@@ -20,7 +20,7 @@ public class PluginYamlCommandVisitorTest {
         BaseCommandExecutor cmd2 = new BaseCommandExecutor("adm|a", "plugin.adm", "hey jude!");
         cmd2.add(new CompositeCommand("subs|ss", "plugin.sub", "some other sub"));
         cmd2.add(new CompositeCommand("t2", "plugin.cmdtest", "?optional mandatory", "test"));
-        String expected = String.join("\r\n", Files.readAllLines(
+        String expected = String.join(System.lineSeparator(), Files.readAllLines(
                 Paths.get(getClass().getClassLoader().getResource("yml/pluginyml_simple.yml").toURI())));
 
         cmd.accept(visitor);
@@ -42,7 +42,7 @@ public class PluginYamlCommandVisitorTest {
         sub.addFeaturePermission("plugin.feature.b", "enables B");
         sub.addFeaturePermission("plugin.featuresub", "standalone feature");
         cmd.add(new CompositeCommand("other", "plugin.cmd.other", "some other command"));
-        String expected = String.join("\r\n", Files.readAllLines(
+        String expected = String.join(System.lineSeparator(), Files.readAllLines(
                 Paths.get(getClass().getClassLoader().getResource("yml/pluginyml_featuremap.yml").toURI())));
 
         cmd.accept(visitor);

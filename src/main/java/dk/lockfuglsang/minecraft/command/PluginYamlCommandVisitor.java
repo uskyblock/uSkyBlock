@@ -233,10 +233,10 @@ public class PluginYamlCommandVisitor implements DocumentWriter {
             if (commands.size() == 1) {
                 return "'Grants access to " + getCmdDescription(commands.get(0)) + "'";
             } else if (commands.size() > 1) {
-                String desc = "|\r\n";
+                String desc = "|" + System.lineSeparator();
                 desc += "      Grants access to " + getCmdDescription(commands.get(0));
                 for (int i = 1; i < commands.size(); i++) {
-                    desc += "\r\n";
+                    desc += System.lineSeparator();
                     desc += "      " + getCmdDescription(commands.get(i));
                 }
                 return desc;
