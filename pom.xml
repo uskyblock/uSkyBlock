@@ -89,12 +89,27 @@
     </build>
     <profiles>
         <profile>
-            <id>1.13</id>
+            <id>1.14</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
-                <dependency> <!-- Bukkit implementation -->
+                <dependency>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                    <version>1.14.2-R0.1-SNAPSHOT</version>
+                    <optional>true</optional>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>1.13</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
                     <groupId>org.bukkit</groupId>
                     <artifactId>bukkit</artifactId>
                     <version>1.13-R0.1-SNAPSHOT</version>
@@ -109,7 +124,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <dependencies>
-                <dependency> <!-- Bukkit implementation -->
+                <dependency>
                     <groupId>org.bukkit</groupId>
                     <artifactId>bukkit</artifactId>
                     <version>1.12-R0.1-SNAPSHOT</version>
@@ -128,8 +143,16 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
             <optional>true</optional>
+        </dependency>
+        <!-- Deprecated, only available in Spigot 1.14 and lower.
+             Should be removed from or included into bukkit-utils in the future. -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -152,7 +175,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.19.0</version>
+            <version>2.28.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

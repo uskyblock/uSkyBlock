@@ -7,13 +7,13 @@ cache:
   - "$HOME/.m2"
 env:
   matrix:
-  - MC=1.13
+  - MC=1.14
 git:
   submodules: false
 notifications:
   email: false
 install:
-- mvn -nsu -P${MC} clean install deploy
+- mvn -nsu -P${MC} clean deploy
 before_deploy:
 - echo '|1|DBFhltHRAVmrfmMZPLbN7FwnS5E=|79CP65+tOIeVNeNNC2R680mpV9o= ecdsa-sha2-nistp256
   AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK/krqsEUrVoDrYIc7I7nsiSCF0M7Xxr379IqZ2pLUPlxF2Or/MkTTokXzRsyspJazL1W1UrBDmKXHfO6+tyMMw='
