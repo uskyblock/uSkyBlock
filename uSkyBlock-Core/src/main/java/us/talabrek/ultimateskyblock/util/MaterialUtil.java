@@ -23,6 +23,7 @@ public enum MaterialUtil {
     private static final Collection<Material> IRON_TOOLS = Arrays.asList(Material.IRON_AXE, Material.IRON_HOE, Material.IRON_PICKAXE, Material.IRON_SHOVEL, Material.IRON_SWORD);
     private static final Collection<Material> GOLD_TOOLS = Arrays.asList(Material.GOLDEN_AXE, Material.GOLDEN_HOE, Material.GOLDEN_PICKAXE, Material.GOLDEN_SHOVEL, Material.GOLDEN_SWORD);
     private static final Collection<Material> DIAMOND_TOOLS = Arrays.asList(Material.DIAMOND_AXE, Material.DIAMOND_HOE, Material.DIAMOND_PICKAXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_SWORD);
+    private static final Collection<Material> NETHERITE_TOOLS = Arrays.asList(Material.NETHERITE_AXE, Material.NETHERITE_HOE, Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL, Material.NETHERITE_SWORD);
     private static final Collection<Material> TOOLS = new ArrayList<>();
     static {
         TOOLS.addAll(WOOD_TOOLS);
@@ -30,6 +31,7 @@ public enum MaterialUtil {
         TOOLS.addAll(IRON_TOOLS);
         TOOLS.addAll(GOLD_TOOLS);
         TOOLS.addAll(DIAMOND_TOOLS);
+        TOOLS.addAll(NETHERITE_TOOLS);
     }
 
     public static boolean isTool(Material type) {
