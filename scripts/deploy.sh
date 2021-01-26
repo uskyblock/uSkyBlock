@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 
-if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
+if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
 
- echo -e "Publishing javadocs and artifacts...\n"
- cd $HOME
+  echo -e "Running release script...\n"
+  echo -e "Publishing javadocs...\n"
+  cd $HOME
 
- rsync -r --delete --quiet $HOME/build/uskyblock/bukkit-utils/target/site/apidocs/ \
- dool1@shell.xs4all.nl:WWW/javadocs/dependencies/bukkit-utils/
+  rsync -r --delete --quiet -e "ssh -p 2222 -o StrictHostKeyChecking=no" \
+  $HOME/build/uskyblock/bukkit-utils/target/site/apidocs/ \
+  travis@travis.internetpolice.eu:WWW-USB/javadocs/dependencies/bukkit-utils/
 
- rsync -r --quiet $HOME/build/uskyblock/bukkit-utils/target/mvn-repo/ \
- dool1@shell.xs4all.nl:WWW/maven/dependencies/
+  echo -e "Publishing Maven artifacts...\n"
+
+  rsync -r --quiet -e "ssh -p 2222 -o StrictHostKeyChecking=no" \
+  $HOME/build/uskyblock/bukkit-utils/target/mvn-repo/ \
+  travis@travis.internetpolice.eu:WWW-USB/maven/uskyblock/
 
 fi
