@@ -6,11 +6,11 @@
 
     <groupId>dk.lockfuglsang.minecraft</groupId>
     <artifactId>bukkit-utils</artifactId>
-    <version>1.24-SNAPSHOT</version>
+    <version>1.25-SNAPSHOT</version>
 
     <properties>
         <poutils.version>1.2</poutils.version>
-        <spigotapi.version>1.14.2-R0.1-SNAPSHOT</spigotapi.version>
+        <spigotapi.version>1.16.1-R0.1-SNAPSHOT</spigotapi.version>
         <vaultapi.version>1.7</vaultapi.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -106,8 +106,8 @@
             <version>${poutils.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>${spigotapi.version}</version>
             <optional>true</optional>
             <scope>compile</scope>
