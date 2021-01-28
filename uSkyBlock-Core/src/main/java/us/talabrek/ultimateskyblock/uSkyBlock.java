@@ -717,6 +717,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         createFolders();
         HandlerList.unregisterAll(this);
         hookManager = new HookManager(this);
+        uSkyBlock.this.getHookManager().setupMultiverse();
+        uSkyBlock.this.getHookManager().setupEconomyHook();
+        uSkyBlock.this.getHookManager().setupPermissionsHook();
         if (challengeLogic != null) {
             challengeLogic.shutdown();
         }
