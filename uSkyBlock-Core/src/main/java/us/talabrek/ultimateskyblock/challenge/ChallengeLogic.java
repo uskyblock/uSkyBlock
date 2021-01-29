@@ -470,35 +470,24 @@ public class ChallengeLogic implements Listener {
 
     private List<Rank> getRanksForPage(int page, List<Rank> ranksOnPage) {
         int rowsToSkip = (page - 1) * ROWS_OF_RANKS;
-        List<Rank> allRanks = new ArrayList<>(ranksOnPage);
-
-        int i = 1;
-        for (Iterator<Rank> it = ranksOnPage.iterator(); it.hasNext(); i++) {
-            it.next();
-            int rowsInRanks = calculateRows(allRanks.subList(0,i));
-            if (rowsToSkip <= 0 || ((rowsToSkip - rowsInRanks) < 0)) {
+        for (Iterator<Rank> it = ranksOnPage.iterator(); it.hasNext(); ) {
+            Rank rank = it.next();
+            int rowsInRank = getRows(rank);
+            if (rowsToSkip <= 0 || ((rowsToSkip - rowsInRank) < 0)) {
                 return ranksOnPage;
             }
+            rowsToSkip -= rowsInRank;
             it.remove();
         }
         return ranksOnPage;
     }
 
     private int calculateRows(List<Rank> ranksOnPage) {
-        int totalRows = 0;
-        int previousRowsOnPage = 0;
-        int currentRows;
-
+        int row = 0;
         for (Rank rank : ranksOnPage) {
-            currentRows = getRows(rank);
-            totalRows += currentRows;
-
-            if(previousRowsOnPage < 5 && (currentRows + previousRowsOnPage) > 5){
-                totalRows = totalRows + (5 - previousRowsOnPage);
-                previousRowsOnPage = currentRows;
-            } else previousRowsOnPage = previousRowsOnPage + currentRows;
+            row += getRows(rank);
         }
-        return totalRows;
+        return row;
     }
 
     private int getRows(Rank rank) {
