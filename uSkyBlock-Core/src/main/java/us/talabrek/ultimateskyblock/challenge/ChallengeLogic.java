@@ -493,10 +493,12 @@ public class ChallengeLogic implements Listener {
             currentRows = getRows(rank);
             totalRows += currentRows;
 
-            if(previousRowsOnPage < 5 && (currentRows + previousRowsOnPage) > 5){
+            if (previousRowsOnPage < 5 && (currentRows + previousRowsOnPage) > 5) {
                 totalRows = totalRows + (5 - previousRowsOnPage);
                 previousRowsOnPage = currentRows;
-            } else previousRowsOnPage = previousRowsOnPage + currentRows;
+            } else {
+                previousRowsOnPage = previousRowsOnPage + currentRows;
+            }
         }
         return totalRows;
     }
