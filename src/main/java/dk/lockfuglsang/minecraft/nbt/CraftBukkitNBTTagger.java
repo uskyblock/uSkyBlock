@@ -30,7 +30,7 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
             return itemStack;
         }
         Object nmsItem = execStatic(getCraftItemStackClass(), "asNMSCopy", itemStack);
-        Object nbtTag = execStatic(getNBTTagParser(nmsItem), "parse", nbtTagString);
+        Object nbtTag = execStatic(getNBTTagParser(), "parse", nbtTagString);
         exec(nmsItem, "setTag", nbtTag);
         Object item = execStatic(getCraftItemStackClass(), "asBukkitCopy", nmsItem);
         if (item instanceof ItemStack) {
@@ -46,7 +46,7 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
         }
         Object nmsItem = execStatic(getCraftItemStackClass(), "asNMSCopy", itemStack);
         Object nbtTag = exec(nmsItem, "getTag");
-        Object nbtTagNew = execStatic(getNBTTagParser(nmsItem), "parse", nbtTagString);
+        Object nbtTagNew = execStatic(getNBTTagParser(), "parse", nbtTagString);
         nbtTag = merge(nbtTagNew, nbtTag);
         exec(nmsItem, "setTag", nbtTag);
         Object item = execStatic(getCraftItemStackClass(), "asBukkitCopy", nmsItem);
@@ -81,9 +81,9 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
         return tgt;
     }
 
-    private static Class<?> getNBTTagParser(Object nmsItem) {
+    private static Class<?> getNBTTagParser() {
         try {
-            return Class.forName(getPackageName(nmsItem) + ".MojangsonParser");
+            return Class.forName("net.minecraft.nbt.MojangsonParser");
         } catch (ClassNotFoundException e) {
             log.info("Unable to instantiate MojangsonParser: " + e);
         }
@@ -99,6 +99,4 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
         }
         return null;
     }
-
-
 }
