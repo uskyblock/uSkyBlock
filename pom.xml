@@ -10,7 +10,7 @@
 
     <properties>
         <poutils.version>1.2</poutils.version>
-        <spigotapi.version>1.16.1-R0.1-SNAPSHOT</spigotapi.version>
+        <spigotapi.version>1.17-R0.1-SNAPSHOT</spigotapi.version>
         <vaultapi.version>1.7</vaultapi.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,10 +35,6 @@
             <id>spigotmc.org</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/public</url>
         </repository>
-        <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
-        </repository>
         <repository> <!-- uSkyBlock dependencies that don't have a (stable) repository -->
             <id>uskyblock-dependencies</id>
             <url>https://www.uskyblock.ovh/maven/dependencies/</url>
@@ -48,15 +44,16 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>16</release>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <executions>
@@ -68,8 +65,9 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <show>public</show>
                     <failOnError>false</failOnError>
@@ -85,6 +83,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.1</version>
                 <executions>
@@ -93,6 +92,28 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.googlecode.json-simple:json-simple</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -118,13 +139,11 @@
             <version>${vaultapi.version}</version>
             <optional>true</optional>
         </dependency>
-        <!-- Deprecated, only available in Spigot 1.14 and lower.
-             Should be removed from or included into bukkit-utils in the future. -->
+        <!-- DEPRECATED -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
