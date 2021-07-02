@@ -1,11 +1,9 @@
 package dk.lockfuglsang.minecraft.nbt;
 
+import com.google.gson.Gson;
 import org.hamcrest.CoreMatchers;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +21,12 @@ public class NBTUtilTest {
      * Tests that the JSONMap will return the proper syntax.
      */
     @Test
-    public void testJSONMap() throws IOException, ParseException {
+    public void testJSONMap() {
         String jsonString = "{\"Potion\":\"minecraft:empty\",\"CustomPotionEffects\":[{\"Id\":1},{\"Id\":2}]}";
-        Map<String, Object> map = (Map<String, Object>) new JSONParser().parse(new StringReader(jsonString));
-        assertThat(map.get("Potion"), CoreMatchers.<Object>is("minecraft:empty"));
+        Gson gson = new Gson();
+
+        Map<String, Object> map = (Map<String, Object>) gson.fromJson(new StringReader(jsonString), Map.class);
+        assertThat(map.get("Potion"), CoreMatchers.is("minecraft:empty"));
         assertThat(map.get("CustomPotionEffects"), instanceOf(List.class));
         assertThat(((List)map.get("CustomPotionEffects")).get(0), instanceOf(Map.class));
     }
