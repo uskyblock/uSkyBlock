@@ -64,11 +64,9 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
             return src;
         }
         try {
-            Field mapField = src.getClass().getDeclaredField("map");
-            boolean wasAccessible = mapField.isAccessible();
+            Field mapField = src.getClass().getDeclaredField("x");
             mapField.setAccessible(true);
             Map<String, Object> map = (Map<String, Object>) mapField.get(src);
-            mapField.setAccessible(wasAccessible);
             Class<?> NBTBase = Class.forName(getPackageName(tgt) + ".NBTBase");
             for (String key : map.keySet()) {
                 Object val = exec(src, "get", new Class[]{String.class}, key);
