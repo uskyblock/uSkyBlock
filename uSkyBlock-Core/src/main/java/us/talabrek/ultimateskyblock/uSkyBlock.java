@@ -116,7 +116,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private static final String[][] depends = new String[][]{
             new String[]{"Vault", "1.7.1", "optional"},
             new String[]{"WorldEdit", "7.2.6", "optionalIf", "FastAsyncWorldEdit"},
-            new String[]{"WorldGuard", "7.0.5"},
+            new String[]{"WorldGuard", "7.0.6"},
             new String[]{"FastAsyncWorldEdit", "1.17", "optional"},
             new String[]{"Multiverse-Core", "4.3.0", "optional"},
             new String[]{"Multiverse-Portals", "4.2.1", "optional"},
