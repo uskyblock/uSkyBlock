@@ -9,7 +9,6 @@ import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
@@ -79,6 +78,7 @@ import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
+import us.talabrek.ultimateskyblock.player.NotificationManager;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
@@ -114,13 +114,13 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
     private static final String[][] depends = new String[][]{
-            new String[]{"Vault", "1.7.0", "optional"},
-            new String[]{"WorldEdit", "7.0", "optionalIf", "FastAsyncWorldEdit"},
-            new String[]{"WorldGuard", "7.0"},
-            new String[]{"FastAsyncWorldEdit", "1.16.1", "optional"},
-            new String[]{"Multiverse-Core", "2.5", "optional"},
-            new String[]{"Multiverse-Portals", "2.5", "optional"},
-            new String[]{"Multiverse-NetherPortals", "2.5", "optional"},
+            new String[]{"Vault", "1.7.1", "optional"},
+            new String[]{"WorldEdit", "7.2.6", "optionalIf", "FastAsyncWorldEdit"},
+            new String[]{"WorldGuard", "7.0.6"},
+            new String[]{"FastAsyncWorldEdit", "1.17", "optional"},
+            new String[]{"Multiverse-Core", "4.3.0", "optional"},
+            new String[]{"Multiverse-Portals", "4.2.1", "optional"},
+            new String[]{"Multiverse-NetherPortals", "4.2.1", "optional"},
     };
     private static String missingRequirements = null;
     private static final Random RND = new Random(System.currentTimeMillis());
@@ -228,12 +228,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                     Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
                     getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
                 }
+                getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
                 log(Level.INFO, getVersionInfo(false));
             }
         }, getConfig().getLong("init.initDelay", 50L));
 
         metricsManager = new MetricsManager(this);
-        PaperLib.suggestPaper(this);
     }
 
     public synchronized boolean isRequirementsMet(CommandSender sender, Command command, String... args) {

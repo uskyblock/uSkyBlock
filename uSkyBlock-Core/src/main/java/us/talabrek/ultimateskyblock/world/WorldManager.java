@@ -21,6 +21,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +98,9 @@ public class WorldManager {
 
         Location spawnLocation = world.getSpawnLocation();
         if (!LocationUtil.isSafeLocation(spawnLocation)) {
+            // Warn the user why we're doing this, because it's a FAQ on the forums:
+            plugin.getLogger().warning("Spawn location in " + world.getName() + " is considered unsafe. " +
+                "Placing default spawn. This check can be disabled in config.yml, option manageSpawn.");
             createSpawn(spawnLocation);
         }
     }
@@ -134,12 +138,14 @@ public class WorldManager {
         try {
             String clazz = plugin.getConfig().getString("options.advanced.chunk-generator",
                     "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator");
-            Object generator = Class.forName(clazz).newInstance();
+            Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
             }
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
+        } catch (ClassNotFoundException ex) {
             logger.log(Level.WARNING, "Invalid overworld chunk-generator configured: " + ex);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
+            plugin.getLogger().log(Level.WARNING, "Unable to instantiate overworld chunk-generator: " + ex);
         }
         return new SkyBlockChunkGenerator();
     }
@@ -153,12 +159,14 @@ public class WorldManager {
         try {
             String clazz = plugin.getConfig().getString("nether.chunk-generator",
                     "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator");
-            Object generator = Class.forName(clazz).newInstance();
+            Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
             }
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
+        } catch (ClassNotFoundException ex) {
             logger.log(Level.WARNING, "Invalid nether chunk-generator configured: " + ex);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
+            plugin.getLogger().log(Level.WARNING, "Unable to instantiate nether chunk-generator: " + ex);
         }
         return new SkyBlockNetherChunkGenerator();
     }
@@ -202,13 +210,13 @@ public class WorldManager {
                         .createWorld();
                 skyBlockWorld.save();
             }
-        }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () ->
-            plugin.getHookManager().getMultiverse().ifPresent(hook -> {
-                hook.registerOverworld(skyBlockWorld);
-                setupWorld(skyBlockWorld, Settings.island_height);
-        }), plugin.getConfig().getLong("init.initDelay", 50L) + 40L);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () ->
+                plugin.getHookManager().getMultiverse().ifPresent(hook -> {
+                    hook.registerOverworld(skyBlockWorld);
+                    setupWorld(skyBlockWorld, Settings.island_height);
+                }), plugin.getConfig().getLong("init.initDelay", 50L) + 40L);
+        }
 
         return skyBlockWorld;
     }
@@ -220,7 +228,11 @@ public class WorldManager {
      */
     @Nullable
     public synchronized World getNetherWorld() {
-        if (skyBlockNetherWorld == null && Settings.nether_enabled) {
+        if (!Settings.nether_enabled) {
+            return null;
+        }
+
+        if (skyBlockNetherWorld == null) {
             skyBlockNetherWorld = Bukkit.getWorld(Settings.general_worldName + "_nether");
             ChunkGenerator skyGenerator = getNetherGenerator();
             ChunkGenerator worldGenerator = skyBlockNetherWorld != null ? skyBlockNetherWorld.getGenerator() : null;
@@ -237,13 +249,13 @@ public class WorldManager {
                         .createWorld();
                 skyBlockNetherWorld.save();
             }
-        }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () ->
-            plugin.getHookManager().getMultiverse().ifPresent(hook -> {
-                hook.registerNetherworld(skyBlockNetherWorld);
-                setupWorld(skyBlockNetherWorld, island_height / 2);
-            }), plugin.getConfig().getLong("init.initDelay", 50L) + 100L);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () ->
+                plugin.getHookManager().getMultiverse().ifPresent(hook -> {
+                    hook.registerNetherworld(skyBlockNetherWorld);
+                    setupWorld(skyBlockNetherWorld, island_height / 2);
+                }), plugin.getConfig().getLong("init.initDelay", 50L) + 100L);
+        }
 
         return skyBlockNetherWorld;
     }

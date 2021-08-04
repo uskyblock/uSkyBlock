@@ -415,6 +415,7 @@ nether:
     IRON: 0.9
     GOLD: 1.5
     DIAMOND: 0.2
+    NETHERITE: 1.2
 
   # The chances of changing a pigzombie when spawned on a netherbrick
   spawn-chances:
@@ -427,8 +428,8 @@ tool-menu:
   tool: OAK_SAPLING
   commands:
     CHEST: island
+    CRAFTING_TABLE: challenges
     BEDROCK: island spawn
-    WORKBENCH: challenges
 
 # Placeholders - enable these to get placeholder substitution
 # usb_version
@@ -440,9 +441,6 @@ tool-menu:
 # usb_island_golems_max, usb_island_monsters_max, usb_island_animals_max, usb_island_villagers_max,
 # usb_island_golems, usb_island_monsters, usb_island_animals, usb_island_villagers
 placeholder:
-
-  # Hooks directly into DeluxeChatPlaceholderAPI
-  deluxechatplaceholderapi: false
 
   # Hooks into MVdWPlaceholderAPI
   mvdwplaceholderapi: false
