@@ -324,8 +324,12 @@ blocks:
   DIRT:
     additionalBlocks:
       - FARMLAND
+      - ROOTED_DIRT
     score: 20.0
     diminishingReturns: 10000
+  DIRT_PATH:
+    score: 20.0
+    diminishingReturns: 5000
   DRAGON_EGG:
     score: 5000.0
     limit: 2
@@ -396,9 +400,6 @@ blocks:
   GRASS_BLOCK:
     score: 20.0
     diminishingReturns: 10000
-  GRASS_PATH:
-    score: 20.0
-    diminishingReturns: 5000
   GRAVEL:
     score: 20.0
   GRINDSTONE:
@@ -962,7 +963,7 @@ blocks:
   STONECUTTER:
     score: 15.0
     limit: 250
-  SUGAR_CANE_BLOCK:
+  SUGAR_CANE:
     score: 0.0
   SUNFLOWER:
     diminishingReturns: 100

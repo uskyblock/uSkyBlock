@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
