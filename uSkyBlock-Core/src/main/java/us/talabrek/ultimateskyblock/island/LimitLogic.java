@@ -110,23 +110,23 @@ public class LimitLogic {
     }
 
     public boolean canSpawn(EntityType entityType, us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
+        if (!isLimitsEnabled()) {
+            return true;
+        }
         Map<CreatureType, Integer> creatureCount = getCreatureCount(islandInfo);
         CreatureType creatureType = getCreatureType(entityType);
         int max = getMax(islandInfo, creatureType);
-        if (creatureCount.containsKey(creatureType) && creatureCount.get(creatureType) >= max) {
-            return false;
-        }
-        return true;
+        return !creatureCount.containsKey(creatureType) || creatureCount.get(creatureType) < max;
     }
 
     private int getMax(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo, CreatureType creatureType) {
-        switch (creatureType) {
-            case ANIMAL: return islandInfo.getMaxAnimals();
-            case MONSTER: return islandInfo.getMaxMonsters();
-            case VILLAGER: return islandInfo.getMaxVillagers();
-            case GOLEM: return islandInfo.getMaxGolems();
-        }
-        return Integer.MAX_VALUE;
+        return switch (creatureType) {
+            case ANIMAL -> islandInfo.getMaxAnimals();
+            case MONSTER -> islandInfo.getMaxMonsters();
+            case VILLAGER -> islandInfo.getMaxVillagers();
+            case GOLEM -> islandInfo.getMaxGolems();
+            default -> Integer.MAX_VALUE;
+        };
     }
 
     public String getSummary(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
@@ -157,5 +157,13 @@ public class LimitLogic {
             }
         }
         return sb.toString().trim();
+    }
+
+    /**
+     * Returns if spawn-limits is enabled in the plugins' config.
+     * @return True if spawn-limits is enabled, false otherwise.
+     */
+    private boolean isLimitsEnabled() {
+        return plugin.getConfig().getBoolean("options.island.spawn-limits.enabled", true);
     }
 }

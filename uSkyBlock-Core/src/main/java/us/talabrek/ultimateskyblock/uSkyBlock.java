@@ -78,7 +78,6 @@ import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
-import us.talabrek.ultimateskyblock.player.NotificationManager;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
@@ -301,14 +300,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new MenuEvents(this), this);
         manager.registerEvents(new ExploitEvents(this), this);
+        manager.registerEvents(new SpawnEvents(this), this);
         if (getConfig().getBoolean("options.protection.enabled", true)) {
             manager.registerEvents(new GriefEvents(this), this);
             if (getConfig().getBoolean("options.protection.item-drops", true)) {
                 manager.registerEvents(new ItemDropEvents(this), this);
             }
-        }
-        if (getConfig().getBoolean("options.island.spawn-limits.enabled", true)) {
-            manager.registerEvents(new SpawnEvents(this), this);
         }
         if (getConfig().getBoolean("options.protection.visitors.block-banned-entry", true)) {
             manager.registerEvents(new WorldGuardEvents(this), this);

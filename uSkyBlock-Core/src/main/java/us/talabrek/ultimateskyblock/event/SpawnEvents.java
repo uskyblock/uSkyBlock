@@ -39,13 +39,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public class SpawnEvents implements Listener {
     private static final Set<Action> RIGHT_CLICKS = new HashSet<>(Arrays.asList(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK));
-    private static final Set<CreatureSpawnEvent.SpawnReason> PLAYER_INITIATED = new HashSet<>(Arrays.asList(
-            CreatureSpawnEvent.SpawnReason.BREEDING,
-            CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM, CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN,
-            CreatureSpawnEvent.SpawnReason.BUILD_WITHER
-    ));
-    private static final Set<CreatureSpawnEvent.SpawnReason> ADMIN_INITIATED = new HashSet<>(Arrays.asList(
-            CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
+    private static final Set<CreatureSpawnEvent.SpawnReason> ADMIN_INITIATED = new HashSet<>(List.of(
+        CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
     ));
 
     private final uSkyBlock plugin;
