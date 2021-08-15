@@ -6,10 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fish;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WaterMob;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SplittableRandom;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
@@ -43,10 +44,10 @@ public class SpawnEvents implements Listener {
         CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
     ));
 
-    private final uSkyBlock plugin;
-
+    private final SplittableRandom random = new SplittableRandom();
     private boolean phantomsInOverworld;
     private boolean phantomsInNether;
+    private final uSkyBlock plugin;
 
     public SpawnEvents(uSkyBlock plugin) {
         this.plugin = plugin;
@@ -93,10 +94,12 @@ public class SpawnEvents implements Listener {
             return; // Allow it, the above method would have blocked it if it should be blocked.
         }
         checkLimits(event, event.getEntity().getType(), event.getLocation());
-        if (event.getEntity() instanceof WaterMob) {
+        if (event.getEntity() instanceof Fish) {
             Location loc = event.getLocation();
             if (isDeepOceanBiome(loc) && isPrismarineRoof(loc)) {
-                loc.getWorld().spawnEntity(loc, EntityType.GUARDIAN);
+                if (random.nextDouble() <= plugin.getConfig().getDouble("options.island.spawn-chances.guardians")) {
+                    loc.getWorld().spawnEntity(loc, EntityType.GUARDIAN);
+                }
                 event.setCancelled(true);
             }
         }

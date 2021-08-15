@@ -70,12 +70,15 @@ options:
     fixFlatland: false
     chat-format: '&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}'
     log-size: 10
+    # Disabling spawn-limits might flood the server with mobs. Proceed with caution!
     spawn-limits:
       enabled: true
       animals: 64
       monsters: 50
       villagers: 16
       golems: 5
+    spawn-chances:
+      guardians: 0.05
     block-limits:
       enabled: true
       hopper: 50
@@ -452,7 +455,7 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 107
+version: 108
 force-replace:
   options.party.invite-timeout: 100
   options.island.islandTeleportDelay: 5
