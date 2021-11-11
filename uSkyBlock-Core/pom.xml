@@ -100,8 +100,12 @@
                                     <shadedPattern>us.talabrek.ultimateskyblock.paperlib</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.kyori</pattern>
+                                    <pattern>org.codehaus.plexus.util</pattern>
                                     <shadedPattern>us.talabrek.ultimateskyblock.kyori</shadedPattern>
+                                    <excludes>
+                                        <exclude>org.codehaus.plexus.util.xml.Xpp3Dom</exclude>
+                                        <exclude>org.codehaus.plexus.util.xml.pull.*</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
