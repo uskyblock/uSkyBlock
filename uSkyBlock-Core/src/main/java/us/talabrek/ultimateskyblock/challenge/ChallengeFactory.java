@@ -41,7 +41,9 @@ public class ChallengeFactory {
                 section.getBoolean("enableEconomyPlugin", true),
                 section.getBoolean("broadcastCompletion", true),
                 section.getInt("radius", 10), section.getBoolean("showLockedChallengeName", true),
-                section.getInt("repeatLimit", 0));
+                section.getInt("repeatLimit", 0),
+                section.getString("permission", "usb.challenges.permission-default")
+        );
     }
 
     public static Challenge createChallenge(Rank rank, ConfigurationSection section, ChallengeDefaults defaults) {
@@ -69,7 +71,9 @@ public class ChallengeFactory {
         List<String> requiredChallenges = section.getStringList("requiredChallenges");
         int offset = section.getInt("offset", 0);
         int repeatLimit = section.getInt("repeatLimit", 0);
-        return new Challenge(name, displayName, description, type,
+        String permission = section.getString("permission", defaults.permission);
+
+        return new Challenge(name, displayName, description, permission, type,
                 requiredItems, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d), rank,
                 resetInHours, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
                 radius, reward, repeatReward, repeatLimit);

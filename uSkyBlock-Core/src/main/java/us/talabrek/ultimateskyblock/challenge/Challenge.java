@@ -27,13 +27,16 @@ public class Challenge {
     public static final int MAX_LINE = 30;
 
     public enum Type {
-        PLAYER, ISLAND, ISLAND_LEVEL;
+        PLAYER, ISLAND, ISLAND_LEVEL, PERMISSION;
 
         static Type from(String s) {
             if (s == null || s.trim().isEmpty() || s.trim().toLowerCase().equals("onplayer")) {
                 return PLAYER;
             } else if (s != null && s.equalsIgnoreCase("islandlevel")) {
                 return ISLAND_LEVEL;
+            }
+            else if(s != null && s.equalsIgnoreCase("permission")) {
+                return PERMISSION;
             }
             return ISLAND;
         }
@@ -42,6 +45,7 @@ public class Challenge {
     private final String name;
     private final String description;
     private final String displayName;
+    private final String permission;
     private final Type type;
     private final List<String> requiredItems;
     private final List<EntityMatch> requiredEntities;
@@ -59,7 +63,7 @@ public class Challenge {
     private final Reward repeatReward;
     private final int repeatLimit;
 
-    public Challenge(String name, String displayName, String description, Type type, List<String> requiredItems,
+    public Challenge(String name, String displayName, String description, String permission, Type type, List<String> requiredItems,
                      List<EntityMatch> requiredEntities, List<String> requiredChallenges, double requiredLevel, Rank rank, int resetInHours,
                      ItemStack displayItem, String tool, ItemStack lockedItem, int offset, boolean takeItems,
                      int radius, Reward reward, Reward repeatReward, int repeatLimit) {
@@ -82,6 +86,7 @@ public class Challenge {
         this.repeatReward = repeatReward;
         this.description = description;
         this.repeatLimit = repeatLimit;
+        this.permission = permission;
     }
 
     public boolean isRepeatable() {
@@ -110,6 +115,10 @@ public class Challenge {
 
     public double getRequiredLevel() {
         return requiredLevel;
+    }
+
+    public String getPermission() {
+        return permission;
     }
 
     public List<ItemStack> getRequiredItems(int timesCompleted) {

@@ -7,6 +7,7 @@ public class ChallengeDefaults {
     public final String repeatableColor;
     public final String finishedColor;
     public final String challengeColor;
+    public final String permission;
     public final int rankLeeway;
     public final boolean enableEconomyPlugin;
     public final boolean broadcastCompletion;
@@ -16,7 +17,7 @@ public class ChallengeDefaults {
 
     ChallengeDefaults(int resetInHours, boolean requiresPreviousRank, String repeatableColor, String finishedColor,
                       String challengeColor, int rankLeeway, boolean enableEconomyPlugin, boolean broadcastCompletion,
-                      int radius, boolean showLockedChallengeName, int repeatLimit) {
+                      int radius, boolean showLockedChallengeName, int repeatLimit, String permission) {
         this.resetInHours = resetInHours;
         this.requiresPreviousRank = requiresPreviousRank;
         this.repeatableColor = repeatableColor;
@@ -28,5 +29,6 @@ public class ChallengeDefaults {
         this.radius = radius;
         this.showLockedChallengeName = showLockedChallengeName;
         this.repeatLimit = repeatLimit;
+        this.permission = permission;
     }
 }

@@ -166,6 +166,10 @@ public class ChallengeLogic implements Listener {
             if (!tryCompleteIslandLevel(player, challenge)) {
                 player.sendMessage(tr("\u00a74Your island must be level {0} to complete this challenge!", challenge.getRequiredLevel()));
             }
+        } else if(challenge.getType() == Challenge.Type.PERMISSION) {
+            if(!tryCompletePermission(player, challenge)) {
+                player.sendMessage(tr("\u00a74You have not completed the task yet: \u00a77{0}", challenge.getDescription()));
+            }
         }
     }
 
@@ -222,6 +226,14 @@ public class ChallengeLogic implements Listener {
      */
     private boolean tryCompleteIslandLevel(Player player, Challenge challenge) {
         if (plugin.getIslandInfo(player).getLevel() >= challenge.getRequiredLevel()) {
+            giveReward(player, challenge);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryCompletePermission(Player player, Challenge challenge) {
+        if(player.hasPermission(challenge.getPermission())) {
             giveReward(player, challenge);
             return true;
         }
