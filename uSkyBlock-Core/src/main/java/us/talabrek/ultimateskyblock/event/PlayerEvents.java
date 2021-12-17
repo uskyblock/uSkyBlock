@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -87,22 +88,22 @@ public class PlayerEvents implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onClickOnObsidian(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (!plugin.playerIsOnIsland(player) || !event.hasItem() || !event.hasBlock()) {
-            return;
-        }
-        long now = System.currentTimeMillis();
-        Long lastClick = obsidianClick.get(player.getUniqueId());
-        if (lastClick != null && (lastClick + OBSIDIAN_SPAM) >= now) {
-            plugin.notifyPlayer(player, tr("\u00a74You can only convert obsidian once every 10 seconds"));
-            return;
-        }
         Block block = event.getClickedBlock();
-        if (Settings.extras_obsidianToLava
-                && event.getAction() == Action.RIGHT_CLICK_BLOCK
-                && event.getMaterial() == Material.BUCKET
-                && block != null
-                && block.getType() == Material.OBSIDIAN
-                && !testForObsidian(block)) {
+        if (plugin.playerIsOnIsland(player)
+            && Settings.extras_obsidianToLava
+            && event.hasBlock()
+            && event.hasItem()
+            && event.getAction() == Action.RIGHT_CLICK_BLOCK
+            && event.getMaterial() == Material.BUCKET
+            && block != null
+            && block.getType() == Material.OBSIDIAN
+            && !testForObsidian(block)) {
+            long now = System.currentTimeMillis();
+            Long lastClick = obsidianClick.get(player.getUniqueId());
+            if (lastClick != null && (lastClick + OBSIDIAN_SPAM) >= now) {
+                plugin.notifyPlayer(player, tr("\u00a74You can only convert obsidian once every 10 seconds"));
+                return;
+            }
             PlayerInventory inventory = player.getInventory();
             if (inventory.firstEmpty() != -1) {
                 HashMap<Integer, ItemStack> leftover = inventory.removeItem(new ItemStack(Material.BUCKET));
@@ -114,9 +115,8 @@ public class PlayerEvents implements Listener {
                     if (!leftover.isEmpty()) {
                         player.getWorld().dropItem(block.getLocation(), new ItemStack(Material.LAVA_BUCKET));
                     }
-                    //player.updateInventory();
                     block.setType(Material.AIR);
-                    event.setCancelled(true); // Don't execute the click anymore (since that would re-place the lava).
+                    event.setCancelled(true);
                 }
             } else {
                 player.sendMessage(tr("\u00a7eYour inventory must have another empty space!"));
@@ -139,6 +139,18 @@ public class PlayerEvents implements Listener {
             }
         }
         return false;
+    }
+
+    // Prevent re-placing lava that was picked up in the last tick
+    @EventHandler(ignoreCancelled = true)
+    public void onLavaPlace(final PlayerBucketEmptyEvent event) {
+        if (Settings.extras_obsidianToLava && event.getBucket() == Material.LAVA_BUCKET) {
+            long now = System.currentTimeMillis();
+            Long lastClick = obsidianClick.get(event.getPlayer().getUniqueId());
+            if (lastClick != null && (now - lastClick < 50)) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -174,7 +186,6 @@ public class PlayerEvents implements Listener {
         }
     }
 
-    // TODO 2018-11-09 Muspah: Move (parts) to new EntityDamageByEntityEvent-handler
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onVisitorDamage(final EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player
@@ -193,7 +204,7 @@ public class PlayerEvents implements Listener {
         if (event.getEntity() instanceof Player player
             && plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())
             && !plugin.playerIsOnIsland(player)
-            && !(event.getDamager() instanceof Player)) {
+            && !(event.getDamager() instanceof Player && Settings.island_allowPvP)) {
             if (visitorMonsterProtected &&
                 (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK
                     || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK

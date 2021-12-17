@@ -31,6 +31,7 @@ public class Settings {
     public static int general_cooldownRestart;
     public static int general_biomeChange;
     public static boolean extras_sendToSpawn;
+    public static boolean extras_respawnAtIsland;
     public static boolean extras_obsidianToLava;
     public static String island_schematicName;
     public static long island_topTenTimeout;
@@ -127,6 +128,7 @@ public class Settings {
         island_useIslandLevel = config.getBoolean("options.island.useIslandLevel");
         island_extraPermissions = permissionList.toArray(new String[0]);
         extras_sendToSpawn = config.getBoolean("options.extras.sendToSpawn");
+        extras_respawnAtIsland = config.getBoolean("options.extras.respawnAtIsland");
         island_useTopTen = config.getBoolean("options.island.useTopTen");
         general_worldName = config.getString("options.general.worldName", "skyworld");
         island_removeCreaturesByTeleport = config.getBoolean("options.island.removeCreaturesByTeleport");
