@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
+import us.talabrek.ultimateskyblock.api.UltimateSkyblock;
+import us.talabrek.ultimateskyblock.api.UltimateSkyblockProvider;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.event.EventLogic;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
@@ -110,7 +113,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.pre;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
-public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
+public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker, UltimateSkyblock {
     private static final String CN = uSkyBlock.class.getName();
     private static final String[][] depends = new String[][]{
             new String[]{"Vault", "1.7.1", "optional"},
@@ -171,6 +174,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     @Override
     public void onDisable() {
+        deregisterApi();
+
         HandlerList.unregisterAll(this);
         Bukkit.getScheduler().cancelTasks(this);
         try {
@@ -206,8 +211,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAllwaysOverwrite("levelConfig.yml");
         I18nUtil.setDataFolder(getDataFolder());
-
         reloadConfigs();
+
+        registerApi();
 
         getServer().getScheduler().runTaskLater(getInstance(), new Runnable() {
             @Override
@@ -1144,5 +1150,21 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         for (String cmd : cmdList) {
             execCommand(player, cmd, false);
         }
+    }
+
+    /**
+     * Register this uSkyBlock instance with our API provider and Bukkit's ServicesManager.
+     */
+    private void registerApi() {
+        UltimateSkyblockProvider.registerPlugin(this);
+        getServer().getServicesManager().register(UltimateSkyblock.class, this, this, ServicePriority.Normal);
+    }
+
+    /**
+     * Deregister this uSkyBlock instance with our API provider and Bukkit's ServicesManager.
+     */
+    private void deregisterApi() {
+        UltimateSkyblockProvider.deregisterPlugin();
+        getServer().getServicesManager().unregister(this);
     }
 }
