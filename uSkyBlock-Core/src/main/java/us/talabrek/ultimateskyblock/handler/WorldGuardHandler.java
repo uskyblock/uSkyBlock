@@ -214,11 +214,13 @@ public class WorldGuardHandler {
     }
 
     public static BlockVector3 getProtectionVectorLeft(final Location island) {
-        return BlockVector3.at(island.getX() + Settings.island_radius - 1, 319.0, island.getZ() + Settings.island_radius - 1);
+        World world = uSkyBlock.getInstance().getWorldManager().getWorld();
+        return BlockVector3.at(island.getX() + Settings.island_radius - 1, world.getMaxHeight(), island.getZ() + Settings.island_radius - 1);
     }
 
     public static BlockVector3 getProtectionVectorRight(final Location island) {
-        return BlockVector3.at(island.getX() - Settings.island_radius, -64.0, island.getZ() - Settings.island_radius);
+        World world = uSkyBlock.getInstance().getWorldManager().getWorld();
+        return BlockVector3.at(island.getX() - Settings.island_radius, world.getMinHeight(), island.getZ() - Settings.island_radius);
     }
 
     public static String getIslandNameAt(Location location) {
