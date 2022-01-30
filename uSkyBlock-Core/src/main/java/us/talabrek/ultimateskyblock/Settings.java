@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import us.talabrek.ultimateskyblock.command.island.BiomeCommand;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 
@@ -30,7 +31,9 @@ public class Settings {
     public static int general_cooldownInfo;
     public static int general_cooldownRestart;
     public static int general_biomeChange;
+    public static String general_defaultBiome;
     public static boolean extras_sendToSpawn;
+    public static boolean extras_respawnAtIsland;
     public static boolean extras_obsidianToLava;
     public static String island_schematicName;
     public static long island_topTenTimeout;
@@ -84,6 +87,14 @@ public class Settings {
             general_biomeChange = 3600;
         }
         try {
+            general_defaultBiome = config.getString("options.general.defaultBiome");
+            if (!BiomeCommand.biomeExists(general_defaultBiome)) {
+                general_defaultBiome = "OCEAN";
+            }
+        } catch (Exception e) {
+            general_defaultBiome = "OCEAN";
+        }
+        try {
             general_cooldownRestart = config.getInt("options.general.cooldownRestart");
             if (general_cooldownRestart < 0) {
                 general_cooldownRestart = 0;
@@ -127,6 +138,7 @@ public class Settings {
         island_useIslandLevel = config.getBoolean("options.island.useIslandLevel");
         island_extraPermissions = permissionList.toArray(new String[0]);
         extras_sendToSpawn = config.getBoolean("options.extras.sendToSpawn");
+        extras_respawnAtIsland = config.getBoolean("options.extras.respawnAtIsland");
         island_useTopTen = config.getBoolean("options.island.useTopTen");
         general_worldName = config.getString("options.general.worldName", "skyworld");
         island_removeCreaturesByTeleport = config.getBoolean("options.island.removeCreaturesByTeleport");

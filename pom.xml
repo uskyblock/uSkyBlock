@@ -1,23 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>uSkyBlock</groupId>
+    <groupId>ovh.uskyblock</groupId>
     <artifactId>uSkyBlock</artifactId>
     <packaging>pom</packaging>
-    <version>2.10.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Ultimate SkyBlock</name>
 
     <properties>
-        <adventure-api.version>4.8.1</adventure-api.version>
-        <adventure-bukkit.version>4.0.0-SNAPSHOT</adventure-bukkit.version>
-        <jbannotations.version>19.0.0</jbannotations.version>
+        <adventure-api.version>4.9.3</adventure-api.version>
+        <adventure-bukkit.version>4.0.1</adventure-bukkit.version>
+        <apache-http.version>4.5.13</apache-http.version>
+        <gson.version>2.8.9</gson.version>
+        <jbannotations.version>23.0.0</jbannotations.version>
+        <maven-artifact.version>3.8.4</maven-artifact.version>
         <api.version>${project.version}</api.version>
         <bukkit-utils.version>1.25-SNAPSHOT</bukkit-utils.version>
-        <paperlib.version>1.0.4</paperlib.version>
-        <spigotapi.version>1.17-R0.1-SNAPSHOT</spigotapi.version>
+        <paperlib.version>1.0.7</paperlib.version>
+        <spigotapi.version>1.18.1-R0.1-SNAPSHOT</spigotapi.version>
         <vault.version>1.7</vault.version>
-        <worldedit.version>7.2.6-SNAPSHOT</worldedit.version>
-        <worldguard.version>7.0.6-SNAPSHOT</worldguard.version>
+        <worldedit.version>7.2.8</worldedit.version>
+        <worldguard.version>7.0.6</worldguard.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <finalName>${project.artifactId}</finalName>
@@ -27,15 +30,16 @@
         <msgmergeCmd>msgmerge</msgmergeCmd>
 
         <!-- Testing -->
-        <hamcrest.version>2.1</hamcrest.version>
-        <junit.version>4.12</junit.version>
-        <junit-vintage-engine.version>5.5.1</junit-vintage-engine.version>
-        <mockito.version>3.11.0</mockito.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <junit.version>4.13.2</junit.version>
+        <junit-vintage-engine.version>5.8.2</junit-vintage-engine.version>
+        <mockito.version>3.12.4</mockito.version>
     </properties>
 
     <modules>
         <module>po-utils</module>
         <module>uSkyBlock-API</module>
+        <module>uSkyBlock-APIv2</module>
         <module>uSkyBlock-Core</module>
         <module>uSkyBlock-Plugin</module>
         <module>uSkyBlock-FAWE</module>
@@ -65,7 +69,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <release>16</release>
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -76,7 +80,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -85,16 +89,43 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>3.0.0-M5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>3.0.0-M5</version>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.8.1</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <repositories>
         <repository> <!-- Bukkit & Spigot API -->
@@ -182,22 +213,27 @@
                 <version>${api.version}</version>
             </dependency>
             <dependency>
-                <groupId>uSkyBlock</groupId>
+                <groupId>ovh.uskyblock</groupId>
+                <artifactId>uSkyBlock-APIv2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ovh.uskyblock</groupId>
                 <artifactId>uSkyBlock-Core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>uSkyBlock</groupId>
+                <groupId>ovh.uskyblock</groupId>
                 <artifactId>uSkyBlock-FAWE</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>uSkyBlock</groupId>
+                <groupId>ovh.uskyblock</groupId>
                 <artifactId>uSkyBlock-AWE370</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>uSkyBlock</groupId>
+                <groupId>ovh.uskyblock</groupId>
                 <artifactId>po-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -220,6 +256,21 @@
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-platform-bukkit</artifactId>
                 <version>${adventure-bukkit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${apache-http.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>${maven-artifact.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

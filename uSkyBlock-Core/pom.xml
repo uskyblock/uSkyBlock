@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>uSkyBlock</artifactId>
-        <groupId>uSkyBlock</groupId>
-        <version>2.10.0-SNAPSHOT</version>
+        <groupId>ovh.uskyblock</groupId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
@@ -17,7 +17,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>16</release>
+                    <release>17</release>
                     <encoding>utf-8</encoding>
                 </configuration>
             </plugin>
@@ -82,15 +82,21 @@
                             <minimizeJar>true</minimizeJar>
                             <artifactSet>
                                 <includes>
-                                    <include>com.googlecode.json-simple:json-simple</include>
+                                    <include>com.google.code.gson:gson</include>
                                     <include>dk.lockfuglsang.minecraft:bukkit-utils</include>
                                     <include>io.papermc:paperlib</include>
                                     <include>net.kyori:*</include>
+                                    <include>org.apache.httpcomponents:httpclient</include>
+                                    <include>org.apache.maven:maven-artifact</include>
                                     <include>org.bstats:*</include>
-                                    <include>uSkyBlock:po-utils</include>
+                                    <include>ovh.uskyblock:po-utils</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
+                                <relocation>
+                                    <pattern>com.google.code.gson</pattern>
+                                    <shadedPattern>us.talabrek.ultimateskyblock.gson</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>dk.lockfuglsang.minecraft</pattern>
                                     <shadedPattern>us.talabrek.ultimateskyblock.utils</shadedPattern>
@@ -108,6 +114,14 @@
                                     </excludes>
                                 </relocation>
                                 <relocation>
+                                    <pattern>org.apache.httpcomponents</pattern>
+                                    <shadedPattern>us.talabrek.ultimateskyblock.apache.httpcomponents</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.maven</pattern>
+                                    <shadedPattern>us.talabrek.ultimateskyblock.apache.maven</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>us.talabrek.ultimateskyblock.metrics</shadedPattern>
                                 </relocation>
@@ -120,6 +134,8 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF.*</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -174,10 +190,28 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
                         <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -341,12 +375,16 @@
             <classifier>tests</classifier>
         </dependency>
         <dependency>
-            <groupId>uSkyBlock</groupId>
+            <groupId>ovh.uskyblock</groupId>
             <artifactId>po-utils</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.rlf</groupId>
             <artifactId>uSkyBlock-API</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ovh.uskyblock</groupId>
+            <artifactId>uSkyBlock-APIv2</artifactId>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
@@ -361,6 +399,12 @@
             <version>${spigotapi.version}</version>
             <scope>provided</scope>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- PaperLib -->
         <dependency>
@@ -425,15 +469,22 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- Guava -->
+        <!-- bundled with Minecraft, should be kept in sync -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>31.0.1-jre</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Google Gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>be.maximvdw</groupId>
@@ -469,11 +520,16 @@
             <version>2.6</version>
             <scope>provided</scope>
         </dependency>
-        <!-- DEPRECATED -->
+        <!-- Apache HttpComponents -->
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <scope>compile</scope>
         </dependency>
         <!-- TESTING -->
         <dependency>

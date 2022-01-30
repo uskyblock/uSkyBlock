@@ -3,17 +3,13 @@ package us.talabrek.ultimateskyblock.imports;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import us.talabrek.ultimateskyblock.imports.challenges.ConfigPre113Importer;
 import us.talabrek.ultimateskyblock.imports.fixuuidleader.UUIDLeaderImporter;
-import us.talabrek.ultimateskyblock.imports.name2uuid.Name2UUIDImporter;
 import us.talabrek.ultimateskyblock.imports.update.USBUpdateImporter;
-import us.talabrek.ultimateskyblock.imports.wolfwork.WolfWorkUSBImporter;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
@@ -52,14 +48,11 @@ public class USBImporterExecutor {
     private List<USBImporter> getImporters() {
         if (importers == null) {
             importers = new ArrayList<>();
-            importers.add(new WolfWorkUSBImporter());
             importers.add(new UUIDLeaderImporter());
             importers.add(new USBUpdateImporter());
-            importers.add(new Name2UUIDImporter());
-            importers.add(new ConfigPre113Importer());
-            ServiceLoader serviceLoader = ServiceLoader.load(USBImporter.class, getClass().getClassLoader());
-            for (Iterator<USBImporter> it = serviceLoader.iterator(); it.hasNext(); ) {
-                importers.add(it.next());
+            ServiceLoader<USBImporter> serviceLoader = ServiceLoader.load(USBImporter.class, getClass().getClassLoader());
+            for (USBImporter usbImporter : serviceLoader) {
+                importers.add(usbImporter);
             }
         }
         return importers;
@@ -83,12 +76,7 @@ public class USBImporterExecutor {
             sender.sendMessage(tr("\u00a74No importer named \u00a7e{0}\u00a74 found", name));
             return;
         }
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                doImport(sender, importer);
-            }
-        });
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> doImport(sender, importer));
     }
 
     private void doImport(CommandSender sender, USBImporter importer) {
@@ -108,8 +96,7 @@ public class USBImporterExecutor {
 
     private void doImport(final CommandSender sender, final USBImporter importer, final File[] files) {
         try {
-            for (int i = 0; i < files.length; i++) {
-                File file = files[i];
+            for (File file : files) {
                 try {
                     Boolean status = importer.importFile(file);
                     if (status == null) {
@@ -127,8 +114,8 @@ public class USBImporterExecutor {
                     log(Level.WARNING, "Could not import file " + file, t);
                 }
                 progressTracker.progressUpdate(countSuccess + countFailed + countSkip, files.length,
-                        countSuccess, countFailed, countSkip,
-                        TimeUtil.millisAsString(System.currentTimeMillis()-tStart));
+                    countSuccess, countFailed, countSkip,
+                    TimeUtil.millisAsString(System.currentTimeMillis() - tStart));
             }
         } finally {
             complete(sender, importer);

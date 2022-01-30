@@ -3,6 +3,7 @@ name: Maven build
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master ]
 
@@ -21,11 +22,13 @@ jobs:
         run: |
           cd uSkyBlock-Core/src/main/po && perl en2pirate.pl && cd -
           cd uSkyBlock-Core/src/main/po && perl en2kitteh.pl && cd -
-      - name: JDK 16
-        uses: actions/setup-java@v1
+      - name: JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: '16'
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Install gettext
+        run: sudo apt-get install -y gettext
       - name: Cache Maven repository
         uses: actions/cache@v2
         with:
@@ -34,3 +37,28 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
         run: mvn -U -Pi18n clean deploy
+
+      # Install our SSH key:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
+
+      # Mark our scripts runnable:
+      - name: Mark deploy scripts runnable
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          chmod +x "${GITHUB_WORKSPACE}/.github/deploy-staging.sh"
+          chmod +x "${GITHUB_WORKSPACE}/.github/deploy-release.sh"
+
+      # Deploy from master branch (staging release):
+      - name: Run deploy script for staging release
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        run: "${GITHUB_WORKSPACE}/.github/deploy-staging.sh"
+
+      # Deploy from tag create (plugin release):
+      - name: Run deploy script for plugin release
+        if: ${{ github.event_name == 'push' && startsWith( github.ref, 'refs/tags/') }}
+        run: "${GITHUB_WORKSPACE}/.github/deploy-release.sh"

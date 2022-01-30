@@ -8,10 +8,10 @@ We are on [Spigot](https://www.spigotmc.org/resources/uskyblock-revived.66795/).
 
 This version depends on the following plugins:
 
-* Spigot/Paper 1.17-R0.1-SNAPSHOT
+* Spigot/Paper 1.18.1-R0.1-SNAPSHOT
 * Vault 1.7.x
-* WorldEdit 7.1.0-SNAPSHOT
-* WorldGuard 7.0.2-SNAPSHOT
+* WorldEdit 7.2.8
+* WorldGuard 7.0.6
 
 ## Releases 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Percentage of issues still open")
@@ -21,6 +21,32 @@ https://www.spigotmc.org/resources/uskyblock-revived.66795/history
 Pre-releases will end in -SNAPSHOT, and is considered **unsafe** for production servers.
 
 Releases have a clean version number, has been tested, and should be safe for production servers.
+
+# New Maven group/artifactId
+Starting with version 3.0.0-SNAPSHOT, we've changed our Maven groupId's for all submodules except uSkyBlock-API.
+If you're using uSkyBlock-Core or po-utils as dependency in your project, update your
+dependencies to:
+
+```xml
+<dependency>
+    <groupId>ovh.uskyblock</groupId>
+    <artifactId>uSkyBlock-Core</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+We're moving new API features towards APIv2, which is available as:
+
+```xml
+<dependency>
+    <groupId>ovh.uskyblock</groupId>
+    <artifactId>uSkyBlock-APIv2</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+Feel free to use any of the new APIv2 functions on servers running uSkyBlock 3.0.0+. The old API-methods will
+be deprecated and removed in the upcoming plugin releases.
 
 ### Bukkit/Spigot 1.7.9/10 Releases
 
