@@ -214,12 +214,12 @@ public class WorldGuardHandler {
     }
 
     public static BlockVector3 getProtectionVectorLeft(final Location island) {
-        World world = uSkyBlock.getInstance().getWorldManager().getWorld();
+        World world = island.getWorld();
         return BlockVector3.at(island.getX() + Settings.island_radius - 1, world.getMaxHeight(), island.getZ() + Settings.island_radius - 1);
     }
 
     public static BlockVector3 getProtectionVectorRight(final Location island) {
-        World world = uSkyBlock.getInstance().getWorldManager().getWorld();
+        World world = island.getWorld();
         return BlockVector3.at(island.getX() - Settings.island_radius, world.getMinHeight(), island.getZ() - Settings.island_radius);
     }
 
@@ -324,7 +324,8 @@ public class WorldGuardHandler {
             if (r == 0) {
                 return false;
             }
-            ProtectedRegion spawn = new ProtectedCuboidRegion("spawn", BlockVector3.at(-r, 0, -r), BlockVector3.at(r, 255, r));
+            World world = islandLocation.getWorld();
+            ProtectedRegion spawn = new ProtectedCuboidRegion("spawn", BlockVector3.at(-r, world.getMinHeight(), -r), BlockVector3.at(r, world.getMaxHeight(), r));
             ProtectedCuboidRegion islandRegion = getIslandRegion(islandLocation);
             return !islandRegion.getIntersectingRegions(Collections.singletonList(spawn)).isEmpty();
         } catch (Exception e) {
