@@ -65,8 +65,8 @@ public class PerkLogic {
                         .build();
                 ItemStack itemStack = ItemStackUtil.createItemStack(
                         config.getString("displayItem", Material.OAK_SAPLING.toString()),
-                        schemeName,
-                        config.getString("description", null)
+                        "\u00a7b\u00a7n" + schemeName,
+                        "\u00a77" + config.getString("description", null)
                 );
                 islandPerks.put(schemeName, new IslandPerk(schemeName, perm, itemStack, perk,
                         config.getDouble("scoreMultiply", 1d), config.getDouble("scoreOffset", 0d)));

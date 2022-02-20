@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -584,25 +585,38 @@ public class SkyBlockMenu {
         return index + 3;
     }
 
+    /**
+     * creates the basic /is - command menu using the players IslandInfo
+     * @param player    player
+     * @return          Inventory (the Inventory that will be opened)
+     */
     private Inventory createMainMenu(Player player) {
-		String title = "\u00a79" + tr("Island Menu");
-        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 18, title);
+		String title = "\u00a73\u00a7l" + tr("Island Menu");
+        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 9*5, title);
+        ItemStack placeholderItem = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta placeholderMeta = placeholderItem.getItemMeta();
+        placeholderMeta.setDisplayName("\u00a70");
+        placeholderItem.setItemMeta(placeholderMeta);
+        for(int i = 0; i < menu.getSize(); i++) {
+            menu.setItem(i, placeholderItem);
+        }
+
         List<String> lores = new ArrayList<>();
-        ItemStack menuItem = new ItemStack(Material.OAK_DOOR, 1);
+        ItemStack menuItem = new ItemStack(Material.ENDER_PEARL, 1);
         ItemMeta meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lReturn Home"));
-        addLore(lores, "\u00a7f", tr("Return to your island''s home\npoint. You can change your home\npoint to any location on your\nisland using \u00a7b/island sethome\n\u00a7e\u00a7lClick here to return home."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lReturn Home"));
+        addLore(lores, "\u00a77", tr("Return to your island''s home\npoint. You can change your home\npoint to any location on your\nisland using \u00a7b/island sethome\n\u00a7e\u00a7lClick here to return home."));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(11, menuItem);
         lores.clear();
 
         IslandInfo islandInfo = plugin.getIslandInfo(player);
 
         menuItem = new ItemStack(Material.DIAMOND_ORE, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lChallenges"));
-        addLore(lores, "\u00a7f", tr("View a list of \u00a79challenges that\nyou can complete on your island\nto earn skybucks, items, perks,\nand titles."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lChallenges"));
+        addLore(lores, "\u00a77", tr("View a list of \u00a79challenges that\nyou can complete on your island\nto earn skybucks, items, perks,\nand titles."));
         if (plugin.getChallengeLogic().isEnabled()) {
             addLore(lores, tr("\u00a7e\u00a7lClick here to view challenges."));
         } else {
@@ -610,35 +624,36 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(22, menuItem);
 
         lores.clear();
         menuItem = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lIsland Level"));
+        meta4.setDisplayName(tr("\u00a73\u00a7lIsland Level"));
         addLore(lores, tr("\u00a7eCurrent Level: \u00a7a{0,number,##.#}", islandInfo.getLevel()));
         addLore(lores, plugin.getLimitLogic().getSummary(islandInfo));
-        addLore(lores, "\u00a7f", tr("Gain island levels by expanding\nyour skyblock and completing\ncertain challenges. Rarer blocks\nwill add more to your level.\n\u00a7e\u00a7lClick here to refresh.\n\u00a7e\u00a7l(must be on island)"));
+        addLore(lores, "\u00a77", tr("Gain island levels by expanding\nyour skyblock and completing\ncertain challenges. Rarer blocks\nwill add more to your level.\n\u00a7e\u00a7lClick here to refresh.\n\u00a7e\u00a7l(must be on island)"));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(32, menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.PLAYER_HEAD, 1);
         final SkullMeta meta2 = (SkullMeta) menuItem.getItemMeta();
-        meta2.setDisplayName("\u00a7a\u00a7l" + tr("Island Group"));
+        meta2.setDisplayName("\u00a73\u00a7l" + tr("Island Group"));
         lores.add(tr("\u00a7eMembers: \u00a72{0}/{1}", islandInfo.getPartySize(), islandInfo.getMaxPartySize()));
-        addLore(lores, "\u00a7f", tr("View the members of your island\ngroup and their permissions. If\nyou are the island leader, you\ncan change the member permissions.\n\u00a7e\u00a7lClick here to view or change."));
+        addLore(lores, "\u00a77", tr("View the members of your island\ngroup and their permissions. If\nyou are the island leader, you\ncan change the member permissions.\n\u00a7e\u00a7lClick here to view or change."));
         meta2.setLore(lores);
+        meta2.setOwnerProfile(player.getPlayerProfile());
         menuItem.setItemMeta(meta2);
-        menu.addItem(menuItem);
+        menu.setItem(16, menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.JUNGLE_SAPLING, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName("\u00a7a\u00a7l" + tr("Change Island Biome"));
+        meta4.setDisplayName("\u00a73\u00a7l" + tr("Change Island Biome"));
         lores.add(tr("\u00a7eCurrent Biome: \u00a7b{0}", islandInfo.getBiome()));
-        addLore(lores, "\u00a7f", tr("The island biome affects things\nlike grass color and spawning\nof both animals and monsters."));
+        addLore(lores, "\u00a77", tr("The island biome affects things\nlike grass color and spawning\nof both animals and monsters."));
         if (islandInfo.hasPerm(player, "canChangeBiome")) {
             addLore(lores, tr("\u00a7e\u00a7lClick here to change biomes."));
         } else {
@@ -646,12 +661,12 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(14, menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.IRON_BARS, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lIsland Lock"));
+        meta4.setDisplayName(tr("\u00a73\u00a7lIsland Lock"));
         if (plugin.getIslandInfo(player).isLocked()) {
             addLore(lores, tr("\u00a7eLock Status: \u00a7aActive\n\u00a7fYour island is currently \u00a7clocked.\n\u00a7fPlayers outside of your group\n\u00a7fare unable to enter your island."));
             if (islandInfo.hasPerm(player, "canToggleLock") && player.hasPermission("usb.island.lock")) {
@@ -669,24 +684,25 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(23, menuItem);
         lores.clear();
 
         if (plugin.getIslandInfo(player).hasWarp()) {
             menuItem = new ItemStack(Material.END_PORTAL_FRAME, 1);
             meta4 = menuItem.getItemMeta();
-            meta4.setDisplayName(tr("\u00a7a\u00a7lIsland Warp"));
-            addLore(lores, tr("\u00a7eWarp Status: \u00a7aActive\n\u00a7fOther players may warp to your\n\u00a7fisland at anytime to the point\n\u00a7fyou set using \u00a7d/island setwarp."));
+            meta4.addEnchant(Enchantment.LOYALTY, 1, true);
+            meta4.setDisplayName(tr("\u00a73\u00a7lIsland Warp"));
+            addLore(lores, tr("\u00a7eWarp Status: \u00a7aActive\n\u00a77Other players may warp to your\n\u00a7fisland at anytime to the point\n\u00a7fyou set using \u00a7d/island setwarp."));
             if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
                 addLore(lores, tr("\u00a7e\u00a7lClick here to deactivate."));
             } else {
                 addLore(lores, tr("\u00a7c\u00a7lYou can't change the warp."));
             }
         } else {
-            menuItem = new ItemStack(Material.END_STONE, 1);
+            menuItem = new ItemStack(Material.END_PORTAL_FRAME, 1);
             meta4 = menuItem.getItemMeta();
-            meta4.setDisplayName(tr("\u00a7a\u00a7lIsland Warp"));
-            addLore(lores, tr("\u00a7eWarp Status: \u00a78Inactive\n\u00a7fOther players can't warp to your\n\u00a7fisland. Set a warp point using\n\u00a7d/island setwarp \u00a7fbefore activating."));
+            meta4.setDisplayName(tr("\u00a73\u00a7lIsland Warp"));
+            addLore(lores, tr("\u00a7eWarp Status: \u00a78Inactive\n\u00a77Other players can't warp to your\n\u00a77island. Set a warp point using\n\u00a7b/island setwarp \u00a77before activating."));
             if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
                 addLore(lores, tr("\u00a7e\u00a7lClick here to activate."));
             } else {
@@ -695,40 +711,40 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(29, menuItem);
         lores.clear();
 
-        menuItem = new ItemStack(Material.GRASS, 1);
+        menuItem = new ItemStack(Material.NETHER_STAR, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lReturn to Spawn"));
-        addLore(lores, "\u00a7f", tr("Teleport to the spawn area."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lReturn to Spawn"));
+        addLore(lores, "\u00a77", tr("Teleport to the spawn area."));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        menu.setItem(31, menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.WRITABLE_BOOK, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lIsland Log"));
-        addLore(lores, "\u00a7f", tr("View a log of events from\nyour island such as member,\nbiome, and warp changes.\n\u00a7e\u00a7lClick to view the log."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lIsland Log"));
+        addLore(lores, "\u00a77", tr("View a log of events from\nyour island such as member,\nbiome, and warp changes.\n\u00a7e\u00a7lClick to view the log."));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.setItem(8, menuItem); // Last item, first line
+        menu.setItem(25, menuItem); // Last item, first line
         lores.clear();
 
-        menuItem = new ItemStack(Material.RED_BED, 1); // red bed
+        menuItem = new ItemStack(Material.ENDER_EYE, 1); // red bed
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lChange Home Location"));
-        addLore(lores, "\u00a7f", tr("When you teleport to your\nisland you will be taken to\nthis location.\n\u00a7e\u00a7lClick here to change."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lChange Home Location"));
+        addLore(lores, "\u00a77", tr("When you teleport to your\nisland you will be taken to\nthis location.\n\u00a7e\u00a7lClick here to change."));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.setItem(9, menuItem); // First item, 2nd line
+        menu.setItem(10, menuItem); // First item, 2nd line
         lores.clear();
 
-        menuItem = new ItemStack(Material.HOPPER, 1);
+        menuItem = new ItemStack(Material.RESPAWN_ANCHOR, 1);
         meta4 = menuItem.getItemMeta();
-        meta4.setDisplayName(tr("\u00a7a\u00a7lChange Warp Location"));
-        addLore(lores, "\u00a7f", tr("When your warp is activated,\nother players will be taken to\nthis point when they teleport\nto your island."));
+        meta4.setDisplayName(tr("\u00a73\u00a7lChange Warp Location"));
+        addLore(lores, "\u00a77", tr("When your warp is activated,\nother players will be taken to\nthis point when they teleport\nto your island."));
         if (islandInfo.hasPerm(player, "canChangeWarp") && player.hasPermission("usb.island.setwarp")) {
             addLore(lores, tr("\u00a7e\u00a7lClick here to change."));
         } else {
@@ -736,28 +752,28 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.setItem(15, menuItem);
+        menu.setItem(28, menuItem);
         lores.clear();
         if (islandInfo.isLeader(player)) {
             if (plugin.getConfig().getBoolean("island-schemes-enabled", true)) {
                 menuItem = new ItemStack(Material.PODZOL, 1);
                 meta4 = menuItem.getItemMeta();
                 meta4.setDisplayName(tr("\u00a7c\u00a7lRestart Island"));
-                addLore(lores, "\u00a7f", tr("Restarts your island.\n\u00a74WARNING! \u00a7cwill remove your items and island!"));
+                addLore(lores, "\u00a77", tr("Restarts your island.\n\u00a74WARNING! \u00a7cwill remove your items and island!"));
                 meta4.setLore(lores);
                 menuItem.setItemMeta(meta4);
-                menu.setItem(17, menuItem);
+                menu.setItem(34, menuItem);
                 lores.clear();
             }
         } else {
             menuItem = new ItemStack(Material.IRON_DOOR, 1);
             meta4 = menuItem.getItemMeta();
             meta4.setDisplayName(tr("\u00a7c\u00a7lLeave Island"));
-            addLore(lores, "\u00a7f", tr("Leaves your island.\n\u00a74WARNING! \u00a7cwill remove all your items!"));
+            addLore(lores, "\u00a77", tr("Leaves your island.\n\u00a74WARNING! \u00a7cwill remove all your items!"));
             addLore(lores, tr("\u00a7cClick to leave"));
             meta4.setLore(lores);
             menuItem.setItemMeta(meta4);
-            menu.setItem(17, menuItem);
+            menu.setItem(34, menuItem);
             lores.clear();
             long millisLeft = plugin.getConfirmHandler().millisLeft(player, "/is leave");
             if (millisLeft > 0) {
@@ -807,7 +823,7 @@ public class SkyBlockMenu {
         if (slotIndex == 0) {
             p.openInventory(createMainMenu(p));
         } else if (currentItem != null && meta != null && meta.getDisplayName() != null) {
-            String schemeName = stripFormatting(meta.getDisplayName());
+            String schemeName = stripFormatting(meta.getDisplayName().replace("\u00a7b\u00a7n", "")); // replace §b§n because it was used for formatting
             IslandPerk islandPerk = plugin.getPerkLogic().getIslandPerk(schemeName);
             if (plugin.getPerkLogic().getSchemes(p).contains(schemeName) && p.hasPermission(islandPerk.getPermission())) {
                 if (plugin.getConfirmHandler().millisLeft(p, "/is restart") > 0) {
@@ -863,17 +879,17 @@ public class SkyBlockMenu {
             p.performCommand("island biome");
         } else if (currentItem.getType() == Material.PLAYER_HEAD) {
             p.performCommand("island party");
-        } else if (currentItem.getType() == Material.RED_BED) {
+        } else if (currentItem.getType() == Material.ENDER_EYE) {
             p.performCommand("island sethome");
             p.performCommand("island");
-        } else if (currentItem.getType() == Material.GRASS) {
-            p.performCommand("island spawn");
-        } else if (currentItem.getType() == Material.HOPPER) {
+        } else if (currentItem.getType() == Material.NETHER_STAR) {
+            p.performCommand("spawn");
+        } else if (currentItem.getType() == Material.RESPAWN_ANCHOR) {
             p.performCommand("island setwarp");
             p.performCommand("island");
         } else if (currentItem.getType() == Material.WRITABLE_BOOK) {
             p.performCommand("island log");
-        } else if (currentItem.getType() == Material.OAK_DOOR) {
+        } else if (currentItem.getType() == Material.ENDER_PEARL) {
             p.performCommand("island home");
         } else if (currentItem.getType() == Material.EXPERIENCE_BOTTLE) {
             p.performCommand("island level");
@@ -888,7 +904,7 @@ public class SkyBlockMenu {
         } else if (currentItem.getType() == Material.IRON_BARS && !islandInfo.isLocked()) {
             p.performCommand("island lock");
             p.performCommand("island");
-        } else if (slotIndex == 17) {
+        } else if (slotIndex == 34) {
             if (islandInfo.isLeader(p) && plugin.getConfig().getBoolean("island-schemes-enabled", true)) {
                 p.openInventory(createRestartGUI(p));
             } else {
@@ -940,7 +956,7 @@ public class SkyBlockMenu {
     public Inventory createRestartGUI(Player player) {
         List<String> schemeNames = plugin.getIslandGenerator().getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d)*9;
-        String title = "\u00a79" + tr("Island Restart Menu");
+        String title = "\u00a73\u00a7l" + tr("Island Restart Menu");
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);
         List<String> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_SIGN, 1);
