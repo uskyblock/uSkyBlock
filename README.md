@@ -1,4 +1,4 @@
-# Fork
+# Fork!
 
 !This is a fork of uSkyBlock! and my try to make it a bit more modern.
 
@@ -13,6 +13,13 @@ Here are the things i plan to do:
 - change colors & inventories overall
 - add details (particle effects, rockets, titles, sounds, use new ChatComponents, make everything clickable/hoverable)
 - add more API features
+
+# Difference to uSkyBlock
+
+(currently none, but this section will be updated)
+
+
+uSkyBlock readme below
 
 
 # uSkyBlock
