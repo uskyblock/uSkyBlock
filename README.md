@@ -1,3 +1,20 @@
+# Fork
+
+!This is a fork of uSkyBlock! and my try to make it a bit more modern.
+
+I really liked uSkyBlock and currently there aren't a lot of good SkyBlock-plugins out there. (Maybe BentoBox?)
+
+Here are the things i plan to do:
+
+- only support latest versions
+- implement PAPI
+- use FAWE only
+- make overall look cleaner (chat messages & stuff)
+- change colors & inventories overall
+- add details (particle effects, rockets, titles, sounds, use new ChatComponents, make everything clickable/hoverable)
+- add more API features
+
+
 # uSkyBlock
 
 This is a continually updated and custom version of Talabrek's Ultimate SkyBlock plugin.
