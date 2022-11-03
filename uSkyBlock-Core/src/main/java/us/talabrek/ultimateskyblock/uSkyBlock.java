@@ -219,30 +219,27 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         api = new UltimateSkyblockApi(this);
         registerApi(api);
 
-        getServer().getScheduler().runTaskLater(getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                ServerUtil.init(uSkyBlock.this);
-                if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
-                    return;
-                }
-                uSkyBlock.this.getHookManager().setupMultiverse();
-                uSkyBlock.this.getHookManager().setupEconomyHook();
-                uSkyBlock.this.getHookManager().setupPermissionsHook();
-                AsyncWorldEditHandler.onEnable(uSkyBlock.this);
-                WorldGuardHandler.setupGlobal(getWorldManager().getWorld());
-                if (getWorldManager().getNetherWorld() != null) {
-                    WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
-                }
-                registerEventsAndCommands();
-                if (!getConfig().getBoolean("importer.name2uuid.imported", false)) {
-                    Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
-                    getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
-                }
-
-                getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
-                log(Level.INFO, getVersionInfo(false));
+        getServer().getScheduler().runTaskLater(getInstance(), () -> {
+            ServerUtil.init(uSkyBlock.this);
+            if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
+                return;
             }
+            uSkyBlock.this.getHookManager().setupMultiverse();
+            uSkyBlock.this.getHookManager().setupEconomyHook();
+            uSkyBlock.this.getHookManager().setupPermissionsHook();
+            AsyncWorldEditHandler.onEnable(uSkyBlock.this);
+            WorldGuardHandler.setupGlobal(getWorldManager().getWorld());
+            if (getWorldManager().getNetherWorld() != null) {
+                WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
+            }
+            registerEventsAndCommands();
+            if (!getConfig().getBoolean("importer.name2uuid.imported", false)) {
+                Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
+                getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
+            }
+
+            getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
+            Bukkit.getConsoleSender().sendMessage(getVersionInfo(false));
         }, getConfig().getLong("init.initDelay", 50L));
 
         updateChecker = new SkyUpdateChecker(this);
@@ -984,10 +981,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public String getVersionInfo(boolean checkEnabled) {
         PluginDescriptionFile description = getDescription();
-        String msg = pre("\u00a77Name: \u00a7b{0}\n", description.getName());
+        String msg = pre("\n\u00a77Name: \u00a7b{0}\n", description.getName());
         msg += pre("\u00a77Version: \u00a7b{0}\n", description.getVersion());
-        msg += pre("\u00a77Description: \u00a7b{0}\n", description.getDescription());
-        msg += pre("\u00a77Language: \u00a7b{0} ({1})\n", getConfig().get("language", "en"), I18nUtil.getI18n().getLocale());
+        msg += pre("\u00a7Description: \u00a7b{0}\n", description.getDescription());
+        msg += pre("\u00a7Language: \u00a7b{0} ({1})\n", getConfig().get("language", "en"), I18nUtil.getI18n().getLocale());
         msg += pre("\u00a79  State: d={0}, r={1}, i={2}, p={3}, n={4}, awe={5}\n", Settings.island_distance, Settings.island_radius,
                 islandLogic.getSize(), playerLogic.getSize(),
                 Settings.nether_enabled, AsyncWorldEditHandler.isAWE());
