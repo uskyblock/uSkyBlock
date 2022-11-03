@@ -4,15 +4,20 @@
 
 I really liked uSkyBlock and currently there aren't a lot of good SkyBlock-plugins out there. (Maybe BentoBox?)
 
-Here are the things i plan to do:
 
-- only support latest versions
-- implement PAPI
-- use FAWE only
-- make overall look cleaner (chat messages & stuff)
-- change colors & inventories overall
-- add details (particle effects, rockets, titles, sounds, use new ChatComponents, make everything clickable/hoverable)
-- add more API features
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/treppenhaus/uskyblock) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/treppenhaus/uskyblock) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Percentage of issues still open")
+
+
+Here are the things i plan to do:
+- Support latest features (new biomes, new mobs)
+- Add new challenges (+some 1.19+ challenges)
+- PAPI Support
+- Use FAWE only
+- Make overall look cleaner (chat messages & stuff)
+- Change colors & inventories overall
+- Add details (particle effects, rockets, titles, sounds, use new ChatComponents, make everything clickable/hoverable)
+- Add more API features
 
 # Difference to uSkyBlock
 
@@ -38,7 +43,7 @@ This version depends on the following plugins:
 * WorldGuard 7.0.6
 
 ## Releases 
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Percentage of issues still open")
+
 
 https://www.spigotmc.org/resources/uskyblock-revived.66795/history
 
