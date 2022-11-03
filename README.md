@@ -6,7 +6,7 @@ I really liked uSkyBlock and currently there aren't a lot of good SkyBlock-plugi
 
 
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/treppenhaus/uskyblock) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/treppenhaus/uskyblock) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/rlf/uSkyBlock.svg)](http://isitmaintained.com/project/rlf/uSkyBlock "Percentage of issues still open")
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/treppenhaus/uskyblock) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/treppenhaus/uskyblock) ![GitHub closed issues](https://img.shields.io/github/issues-closed/treppenhaus/uskyblock) ![GitHub issues](https://img.shields.io/github/issues/treppenhaus/uskyblock)
 
 
 Here are the things i plan to do:
