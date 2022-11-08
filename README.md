@@ -9,6 +9,11 @@ I really liked uSkyBlock and currently there aren't a lot of good SkyBlock-plugi
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/treppenhaus/uskyblock) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/treppenhaus/uskyblock) ![GitHub closed issues](https://img.shields.io/github/issues-closed/treppenhaus/uskyblock) ![GitHub issues](https://img.shields.io/github/issues/treppenhaus/uskyblock)
 
 
+## >>> [PlaceholderAPI Placeholders](https://github.com/Treppenhaus/uSkyBlock/blob/master/placeholderapi.md)
+
+---
+
+
 Here are the things i plan to do:
 - Support latest features (new biomes, new mobs)
 - Add new challenges (+some 1.19+ challenges)
