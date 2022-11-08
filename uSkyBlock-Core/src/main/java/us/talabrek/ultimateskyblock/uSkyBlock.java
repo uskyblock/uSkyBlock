@@ -65,6 +65,7 @@ import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.hook.placeholderapi.UsbExpansion;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
@@ -237,10 +238,19 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
                 getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
             }
+            if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                log(Level.INFO, "Registering PlaceholderAPI expansion...");
+                new UsbExpansion(this).register();
+            }
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
             Bukkit.getConsoleSender().sendMessage(getVersionInfo(false));
         }, getConfig().getLong("init.initDelay", 50L));
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+            this.getIslandLogic().generateTopTen(Bukkit.getConsoleSender());
+            log(Level.INFO, "generated topten playerlist");
+        }, 20);
 
         updateChecker = new SkyUpdateChecker(this);
         // Runs every 4 hours
@@ -935,7 +945,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     @Override
     public List<IslandLevel> getRanks(int offset, int length) {
-        return islandLogic != null ? islandLogic.getRanks(offset, length) : Collections.<IslandLevel>emptyList();
+        return islandLogic != null ? islandLogic.getRanks(offset, length) : Collections.emptyList();
     }
 
     @Override
