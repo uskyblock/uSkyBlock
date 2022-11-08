@@ -12,13 +12,14 @@ I really liked uSkyBlock and currently there aren't a lot of good SkyBlock-plugi
 ## >>> [PlaceholderAPI Placeholders](https://github.com/Treppenhaus/uSkyBlock/blob/master/placeholderapi.md)
 
 ---
+Whats done so far:
+- PAPI Support
+- Main inventory & texts changed
 
 
 Here are the things i plan to do:
 - Support latest features (new biomes, new mobs)
 - Add new challenges (+some 1.19+ challenges)
-- PAPI Support
-- Use FAWE only
 - Make overall look cleaner (chat messages & stuff)
 - Change colors & inventories overall
 - Add details (particle effects, rockets, titles, sounds, use new ChatComponents, make everything clickable/hoverable)
