@@ -174,14 +174,14 @@ permissions:
     children:
       usb.biome.deep_ocean: true
       usb.biome.desert: true
-      usb.biome.extreme_hills: true # TODO replace with new biome name
+      usb.biome.windswept_hills: true
       usb.biome.forest: true
-      usb.biome.hell: true # TODO replace with new biome name (probably nether wastes)
+      usb.biome.nether_wastes: true
       usb.biome.jungle: true
       usb.biome.mushroom_fields: true
       usb.biome.ocean: false # default: true
       usb.biome.plains: true
-      usb.biome.sky: true # TODO replace with new biome name (is it the END biome?)
+      usb.biome.the_end: true
       usb.biome.swamp: true
       usb.biome.taiga: true
 
@@ -390,17 +390,17 @@ permissions:
     default: false
     description: 'Let the player change their islands biome to DESERT'
 
-  usb.biome.extreme_hills:
+  usb.biome.windswept_hills:
     default: false
-    description: 'Let the player change their islands biome to EXTREME_HILLS'
+    description: 'Let the player change their islands biome to WINDSWEPT_HILLS'
 
   usb.biome.forest:
     default: false
     description: 'Let the player change their islands biome to FOREST'
 
-  usb.biome.hell:
+  usb.biome.nether_wastes:
     default: false
-    description: 'Let the player change their islands biome to HELL'
+    description: 'Let the player change their islands biome to NETHER_WASTES'
 
   usb.biome.jungle:
     default: false
@@ -418,9 +418,9 @@ permissions:
     default: false
     description: 'Let the player change their islands biome to PLAINS'
 
-  usb.biome.sky:
+  usb.biome.the_end:
     default: false
-    description: 'Let the player change their islands biome to SKY'
+    description: 'Let the player change their islands biome to THE_END'
 
   usb.biome.swamp:
     default: false
