@@ -174,15 +174,15 @@ permissions:
     children:
       usb.biome.deep_ocean: true
       usb.biome.desert: true
-      usb.biome.extreme_hills: true
+      usb.biome.extreme_hills: true # TODO replace with new biome name
       usb.biome.forest: true
-      usb.biome.hell: true
+      usb.biome.hell: true # TODO replace with new biome name (probably nether wastes)
       usb.biome.jungle: true
-      usb.biome.mushroom: true
+      usb.biome.mushroom_fields: true
       usb.biome.ocean: false # default: true
       usb.biome.plains: true
-      usb.biome.sky: true
-      usb.biome.swampland: true
+      usb.biome.sky: true # TODO replace with new biome name (is it the END biome?)
+      usb.biome.swamp: true
       usb.biome.taiga: true
 
   usb.exempt.*:
@@ -406,9 +406,9 @@ permissions:
     default: false
     description: 'Let the player change their islands biome to JUNGLE'
 
-  usb.biome.mushroom:
+  usb.biome.mushroom_fields:
     default: false
-    description: 'Let the player change their islands biome to MUSHROOM'
+    description: 'Let the player change their islands biome to MUSHROOM_FIELDS'
 
   usb.biome.ocean:
     default: true
@@ -422,9 +422,9 @@ permissions:
     default: false
     description: 'Let the player change their islands biome to SKY'
 
-  usb.biome.swampland:
+  usb.biome.swamp:
     default: false
-    description: 'Let the player change their islands biome to SWAMPLAND'
+    description: 'Let the player change their islands biome to SWAMP'
 
   usb.biome.taiga:
     default: false
