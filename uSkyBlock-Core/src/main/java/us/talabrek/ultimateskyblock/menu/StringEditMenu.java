@@ -10,12 +10,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.talabrek.ultimateskyblock.player.UltimateHolder;
+import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import us.talabrek.ultimateskyblock.player.UltimateHolder;
-import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
@@ -25,11 +26,11 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
  */
 public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
     private final EditMenu parent;
-    private ArrayList<ItemStack> keyboard = new ArrayList<>();
-    private ArrayList<ItemStack> capslockOverlay = new ArrayList<>();
+    private final List<ItemStack> keyboard = new ArrayList<>();
+    private final List<ItemStack> capslockOverlay = new ArrayList<>();
 
-    private ItemStack capsOn;
-    private ItemStack capsOff;
+    private final ItemStack capsOn;
+    private final ItemStack capsOff;
 
     private final int capsIndex;
     private final int backspaceIndex;
@@ -39,14 +40,14 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
         super(menuConfig);
         this.parent = parent;
         List<?> characterMap = menuConfig.getList("keyboard.en");
-        ensureCapacity(keyboard, 9*6);
-        ensureCapacity(capslockOverlay, 9*6);
+        ensureCapacity(keyboard, 9 * 6);
+        ensureCapacity(capslockOverlay, 9 * 6);
         int row = 0;
         for (Object o : characterMap) {
             int col = 0;
             if (o instanceof List) {
-                for (String item : (List<String>)o) {
-                    ItemStack character = createItem(item);
+                for (String item : (List<String>) o) {
+                    ItemStack character = createItemFromComponentString(item);
                     if (character != null) {
                         keyboard.set(getIndex(row, col), character);
                     }
@@ -59,15 +60,15 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
         if (overlay != null) {
             for (String key : overlay.getKeys(false)) {
                 int index = Integer.parseInt(key, 10);
-                ItemStack item = createItem(overlay.getString(key));
+                ItemStack item = createItemFromComponentString(overlay.getString(key));
                 if (item != null) {
                     capslockOverlay.set(index, item);
                 }
             }
         }
-        capsOn = createItem(menuConfig.getString("keyboard.capslock.true"));
-        capsOff = createItem(menuConfig.getString("keyboard.capslock.false"));
-        keyboard.set(getIndex(0,0), createItem(Material.OAK_DOOR, "\u00a79" + tr("Return"), null));
+        capsOn = createItemFromComponentString(menuConfig.getString("keyboard.capslock.true"));
+        capsOff = createItemFromComponentString(menuConfig.getString("keyboard.capslock.false"));
+        keyboard.set(getIndex(0, 0), createItem(Material.OAK_DOOR, "\u00a79" + tr("Return"), null));
         capsIndex = getIndex(5, 0);
         keyboard.set(capsIndex, capsOff);
         backspaceIndex = getIndex(0, 5);
@@ -77,7 +78,7 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
     @Override
     public boolean onClick(InventoryClickEvent e) {
         if (!(e.getInventory().getHolder() instanceof UltimateHolder) ||
-                !stripFormatting(((UltimateHolder) e.getInventory().getHolder()).getTitle()).equals(stripFormatting(getTitle()))) {
+            !stripFormatting(((UltimateHolder) e.getInventory().getHolder()).getTitle()).equals(stripFormatting(getTitle()))) {
             return false;
         }
         Player player = (Player) e.getWhoClicked();
@@ -94,7 +95,7 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
                 // Toggle caps
                 ItemStack capsItem = isCaps ? capsOff.clone() : capsOn.clone();
                 ItemMeta meta = capsItem.getItemMeta();
-                meta.setLore(Arrays.asList(value));
+                meta.setLore(Collections.singletonList(value));
                 capsItem.setItemMeta(meta);
                 e.getInventory().setItem(capsIndex, capsItem);
                 isCaps = !isCaps;
@@ -146,20 +147,20 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
 
         ItemStack capsItem = isCaps ? capsOn.clone() : capsOff.clone();
         ItemMeta itemMeta = capsItem.getItemMeta();
-        itemMeta.setLore(Arrays.asList(value));
+        itemMeta.setLore(List.of(value));
         capsItem.setItemMeta(itemMeta);
         menu.setItem(capsIndex, capsItem);
 
         return menu;
     }
 
-    private void setCharacters(Inventory menu, String value, ArrayList<ItemStack> itemList) {
+    private void setCharacters(Inventory menu, String value, List<ItemStack> itemList) {
         int index = 0;
         for (ItemStack item : itemList) {
             if (item != null) {
                 ItemStack clone = item.clone();
                 ItemMeta itemMeta = clone.getItemMeta();
-                itemMeta.setLore(Arrays.asList(value));
+                itemMeta.setLore(Collections.singletonList(value));
                 clone.setItemMeta(itemMeta);
                 menu.setItem(index, clone);
             }
