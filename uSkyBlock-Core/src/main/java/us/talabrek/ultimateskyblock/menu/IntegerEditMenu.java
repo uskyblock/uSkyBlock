@@ -14,7 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
-import us.talabrek.ultimateskyblock.util.ItemUtil;
+import us.talabrek.ultimateskyblock.util.GuiItemUtil;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class IntegerEditMenu extends AbstractConfigMenu implements EditMenu {
                 int incValue = Integer.parseInt(inc, 10);
                 String itemType = incSection.getString(inc, Material.IRON_INGOT.name());
                 String displayName = incValue < 0 ? tr("\u00a7c{0,number,#}", incValue) : tr("\u00a7a+{0,number,#}", incValue);
-                ItemStack displayItem = ItemUtil.createGuiDisplayItem(itemType, displayName);
+                ItemStack displayItem = GuiItemUtil.createGuiDisplayItem(itemType, displayName);
                 increments.put(inc, displayItem);
             }
         }
@@ -138,7 +138,7 @@ public class IntegerEditMenu extends AbstractConfigMenu implements EditMenu {
             int tenValue = nvalue % 10;
             String itemType = menuConfig.getString("integer-menu.number-items." + tenValue, DEFAULT_NUMBER_ICON.name());
             String displayName = value < 0 ? tr("\u00a7c{0,number,#}", value) : tr("\u00a7a{0,number,#}", value);
-            ItemStack displayItem = ItemUtil.createGuiDisplayItem(itemType, displayName);
+            ItemStack displayItem = GuiItemUtil.createGuiDisplayItem(itemType, displayName);
             menu.setItem(getIndex(1, col), displayItem);
             nvalue = (nvalue - tenValue) / 10;
             col--;

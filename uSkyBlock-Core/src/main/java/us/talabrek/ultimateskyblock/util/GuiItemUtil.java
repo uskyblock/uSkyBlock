@@ -8,11 +8,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Locale;
 
-public class ItemUtil {
-    private ItemUtil() {
+public class GuiItemUtil {
+    private GuiItemUtil() {
         // Uninstantiable static utility class
     }
 
+    // TODO: Replace calls to this specific method with a more general one
     public static ItemStack createItemFromComponentString(String components) {
         if (components == null) {
             return null;

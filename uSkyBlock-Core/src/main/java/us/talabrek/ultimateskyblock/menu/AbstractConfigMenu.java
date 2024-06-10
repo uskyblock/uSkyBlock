@@ -4,7 +4,7 @@ import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.talabrek.ultimateskyblock.util.ItemUtil;
+import us.talabrek.ultimateskyblock.util.GuiItemUtil;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -60,7 +60,7 @@ public class AbstractConfigMenu {
     }
 
     protected ItemStack createItemFromComponentString(String components) {
-        return ItemUtil.createItemFromComponentString(components);
+        return GuiItemUtil.createItemFromComponentString(components);
     }
 
     protected ItemStack createItem(Material icon, String title, List<String> lore) {

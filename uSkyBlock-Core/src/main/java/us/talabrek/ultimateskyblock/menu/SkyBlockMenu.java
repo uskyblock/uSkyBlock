@@ -20,7 +20,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import us.talabrek.ultimateskyblock.util.ItemUtil;
+import us.talabrek.ultimateskyblock.util.GuiItemUtil;
 import us.talabrek.ultimateskyblock.util.PlayerUtil;
 
 import java.util.ArrayList;
@@ -406,7 +406,7 @@ public class SkyBlockMenu {
                     }
                 }
                 // Only SIMPLE icons supported...
-                ItemStack item = ItemUtil.createGuiDisplayItem(icon, title);
+                ItemStack item = GuiItemUtil.createGuiDisplayItem(icon, title);
                 ItemMeta meta = item.getItemMeta();
                 meta.setLore(lores);
                 item.setItemMeta(meta);
@@ -485,9 +485,9 @@ public class SkyBlockMenu {
             if (p >= 1 && p <= total) {
                 ItemStack pageItem;
                 if (p == page) {
-                    pageItem = ItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, tr("\u00a77Current page"));
+                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, tr("\u00a77Current page"));
                 } else {
-                    pageItem = ItemUtil.createGuiDisplayItem(Material.BOOK, tr("\u00a77Page {0}", p));
+                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, tr("\u00a77Page {0}", p));
                 }
                 if (i == 0) {
                     pageItem = ItemStackUtil.builder(pageItem)
