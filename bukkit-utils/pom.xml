@@ -4,13 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dk.lockfuglsang.minecraft</groupId>
+    <parent>
+        <artifactId>uSkyBlock</artifactId>
+        <groupId>ovh.uskyblock</groupId>
+        <version>3.1.0-SNAPSHOT</version>
+    </parent>
     <artifactId>bukkit-utils</artifactId>
-    <version>1.25-SNAPSHOT</version>
 
     <properties>
-        <poutils.version>1.2</poutils.version>
-        <spigotapi.version>1.17-R0.1-SNAPSHOT</spigotapi.version>
         <vaultapi.version>1.7</vaultapi.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -107,9 +108,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>dk.lockfuglsang.minecraft</groupId>
+            <groupId>ovh.uskyblock</groupId>
             <artifactId>po-utils</artifactId>
-            <version>${poutils.version}</version>
+            <version>3.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
