@@ -1,57 +1,50 @@
 package dk.lockfuglsang.minecraft.yml;
 
-import org.bukkit.configuration.InvalidConfigurationException;
+import com.google.common.collect.Streams;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A YamlConfiguration that supports comments
- *
+ * <p>
  * Note: This includes a VERY SIMPLISTIC Yaml-parser, which sole purpose is to detect and store comments.
  */
+@Deprecated(forRemoval = true) // Bukkit YamlConfiguration now preserves comments by default
 public class YmlConfiguration extends YamlConfiguration {
-    private YmlCommentParser commentParser = new YmlCommentParser();
 
+    @Deprecated(forRemoval = true) // Use #getComments and #getInlineComments instead
     public String getComment(String key) {
-        String comment = commentParser.getComment(key);
-        return comment != null ? comment.replaceAll("^# ?", "").replaceAll("\n# ?", "") : null;
-    }
-
-    public Map<String,String> getComments() {
-        return commentParser.getCommentMap();
-    }
-
-    public void addComment(String path, String comment) {
-        commentParser.addComment(path, comment);
-    }
-    public void addComments(Map<String,String> comments) {
-        commentParser.addComments(comments);
-    }
-
-    @Override
-    public void loadFromString(String contents) throws InvalidConfigurationException {
-        super.loadFromString(contents);
-        commentParser.loadFromString(contents);
-    }
-
-    @Override
-    public List<String> getStringList(String path) {
-        if (isList(path)) {
-            return super.getStringList(path);
-        } else if (isString(path)) {
-            return Arrays.asList(super.getString(path, "").split(" "));
+        String comment = Streams.concat(super.getComments(key).stream(),
+            super.getInlineComments(key).stream()).collect(Collectors.joining(System.lineSeparator()));
+        if (comment.isEmpty()) {
+            return null;
         }
-        return new ArrayList<>();
+        return comment.replaceAll("^# ?", "").replaceAll("\n# ?", "");
     }
 
-    @Override
-    public String saveToString() {
-        String ymlPure = super.saveToString();
-        return commentParser.mergeComments(ymlPure);
+    @Deprecated(forRemoval = true) // Use #getComments and #getInlineComments instead
+    public Map<String, String> getComments() {
+        Map<String, String> comments = new LinkedHashMap<>();
+        for (String key : getKeys(true)) {
+            String comment = getComment(key);
+            if (comment != null) {
+                comments.put(key, comment);
+            }
+        }
+        return comments;
     }
 
+    @Deprecated(forRemoval = true) // Use #setComments and #setInlineComments instead
+    public void addComment(String path, String comment) {
+        var comments = new ArrayList<>(super.getComments(path));
+        comments.add(comment);
+        super.setComments(path, comments);
+    }
+
+    @Deprecated(forRemoval = true) // Use #setComments and #setInlineComments instead
+    public void addComments(Map<String, String> comments) {
+        comments.forEach(this::addComment);
+    }
 }

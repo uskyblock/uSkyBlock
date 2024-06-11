@@ -4,12 +4,10 @@
 # with multiple comments
 root:
   child-value: 10
-
+  
   # child nodes
   child node:
-
-    # a number
-    some-double: 1.34
+    some-double: 1.34 # a number
     some-section:
       section-list:
       - Hej
@@ -18,7 +16,6 @@ root:
       - what now
       - do you know?
       space-list: 13:1 34:3
-
     # this is a key and a value
     key: value
     abe: |-
@@ -29,16 +26,12 @@ root:
     enabled: true
   a:
     section:
-
       # a comment
       deeper:
-
-        # b comment
-        b:
-
-          # should be false
-          c: false
+        b: # b comment
+          c: false # should be false
 an:
   annoying:key this:
     is:for:
       sure: hello world
+
