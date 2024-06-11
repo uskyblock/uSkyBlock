@@ -110,7 +110,7 @@ public class ChallengeFactory {
         }
         return new Reward(
                 section.getString("text", "\u00a74Unknown"),
-                ItemStackUtil.createItemsWithProbabilty(items),
+                ItemStackUtil.createItemsWithProbability(items),
                 section.getString("permission"),
                 section.getInt("currency", 0),
                 section.getInt("xp", 0),

@@ -4,18 +4,13 @@ import dk.lockfuglsang.minecraft.nbt.NBTUtil;
 import dk.lockfuglsang.minecraft.reflection.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,21 +21,24 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public enum ItemStackUtil {
     ;
-    private static final Pattern ITEM_AMOUNT_PATTERN = Pattern.compile("(\\{p=(?<prob>0\\.[0-9]+)\\})?(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?:(?<amount>[0-9]+)\\s*(?<meta>\\{.*\\})?");
-    private static final Pattern ITEM_PATTERN = Pattern.compile("(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?\\s*(?<meta>\\{.*\\})?");
+    private static final Pattern ITEM_AMOUNT_PATTERN = Pattern.compile(
+        "(\\{p=(?<prob>0\\.[0-9]+)})?(?<id>[0-9A-Z_]+):(?<amount>[0-9]+)\\s*(?<meta>\\{.*})?"
+    );
+    private static final Pattern ITEM_PATTERN = Pattern.compile(
+        "(?<id>[0-9A-Z_]+)\\s*(?<meta>\\{.*})?"
+    );
 
-    public static List<ItemProbability> createItemsWithProbabilty(List<String> items) {
+    public static List<ItemProbability> createItemsWithProbability(List<String> items) {
         List<ItemProbability> itemProbs = new ArrayList<>();
         for (String reward : items) {
-            Matcher m = ITEM_AMOUNT_PATTERN.matcher(reward);
-            if (m.matches()) {
-                double p = m.group("prob") != null ? Double.parseDouble(m.group("prob")) : 1;
-                short sub = m.group("sub") != null ? (short) Integer.parseInt(m.group("sub"), 10) : 0;
-                Material type = getItemType(m, sub);
-                int amount = Integer.parseInt(m.group("amount"), 10);
-                ItemStack itemStack = new ItemStack(type, amount, sub < type.getMaxDurability() ? sub : 0);
-                itemStack = NBTUtil.addNBTTag(itemStack, m.group("meta"));
-                itemProbs.add(new ItemProbability(p, itemStack));
+            Matcher matcher = ITEM_AMOUNT_PATTERN.matcher(reward);
+            if (matcher.matches()) {
+                double probability = matcher.group("prob") != null ? Double.parseDouble(matcher.group("prob")) : 1;
+                Material type = getItemType(matcher);
+                int amount = Integer.parseInt(matcher.group("amount"), 10);
+                ItemStack itemStack = new ItemStack(type, amount);
+                itemStack = NBTUtil.addNBTTag(itemStack, matcher.group("meta"));
+                itemProbs.add(new ItemProbability(probability, itemStack));
             } else {
                 throw new IllegalArgumentException("Unknown item: '" + reward + "' in '" + items + "'");
             }
@@ -48,28 +46,16 @@ public enum ItemStackUtil {
         return itemProbs;
     }
 
-    private static Material getItemType(Matcher m, short dataValue) {
+    private static Material getItemType(Matcher m) {
         String id = m.group("id");
-        if (id != null && id.matches("[0-9]*")) {
-            throw new IllegalArgumentException("Bukkit 1.13+ doesn't support Item-IDs, please use Material names instead");
-        } else if (id != null) {
+        if (id != null) {
             Material type = Material.matchMaterial(id);
             if (type == null) {
-                try {
-                    Material legacyType = Material.matchMaterial(id, true);
-                    BlockData blockData = Bukkit.getServer().getUnsafe().fromLegacy(legacyType, (byte) (dataValue & 0x0f));
-                    type = blockData != null && blockData.getMaterial() != null && blockData.getMaterial() != Material.AIR
-                            ? blockData.getMaterial()
-                            : legacyType;
-                } catch (NullPointerException e) {
-                    throw new IllegalArgumentException("Bukkit 1.13 does not know the material " + id + "!", e);
-                }
+                throw new IllegalArgumentException("Bukkit 1.13 does not know the material " + id + "!");
             }
-            if (type != null) {
-                return type;
-            }
+            return type;
         }
-        return Material.BARRIER;
+        return Material.BARRIER; // TODO: it may not be a good idea to default to Barrier, as this is what players get when the material is invalid
     }
 
     public static List<ItemStack> createItemList(List<String> items) {
@@ -88,10 +74,9 @@ public enum ItemStackUtil {
         }
         Matcher m = ITEM_AMOUNT_PATTERN.matcher(reward);
         if (m.matches()) {
-            short sub = m.group("sub") != null ? (short) Integer.parseInt(m.group("sub"), 10) : 0;
-            Material type = getItemType(m, sub);
+            Material type = getItemType(m);
             int amount = Integer.parseInt(m.group("amount"), 10);
-            ItemStack itemStack = new ItemStack(type, amount, sub < type.getMaxDurability() ? sub : 0);
+            ItemStack itemStack = new ItemStack(type, amount);
             if (m.group("meta") != null) {
                 itemStack = NBTUtil.addNBTTag(itemStack, m.group("meta"));
             }
@@ -102,7 +87,7 @@ public enum ItemStackUtil {
     }
 
     public static ItemStack[] createItemArray(List<ItemStack> items) {
-        return items != null ? items.toArray(new ItemStack[items.size()]) : new ItemStack[0];
+        return items != null ? items.toArray(new ItemStack[0]) : new ItemStack[0];
     }
 
     public static ItemStack createItemStack(String displayItem) {
@@ -129,18 +114,16 @@ public enum ItemStackUtil {
     }
 
     public static UUID createUniqueId(String texture, String name, String description) {
-        return new UUID(texture.hashCode(), ("" + name + description).hashCode());
+        return new UUID(texture.hashCode(), (name + description).hashCode());
     }
 
     public static ItemStack createItemStack(String displayItem, String name, String description) {
         Material type = Material.DIRT;
-        short sub = 0;
         String metaStr = null;
         if (displayItem != null) {
             Matcher matcher = ITEM_PATTERN.matcher(displayItem);
             if (matcher.matches()) {
-                sub = matcher.group("sub") != null ? (short) Integer.parseInt(matcher.group("sub"), 10) : 0;
-                type = getItemType(matcher, sub);
+                type = getItemType(matcher);
                 metaStr = matcher.group("meta");
             }
         }
@@ -148,7 +131,7 @@ public enum ItemStackUtil {
             Bukkit.getLogger().warning("Invalid material " + displayItem + " supplied!");
             type = Material.BARRIER;
         }
-        ItemStack itemStack = new ItemStack(type, 1, sub < type.getMaxDurability() ? sub : 0);
+        ItemStack itemStack = new ItemStack(type, 1);
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null) {
             if (name != null) {
@@ -187,7 +170,15 @@ public enum ItemStackUtil {
     }
 
     public static String asString(ItemStack item) {
-        return item.getType().name() + (item.getDurability() != 0 ? ":" + item.getDurability() : "") + ":" + item.getAmount();
+        var itemType = item.getType().getKey().toString();
+        var itemMeta = item.getItemMeta();
+        if (itemMeta != null) {
+            var componentString = itemMeta.getAsComponentString();
+            if (!componentString.isEmpty() && !componentString.equals("[]")) {
+                itemType += componentString;
+            }
+        }
+        return itemType + ":" + item.getAmount();
     }
 
     public static String asShortString(List<ItemStack> items) {
@@ -195,7 +186,7 @@ public enum ItemStackUtil {
         for (ItemStack item : items) {
             shorts.add(asShortString(item));
         }
-        return  "[" + FormatUtil.join(shorts, ", ") + "]";
+        return "[" + FormatUtil.join(shorts, ", ") + "]";
     }
 
     public static String asShortString(ItemStack item) {
@@ -203,8 +194,8 @@ public enum ItemStackUtil {
             return "";
         }
         return item.getAmount() > 1
-                ? tr("\u00a7f{0}x \u00a77{1}", item.getAmount(), getItemName(item))
-                : tr("\u00a77{0}", getItemName(item));
+            ? tr("\u00a7f{0}x \u00a77{1}", item.getAmount(), getItemName(item))
+            : tr("\u00a77{0}", getItemName(item));
     }
 
     public static ItemStack asDisplayItem(ItemStack item) {
@@ -241,7 +232,7 @@ public enum ItemStackUtil {
      * Builder for ItemStack
      */
     public static class Builder {
-        private ItemStack itemStack;
+        private final ItemStack itemStack;
 
         public Builder(ItemStack itemStack) {
             this.itemStack = itemStack != null ? itemStack.clone() : new ItemStack(Material.AIR);
@@ -249,11 +240,6 @@ public enum ItemStackUtil {
 
         public Builder type(Material mat) {
             itemStack.setType(mat);
-            return this;
-        }
-
-        public Builder subType(int subType) {
-            itemStack.setDurability((short) subType);
             return this;
         }
 
@@ -333,43 +319,6 @@ public enum ItemStackUtil {
         }
     }
 
-    public static class ItemProbability {
-        private final double probability;
-        private final ItemStack item;
-
-        public ItemProbability(double probability, ItemStack item) {
-            this.probability = probability;
-            this.item = item;
-        }
-
-        public double getProbability() {
-            return probability;
-        }
-
-        public ItemStack getItem() {
-            return item;
-        }
-
-        @Override
-        public String toString() {
-            return "ItemProbability{" +
-                    "probability=" + probability +
-                    ", item=" + item +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ItemProbability that = (ItemProbability) o;
-            return Double.compare(that.probability, probability) == 0 &&
-                    Objects.equals(asString(item), asString(that.item));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(probability, item);
-        }
+    public record ItemProbability(double probability, ItemStack item) {
     }
 }

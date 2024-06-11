@@ -48,7 +48,7 @@ public class BukkitServerMock {
         when(itemFactoryMock.isApplicable(any(ItemMeta.class), any(Material.class)))
                 .thenReturn(true);
 
-        when(itemFactoryMock.equals(any(ItemMeta.class), any(ItemMeta.class)))
+        when(itemFactoryMock.equals(any(), any()))
                 .thenAnswer((Answer<Boolean>) invocationOnMock -> {
                     // Better equals for mocks?
                     return Objects.equals("" + invocationOnMock.getArguments()[0],

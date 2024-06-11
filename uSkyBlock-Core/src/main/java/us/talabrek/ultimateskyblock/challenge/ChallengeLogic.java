@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import dk.lockfuglsang.minecraft.nbt.NBTUtil;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Bukkit;
@@ -24,19 +23,7 @@ import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 
@@ -339,13 +326,9 @@ public class ChallengeLogic implements Listener {
     }
 
     public int getCountOf(Inventory inventory, ItemStack required) {
-        int count = 0;
-        for (ItemStack invItem : inventory.all(required.getType()).values()) {
-            if (invItem.getDurability() == required.getDurability() && NBTUtil.getNBTTag(invItem).equals(NBTUtil.getNBTTag(required))) {
-                count += invItem.getAmount();
-            }
-        }
-        return count;
+        return Arrays.stream(inventory.getContents())
+            .filter(item -> item != null && item.isSimilar(required))
+            .mapToInt(ItemStack::getAmount).sum();
     }
 
     private boolean giveReward(Player player, Challenge challenge) {
@@ -551,10 +534,8 @@ public class ChallengeLogic implements Listener {
                         }
                         if (locked != null) {
                             currentChallengeItem.setType(locked.getType());
-                            currentChallengeItem.setDurability(locked.getDurability());
                         } else if (lockedItem != null) {
                             currentChallengeItem.setType(lockedItem.getType());
-                            currentChallengeItem.setDurability(lockedItem.getDurability());
                         }
                     } else {
                         lores = currentChallengeItem.getItemMeta().getLore();

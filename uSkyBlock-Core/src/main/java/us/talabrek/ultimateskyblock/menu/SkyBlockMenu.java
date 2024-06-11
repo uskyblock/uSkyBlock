@@ -1088,7 +1088,7 @@ public class SkyBlockMenu {
         }
         for (BiomeMenuItem biomeMenu : biomeMenus) {
             ItemStack menuIcon = biomeMenu.getIcon();
-            if (currentItem.getType() == menuIcon.getType() && currentItem.getDurability() == menuIcon.getDurability()) {
+            if (currentItem.getType() == menuIcon.getType()) {
                 String radius = PlayerUtil.getMetadata(p, "biome.radius", "all");
                 p.performCommand("island biome " + biomeMenu.getId() + " " + radius);
                 return;
