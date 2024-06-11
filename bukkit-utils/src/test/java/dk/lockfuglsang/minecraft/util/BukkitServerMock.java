@@ -62,8 +62,6 @@ public class BukkitServerMock {
                 .thenAnswer((Answer<ItemMeta>) invocationOnMock -> invocationOnMock.getArguments()[0] != null
                         ? (ItemMeta) invocationOnMock.getArguments()[0]
                         : null);
-        when(itemFactoryMock.updateMaterial(any(ItemMeta.class), any(Material.class)))
-                .thenAnswer(i -> i.getArguments()[1]);
         when(serverMock.getItemFactory()).thenReturn(itemFactoryMock);
 
         UnsafeValues unsafeMock = mock(UnsafeValues.class);
