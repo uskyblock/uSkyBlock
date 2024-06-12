@@ -1,6 +1,5 @@
 package dk.lockfuglsang.minecraft.util;
 
-import dk.lockfuglsang.minecraft.nbt.NBTItemStackTagger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -120,34 +119,5 @@ public class BukkitServerMock {
         when(meta.toString()).thenAnswer((Answer<String>) invocationOnMock -> "" + metaData);
         when(meta.clone()).thenReturn(meta); // Don't clone it - we need to verify it
         return meta;
-    }
-
-    public static class TestNBTItemStackTagger implements NBTItemStackTagger {
-        @Override
-        public String getNBTTag(ItemStack itemStack) {
-            if (itemMetaMap.containsKey(itemStack.getItemMeta())) {
-                Map<String, String> metaMap = itemMetaMap.get(itemStack.getItemMeta());
-                if (metaMap.containsKey("nbt")) {
-                    return metaMap.get("nbt");
-                }
-            }
-            return "";
-        }
-
-        @Override
-        public ItemStack setNBTTag(ItemStack itemStack, String tag) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null && itemMetaMap.containsKey(itemMeta)) {
-                Map<String, String> metaMap = itemMetaMap.get(itemMeta);
-                metaMap.put("nbt", tag);
-                itemStack.setItemMeta(itemMeta);
-            }
-            return itemStack;
-        }
-
-        @Override
-        public ItemStack addNBTTag(ItemStack itemStack, String tag) {
-            return setNBTTag(itemStack, tag);
-        }
     }
 }
