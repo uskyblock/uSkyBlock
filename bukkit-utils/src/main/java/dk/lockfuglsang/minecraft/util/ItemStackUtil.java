@@ -1,16 +1,19 @@
 package dk.lockfuglsang.minecraft.util;
 
-import dk.lockfuglsang.minecraft.nbt.NBTUtil;
-import dk.lockfuglsang.minecraft.reflection.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,44 +24,40 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public enum ItemStackUtil {
     ;
-    private static final Pattern ITEM_AMOUNT_PATTERN = Pattern.compile(
-        "(\\{p=(?<prob>0\\.[0-9]+)})?(?<id>[0-9A-Z_]+):(?<amount>[0-9]+)\\s*(?<meta>\\{.*})?"
+    private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
+        "(\\{p=(?<prob>0\\.[0-9]+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>[0-9]+)"
     );
-    private static final Pattern ITEM_PATTERN = Pattern.compile(
-        "(?<id>[0-9A-Z_]+)\\s*(?<meta>\\{.*})?"
+    private static final Pattern ITEM_TYPE_PATTERN = Pattern.compile(
+        "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?)"
     );
 
-    public static List<ItemProbability> createItemsWithProbability(List<String> items) {
-        List<ItemProbability> itemProbs = new ArrayList<>();
+    @NotNull
+    public static List<ItemProbability> createItemsWithProbability(@NotNull List<String> items) {
+        List<ItemProbability> itemsWithProbability = new ArrayList<>();
         for (String reward : items) {
-            Matcher matcher = ITEM_AMOUNT_PATTERN.matcher(reward);
+            Matcher matcher = ITEM_AMOUNT_PROBABILITY_PATTERN.matcher(reward);
             if (matcher.matches()) {
-                double probability = matcher.group("prob") != null ? Double.parseDouble(matcher.group("prob")) : 1;
-                Material type = getItemType(matcher);
-                int amount = Integer.parseInt(matcher.group("amount"), 10);
-                ItemStack itemStack = new ItemStack(type, amount);
-                itemStack = NBTUtil.addNBTTag(itemStack, matcher.group("meta"));
-                itemProbs.add(new ItemProbability(probability, itemStack));
+                double probability = matcher.group("prob") != null ?
+                    Double.parseDouble(matcher.group("prob")) : 1.0;
+                ItemStack itemStack = getItemType(matcher);
+                int amount = Integer.parseInt(matcher.group("amount"));
+                itemStack.setAmount(amount);
+                itemsWithProbability.add(new ItemProbability(probability, itemStack));
             } else {
                 throw new IllegalArgumentException("Unknown item: '" + reward + "' in '" + items + "'");
             }
         }
-        return itemProbs;
+        return itemsWithProbability;
     }
 
-    private static Material getItemType(Matcher m) {
-        String id = m.group("id");
-        if (id != null) {
-            Material type = Material.matchMaterial(id);
-            if (type == null) {
-                throw new IllegalArgumentException("Bukkit 1.13 does not know the material " + id + "!");
-            }
-            return type;
-        }
-        return Material.BARRIER; // TODO: it may not be a good idea to default to Barrier, as this is what players get when the material is invalid
+    @NotNull
+    private static ItemStack getItemType(@NotNull Matcher matcher) {
+        String type = matcher.group("type");
+        return Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
     }
 
-    public static List<ItemStack> createItemList(List<String> items) {
+    @NotNull
+    public static List<ItemStack> createItemList(@NotNull List<String> items) {
         List<ItemStack> itemList = new ArrayList<>();
         for (String reward : items) {
             if (reward != null && !reward.isEmpty()) {
@@ -68,18 +67,13 @@ public enum ItemStackUtil {
         return itemList;
     }
 
-    private static ItemStack createItemStackAmount(String reward) {
-        if (reward == null || reward.isEmpty()) {
-            return null;
-        }
-        Matcher m = ITEM_AMOUNT_PATTERN.matcher(reward);
-        if (m.matches()) {
-            Material type = getItemType(m);
-            int amount = Integer.parseInt(m.group("amount"), 10);
-            ItemStack itemStack = new ItemStack(type, amount);
-            if (m.group("meta") != null) {
-                itemStack = NBTUtil.addNBTTag(itemStack, m.group("meta"));
-            }
+    @NotNull
+    private static ItemStack createItemStackAmount(@NotNull String reward) {
+        Matcher matcher = ITEM_AMOUNT_PROBABILITY_PATTERN.matcher(reward);
+        if (matcher.matches()) {
+            ItemStack itemStack = getItemType(matcher);
+            int amount = Integer.parseInt(matcher.group("amount"));
+            itemStack.setAmount(amount);
             return itemStack;
         } else {
             throw new IllegalArgumentException("Unknown item: '" + reward + "'");
@@ -94,10 +88,12 @@ public enum ItemStackUtil {
         return createItemStack(displayItem, null, null);
     }
 
-    public static ItemStack createItemStackSkull(String texture, String name, String description) {
-        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
-        String metaStr = String.format("{display:{Name:\"%s\"},SkullOwner:{Id:\"%s\",Properties:{textures:[{Value:\"%s\"}]}}}", name, createUniqueId(texture, name, description), texture);
-        itemStack = NBTUtil.addNBTTag(itemStack, metaStr);
+    public static ItemStack createItemStack(@NotNull String displayItem, @Nullable String name, @Nullable String description) {
+        Matcher matcher = ITEM_TYPE_PATTERN.matcher(displayItem);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid item " + displayItem + " supplied!");
+        }
+        ItemStack itemStack = getItemType(matcher);
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null) {
             if (name != null) {
@@ -113,56 +109,8 @@ public enum ItemStackUtil {
         return itemStack;
     }
 
-    public static UUID createUniqueId(String texture, String name, String description) {
-        return new UUID(texture.hashCode(), (name + description).hashCode());
-    }
-
-    public static ItemStack createItemStack(String displayItem, String name, String description) {
-        Material type = Material.DIRT;
-        String metaStr = null;
-        if (displayItem != null) {
-            Matcher matcher = ITEM_PATTERN.matcher(displayItem);
-            if (matcher.matches()) {
-                type = getItemType(matcher);
-                metaStr = matcher.group("meta");
-            }
-        }
-        if (type == null) {
-            Bukkit.getLogger().warning("Invalid material " + displayItem + " supplied!");
-            type = Material.BARRIER;
-        }
-        ItemStack itemStack = new ItemStack(type, 1);
-        ItemMeta meta = itemStack.getItemMeta();
-        if (meta != null) {
-            if (name != null) {
-                meta.setDisplayName(FormatUtil.normalize(name));
-            }
-            List<String> lore = new ArrayList<>();
-            if (description != null) {
-                lore.addAll(FormatUtil.wordWrap(FormatUtil.normalize(description), 30, 30));
-            }
-            meta.setLore(lore);
-            itemStack.setItemMeta(meta);
-        }
-        itemStack = NBTUtil.addNBTTag(itemStack, metaStr);
-        return itemStack;
-    }
-
-    public static List<ItemStack> clone(List<ItemStack> items) {
-        if (items == null) {
-            return null;
-        }
-        List<ItemStack> copy = new ArrayList<>();
-        for (ItemStack item : items) {
-            copy.add(item.clone());
-        }
-        return copy;
-    }
-
-    public static boolean isValidInventoryItem(ItemStack itemStack) {
-        Inventory inventory = Bukkit.createInventory(null, 9);
-        inventory.setItem(0, itemStack);
-        return inventory.getItem(0) != null && inventory.getItem(0).getItemMeta() != null && inventory.getItem(0).getData() != null && inventory.getItem(0).getData().toItemStack() != null;
+    public static @NotNull List<ItemStack> clone(@NotNull List<ItemStack> items) {
+        return items.stream().map(ItemStack::clone).toList();
     }
 
     public static Builder builder(ItemStack stack) {
@@ -198,34 +146,28 @@ public enum ItemStackUtil {
             : tr("\u00a77{0}", getItemName(item));
     }
 
-    public static ItemStack asDisplayItem(ItemStack item) {
+    @NotNull
+    public static ItemStack asDisplayItem(@NotNull ItemStack item) {
         ItemStack copy = new ItemStack(item);
         ItemMeta itemMeta = copy.getItemMeta();
-        // Hide all enchants (if possible).
-        try {
-            Class<?> aClass = Class.forName("org.bukkit.inventory.ItemFlag");
-            Object allValues = ReflectionUtil.execStatic(aClass, "values");
-            ReflectionUtil.exec(itemMeta, "addItemFlags", allValues);
-        } catch (ClassNotFoundException e) {
-            // Ignore - only available for 1.9 and above
+        if (itemMeta != null) {
+            itemMeta.addItemFlags(ItemFlag.values());
         }
         copy.setItemMeta(itemMeta);
         return copy;
     }
 
+    @Contract("null -> null; !null -> !null")
+    @Nullable
     public static String getItemName(ItemStack stack) {
-        if (stack != null) {
-            if (stack.getItemMeta() != null && stack.getItemMeta().getDisplayName() != null && !stack.getItemMeta().getDisplayName().trim().isEmpty()) {
-                return stack.getItemMeta().getDisplayName();
-            }
-            /*
-            Vault isn't 1.13 compatible (yet)
-            ItemInfo itemInfo = Items.itemByStack(stack);
-            return itemInfo != null ? itemInfo.getName() : "" + stack.getType();
-             */
-            return tr(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
+        if (stack == null) {
+            return null;
         }
-        return null;
+        var itemMeta = stack.getItemMeta();
+        if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
+            return stack.getItemMeta().getDisplayName();
+        }
+        return tr(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
     /**

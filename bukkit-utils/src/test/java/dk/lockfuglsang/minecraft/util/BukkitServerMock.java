@@ -1,7 +1,6 @@
 package dk.lockfuglsang.minecraft.util;
 
 import dk.lockfuglsang.minecraft.nbt.NBTItemStackTagger;
-import dk.lockfuglsang.minecraft.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -28,7 +27,6 @@ public class BukkitServerMock {
      * Stubbing data, allows for advanced stubbing behaviour for item-meta
      */
     protected static Map<ItemMeta, Map<String,String>> itemMetaMap = new HashMap<>();
-    private static ItemFactory itemFactoryMock;
 
     public static Server setupServerMock() throws NoSuchFieldException, IllegalAccessException {
         Field server = Bukkit.class.getDeclaredField("server");
@@ -36,14 +34,12 @@ public class BukkitServerMock {
         Server serverMock = createServerMock();
         server.set(null, serverMock);
         server.setAccessible(false);
-
-        NBTUtil.setNBTItemStackTagger(new TestNBTItemStackTagger());
         return serverMock;
     }
 
     public static Server createServerMock() {
         Server serverMock = mock(Server.class);
-        itemFactoryMock = mock(ItemFactory.class);
+        ItemFactory itemFactoryMock = mock(ItemFactory.class);
 
         when(itemFactoryMock.isApplicable(any(ItemMeta.class), any(Material.class)))
                 .thenReturn(true);
@@ -62,6 +58,30 @@ public class BukkitServerMock {
                 .thenAnswer((Answer<ItemMeta>) invocationOnMock -> invocationOnMock.getArguments()[0] != null
                         ? (ItemMeta) invocationOnMock.getArguments()[0]
                         : null);
+
+        when(itemFactoryMock.createItemStack(any()))
+                .thenAnswer((Answer<ItemStack>) invocationOnMock -> {
+                    String specification = (String) invocationOnMock.getArguments()[0];
+                    var componentSplitIndex = specification.indexOf('[');
+                    String typeSpecification;
+                    String components;
+                    if (componentSplitIndex > 0) {
+                        typeSpecification = specification.substring(0, componentSplitIndex);
+                        components = specification.substring(componentSplitIndex);
+                    } else {
+                        typeSpecification = specification;
+                        components = "";
+                    }
+                    var type = Material.matchMaterial(typeSpecification);
+                    var itemStack = new ItemStack(type);
+                    var mockMeta = mock(ItemMeta.class, withSettings().extraInterfaces(Damageable.class));
+                    when(((Damageable)mockMeta).getDamage()).thenReturn(0);
+                    when(mockMeta.toString()).thenReturn(components);
+                    when(mockMeta.getAsComponentString()).thenReturn(components.isEmpty() ? "[]" : components);
+                    when(itemStack.getItemMeta()).thenReturn(mockMeta);
+                    return itemStack;
+                });
+
         when(serverMock.getItemFactory()).thenReturn(itemFactoryMock);
 
         UnsafeValues unsafeMock = mock(UnsafeValues.class);
