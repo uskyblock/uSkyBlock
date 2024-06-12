@@ -34,20 +34,6 @@ public enum FileUtil {
         }
     }
 
-    public static void setNeverOverwrite(String... configs) {
-        for (String s : configs) {
-            if (!neverOverwrite.contains(s)) {
-                neverOverwrite.add(s);
-            }
-        }
-    }
-
-    public static FileConfiguration loadConfig(File file) {
-        FileConfiguration config = new YamlConfiguration();
-        readConfig(config, file);
-        return config;
-    }
-
     public static void readConfig(FileConfiguration config, File file) {
         if (file == null) {
             log.log(Level.INFO, "No " + file + " found, it will be created");
@@ -87,19 +73,6 @@ public enum FileUtil {
         } catch (InvalidConfigurationException | IOException e) {
             log.log(Level.SEVERE, "Unable to read configuration", e);
         }
-    }
-
-    public static FilenameFilter createYmlFilenameFilter() {
-        return new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name != null && name.endsWith(".yml");
-            }
-        };
-    }
-
-    public static String getBasename(File file) {
-        return getBasename(file.getName());
     }
 
     public static String getBasename(String file) {
@@ -304,19 +277,4 @@ public enum FileUtil {
             readConfig(e.getValue(), configFile);
         }
     }
-
-    public static Properties readProperties(String fileName) {
-        File configFile = getConfigFile(fileName);
-        if (configFile != null && configFile.exists() && configFile.canRead()) {
-            Properties prop = new Properties();
-            try (InputStreamReader in = new InputStreamReader(new FileInputStream(configFile), "UTF-8")) {
-                prop.load(in);
-                return prop;
-            } catch (IOException e) {
-                log.log(Level.WARNING, "Error reading " + fileName, e);
-            }
-        }
-        return null;
-    }
-
 }
