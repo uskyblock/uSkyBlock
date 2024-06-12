@@ -29,6 +29,37 @@ public class ItemStackUtilTest extends BukkitServerMock {
     }
 
     @Test
+    public void createBasicItemRequirement() {
+        ItemRequirement actual = ItemStackUtil.createItemRequirement("stone:1");
+        ItemRequirement expected = new ItemRequirement(new ItemStack(Material.STONE), 1, ItemRequirement.Operator.NONE, 0.0);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void createItemRequirementWithDifferentIncrements() {
+        var specifications = List.of("stone:1", "stone:12;+1", "stone:1;-10", "stone:100;*0.1", "stone:1;/12.1");
+        var expected = List.of(
+            new ItemRequirement(new ItemStack(Material.STONE), 1, ItemRequirement.Operator.NONE, 0.0),
+            new ItemRequirement(new ItemStack(Material.STONE), 12, ItemRequirement.Operator.ADD, 1.0),
+            new ItemRequirement(new ItemStack(Material.STONE), 1, ItemRequirement.Operator.SUBTRACT, 10.0),
+            new ItemRequirement(new ItemStack(Material.STONE), 100, ItemRequirement.Operator.MULTIPLY, 0.1),
+            new ItemRequirement(new ItemStack(Material.STONE), 1, ItemRequirement.Operator.DIVIDE, 12.1)
+        );
+        for (int i = 0; i < specifications.size(); i++) {
+            ItemRequirement actual = ItemStackUtil.createItemRequirement(specifications.get(i));
+            assertThat(actual, is(expected.get(i)));
+        }
+    }
+
+    @Test
+    public void createComplexItemRequirement() {
+        ItemRequirement actual = ItemStackUtil.createItemRequirement("minecraft:white_banner[complex={item:[]}]:1923;/0.001");
+        ItemRequirement expected = new ItemRequirement(new ItemStack(Material.WHITE_BANNER), 1923, ItemRequirement.Operator.DIVIDE, 0.001);
+        assertThat(actual, is(expected));
+        assertThat(actual.type().getItemMeta().toString(), is("[complex={item:[]}]"));
+    }
+
+    @Test
     public void createItemsWithProbability1() {
         List<ItemStackUtil.ItemProbability> actual = ItemStackUtil.createItemsWithProbability(List.of("{p=0.9}LAVA_BUCKET:1"));
         List<ItemStackUtil.ItemProbability> expected = List.of(new ItemStackUtil.ItemProbability(0.9, new ItemStack(Material.LAVA_BUCKET, 1)));

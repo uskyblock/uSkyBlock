@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -53,9 +53,8 @@ public class ChallengeFactoryTest {
         Challenge challenge = ChallengeFactory.createChallenge(rank, rankSection.getConfigurationSection("challenges.villageguard"), defaults);
 
         assertThat(challenge, notNullValue());
-        List<ItemStack> requiredItems = challenge.getRequiredItems(0);
+        Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(0);
         assertThat(requiredItems.size(), is(1));
-        assertThat(ItemStackUtil.asString(requiredItems.get(0)), is(ItemStackUtil.asString(new ItemStack(Material.COBBLESTONE, 257))));
+        assertThat(ItemStackUtil.asString(requiredItems.keySet().stream().findFirst().get()), is(ItemStackUtil.asString(new ItemStack(Material.COBBLESTONE, 257))));
     }
-
 }

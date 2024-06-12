@@ -10,10 +10,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,11 +22,30 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public enum ItemStackUtil {
     ;
     private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
-        "(\\{p=(?<prob>0\\.[0-9]+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>[0-9]+)"
+        "(\\{p=(?<prob>0\\.\\d+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
     private static final Pattern ITEM_TYPE_PATTERN = Pattern.compile(
         "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?)"
     );
+    private static final Pattern ITEM_REQUIREMENT_PATTERN = Pattern.compile(
+        "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)(;(?<op>[-+*^/])(?<inc>\\d+(.\\d+)?))?"
+    );
+
+    @NotNull
+    public static ItemRequirement createItemRequirement(@NotNull String specification) {
+        Matcher matcher = ITEM_REQUIREMENT_PATTERN.matcher(specification);
+        if (matcher.matches()) {
+            ItemStack itemStack = getItemType(matcher);
+            int amount = Integer.parseInt(matcher.group("amount"));
+            ItemRequirement.Operator operator = matcher.group("op") != null ?
+                ItemRequirement.Operator.fromSymbol(matcher.group("op")) : ItemRequirement.Operator.NONE;
+            double increment = matcher.group("inc") != null ?
+                Double.parseDouble(matcher.group("inc")) : operator.getNeutralElement();
+            return new ItemRequirement(itemStack, amount, operator, increment);
+        } else {
+            throw new IllegalArgumentException("Invalid item requirement: '" + specification + "'");
+        }
+    }
 
     @NotNull
     public static List<ItemProbability> createItemsWithProbability(@NotNull List<String> items) {
@@ -168,6 +184,24 @@ public enum ItemStackUtil {
             return stack.getItemMeta().getDisplayName();
         }
         return tr(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public static ItemStack[] asValidItemStacksWithAmount(@NotNull Map<ItemStack, Integer> typesWithAmount) {
+        return typesWithAmount.entrySet().stream().flatMap(entry -> {
+            ItemStack requiredType = entry.getKey();
+            int requiredAmount = entry.getValue();
+            List<ItemStack> result = new ArrayList<>();
+            int remaining = requiredAmount;
+            while (remaining > 0) {
+                ItemStack item = requiredType.clone();
+                item.setAmount(Math.min(remaining, item.getMaxStackSize()));
+                remaining -= item.getAmount();
+                result.add(item);
+            }
+            return result.stream();
+        }).toArray(ItemStack[]::new);
     }
 
     /**

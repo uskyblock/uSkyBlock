@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,12 +25,12 @@ public class BlockCollection {
     /**
      * Returns <code>null</code> if all the items are in the BlockCollection, a String describing the missing items if it's not
      */
-    public synchronized String diff(Collection<ItemStack> itemStacks) {
+    public synchronized String diff(Map<ItemStack, Integer> itemStacks) {
         StringBuilder sb = new StringBuilder();
-        for (ItemStack item : itemStacks) {
-            int diff = item.getAmount() - count(item.getType());
+        for (Map.Entry<ItemStack, Integer> item : itemStacks.entrySet()) {
+            int diff = item.getValue() - count(item.getKey().getType());
             if (diff > 0) {
-                sb.append(tr(" \u00a7f{0}x \u00a77{1}", diff, ItemStackUtil.getItemName(item)));
+                sb.append(tr(" \u00a7f{0}x \u00a77{1}", diff, ItemStackUtil.getItemName(item.getKey())));
             }
         }
         if (sb.toString().trim().isEmpty()) {
