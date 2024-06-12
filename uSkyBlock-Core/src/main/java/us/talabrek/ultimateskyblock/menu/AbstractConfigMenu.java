@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.menu;
 
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.talabrek.ultimateskyblock.util.GuiItemUtil;
@@ -18,13 +18,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * Created by R4zorax on 03/10/2015.
  */
 public class AbstractConfigMenu {
-    private final YmlConfiguration menuConfig;
+    private final FileConfiguration menuConfig;
 
-    public AbstractConfigMenu(YmlConfiguration menuConfig) {
+    public AbstractConfigMenu(FileConfiguration menuConfig) {
         this.menuConfig = menuConfig;
     }
 
-    public YmlConfiguration getMenuConfig() {
+    public FileConfiguration getMenuConfig() {
         return menuConfig;
     }
 

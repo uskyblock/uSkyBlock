@@ -8,12 +8,12 @@ import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -769,7 +769,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         challengeLogic = new ChallengeLogic(FileUtil.getYmlConfiguration("challenges.yml"), this);
         menu = new SkyBlockMenu(this, challengeLogic);
         configMenu = new ConfigMenu(this);
-        YmlConfiguration levelConfig = FileUtil.getYmlConfiguration("levelConfig.yml");
+        FileConfiguration levelConfig = FileUtil.getYmlConfiguration("levelConfig.yml");
         // Disabled until AWE/FAWE supports 1.13
         //levelLogic = AsyncWorldEditHandler.isAWE() ? new AweLevelLogic(this, levelConfig) : new ChunkSnapshotLevelLogic(this, levelConfig);
         levelLogic = new ChunkSnapshotLevelLogic(this, levelConfig);

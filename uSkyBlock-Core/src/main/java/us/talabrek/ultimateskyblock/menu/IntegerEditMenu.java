@@ -2,10 +2,10 @@ package us.talabrek.ultimateskyblock.menu;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,13 +26,13 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
  */
 public class IntegerEditMenu extends AbstractConfigMenu implements EditMenu {
     private static final Material DEFAULT_NUMBER_ICON = Material.BLUE_STAINED_GLASS_PANE;
-    private final YmlConfiguration menuConfig;
+    private final FileConfiguration menuConfig;
     private final MenuItemFactory factory;
     private final EditMenu parent;
 
     private final Map<String, ItemStack> increments = new LinkedHashMap<>();
 
-    public IntegerEditMenu(YmlConfiguration menuConfig, MenuItemFactory factory, EditMenu parent) {
+    public IntegerEditMenu(FileConfiguration menuConfig, MenuItemFactory factory, EditMenu parent) {
         super(menuConfig);
         this.menuConfig = menuConfig;
         this.factory = factory;
@@ -71,7 +71,7 @@ public class IntegerEditMenu extends AbstractConfigMenu implements EditMenu {
         ItemStack clickedItem = event.getCurrentItem();
         if (slot >= getIndex(3, 0) && slot <= getIndex(3, 8)) {
             // increment buttons
-            YmlConfiguration config = FileUtil.getYmlConfiguration(configName);
+            FileConfiguration config = FileUtil.getYmlConfiguration(configName);
             int value = config.getInt(path, 0);
             int increment = getDisplayNameAsInt(clickedItem);
             if (event.getClick() == ClickType.LEFT) {
@@ -121,7 +121,7 @@ public class IntegerEditMenu extends AbstractConfigMenu implements EditMenu {
      */
     @Override
     public Inventory createEditMenu(String configName, String path, int page) {
-        YmlConfiguration config = FileUtil.getYmlConfiguration(configName);
+        FileConfiguration config = FileUtil.getYmlConfiguration(configName);
         if (!config.isInt(path)) {
             return null;
         }

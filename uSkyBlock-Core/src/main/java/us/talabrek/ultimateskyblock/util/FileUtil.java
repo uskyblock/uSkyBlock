@@ -1,9 +1,9 @@
 package us.talabrek.ultimateskyblock.util;
 
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +34,7 @@ public enum FileUtil {;
     private static final Logger log = Logger.getLogger(FileUtil.class.getName());
     private static final Collection<String> allwaysOverwrite = new ArrayList<>();
     private static final Collection<String> neverOverwrite = new ArrayList<>();
-    private static final Map<String, YmlConfiguration> configFiles = new ConcurrentHashMap<>();
+    private static final Map<String, FileConfiguration> configFiles = new ConcurrentHashMap<>();
     private static Locale locale = Locale.getDefault();
     private static File dataFolder;
 
@@ -54,8 +54,8 @@ public enum FileUtil {;
         }
     }
 
-    public static YmlConfiguration loadConfig(File file) {
-        YmlConfiguration config = new YmlConfiguration();
+    public static FileConfiguration loadConfig(File file) {
+        FileConfiguration config = new YamlConfiguration();
         readConfig(config, file);
         return config;
     }
@@ -151,15 +151,15 @@ public enum FileUtil {;
      * *merged: using data-conversion of special nodes.
      * </pre>
      */
-    public static YmlConfiguration getYmlConfiguration(String configName) {
+    public static FileConfiguration getYmlConfiguration(String configName) {
         // Caching, for your convenience! (and a bigger memory print!)
 
         if (!configFiles.containsKey(configName)) {
-            YmlConfiguration config = new YmlConfiguration();
+            FileConfiguration config = new YamlConfiguration();
             try {
                 // read from datafolder!
                 File configFile = getConfigFile(configName);
-                YmlConfiguration configJar = new YmlConfiguration();
+                FileConfiguration configJar = new YamlConfiguration();
                 readConfig(config, configFile);
                 readConfig(configJar, getResource(configName));
                 if (!configFile.exists() || config.getInt("version", 0) < configJar.getInt("version", 0)) {
@@ -232,12 +232,11 @@ public enum FileUtil {;
      * @param src The source (containing the new values).
      * @param dest The destination (containing old-values).
      */
-    private static YmlConfiguration mergeConfig(YmlConfiguration src, YmlConfiguration dest) {
+    private static FileConfiguration mergeConfig(FileConfiguration src, FileConfiguration dest) {
         int existing = dest.getInt("version");
         int version = src.getInt("version", existing);
         dest.setDefaults(src);
         dest.options().copyDefaults(true);
-        dest.addComments(src.getComments());
         dest.set("version", version);
         dest.options().copyHeader(false);
         src.options().copyHeader(false);
@@ -250,14 +249,14 @@ public enum FileUtil {;
     /**
      * Removes nodes from dest.defaults, that are specifically excluded in the config
      */
-    private static void removeExcludes(YmlConfiguration dest) {
+    private static void removeExcludes(FileConfiguration dest) {
         List<String> keys = dest.getStringList("merge-ignore");
         for (String key : keys) {
             dest.getDefaults().set(key, null);
         }
     }
 
-    private static void replaceDefaults(YmlConfiguration src, YmlConfiguration dest) {
+    private static void replaceDefaults(FileConfiguration src, FileConfiguration dest) {
         ConfigurationSection forceSection = src.getConfigurationSection("force-replace");
         if (forceSection != null) {
             for (String key : forceSection.getKeys(true)) {
@@ -273,7 +272,7 @@ public enum FileUtil {;
         dest.getDefaults().set("force-replace", null);
     }
 
-    private static void moveNodes(YmlConfiguration src, YmlConfiguration dest) {
+    private static void moveNodes(FileConfiguration src, FileConfiguration dest) {
         ConfigurationSection moveSection = src.getConfigurationSection("move-nodes");
         if (moveSection != null) {
             List<String> keys = new ArrayList<>(moveSection.getKeys(true));
@@ -309,7 +308,7 @@ public enum FileUtil {;
     }
 
     public static void reload() {
-        for (Map.Entry<String, YmlConfiguration> e : configFiles.entrySet()) {
+        for (Map.Entry<String, FileConfiguration> e : configFiles.entrySet()) {
             File configFile = new File(getDataFolder(), e.getKey());
             readConfig(e.getValue(), configFile);
         }

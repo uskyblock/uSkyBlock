@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.signs;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,6 +10,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -40,7 +40,7 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 public class SignLogic {
     private static final Logger log = Logger.getLogger(SignLogic.class.getName());
     private static final int SIGN_LINE_WIDTH = 11; // Actually more like 15, but we break after.
-    private final YmlConfiguration config;
+    private final FileConfiguration config;
     private final File configFile;
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;

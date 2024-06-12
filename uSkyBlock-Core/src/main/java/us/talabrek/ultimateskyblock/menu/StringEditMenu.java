@@ -1,10 +1,10 @@
 package us.talabrek.ultimateskyblock.menu;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.yml.YmlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -36,7 +36,7 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
     private final int backspaceIndex;
     private final int returnIndex;
 
-    public StringEditMenu(YmlConfiguration menuConfig, EditMenu parent) {
+    public StringEditMenu(FileConfiguration menuConfig, EditMenu parent) {
         super(menuConfig);
         this.parent = parent;
         List<?> characterMap = menuConfig.getList("keyboard.en");
@@ -89,7 +89,7 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
         ItemStack currentItem = e.getCurrentItem();
         boolean isCaps = e.getInventory().getItem(capsIndex).getItemMeta().getDisplayName().equals(tr("Caps On"));
         if (currentItem != null) {
-            YmlConfiguration config = FileUtil.getYmlConfiguration(configName);
+            FileConfiguration config = FileUtil.getYmlConfiguration(configName);
             String value = config.getString(path);
             if (e.getSlot() == capsIndex) {
                 // Toggle caps
@@ -129,7 +129,7 @@ public class StringEditMenu extends AbstractConfigMenu implements EditMenu {
     }
 
     private Inventory createEditMenuInternal(String configName, String path, int page, boolean isCaps) {
-        YmlConfiguration config = FileUtil.getYmlConfiguration(configName);
+        FileConfiguration config = FileUtil.getYmlConfiguration(configName);
         if (!config.isString(path)) {
             return null;
         }
