@@ -36,7 +36,8 @@ public class ChallengeFactory {
             section.getInt("rankLeeway", 1),
             section.getBoolean("enableEconomyPlugin", true),
             section.getBoolean("broadcastCompletion", true),
-            section.getInt("radius", 10), section.getBoolean("showLockedChallengeName", true),
+            section.getInt("radius", 10),
+            section.getBoolean("showLockedChallengeName", true),
             section.getInt("repeatLimit", 0));
     }
 
