@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
@@ -45,7 +46,7 @@ public class ItemComponentConverterTest {
         YamlConfiguration actual = new YamlConfiguration();
         actual.load(testFile);
         YamlConfiguration expected = new YamlConfiguration();
-        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("test-challenges-expected.yml")))) {
+        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("test-challenges-expected.yml"), StandardCharsets.UTF_8))) {
             expected.load(reader);
         }
         assertConfigsEquals(expected, actual);
@@ -72,7 +73,7 @@ public class ItemComponentConverterTest {
         YamlConfiguration actual = new YamlConfiguration();
         actual.load(testFile);
         YamlConfiguration expected = new YamlConfiguration();
-        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("old-default-challenges-expected.yml")))) {
+        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("old-default-challenges-expected.yml"), StandardCharsets.UTF_8))) {
             expected.load(reader);
         }
         assertConfigsEquals(expected, actual);
