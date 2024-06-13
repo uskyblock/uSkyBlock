@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,53 +28,44 @@ public class ItemComponentConverterTest {
 
     @Test
     public void testMinimalChallengeConversion() throws Exception {
-        var testFile = new File(testFolder.getRoot(), "challenges.yml");
-        try (var reader = getClass().getResourceAsStream("test-challenges.yml")) {
-            Files.copy(reader, testFile.toPath());
-        }
-
-        var plugin = mock(uSkyBlock.class);
-        when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
-
-        var converter = new ItemComponentConverter();
-        converter.init(plugin);
-        converter.importFile(testFile);
-
-        assertTrue(testFile.exists());
-        File backup = new File(testFolder.getRoot(), "challenges.yml.old");
-        assertTrue(backup.isFile());
-
-        YamlConfiguration actual = new YamlConfiguration();
-        actual.load(testFile);
-        YamlConfiguration expected = new YamlConfiguration();
-        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("test-challenges-expected.yml"), StandardCharsets.UTF_8))) {
-            expected.load(reader);
-        }
-        assertConfigsEquals(expected, actual);
+        testConfig("test-challenges.yml", "test-challenges-expected.yml", "challenges.yml");
     }
 
     @Test
     public void testDefaultChallengeConversion() throws Exception {
-        var testFile = new File(testFolder.getRoot(), "challenges.yml");
-        try (var reader = getClass().getResourceAsStream("old-default-challenges.yml")) {
+        testConfig("old-default-challenges.yml", "old-default-challenges-expected.yml", "challenges.yml");
+    }
+
+    @Test
+    public void testDefaultSettingsConversion() throws Exception {
+        testConfig("old-config.yml", "old-config-expected.yml", "config.yml");
+    }
+
+    private void testConfig(String originalName, String expectedName, String fileName) throws Exception {
+        var testFile = new File(testFolder.getRoot(), fileName);
+        try (var reader = Objects.requireNonNull(getClass().getResourceAsStream(originalName))) {
             Files.copy(reader, testFile.toPath());
         }
 
         var plugin = mock(uSkyBlock.class);
         when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
+        if (fileName.equals("config.yml")) {
+            when(plugin.getConfig()).thenReturn(YamlConfiguration.loadConfiguration(testFile));
+        }
 
         var converter = new ItemComponentConverter();
         converter.init(plugin);
         converter.importFile(testFile);
 
         assertTrue(testFile.exists());
-        File backup = new File(testFolder.getRoot(), "challenges.yml.old");
+        File backup = new File(testFolder.getRoot(), fileName + ".old");
         assertTrue(backup.isFile());
 
         YamlConfiguration actual = new YamlConfiguration();
         actual.load(testFile);
         YamlConfiguration expected = new YamlConfiguration();
-        try (var reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("old-default-challenges-expected.yml"), StandardCharsets.UTF_8))) {
+        try (var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
+            getClass().getResourceAsStream(expectedName)), StandardCharsets.UTF_8))) {
             expected.load(reader);
         }
         assertConfigsEquals(expected, actual);

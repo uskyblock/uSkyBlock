@@ -10,6 +10,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -60,8 +61,51 @@ public class ItemComponentConverter implements USBImporter {
     }
 
     private void convertConfig(FileConfiguration config) {
-        // TODO implement
-        // TODO make sure all config values use the new parsing methods
+        var oldVersion = config.getInt("version");
+        if (oldVersion != 108) {
+            throw new RuntimeException("Expecting config.yml version 108, but found " + oldVersion + " instead.");
+        }
+
+
+        for (var path : config.getKeys(true)) {
+            if (path.endsWith("chestItems")
+                || (path.contains(".extraPermissions.") && config.isList(path))
+                || path.endsWith("extraItems")
+            ) {
+                var oldSpecifications = config.getStringList(path);
+                var results = oldSpecifications.stream().map(spec -> convertItemReward(spec, path)).toList();
+                var newSpecifications = results.stream().map(pair -> pair.item).toList();
+                var newComments = results.stream().map(pair -> pair.comment).filter(Objects::nonNull).toList();
+                if (!newSpecifications.isEmpty()) {
+                    config.set(path, newSpecifications);
+                }
+                if (!newComments.isEmpty()) {
+                    List<String> comments = new ArrayList<>(config.getComments(path));
+                    comments.addAll(newComments);
+                    config.setComments(path, comments);
+                }
+            } else if (path.endsWith("displayItem")) {
+                var oldSpecification = config.getString(path);
+                var pair = convertDisplayItem(oldSpecification, path);
+                config.set(path, pair.item);
+                if (pair.comment != null) {
+                    List<String> comments = new ArrayList<>(config.getComments(path));
+                    comments.add(pair.comment);
+                    config.setComments(path, comments);
+                }
+            }
+        }
+
+        // fix old grass block in default config. We don't fix all of them, as GRASS has referred to both grass_block
+        // and short_grass in the past, and we cannot determine what the user meant. They should fix it manually.
+        List<String> giantBonus = config.getStringList("options.island.extraPermissions.giantbonus");
+        if (giantBonus.contains("grass:1")) {
+            var index = giantBonus.indexOf("grass:1");
+            giantBonus.set(index, "grass_block:1");
+            config.set("options.island.extraPermissions.giantbonus", giantBonus);
+        }
+
+        config.set("version", 109);
     }
 
     private void convertChallenges(FileConfiguration config) throws Exception {
@@ -130,7 +174,8 @@ public class ItemComponentConverter implements USBImporter {
 
         // Add the new header with explanations and usage instructions
         var defaultConfig = new YamlConfiguration();
-        try (var reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("challenges.yml")))) {
+        try (var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
+            getClass().getClassLoader().getResourceAsStream("challenges.yml")), StandardCharsets.UTF_8))) {
             defaultConfig.load(reader);
         }
         config.options().setHeader(defaultConfig.options().getHeader());

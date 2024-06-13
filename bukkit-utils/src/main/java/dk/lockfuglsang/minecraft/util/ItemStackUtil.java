@@ -72,6 +72,7 @@ public enum ItemStackUtil {
         return Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
     }
 
+    // used for parsing challenge rewards and starter chest items
     @NotNull
     public static List<ItemStack> createItemList(@NotNull List<String> items) {
         List<ItemStack> itemList = new ArrayList<>();
