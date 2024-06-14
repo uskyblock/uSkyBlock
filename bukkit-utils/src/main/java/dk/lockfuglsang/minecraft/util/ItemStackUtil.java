@@ -69,7 +69,22 @@ public enum ItemStackUtil {
     @NotNull
     private static ItemStack getItemType(@NotNull Matcher matcher) {
         String type = matcher.group("type");
-        return Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
+        ItemStack result;
+        try {
+            result = Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            // There are some items that are not supported by the /give command and therefore not by the Bukkit API,
+            // for example minecraft:nether_portal. These should never be used as item requirements/rewards, but the
+            // item requirements section is also (miss-) used for block requirements. Therefore, we need to handle
+            // these cases. Ideally we should have a separate class for block requirements.
+            Material material = Material.matchMaterial(type);
+            if (material != null) {
+                result = new ItemStack(material);
+            } else {
+                throw e;
+            }
+        }
+        return result;
     }
 
     // used for parsing challenge rewards and starter chest items
