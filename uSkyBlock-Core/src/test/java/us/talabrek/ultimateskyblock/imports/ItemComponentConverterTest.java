@@ -4,7 +4,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,8 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ItemComponentConverterTest {
 
@@ -47,14 +44,7 @@ public class ItemComponentConverterTest {
             Files.copy(reader, testFile.toPath());
         }
 
-        var plugin = mock(uSkyBlock.class);
-        when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
-        if (fileName.equals("config.yml")) {
-            when(plugin.getConfig()).thenReturn(YamlConfiguration.loadConfiguration(testFile));
-        }
-
-        var converter = new ItemComponentConverter();
-        converter.init(plugin);
+        var converter = new ItemComponentConverter(Logger.getAnonymousLogger());
         converter.importFile(testFile);
 
         assertTrue(testFile.exists());

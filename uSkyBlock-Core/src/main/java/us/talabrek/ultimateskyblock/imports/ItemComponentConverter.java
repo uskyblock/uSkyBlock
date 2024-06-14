@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,30 +16,30 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class ItemComponentConverter implements USBImporter {
+public class ItemComponentConverter {
 
-    private uSkyBlock plugin;
-    private Logger logger;
+    private final Logger logger;
 
-    @Override
-    public String getName() {
-        return "item-component-converter";
+    public ItemComponentConverter(Logger logger) {
+        this.logger = logger;
     }
 
-    @Override
-    public void init(uSkyBlock plugin) {
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
-        plugin.setMaintenanceMode(true);
+    public void checkAndDoImport(File directory) {
+        var configFile = new File(directory, "config.yml");
+        if (configFile.exists() && YamlConfiguration.loadConfiguration(configFile).getInt("version") <= 108) {
+            importFile(configFile);
+        }
+        var challengesFile = new File(directory, "challenges.yml");
+        if (challengesFile.exists() && YamlConfiguration.loadConfiguration(challengesFile).getInt("version") <= 106) {
+            importFile(challengesFile);
+        }
     }
 
-    @Override
-    public Boolean importFile(File file) {
+    public void importFile(File file) {
 
         Path configFile = file.toPath();
         try {
             Files.copy(configFile, configFile.getParent().resolve(configFile.getFileName() + ".old"));
-
 
             FileConfiguration config = new YamlConfiguration();
             config.load(file);
@@ -48,13 +47,10 @@ public class ItemComponentConverter implements USBImporter {
             if (file.getName().equals("challenges.yml")) {
                 convertChallenges(config);
             } else if (file.getName().equals("config.yml")) {
-                config = plugin.getConfig();
                 convertConfig(config);
             }
 
             config.save(file);
-            return true;
-
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while attempting to convert file " + file, e);
         }
@@ -62,7 +58,7 @@ public class ItemComponentConverter implements USBImporter {
 
     private void convertConfig(FileConfiguration config) {
         var oldVersion = config.getInt("version");
-        if (oldVersion != 108) {
+        if (oldVersion > 108) {
             logger.warning("Expecting config.yml version 108, but found " + oldVersion + " instead. Skipping conversion.");
             return;
         }
@@ -110,7 +106,7 @@ public class ItemComponentConverter implements USBImporter {
 
     private void convertChallenges(FileConfiguration config) throws Exception {
         var oldVersion = config.getInt("version");
-        if (oldVersion != 106) {
+        if (oldVersion > 106) {
             logger.warning("Expecting challanges.yml version 106, but found " + oldVersion + " instead. Skipping conversion.");
             return;
         }
@@ -330,19 +326,5 @@ public class ItemComponentConverter implements USBImporter {
     }
 
     private record SpecificationCommentPair(@NotNull String item, @Nullable String comment) {
-    }
-
-    @Override
-    public File[] getFiles() {
-        return new File[]{
-            new File(plugin.getDataFolder(), "challenges.yml"),
-            new File(plugin.getDataFolder(), "config.yml"),
-        };
-    }
-
-    @Override
-    public void completed(int success, int failed, int skipped) {
-        plugin.setMaintenanceMode(false);
-        plugin.reloadConfig();
     }
 }

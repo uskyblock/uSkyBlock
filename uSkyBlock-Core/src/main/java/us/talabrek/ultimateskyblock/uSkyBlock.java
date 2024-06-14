@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -64,6 +65,7 @@ import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
@@ -203,12 +205,21 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return FileUtil.getYmlConfiguration("config.yml");
     }
 
+    private void convertConfigItemsTo1_20_6IfRequired() {
+        var converter = new ItemComponentConverter(getLogger());
+        converter.checkAndDoImport(getDataFolder());
+    }
+
     @Override
     public void onEnable() {
         WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
         WorldManager.skyBlockNetherWorld = null;
         missingRequirements = null;
         instance = this;
+
+        // Converter has to run before the plugin loads its config files.
+        convertConfigItemsTo1_20_6IfRequired();
+
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAllwaysOverwrite("levelConfig.yml");
@@ -237,12 +248,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 if (!getConfig().getBoolean("importer.name2uuid.imported", false)) {
                     Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
                     getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
-                }
-
-                if (getConfig().getInt("version") == 108
-                    || FileUtil.getYmlConfiguration("challenges.yml").getInt("version") == 106) {
-                    Bukkit.getConsoleSender().sendMessage(tr("Converting configs to item components."));
-                    getImporter().importUSB(Bukkit.getConsoleSender(), "item-component-converter");
                 }
 
                 getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4

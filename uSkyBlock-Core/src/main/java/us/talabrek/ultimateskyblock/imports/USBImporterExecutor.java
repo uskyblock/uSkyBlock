@@ -50,7 +50,6 @@ public class USBImporterExecutor {
             importers = new ArrayList<>();
             importers.add(new UUIDLeaderImporter());
             importers.add(new USBUpdateImporter());
-            importers.add(new ItemComponentConverter());
             ServiceLoader<USBImporter> serviceLoader = ServiceLoader.load(USBImporter.class, getClass().getClassLoader());
             for (USBImporter usbImporter : serviceLoader) {
                 importers.add(usbImporter);
