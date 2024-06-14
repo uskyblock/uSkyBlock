@@ -36,7 +36,6 @@ public class ItemComponentConverter {
     }
 
     public void importFile(File file) {
-
         Path configFile = file.toPath();
         try {
             Files.copy(configFile, configFile.getParent().resolve(configFile.getFileName() + ".old"));
@@ -82,7 +81,7 @@ public class ItemComponentConverter {
                     comments.addAll(newComments);
                     config.setComments(path, comments);
                 }
-            } else if (path.endsWith("displayItem")) {
+            } else if (path.endsWith("displayItem") || path.endsWith("tool")) {
                 var oldSpecification = config.getString(path);
                 var pair = convertDisplayItem(oldSpecification, path);
                 config.set(path, pair.item);
