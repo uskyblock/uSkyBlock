@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -240,6 +239,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                     getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
                 }
 
+                if (getConfig().getInt("version") == 108
+                    || FileUtil.getYmlConfiguration("challenges.yml").getInt("version") == 106) {
+                    Bukkit.getConsoleSender().sendMessage(tr("Converting configs to item components."));
+                    getImporter().importUSB(Bukkit.getConsoleSender(), "item-component-converter");
+                }
+
                 getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
                 log(Level.INFO, getVersionInfo(false));
             }
@@ -247,8 +252,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         updateChecker = new SkyUpdateChecker(this);
         // Runs every 4 hours
-        // noinspection deprecation
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this, () -> getUpdateChecker().checkForUpdates(), 0L, 288000L);
+        long FOUR_HOURS_IN_TICKS = 4L * 60L * 60L * 20L;
+        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> getUpdateChecker().checkForUpdates(), 0L, FOUR_HOURS_IN_TICKS);
 
         metricsManager = new MetricsManager(this);
     }
@@ -400,13 +405,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             pi = playerLogic.getPlayerInfo(member);
             islandInfo.removeMember(pi);
         }
-        islandLogic.clearIsland(islandLocation, new Runnable() {
-            @Override
-            public void run() {
-                postDelete(finalPI);
-                postDelete(islandInfo);
-                if (runner != null) runner.run();
-            }
+        islandLogic.clearIsland(islandLocation, () -> {
+            postDelete(finalPI);
+            postDelete(islandInfo);
+            if (runner != null) runner.run();
         });
     }
 

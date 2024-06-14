@@ -24,7 +24,7 @@ public class ItemComponentConverter implements USBImporter {
 
     @Override
     public String getName() {
-        return "Item-Component-Converter";
+        return "item-component-converter";
     }
 
     @Override
@@ -63,9 +63,9 @@ public class ItemComponentConverter implements USBImporter {
     private void convertConfig(FileConfiguration config) {
         var oldVersion = config.getInt("version");
         if (oldVersion != 108) {
-            throw new RuntimeException("Expecting config.yml version 108, but found " + oldVersion + " instead.");
+            logger.warning("Expecting config.yml version 108, but found " + oldVersion + " instead. Skipping conversion.");
+            return;
         }
-
 
         for (var path : config.getKeys(true)) {
             if (path.endsWith("chestItems")
@@ -111,7 +111,8 @@ public class ItemComponentConverter implements USBImporter {
     private void convertChallenges(FileConfiguration config) throws Exception {
         var oldVersion = config.getInt("version");
         if (oldVersion != 106) {
-            throw new RuntimeException("Expecting challanges.yml version 106, but found " + oldVersion + " instead.");
+            logger.warning("Expecting challanges.yml version 106, but found " + oldVersion + " instead. Skipping conversion.");
+            return;
         }
 
         convertChallengeItems(config);
@@ -119,7 +120,7 @@ public class ItemComponentConverter implements USBImporter {
     }
 
 
-    private void convertChallengeItems(FileConfiguration config) throws Exception {
+    private void convertChallengeItems(FileConfiguration config) {
         for (var path : config.getKeys(true)) {
             if (path.endsWith("displayItem") || path.endsWith("lockedDisplayItem")) {
                 var oldSpecification = config.getString(path);
@@ -342,5 +343,6 @@ public class ItemComponentConverter implements USBImporter {
     @Override
     public void completed(int success, int failed, int skipped) {
         plugin.setMaintenanceMode(false);
+        plugin.reloadConfig();
     }
 }
