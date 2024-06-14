@@ -63,6 +63,8 @@ public class ItemComponentConverter {
             return;
         }
 
+        logger.info("Converting config.yml to new item component format for Minecraft 1.20.5 and later.");
+
         for (var path : config.getKeys(true)) {
             if (path.endsWith("chestItems")
                 || (path.contains(".extraPermissions.") && config.isList(path))
@@ -110,6 +112,7 @@ public class ItemComponentConverter {
             logger.warning("Expecting challanges.yml version 106, but found " + oldVersion + " instead. Skipping conversion.");
             return;
         }
+        logger.info("Converting challenges.yml to new item component format for Minecraft 1.20.5 and later.");
 
         convertChallengeItems(config);
         updateHeaderAndVersion(config);
@@ -187,7 +190,7 @@ public class ItemComponentConverter {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid display item specification at path " + path);
         }
-        var itemType = matcher.group("id");
+        var itemType = fixMaterial(matcher.group("id"));
         var type = Material.matchMaterial(itemType);
         if (type != null) {
             itemType = type.getKey().getKey();
@@ -225,7 +228,7 @@ public class ItemComponentConverter {
         }
         var probability = matcher.group("prob");
 
-        var itemType = matcher.group("id");
+        var itemType = fixMaterial(matcher.group("id"));
         var type = Material.matchMaterial(itemType);
         if (type != null) {
             itemType = type.getKey().getKey();
@@ -272,7 +275,7 @@ public class ItemComponentConverter {
             throw new IllegalArgumentException("Invalid requirement item specification at path " + path + ": " + oldSpecification);
         }
 
-        var itemType = matcher.group("type");
+        var itemType = fixMaterial(matcher.group("type"));
         var type = Material.matchMaterial(itemType);
         if (type != null) {
             itemType = type.getKey().getKey();
@@ -323,6 +326,15 @@ public class ItemComponentConverter {
             return null;
         }
         return DEFAULT_ITEM_META_CONVERSION.get(oldMeta);
+    }
+
+    private static final Map<String, String> MATERIAL_UPDATES = Map.of(
+        "SIGN", "OAK_SIGN",
+        "SAPLING", "OAK_SAPLING"
+    );
+
+    private String fixMaterial(String material) {
+        return MATERIAL_UPDATES.getOrDefault(material, material);
     }
 
     private record SpecificationCommentPair(@NotNull String item, @Nullable String comment) {
