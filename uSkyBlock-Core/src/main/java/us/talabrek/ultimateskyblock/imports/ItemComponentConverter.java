@@ -317,7 +317,7 @@ public class ItemComponentConverter {
     private static final Map<String, String> DEFAULT_ITEM_META_CONVERSION = Map.of(
         "{Enchantments:[{id:\"minecraft:infinity\",lvl:1},{id:\"minecraft:unbreaking\",lvl:3}]}", "[enchantments={levels:{infinity:1,unbreaking:3}}]",
         "{Enchantments:[{id:\"minecraft:infinity\",lvl:1},{id:\"minecraft:unbreaking\",lvl:3},{id:\"minecraft:power\",lvl:5}]}", "[enchantments={levels:{infinity:1,power:5,unbreaking:3}}]",
-        "{Enchantments:[{id:\"minecraft:sharpness\",lvl:5},{id:\"minecraft:unbreaking\",lvl:3},{id:\"minecraft:fire\",lvl:1}]}", "[enchantments={levels:{fire:1,sharpness:5,unbreaking:3}}]",
+        "{Enchantments:[{id:\"minecraft:sharpness\",lvl:5},{id:\"minecraft:unbreaking\",lvl:3},{id:\"minecraft:fire\",lvl:1}]}", "[enchantments={levels:{fire_aspect:1,sharpness:5,unbreaking:3}}]",
         "{Enchantments:[{id:\"minecraft:feather_falling\",lvl:4},{id:\"minecraft:protection\",lvl:4},{id:\"minecraft:blast_protection\",lvl:4}]}", "[enchantments={levels:{blast_protection:4,feather_falling:4,protection:4}}]"
     );
 
