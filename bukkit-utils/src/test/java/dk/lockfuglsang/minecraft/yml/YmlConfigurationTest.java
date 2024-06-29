@@ -26,7 +26,7 @@ public class YmlConfigurationTest {
 
         config.set("root.child node.abe", "lincoln\nwas a wonderful\npresident");
         String expected = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("yml/simple_expected.yml"), StandardCharsets.UTF_8))
-            .lines().collect(Collectors.joining(System.lineSeparator()));
+            .lines().collect(Collectors.joining("\n"));
         config.save(new File(simpleYml.getParent(), "new_actual.yml"));
         assertThat(config.saveToString(), is(expected));
     }

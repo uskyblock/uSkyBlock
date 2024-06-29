@@ -1,5 +1,7 @@
 package dk.lockfuglsang.minecraft.nbt;
 
+import dk.lockfuglsang.minecraft.reflection.ReflectionUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -44,16 +46,7 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
         if (itemStack == null || nbtTagString == null || nbtTagString.isEmpty()) {
             return itemStack;
         }
-        Object nmsItem = execStatic(getCraftItemStackClass(), "asNMSCopy", itemStack);
-        Object nbtTag = exec(nmsItem, "getTag");
-        Object nbtTagNew = execStatic(getNBTTagParser(), "parse", nbtTagString);
-        nbtTag = merge(nbtTagNew, nbtTag);
-        exec(nmsItem, "setTag", nbtTag);
-        Object item = execStatic(getCraftItemStackClass(), "asBukkitCopy", nmsItem);
-        if (item instanceof ItemStack) {
-            return (ItemStack) item;
-        }
-        return itemStack;
+        return Bukkit.getUnsafe().modifyItemStack(itemStack, itemStack.getType().getKey() + nbtTagString);
     }
 
     /**
@@ -89,9 +82,8 @@ public class CraftBukkitNBTTagger implements NBTItemStackTagger {
     }
 
     private static Class<?> getCraftItemStackClass() {
-        String version = getCraftBukkitVersion();
         try {
-            return Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+            return Class.forName(ReflectionUtil.cb() + ".inventory.CraftItemStack");
         } catch (Exception e) {
             log.info("Unable to find CraftItemStack: " + e);
         }

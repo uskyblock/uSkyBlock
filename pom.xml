@@ -8,7 +8,7 @@
     <name>Ultimate SkyBlock</name>
 
     <properties>
-        <adventure-api.version>4.16.0</adventure-api.version>
+        <adventure-api.version>4.17.0</adventure-api.version>
         <adventure-bukkit.version>4.3.2</adventure-bukkit.version>
         <apache-commons.version>3.14.0</apache-commons.version>
         <apache-commons-text.version>1.12.0</apache-commons-text.version>
@@ -19,10 +19,10 @@
         <maven-artifact.version>3.8.6</maven-artifact.version>
         <api.version>${project.version}</api.version>
         <paperlib.version>1.0.8</paperlib.version>
-        <spigotapi.version>1.20.4-R0.1-SNAPSHOT</spigotapi.version>
+        <spigotapi.version>1.20.6-R0.1-SNAPSHOT</spigotapi.version>
         <vault.version>1.7</vault.version>
-        <worldedit.version>7.2.19</worldedit.version>
-        <worldguard.version>7.0.9</worldguard.version>
+        <worldedit.version>7.3.2</worldedit.version>
+        <worldguard.version>7.0.10</worldguard.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <finalName>${project.artifactId}</finalName>
@@ -35,7 +35,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <junit.version>4.13.2</junit.version>
         <junit-vintage-engine.version>5.9.0</junit-vintage-engine.version>
-        <mockito.version>3.12.4</mockito.version>
+        <mockito.version>5.12.0</mockito.version>
     </properties>
 
     <modules>
@@ -72,7 +72,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.10.1</version>
                     <configuration>
-                        <release>17</release>
+                        <release>21</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -88,7 +88,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

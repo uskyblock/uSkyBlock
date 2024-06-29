@@ -89,24 +89,24 @@ public class ItemStackUtilTest extends BukkitServerMock {
     public void createItemsWithProbabiltyWithNBTTag() throws Exception {
         useMetaData = true;
         List<ItemStackUtil.ItemProbability> actual = ItemStackUtil.createItemsWithProbabilty(Arrays.asList(
-                "{p=0.9}LAVA_BUCKET:1{Potion:Death}",
-                "{p=0.2}STONE:2:3 {MyLittle:\"Pony\"}",
-                "{p=0.3}NETHER_BRICK_FENCE:2\t {meta:{nested:{data:[{},{}]}}}"
+                "{p=0.9}LAVA_BUCKET:1[minecraft:custom_data={Potion:\"Death\"}]",
+                "{p=0.2}STONE:2:3 [minecraft:custom_data={MyLittle:\"Pony\"}]",
+                "{p=0.3}NETHER_BRICK_FENCE:2\t [minecraft:custom_data={meta:{nested:{data:[{},{}]}}}]"
         ));
         List<ItemStackUtil.ItemProbability> expected = Arrays.asList(
                 new ItemStackUtil.ItemProbability(0.9, NBTUtil.setNBTTag(
                         new ItemStack(Material.LAVA_BUCKET, 1),
-                        "{Potion:Death}")),
+                        "[minecraft:custom_data={Potion:\"Death\"}]")),
                 new ItemStackUtil.ItemProbability(0.2, NBTUtil.setNBTTag(
                         new ItemStack(Material.STONE, 3, (short) 2),
-                        "{MyLittle:\"Pony\"}")),
+                        "[minecraft:custom_data={MyLittle:\"Pony\"}]")),
                 new ItemStackUtil.ItemProbability(0.3, NBTUtil.setNBTTag(
                         new ItemStack(Material.NETHER_BRICK_FENCE, 2),
-                        "{meta:{nested:{data:[{},{}]}}}"))
+                        "[minecraft:custom_data={meta:{nested:{data:[{},{}]}}}]"))
         );
         assertThat(actual, notNullValue());
         assertThat(actual, is(expected));
-        assertThat(NBTUtil.getNBTTag(actual.get(2).getItem()), is("{meta:{nested:{data:[{},{}]}}}"));
+        assertThat(NBTUtil.getNBTTag(actual.get(2).getItem()), is("[minecraft:custom_data={meta:{nested:{data:[{},{}]}}}]"));
     }
 
     @Test(expected = NullPointerException.class)
@@ -142,14 +142,14 @@ public class ItemStackUtilTest extends BukkitServerMock {
     @Test
     public void createItemListStringAndListWithNBTTags() throws Exception {
         useMetaData = true;
-        List<ItemStack> actual = ItemStackUtil.createItemList(Arrays.asList("NETHER_BRICK_FENCE:2{meta2}", "JUNGLE_WOOD:256 {meta3}"));
+        List<ItemStack> actual = ItemStackUtil.createItemList(Arrays.asList("NETHER_BRICK_FENCE:2[meta2]", "JUNGLE_WOOD:256 [meta3]"));
         List<ItemStack> expected = Arrays.asList(
-                NBTUtil.setNBTTag(new ItemStack(Material.NETHER_BRICK_FENCE, 2), "{meta2}"),
-                NBTUtil.setNBTTag(new ItemStack(Material.JUNGLE_WOOD, 256), "{meta3}") // Jungle Wood Planks
+                NBTUtil.setNBTTag(new ItemStack(Material.NETHER_BRICK_FENCE, 2), "[meta2]"),
+                NBTUtil.setNBTTag(new ItemStack(Material.JUNGLE_WOOD, 256), "[meta3]") // Jungle Wood Planks
         );
         assertThat(actual, is(expected));
         assertThat(actual.get(1).getAmount(), is(256));
-        assertThat(NBTUtil.getNBTTag(actual.get(0)), is("{meta2}"));
+        assertThat(NBTUtil.getNBTTag(actual.get(0)), is("[meta2]"));
     }
 
     @Test
@@ -213,19 +213,19 @@ public class ItemStackUtilTest extends BukkitServerMock {
     @Test
     public void createItemStackWithMetaNBTTag() throws Exception {
         useMetaData = true;
-        ItemStack actual = ItemStackUtil.createItemStack("STONE {display:{Name:\"Hi mom\"}}", "&lMy Title", "Hello &4World");
+        ItemStack actual = ItemStackUtil.createItemStack("STONE [minecraft:custom_name=\"Hi mom\"]", "&lMy Title", "Hello &4World");
         ItemStack expected = new ItemStack(Material.STONE, 1);
         ItemMeta itemMeta = expected.getItemMeta();
         itemMeta.setDisplayName("\u00a7lMy Title");
         itemMeta.setLore(Arrays.asList("Hello \u00a74World"));
         expected.setItemMeta(itemMeta);
-        expected = NBTUtil.setNBTTag(expected, "{display:{Name:\"Hi mom\"}}");
+        expected = NBTUtil.setNBTTag(expected, "[minecraft:custom_name=\"Hi mom\"]");
 
         assertThat(actual.getItemMeta(), notNullValue());
         verify(actual.getItemMeta()).setDisplayName("\u00a7lMy Title");
         assertThat(actual, is(expected));
         // Also verify the string, just to be extra sure
-        assertThat(actual.toString(), is("ItemStack{STONE x 1, {displayName=\u00a7lMy Title, lore=[Hello \u00a74World], nbt={display:{Name:\"Hi mom\"}}}}"));
+        assertThat(actual.toString(), is("ItemStack{STONE x 1, {displayName=\u00a7lMy Title, lore=[Hello \u00a74World], nbt=[minecraft:custom_name=\"Hi mom\"]}}"));
     }
 
     @Test

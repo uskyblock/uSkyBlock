@@ -23,36 +23,6 @@ public class ReflectionUtil {
     private static final Logger log = Logger.getLogger(ReflectionUtil.class.getName());
 
     /**
-     * Returns the current version of the Bukkit implementation
-     *
-     * @return the current version of the Bukkit implementation
-     * @since 1.8
-     */
-    public static String getCraftBukkitVersion() {
-        return cb().split("\\.")[3];
-    }
-
-    /**
-     * Returns the current version of the net.minecraft.server implementation
-     *
-     * @param nmsObject A native object from nms namespace
-     * @return the current version of the net.minecraft.server implementation
-     * @since 1.8
-     */
-    public static String getNMSVersion(Object nmsObject) {
-        return nmsObject != null ? nmsObject.getClass().getPackage().getName().split("\\.")[3] : "";
-    }
-
-    /**
-     * Returns the NMS version.
-     * @return the NMS version (i.e. "v1_10").
-     * @since 1.9
-     */
-    public static String getNMSVersion() {
-        return nms().split("\\.")[3];
-    }
-
-    /**
      * Returns the real packagename for the net.minecraft.server.
      * @return the real packagename for the net.minecraft.server.
      * @since 1.9
@@ -330,7 +300,6 @@ public class ReflectionUtil {
     public static List<String> dumpMethods(Class aClass) {
         List<Method> methods = Arrays.asList(aClass.getDeclaredMethods());
         List<String> methodDescriptions = new ArrayList<>();
-        String version = getNMSVersion();
         for (Method m : methods) {
             List<String> parms = Arrays.asList(m.getParameterTypes()).stream().map(f -> f.getName()).collect(Collectors.toList());
             String parmString = Arrays.toString(parms.toArray(new String[0]));
@@ -340,15 +309,15 @@ public class ReflectionUtil {
                     + m.getReturnType() + " " + m.getName()
                     + "(" + parmString + ")";
             description = description
-                    .replaceAll("class net.minecraft.server." + version + ".", "")
-                    .replaceAll("net.minecraft.server." + version + ".", "")
+                    .replaceAll("class net.minecraft.server.", "")
+                    .replaceAll("net.minecraft.server.", "")
                     .replaceAll("java.lang.", "");
             methodDescriptions.add(description);
         }
         List<String> list = new ArrayList<String>();
 
-        list.add(aClass.toString().replaceAll("class net.minecraft.server." + version + ".", "")
-                .replaceAll("net.minecraft.server." + version + ".", "")
+        list.add(aClass.toString().replaceAll("class net.minecraft.server.", "")
+                .replaceAll("net.minecraft.server.", "")
                 .replaceAll("java.lang.", "") + ":");
         list.addAll(methodDescriptions.stream().sorted(String::compareTo).collect(Collectors.toList()));
         return list;

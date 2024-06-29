@@ -26,8 +26,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public enum ItemStackUtil {
     ;
-    private static final Pattern ITEM_AMOUNT_PATTERN = Pattern.compile("(\\{p=(?<prob>0\\.[0-9]+)\\})?(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?:(?<amount>[0-9]+)\\s*(?<meta>\\{.*\\})?");
-    private static final Pattern ITEM_PATTERN = Pattern.compile("(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?\\s*(?<meta>\\{.*\\})?");
+    private static final Pattern ITEM_AMOUNT_PATTERN = Pattern.compile("(\\{p=(?<prob>0\\.[0-9]+)\\})?(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?:(?<amount>[0-9]+)\\s*(?<meta>\\[.*\\])?");
+    private static final Pattern ITEM_PATTERN = Pattern.compile("(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?\\s*(?<meta>\\[.*\\])?");
 
     public static List<ItemProbability> createItemsWithProbabilty(List<String> items) {
         List<ItemProbability> itemProbs = new ArrayList<>();
@@ -281,11 +281,11 @@ public enum ItemStackUtil {
         }
 
         public Builder select() {
-            return enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1).add(ItemFlag.HIDE_ENCHANTS);
+            return enchant(Enchantment.PROTECTION, 1).add(ItemFlag.HIDE_ENCHANTS);
         }
 
         public Builder deselect() {
-            return remove(Enchantment.PROTECTION_ENVIRONMENTAL).remove(ItemFlag.HIDE_ENCHANTS);
+            return remove(Enchantment.PROTECTION).remove(ItemFlag.HIDE_ENCHANTS);
         }
 
         public Builder add(ItemFlag... flags) {

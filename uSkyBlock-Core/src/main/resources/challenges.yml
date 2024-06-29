@@ -566,7 +566,7 @@ ranks:
           text: 1 ghast tear, 1 magic bow
           items:
           - GHAST_TEAR:1
-          - 'BOW:1 {Enchantments:[{id:"minecraft:infinity",lvl:1},{id:"minecraft:unbreaking",lvl:3}]}'
+          - BOW:1 [minecraft:enchantments={levels:{"minecraft:infinity":1,"minecraft:unbreaking":3}}]
           currency: 40
           xp: 40
         repeatReward:
@@ -714,7 +714,7 @@ ranks:
         displayItem: COD
         lockedDisplayItem: PURPLE_STAINED_GLASS_PANE
         reward:
-          text: 10 lapis blocks, 20 prismarine, kelp, deep-ocean
+          text: 10 lapis blocks, 20 prismarine, kelp, deep-ocean biome
           items:
           - LAPIS_BLOCK:10
           - PRISMARINE:20
@@ -758,7 +758,7 @@ ranks:
         - RED_WOOL:2;+4
         - BLACK_WOOL:2;+4
         reward:
-          text: 2 diamonds, sheep, emerald, flowers
+          text: 2 diamonds, sheep, emerald, flowers, flower-forest biome
           items:
           - DIAMOND:2
           - EMERALD:1
@@ -894,7 +894,7 @@ ranks:
         - RED_STAINED_GLASS:8;+2
         - BLACK_STAINED_GLASS:8;+2
         reward:
-          text: 2 diamonds, 2 disks, 1 emeralds
+          text: 2 diamonds, 2 disks, 1 emeralds, flower-forest biome
           items:
           - DIAMOND:2
           - MUSIC_DISC_WARD:1
@@ -996,7 +996,7 @@ ranks:
         displayItem: HEART_OF_THE_SEA
         lockedDisplayItem: PURPLE_STAINED_GLASS_PANE
         reward:
-          text: heart-of-the-sea, nautilus shell and a turtle
+          text: heart-of-the-sea, nautilus shell, a turtle egg, deep-ocean biome
           items:
           - NAUTILUS_SHELL:1
           - HEART_OF_THE_SEA:1
@@ -1051,7 +1051,7 @@ ranks:
         displayItem: SLIME_BALL
         lockedDisplayItem: PURPLE_STAINED_GLASS_PANE
         reward:
-          text: 1 diamond, 1 emeralds, swampland
+          text: 1 diamond, 1 emeralds, swamp biome
           items:
           - DIAMOND:1
           - EMERALD:1
@@ -1318,7 +1318,7 @@ ranks:
           items:
           - END_PORTAL_FRAME:3
           - DIAMOND:3
-          - BOW:1 {Enchantments:[{id:"minecraft:infinity",lvl:1},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:power",lvl:5}]}
+          - BOW:1 [minecraft:enchantments={levels:{"minecraft:infinity":1,"minecraft:power":5,"minecraft:unbreaking":3}}]
           currency: 1000
           xp: 500
       poseidonshalls:
@@ -1379,7 +1379,7 @@ ranks:
         reward:
           items:
           - END_PORTAL_FRAME:3
-          - DIAMOND_SWORD:1 {Enchantments:[{id:"minecraft:sharpness",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:fire",lvl:1}]}
+          - DIAMOND_SWORD:1 [minecraft:enchantments={levels:{"minecraft:fire_aspect":1,"minecraft:sharpness":5,"minecraft:unbreaking":3}}]
           text: some end-portal-pieces and a magic diamond sword
           currency: 4000
           xp: 1000
@@ -1402,7 +1402,7 @@ ranks:
           text: 5 diamonds and some nice boots
           items:
           - DIAMOND:5
-          - DIAMOND_BOOTS:1 {Enchantments:[{id:"minecraft:feather_falling",lvl:4},{id:"minecraft:protection",lvl:4},{id:"minecraft:blast_protection",lvl:4}]}
+          - DIAMOND_BOOTS:1 [minecraft:enchantments={levels:{"minecraft:blast_protection":4,"minecraft:feather_falling":4,"minecraft:protection":4}}]
           currency: 4000
           xp: 1000
 

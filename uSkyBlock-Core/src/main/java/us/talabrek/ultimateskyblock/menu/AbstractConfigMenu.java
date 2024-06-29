@@ -10,7 +10,6 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -19,7 +18,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * Created by R4zorax on 03/10/2015.
  */
 public class AbstractConfigMenu {
-    private static final Pattern UUID_PATTERN = Pattern.compile("^.*Id:\\\"(?<uuid>[^\\\"]+)\\\".*");
+    private static final Pattern UUID_PATTERN = Pattern.compile("^.*id:\\\"(?<uuid>[^\\\"]+)\\\".*");
     private YmlConfiguration menuConfig;
 
     public AbstractConfigMenu(YmlConfiguration menuConfig) {
@@ -78,15 +77,11 @@ public class AbstractConfigMenu {
         if (item == null) {
             return null;
         }
-        Matcher m = UUID_PATTERN.matcher(item);
-        if (m.matches()) {
-            ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
-            Bukkit.getUnsafe().modifyItemStack(itemStack, item);
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(tr(itemMeta.getDisplayName()));
-            itemStack.setItemMeta(itemMeta);
-            return itemStack;
-        }
-        return null;
+        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, 1);
+        Bukkit.getUnsafe().modifyItemStack(itemStack, Material.PLAYER_HEAD.getKey() + item);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(tr(itemMeta.getDisplayName()));
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }
