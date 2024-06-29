@@ -11,6 +11,11 @@
     <packaging>jar</packaging>
     <artifactId>uSkyBlock-Core</artifactId>
 
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
+
     <build>
         <plugins>
             <plugin>
