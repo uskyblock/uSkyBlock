@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,6 +51,8 @@ public class ChallengeFactory {
         Challenge.Type type = Challenge.Type.from(section.getString("type", "onPlayer"));
         List<ItemRequirement> requiredItems = section.getStringList("requiredItems").stream()
             .map(ItemStackUtil::createItemRequirement).toList();
+        List<BlockRequirement> requiredBlocks = section.getStringList("requiredBlocks").stream()
+            .map(ItemStackUtil::createBlockRequirement).toList();
         List<EntityMatch> requiredEntities = createEntities(section.getStringList("requiredEntities"));
         int resetInHours = section.getInt("resetInHours", rank.getResetInHours());
         String description = section.getString("description");
@@ -68,8 +71,8 @@ public class ChallengeFactory {
         int offset = section.getInt("offset", 0);
         int repeatLimit = section.getInt("repeatLimit", 0);
         return new Challenge(name, displayName, description, type,
-            requiredItems, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d), rank,
-            resetInHours, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
+            requiredItems, requiredBlocks, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d),
+            rank, resetInHours, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
             radius, reward, repeatReward, repeatLimit);
     }
 

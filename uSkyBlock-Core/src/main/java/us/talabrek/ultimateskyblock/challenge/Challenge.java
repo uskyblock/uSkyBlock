@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
@@ -43,6 +44,7 @@ public class Challenge {
     private final String displayName;
     private final Type type;
     private final List<ItemRequirement> requiredItems;
+    private final List<BlockRequirement> requiredBlocks;
     private final List<EntityMatch> requiredEntities;
     private final List<String> requiredChallenges;
     private final double requiredLevel;
@@ -59,13 +61,15 @@ public class Challenge {
     private final int repeatLimit;
 
     public Challenge(String name, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
-                     List<EntityMatch> requiredEntities, List<String> requiredChallenges, double requiredLevel, Rank rank,
+                     @NotNull List<BlockRequirement> requiredBlocks, List<EntityMatch> requiredEntities,
+                     List<String> requiredChallenges, double requiredLevel, Rank rank,
                      int resetInHours, ItemStack displayItem, String tool, ItemStack lockedItem, int offset,
                      boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
         this.name = name;
         this.displayName = displayName;
         this.type = type;
         this.requiredItems = requiredItems;
+        this.requiredBlocks = requiredBlocks;
         this.requiredEntities = requiredEntities;
         this.requiredChallenges = requiredChallenges;
         this.requiredLevel = requiredLevel;
@@ -117,6 +121,11 @@ public class Challenge {
             item -> item.type().clone(),
             item -> item.amountForRepetitions(timesCompleted)
         ));
+    }
+
+    @NotNull
+    public List<BlockRequirement> getRequiredBlocks() {
+        return requiredBlocks;
     }
 
     public List<EntityMatch> getRequiredEntities() {
@@ -176,7 +185,8 @@ public class Challenge {
             reward = getRepeatReward();
         }
         Map<ItemStack, Integer> requiredItemsForChallenge = getRequiredItems(timesCompleted);
-        if (!requiredItemsForChallenge.isEmpty() || requiredEntities != null && !requiredEntities.isEmpty()) {
+        if (!requiredItemsForChallenge.isEmpty() || !requiredBlocks.isEmpty()
+            || (requiredEntities != null && !requiredEntities.isEmpty())) {
             lores.add(tr("\u00a7eThis challenge requires:"));
         }
         List<String> details = new ArrayList<>();
@@ -191,6 +201,17 @@ public class Challenge {
                 details.add(requiredAmount > 1
                     ? tr("\u00a7f{0}x \u00a77{1}", requiredAmount, ItemStackUtil.getItemName(requiredType))
                     : tr("\u00a77{0}", ItemStackUtil.getItemName(requiredType)));
+            }
+        }
+        if (!requiredBlocks.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
+            for (BlockRequirement blockRequirement : requiredBlocks) {
+                if (wrappedDetails(details).size() >= MAX_DETAILS) {
+                    details.add(tr("\u00a77and more..."));
+                    break;
+                }
+                details.add(blockRequirement.amount() > 1
+                    ? tr("\u00a7f{0}x \u00a77{1}", blockRequirement.amount(), ItemStackUtil.getBlockName(blockRequirement.type()))
+                    : tr("\u00a77{0}", ItemStackUtil.getBlockName(blockRequirement.type())));
             }
         }
         if (requiredEntities != null && !requiredEntities.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {

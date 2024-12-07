@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Bukkit;
@@ -201,7 +202,7 @@ public class ChallengeLogic implements Listener {
         return false;
     }
 
-    private boolean islandContains(Player player, Map<ItemStack, Integer> itemStacks, int radius) {
+    private boolean islandContains(Player player, List<BlockRequirement> itemStacks, int radius) {
         final Location l = player.getLocation();
         final int px = l.getBlockX();
         final int py = l.getBlockY();
@@ -234,9 +235,9 @@ public class ChallengeLogic implements Listener {
      */
     private boolean tryCompleteOnIsland(Player player, String challengeName) {
         Challenge challenge = getChallenge(challengeName);
-        Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(0);
+        List<BlockRequirement> requiredBlocks = challenge.getRequiredBlocks();
         int radius = challenge.getRadius();
-        if (islandContains(player, requiredItems, radius) && hasEntitiesNear(player, challenge.getRequiredEntities(), radius)) {
+        if (islandContains(player, requiredBlocks, radius) && hasEntitiesNear(player, challenge.getRequiredEntities(), radius)) {
             giveReward(player, challenge);
             return true;
         }
