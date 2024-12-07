@@ -21,10 +21,6 @@ $HOME/work/uSkyBlock/uSkyBlock/uSkyBlock-APIv2/target/mvn-repo/ \
 travis@travis.internetpolice.eu:WWW-USB/maven/uskyblock/
 
 rsync -r --quiet -e "ssh -p 2222 -o StrictHostKeyChecking=no" \
-$HOME/work/uSkyBlock/uSkyBlock/uSkyBlock-AWE370/target/mvn-repo/ \
-travis@travis.internetpolice.eu:WWW-USB/maven/uskyblock/
-
-rsync -r --quiet -e "ssh -p 2222 -o StrictHostKeyChecking=no" \
 $HOME/work/uSkyBlock/uSkyBlock/uSkyBlock-Core/target/mvn-repo/ \
 travis@travis.internetpolice.eu:WWW-USB/maven/uskyblock/
 
