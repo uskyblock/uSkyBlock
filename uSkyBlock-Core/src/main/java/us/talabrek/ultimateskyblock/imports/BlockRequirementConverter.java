@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static us.talabrek.ultimateskyblock.util.FileUtil.generateTimestamp;
+
 public class BlockRequirementConverter {
 
     private static final int NEW_CHALLENGES_VERSION = 108;
@@ -31,7 +33,7 @@ public class BlockRequirementConverter {
     public void importFile(File file) {
         Path configFile = file.toPath();
         try {
-            Files.copy(configFile, configFile.getParent().resolve(configFile.getFileName() + ".old"));
+            Files.copy(configFile, configFile.getParent().resolve(configFile.getFileName() + "_" + generateTimestamp() + ".old"));
 
             FileConfiguration config = new YamlConfiguration();
             config.load(file);

@@ -53,8 +53,14 @@ public class ItemComponentConverterTest {
         converter.importFile(testFile);
 
         assertTrue(testFile.exists());
-        File backup = new File(testFolder.getRoot(), fileName + ".old");
-        assertTrue(backup.isFile());
+        long backupFiles;
+        try (var stream = Files.find(testFolder.getRoot().toPath(), 1,
+            (path, attr) ->
+                path.getFileName().toString().startsWith(fileName) && path.getFileName().toString().endsWith(".old")
+        )) {
+            backupFiles = stream.count();
+        }
+        assertEquals(1, backupFiles);
 
         YamlConfiguration actual = new YamlConfiguration();
         actual.load(testFile);
