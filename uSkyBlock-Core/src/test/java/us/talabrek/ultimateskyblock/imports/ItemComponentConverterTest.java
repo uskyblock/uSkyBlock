@@ -38,6 +38,34 @@ public class ItemComponentConverterTest {
         testConfig("old-config.yml", "old-config-expected.yml", "config.yml");
     }
 
+    @Test
+    public void testDefaultChallengeConversionBlockRequirements() throws Exception {
+        testBlockConverterConfig("old-block-challenges.yml", "expected-block-challenges.yml", "challenges.yml");
+    }
+
+    private void testBlockConverterConfig(String originalName, String expectedName, String fileName) throws Exception {
+        var testFile = new File(testFolder.getRoot(), fileName);
+        try (var reader = Objects.requireNonNull(getClass().getResourceAsStream(originalName))) {
+            Files.copy(reader, testFile.toPath());
+        }
+
+        var converter = new BlockRequirementConverter(Logger.getAnonymousLogger());
+        converter.importFile(testFile);
+
+        assertTrue(testFile.exists());
+        File backup = new File(testFolder.getRoot(), fileName + ".old");
+        assertTrue(backup.isFile());
+
+        YamlConfiguration actual = new YamlConfiguration();
+        actual.load(testFile);
+        YamlConfiguration expected = new YamlConfiguration();
+        try (var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
+            getClass().getResourceAsStream(expectedName)), StandardCharsets.UTF_8))) {
+            expected.load(reader);
+        }
+        assertConfigsEquals(expected, actual);
+    }
+
     private void testConfig(String originalName, String expectedName, String fileName) throws Exception {
         var testFile = new File(testFolder.getRoot(), fileName);
         try (var reader = Objects.requireNonNull(getClass().getResourceAsStream(originalName))) {

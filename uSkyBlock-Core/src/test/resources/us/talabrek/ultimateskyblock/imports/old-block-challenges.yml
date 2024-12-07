@@ -65,14 +65,10 @@
 #        ## type: onIsland
 #        # [integer] Overrides the default radius of 10 blocks when using onIsland.
 #        ## radius: 20
-#        # List[item-requirement] The items required to complete the challenge.
+#        # [List[item-requirement] The items required to complete the challenge.
 #        requiredItems:
 #        - stone:64;+16
 #        - cobblestone:64;+16
-#        # List[block-requirement] The blocks required to complete the challenge.
-#        requiredBlocks:
-#        - stone:64
-#        - cobblestone:64
 #        # [true/false] If the challenge can be repeated or not.
 #        ## repeatable: true
 #        # [integer] The maximum number of times the challenge can be completed. Overrides the default repeatLimit.
@@ -256,7 +252,7 @@ ranks:
         type: onIsland
         displayItem: sugar_cane
         lockedDisplayItem: brown_stained_glass_pane
-        requiredBlocks:
+        requiredItems:
           - sugar_cane:4
         reward:
           text: 4 dirt
@@ -636,7 +632,7 @@ ranks:
         type: onIsland
         requiredChallenges:
           - stonebrickmaker
-        requiredBlocks:
+        requiredItems:
           - red_bed:1
           - crafting_table:1
           - glass:1
@@ -662,7 +658,7 @@ ranks:
         requiredChallenges:
           - adeptbuilder
           - homeowner
-        requiredBlocks:
+        requiredItems:
           - obsidian:10
           - nether_portal:1
         displayItem: obsidian
@@ -949,7 +945,7 @@ ranks:
         requiredChallenges:
           - monsterfarm
           - applecollector
-        requiredBlocks:
+        requiredItems:
           - oak_door:30
         requiredEntities:
           - Villager:10
@@ -966,7 +962,7 @@ ranks:
         description: Build a netherfortress.
         type: onIsland
         radius: 50
-        requiredBlocks:
+        requiredItems:
           - nether_bricks:512
           - nether_brick_slab:64
           - nether_brick_fence:64
@@ -1412,7 +1408,7 @@ ranks:
         lockedDisplayItem: blue_stained_glass_pane
         requiredChallenges:
           - nethermining
-        requiredBlocks:
+        requiredItems:
           - quartz_block:512
           - chiseled_quartz_block:64
           - quartz_pillar:128
@@ -1432,7 +1428,7 @@ ranks:
         radius: 30
         displayItem: sandstone
         lockedDisplayItem: blue_stained_glass_pane
-        requiredBlocks:
+        requiredItems:
           - sandstone:512
           - chiseled_sandstone:64
           - smooth_sandstone:128
@@ -1456,7 +1452,7 @@ ranks:
         lockedDisplayItem: blue_stained_glass_pane
         requiredChallenges:
           - deepseafisherman
-        requiredBlocks:
+        requiredItems:
           - prismarine:512
           - prismarine_bricks:128
           - dark_prismarine:64
@@ -1496,7 +1492,7 @@ ranks:
           - ironfarm
           - maestro
           - witherhunter
-        requiredBlocks:
+        requiredItems:
           - beacon:1
           - diamond_block:1
           - emerald_block:8
@@ -1521,7 +1517,7 @@ ranks:
           - tajmahal
           - poseidonshalls
           - greatpyramid
-        requiredBlocks:
+        requiredItems:
           - end_portal_frame:12
           - end_portal:9
         reward:
