@@ -65,10 +65,14 @@
 #        ## type: onIsland
 #        # [integer] Overrides the default radius of 10 blocks when using onIsland.
 #        ## radius: 20
-#        # [List[item-requirement] The items required to complete the challenge.
+#        # List[item-requirement] The items required to complete the challenge.
 #        requiredItems:
 #        - stone:64;+16
 #        - cobblestone:64;+16
+#        # List[block-requirement] The blocks required to complete the challenge.
+#        requiredBlocks:
+#        - stone:64
+#        - cobblestone:64
 #        # [true/false] If the challenge can be repeated or not.
 #        ## repeatable: true
 #        # [integer] The maximum number of times the challenge can be completed. Overrides the default repeatLimit.
