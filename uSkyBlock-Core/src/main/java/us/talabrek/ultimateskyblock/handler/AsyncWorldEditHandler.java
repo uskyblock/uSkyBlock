@@ -56,7 +56,6 @@ public enum AsyncWorldEditHandler {;
             }
             //Plugin fawe = getFAWE();
             Plugin fawe = null; // Disabled b/c 1.18.1 releases
-            Plugin awe = getAWE();
             String className;
             if (fawe != null) {
                 VersionUtil.Version version = VersionUtil.getVersion(fawe.getDescription().getVersion());
@@ -67,15 +66,6 @@ public enum AsyncWorldEditHandler {;
                 } catch (Exception ex) {
                     log(Level.WARNING, "Unable to locate FAWE adaptor for version " + version + ": " + ex);
                     adaptor = NULL_ADAPTOR;
-                }
-            } else if (awe != null) {
-                VersionUtil.Version version = VersionUtil.getVersion(awe.getDescription().getVersion());
-                className = "us.talabrek.ultimateskyblock.handler.asyncworldedit.AWE370Adaptor";
-                try {
-                    adaptor = (AWEAdaptor) Class.forName(className).getDeclaredConstructor().newInstance();
-                    log(Level.INFO, "Hooked into AWE version " + version);
-                } catch (Exception ex) {
-                    log(Level.WARNING, "Unable to locale AWE adaptor for version " + version, ex);
                 }
             } else {
                 adaptor = NULL_ADAPTOR;
@@ -90,10 +80,6 @@ public enum AsyncWorldEditHandler {;
 
     public static Plugin getFAWE() {
         return Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    }
-
-    public static Plugin getAWE() {
-        return Bukkit.getPluginManager().getPlugin("AsyncWorldEdit");
     }
 
     public static final AWEAdaptor NULL_ADAPTOR = new AWEAdaptor() {
