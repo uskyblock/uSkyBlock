@@ -9,7 +9,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static us.talabrek.ultimateskyblock.util.FileUtil.generateTimestamp;
@@ -90,5 +91,7 @@ public class BlockRequirementConverter {
             logger.warning("Failed to load default challenges.yml file - unable to update the config header.");
         }
         config.options().setHeader(defaultConfig.options().getHeader());
+
+        config.set("version", NEW_CHALLENGES_VERSION);
     }
 }
