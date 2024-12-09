@@ -1,11 +1,12 @@
 package us.talabrek.ultimateskyblock.block;
 
+import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -17,7 +18,7 @@ public class BlockCollection {
         this.blockCount = new HashMap<>();
     }
 
-    public synchronized void add(Block block) {
+    public void add(Block block) {
         int currentValue = blockCount.getOrDefault(block.getType(), 0);
         blockCount.put(block.getType(), currentValue + 1);
     }
@@ -25,12 +26,12 @@ public class BlockCollection {
     /**
      * Returns <code>null</code> if all the items are in the BlockCollection, a String describing the missing items if it's not
      */
-    public synchronized String diff(Map<ItemStack, Integer> itemStacks) {
+    public String diff(List<BlockRequirement> requirements) {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<ItemStack, Integer> item : itemStacks.entrySet()) {
-            int diff = item.getValue() - count(item.getKey().getType());
+        for (BlockRequirement requirement : requirements) {
+            int diff = requirement.amount() - count(requirement.type().getMaterial());
             if (diff > 0) {
-                sb.append(tr(" \u00a7f{0}x \u00a77{1}", diff, ItemStackUtil.getItemName(item.getKey())));
+                sb.append(tr(" \u00a7f{0}x \u00a77{1}", diff, ItemStackUtil.getBlockName(requirement.type())));
             }
         }
         if (sb.toString().trim().isEmpty()) {

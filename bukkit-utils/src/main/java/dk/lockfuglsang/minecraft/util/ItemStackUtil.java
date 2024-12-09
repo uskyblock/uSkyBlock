@@ -2,6 +2,7 @@ package dk.lockfuglsang.minecraft.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +31,27 @@ public enum ItemStackUtil {
     private static final Pattern ITEM_REQUIREMENT_PATTERN = Pattern.compile(
         "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)(;(?<op>[-+*^/])(?<inc>\\d+(.\\d+)?))?"
     );
+    private static final Pattern BLOCK_REQUIREMENT_PATTERN = Pattern.compile(
+        "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
+    );
+
+    @NotNull
+    public static BlockRequirement createBlockRequirement(@NotNull String specification) {
+        Matcher matcher = BLOCK_REQUIREMENT_PATTERN.matcher(specification);
+        if (matcher.matches()) {
+            BlockData itemStack = getBlockType(matcher);
+            int amount = Integer.parseInt(matcher.group("amount"));
+            return new BlockRequirement(itemStack, amount);
+        } else {
+            throw new IllegalArgumentException("Invalid item requirement: '" + specification + "'");
+        }
+    }
+
+    @NotNull
+    private static BlockData getBlockType(@NotNull Matcher matcher) {
+        String type = matcher.group("type");
+        return Bukkit.createBlockData(type.toLowerCase(Locale.ROOT));
+    }
 
     @NotNull
     public static ItemRequirement createItemRequirement(@NotNull String specification) {
@@ -69,22 +91,7 @@ public enum ItemStackUtil {
     @NotNull
     private static ItemStack getItemType(@NotNull Matcher matcher) {
         String type = matcher.group("type");
-        ItemStack result;
-        try {
-            result = Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            // There are some items that are not supported by the /give command and therefore not by the Bukkit API,
-            // for example minecraft:nether_portal. These should never be used as item requirements/rewards, but the
-            // item requirements section is also (miss-) used for block requirements. Therefore, we need to handle
-            // these cases. Ideally we should have a separate class for block requirements.
-            Material material = Material.matchMaterial(type);
-            if (material != null) {
-                result = new ItemStack(material);
-            } else {
-                throw e;
-            }
-        }
-        return result;
+        return Bukkit.getItemFactory().createItemStack(type.toLowerCase(Locale.ROOT));
     }
 
     // used for parsing challenge rewards and starter chest items
@@ -200,6 +207,11 @@ public enum ItemStackUtil {
             return stack.getItemMeta().getDisplayName();
         }
         return tr(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
+    }
+
+    @NotNull
+    public static String getBlockName(@NotNull BlockData block) {
+        return tr(FormatUtil.camelcase(block.getMaterial().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
     @Contract(pure = true)

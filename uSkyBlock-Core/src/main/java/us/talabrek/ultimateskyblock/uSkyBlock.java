@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -65,6 +64,7 @@ import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
@@ -210,6 +210,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         converter.checkAndDoImport(getDataFolder());
     }
 
+    private void convertConfigToBlockRequirements() {
+        var converter = new BlockRequirementConverter(getLogger());
+        converter.checkAndDoImport(getDataFolder());
+    }
+
     @Override
     public void onEnable() {
         WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
@@ -219,6 +224,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         // Converter has to run before the plugin loads its config files.
         convertConfigItemsTo1_20_6IfRequired();
+        convertConfigToBlockRequirements();
 
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());

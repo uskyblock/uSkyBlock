@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Common file-utilities.
@@ -25,7 +27,7 @@ public enum FileUtil {;
 
     public static String getExtension(String fileName) {
         if (fileName != null && !fileName.isEmpty()) {
-            return fileName.substring(getBasename(fileName).length()+1);
+            return fileName.substring(getBasename(fileName).length() + 1);
         }
         return "";
     }
@@ -35,5 +37,11 @@ public enum FileUtil {;
             throw new IOException("Invalid resource for " + file);
         }
         Files.copy(stream, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static String generateTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        LocalDateTime now = LocalDateTime.now();
+        return now.format(formatter);
     }
 }
