@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
+import us.talabrek.ultimateskyblock.api.model.IslandScore;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -65,7 +66,7 @@ public class InfoCommand extends RequireIslandCommand {
             return false;
         }
         final PlayerInfo playerInfo = islandPlayer.equals(player.getName()) ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(islandPlayer);
-        final Callback<us.talabrek.ultimateskyblock.api.model.IslandScore> showInfo = new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
+        final Callback<IslandScore> showInfo = new Callback<>() {
             @Override
             public void run() {
                 if (player.isOnline()) {
@@ -82,8 +83,8 @@ public class InfoCommand extends RequireIslandCommand {
                         player.sendMessage(tr("Score Count Block"));
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {
                             player.sendMessage(score.getState().getColor() + tr("{0,number,00.00}  {1,number,#} {2}",
-                                    score.getScore(), score.getCount(),
-                                    ItemStackUtil.getItemName(score.getBlock())));
+                                score.getScore(), score.getCount(),
+                                ItemStackUtil.getBlockName(score.getBlockData())));
                         }
                         player.sendMessage(tr("\u00a7aIsland level is {0,number,###.##}", getState().getScore()));
                     }
@@ -101,6 +102,4 @@ public class InfoCommand extends RequireIslandCommand {
         }, 1L);
         return true;
     }
-
-
 }

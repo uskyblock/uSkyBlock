@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.api.model;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -14,8 +16,25 @@ public interface BlockScore {
      *
      * @return The type of block.
      * @since v2.1.2
+     * @deprecated Converting a BlockData to an ItemStack is not supported in Minecraft. Use #getBlockData() instead.
      */
-    ItemStack getBlock();
+    @Deprecated(since = "v3.1.0")
+    default ItemStack getBlock() {
+        Material material = getBlockData().getMaterial();
+        if (material.isItem()) {
+            return new ItemStack(material);
+        } else {
+            throw new UnsupportedOperationException("BlockData is not an item. Use getBlockData() instead.");
+        }
+    }
+
+    /**
+     * The type of block.
+     *
+     * @return The type of block.
+     * @since v3.1.0
+     */
+    BlockData getBlockData();
 
     /**
      * The number of blocks of this type found on the island.
