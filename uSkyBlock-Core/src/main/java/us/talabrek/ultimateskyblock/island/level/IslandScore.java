@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.island.level;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class IslandScore implements us.talabrek.ultimateskyblock.api.model.Islan
         if (score.getState().ordinal() > existing.getState().ordinal()) {
             state = existing.getState();
         }
-        return new BlockScoreImpl(existing.getBlock(),
+        return new BlockScoreImpl(existing.getBlockData(),
                 score.getCount() + existing.getCount(),
                 score.getScore() + existing.getScore(), state, score.getName());
     }
@@ -70,7 +69,7 @@ public class IslandScore implements us.talabrek.ultimateskyblock.api.model.Islan
             throw new IllegalArgumentException("Offset must be a non-negative integer.");
         }
         if (!isSorted) {
-            Collections.sort(top, new BlockScoreComparator());
+            top.sort(new BlockScoreComparator());
             isSorted = true;
         }
         return top.subList(offset, Math.min(offset+num, top.size()));

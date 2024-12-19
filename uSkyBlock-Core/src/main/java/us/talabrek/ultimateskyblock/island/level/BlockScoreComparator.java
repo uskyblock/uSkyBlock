@@ -16,7 +16,7 @@ public class BlockScoreComparator implements Comparator<BlockScore> {
             cmp = o2.getCount() - o1.getCount();
         }
         if (cmp == 0) {
-            cmp = ItemStackUtil.getItemName(o2.getBlock()).compareTo(ItemStackUtil.getItemName(o1.getBlock()));
+            cmp = ItemStackUtil.getBlockName(o2.getBlockData()).compareTo(ItemStackUtil.getBlockName(o1.getBlockData()));
         }
         return cmp;
     }
