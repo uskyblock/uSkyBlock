@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Holds the identification of a unit to be matched against a block
@@ -15,10 +14,6 @@ public class BlockMatch implements Comparable<BlockMatch> {
 
     public Material getType() {
         return type;
-    }
-
-    public ItemStack asItemStack() {
-        return new ItemStack(type, 1);
     }
 
     public boolean matches(Material material) {
