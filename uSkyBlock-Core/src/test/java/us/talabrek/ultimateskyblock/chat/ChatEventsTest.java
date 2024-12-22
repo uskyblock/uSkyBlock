@@ -33,7 +33,7 @@ public class ChatEventsTest {
         when(fakeScheduler.runTask(any(Plugin.class), any(Runnable.class))).thenReturn(mock(BukkitTask.class));
         when(fakeServer.getScheduler()).thenReturn(fakeScheduler);
 
-        fakeLogic = spy(mock(ChatLogic.class));
+        fakeLogic = mock(ChatLogic.class);
         doNothing().when(fakeLogic).sendMessage(any(), any(), any());
 
         listener = new ChatEvents(fakeLogic, fakePlugin);
