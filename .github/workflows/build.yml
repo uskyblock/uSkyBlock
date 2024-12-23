@@ -22,10 +22,10 @@ jobs:
         run: |
           cd uSkyBlock-Core/src/main/po && perl en2pirate.pl && cd -
           cd uSkyBlock-Core/src/main/po && perl en2kitteh.pl && cd -
-      - name: JDK 17
+      - name: JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: Install gettext
         run: sudo apt-get install -y gettext

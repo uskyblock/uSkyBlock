@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class CompositeCommandTest {
-    private static UUID ownerUUID = UUID.randomUUID();
-    private static UUID adminUUID = UUID.randomUUID();
-    private static UUID modUUID = UUID.randomUUID();
+    private static final UUID ownerUUID = UUID.randomUUID();
+    private static final UUID adminUUID = UUID.randomUUID();
+    private static final UUID modUUID = UUID.randomUUID();
     private static BaseCommandExecutor executor;
 
     @BeforeClass
@@ -89,7 +89,7 @@ public class CompositeCommandTest {
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
         verify(player).sendMessage("executed admin");
-        assertThat(messages, Matchers.contains(new String[]{"executed admin", "§eYou do not have access (§4perm.sub§e)"}));
+        assertThat(messages, Matchers.contains("executed admin", "§eYou do not have access (§4perm.sub§e)"));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class CompositeCommandTest {
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
         verify(player).sendMessage("executed admin");
-        assertThat(messages, Matchers.contains(new String[]{"executed admin", "from sub"}));
+        assertThat(messages, Matchers.contains("executed admin", "from sub"));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
-        assertThat(messages, Matchers.contains(new String[]{"executed admin", "from sub"}));
+        assertThat(messages, Matchers.contains("executed admin", "from sub"));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
-        assertThat(messages, Matchers.contains(new String[]{"§eYou do not have access (§4plugin§e)"}));
+        assertThat(messages, Matchers.contains("§eYou do not have access (§4plugin§e)"));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin", "sub"});
 
-        assertThat(messages, Matchers.contains(new String[]{"executed admin", "from sub"}));
+        assertThat(messages, Matchers.contains("executed admin", "from sub"));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin", "sub2"});
 
-        assertThat(messages, Matchers.contains(new String[]{"executed admin", "from sub2"}));
+        assertThat(messages, Matchers.contains("executed admin", "from sub2"));
     }
 
     private List<String> recordMessages(Player player) {

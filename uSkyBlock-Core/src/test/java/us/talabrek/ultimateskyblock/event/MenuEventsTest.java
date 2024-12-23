@@ -29,8 +29,8 @@ public class MenuEventsTest {
     @Before
     public void setUp() {
         uSkyBlock fakePlugin = mock(uSkyBlock.class);
-        fakeConfigMenu = spy(mock(ConfigMenu.class));
-        fakeMenu = spy(mock(SkyBlockMenu.class));
+        fakeConfigMenu = mock(ConfigMenu.class);
+        fakeMenu = mock(SkyBlockMenu.class);
 
         doNothing().when(fakeConfigMenu).onClick(any(InventoryClickEvent.class));
         doNothing().when(fakeMenu).onClick(any(InventoryClickEvent.class));

@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -25,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,13 +63,10 @@ public class IslandLocatorLogicTest {
         final List<Location> locations = new ArrayList<>();
         ThreadGroup threadGroup = new ThreadGroup("My");
         for (int i = 0; i < 10; i++) {
-            Thread t = new Thread(threadGroup, new Runnable() {
-                @Override
-                public void run() {
-                    Player player = createPlayerMock();
-                    Location location = locator.getNextIslandLocation(player);
-                    locations.add(location);
-                }
+            Thread t = new Thread(threadGroup, () -> {
+                Player player = createPlayerMock();
+                Location location = locator.getNextIslandLocation(player);
+                locations.add(location);
             });
             t.start();
         }
@@ -84,12 +80,7 @@ public class IslandLocatorLogicTest {
 
     private Player createPlayerMock() {
         Player player = mock(Player.class);
-        when(player.getLocation()).then(new Answer<Location>() {
-            @Override
-            public Location answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return new Location(null, 100, 100, 100);
-            }
-        });
+        when(player.getLocation()).then((Answer<Location>) invocationOnMock -> new Location(null, 100, 100, 100));
         return player;
     }
 
