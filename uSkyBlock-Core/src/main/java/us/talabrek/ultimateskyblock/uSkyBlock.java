@@ -48,16 +48,7 @@ import us.talabrek.ultimateskyblock.command.IslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.command.island.BiomeCommand;
-import us.talabrek.ultimateskyblock.event.ExploitEvents;
-import us.talabrek.ultimateskyblock.event.GriefEvents;
-import us.talabrek.ultimateskyblock.event.InternalEvents;
-import us.talabrek.ultimateskyblock.event.ItemDropEvents;
-import us.talabrek.ultimateskyblock.event.MenuEvents;
-import us.talabrek.ultimateskyblock.event.NetherTerraFormEvents;
-import us.talabrek.ultimateskyblock.event.PlayerEvents;
-import us.talabrek.ultimateskyblock.event.SpawnEvents;
-import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
-import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
+import us.talabrek.ultimateskyblock.event.*;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -334,6 +325,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new MenuEvents(this), this);
         manager.registerEvents(new ExploitEvents(this), this);
+        manager.registerEvents(new WitherTagListener(this), this);
         if (getConfig().getBoolean("options.protection.enabled", true)) {
             manager.registerEvents(new GriefEvents(this), this);
             if (getConfig().getBoolean("options.protection.item-drops", true)) {
