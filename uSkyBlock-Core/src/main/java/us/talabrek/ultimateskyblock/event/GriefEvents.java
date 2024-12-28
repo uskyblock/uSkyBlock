@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.event;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Creature;
@@ -25,13 +26,14 @@ import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-
-import java.text.MessageFormat;
-import java.text.ParseException;
 
 /**
  * Handling of mob-related events.
@@ -171,39 +173,34 @@ public class GriefEvents implements Listener {
         }
     }
 
-    private void handleWitherRampage(Cancellable e, Wither shooter, Location targetLocation) {
-        String islandName = getOwningIsland(shooter);
+    private void handleWitherRampage(Cancellable event, Wither shooter, Location targetLocation) {
+        String withersIsland = getOwningIsland(shooter);
         String targetIsland = WorldGuardHandler.getIslandNameAt(targetLocation);
-        if (targetIsland == null || !targetIsland.equals(islandName)) {
-            e.setCancelled(true);
-            checkWitherLeash(shooter, islandName);
+        if (targetIsland == null || !targetIsland.equals(withersIsland)) {
+            event.setCancelled(true);
+            checkWitherLeash(shooter, withersIsland);
         }
     }
 
-    private void checkWitherLeash(Wither shooter, String islandName) {
+    private void checkWitherLeash(@NotNull Wither shooter, @Nullable String withersIsland) {
         String currentIsland = WorldGuardHandler.getIslandNameAt(shooter.getLocation());
-        if (currentIsland == null || !currentIsland.equals(islandName)) {
+        if (currentIsland == null || !currentIsland.equals(withersIsland)) {
             shooter.remove();
-            IslandInfo islandInfo = plugin.getIslandInfo(islandName);
+            IslandInfo islandInfo = plugin.getIslandInfo(withersIsland);
             if (islandInfo != null) {
                 islandInfo.sendMessageToOnlineMembers(I18nUtil.tr("\u00a7cWither Despawned!\u00a7e It wandered too far from your island."));
             }
         }
     }
 
-    private String getOwningIsland(Wither wither) {
-        if (wither.hasMetadata("fromIsland")) {
-            return wither.getMetadata("fromIsland").get(0).asString();
+    private @Nullable String getOwningIsland(@NotNull Wither wither) {
+        PersistentDataContainer container = wither.getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(plugin, WitherTagListener.ENTITY_ORIGIN_METADATA);
+        if (container.has(key, PersistentDataType.STRING)) {
+            return container.get(key, PersistentDataType.STRING);
+        } else {
+            return null;
         }
-        try {
-            Object[] parse = new MessageFormat(I18nUtil.marktr("{0}''s Wither")).parse(wither.getCustomName());
-            if (parse != null && parse.length == 1 && parse[0] instanceof String) {
-                return (String) parse[0];
-            }
-        } catch (ParseException e) {
-            // Ignore
-        }
-        return null;
     }
 
     @EventHandler
@@ -215,5 +212,4 @@ public class GriefEvents implements Listener {
             e.setHatching(false);
         }
     }
-
 }
