@@ -242,10 +242,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                     WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
                 }
                 registerEventsAndCommands();
-                if (!getConfig().getBoolean("importer.name2uuid.imported", false)) {
-                    Bukkit.getConsoleSender().sendMessage(tr("Converting data to UUID, this make take a while!"));
-                    getImporter().importUSB(Bukkit.getConsoleSender(), "name2uuid");
-                }
 
                 getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
                 log(Level.INFO, getVersionInfo(false));
