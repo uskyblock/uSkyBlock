@@ -325,7 +325,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new MenuEvents(this), this);
         manager.registerEvents(new ExploitEvents(this), this);
-        manager.registerEvents(new WitherTagListener(this), this);
+        manager.registerEvents(new WitherTagEvents(this), this);
         if (getConfig().getBoolean("options.protection.enabled", true)) {
             manager.registerEvents(new GriefEvents(this), this);
             if (getConfig().getBoolean("options.protection.item-drops", true)) {

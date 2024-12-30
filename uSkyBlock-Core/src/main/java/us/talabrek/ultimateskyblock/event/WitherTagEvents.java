@@ -4,22 +4,23 @@ import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-public class WitherTagListener implements Listener {
+public class WitherTagEvents implements Listener {
 
     static final String ENTITY_ORIGIN_METADATA = "from-island";
     private final uSkyBlock plugin;
 
-    public WitherTagListener(uSkyBlock plugin) {
+    public WitherTagEvents(uSkyBlock plugin) {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.BUILD_WITHER
             && event.getEntity() instanceof Wither wither) {
