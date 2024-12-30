@@ -11,7 +11,6 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 
-@SuppressWarnings("deprecation")
 public class KickCommand extends RequireIslandCommand {
     public KickCommand(uSkyBlock plugin) {
         super(plugin, "kick|remove", "usb.party.kick", "player", marktr("remove a member from your island."));

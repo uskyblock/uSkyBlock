@@ -107,26 +107,6 @@ public abstract class AbstractCommand implements Command {
         return Collections.unmodifiableMap(featurePerms);
     }
 
-    /**
-     * Convenience method until we can fully rely on everybody running JRE 8.
-     * @param args  A list of arguments
-     * @param delim Delimiter to join them
-     * @return A string containing the arguments concatenated.
-     */
-    public static String join(String[] args, String delim) {
-        String res = "";
-        if (args != null && args.length > 0) {
-            for (String arg : args) {
-                res += (res.isEmpty() ? "" : delim) + arg;
-            }
-        }
-        return res;
-    }
-
-    public static String join(String[] args) {
-        return join(args, " ");
-    }
-
     public boolean hasPermissionOverride(CommandSender sender) {
         if (sender instanceof Player) {
             return permissionOverride.contains(((Player) sender).getUniqueId()) || (parent != null && parent.hasPermissionOverride(sender));

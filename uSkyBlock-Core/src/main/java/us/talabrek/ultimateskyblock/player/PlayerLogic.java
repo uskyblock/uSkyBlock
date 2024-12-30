@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -38,31 +37,23 @@ public class PlayerLogic {
         playerDB = plugin.getPlayerDB();
         playerCache = CacheBuilder
                 .from(plugin.getConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-                .removalListener(new RemovalListener<UUID, PlayerInfo>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<UUID, PlayerInfo> removal) {
-                        log.fine("Removing player-info for " + removal.getKey() + " from cache");
-                        PlayerInfo playerInfo = removal.getValue();
-                        if (playerInfo.isDirty()) {
-                            playerInfo.saveToFile();
-                        }
+                .removalListener((RemovalListener<UUID, PlayerInfo>) removal -> {
+                    log.fine("Removing player-info for " + removal.getKey() + " from cache");
+                    PlayerInfo playerInfo = removal.getValue();
+                    if (playerInfo.isDirty()) {
+                        playerInfo.saveToFile();
                     }
                 })
-                .build(new CacheLoader<UUID, PlayerInfo>() {
+                .build(new CacheLoader<>() {
                            @Override
-                           public PlayerInfo load(UUID s) throws Exception {
+                           public @NotNull PlayerInfo load(@NotNull UUID s) {
                                log.fine("Loading player-info from " + s + " into cache!");
                                return loadPlayerData(s);
                            }
                        }
                 );
         long every = TimeUtil.secondsAsMillis(plugin.getConfig().getInt("options.advanced.player.saveEvery", 2*60));
-        saveTask = plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                saveDirtyToFiles();
-            }
-        }, every, every);
+        saveTask = plugin.async(this::saveDirtyToFiles, every, every);
         notificationManager = new NotificationManager(plugin);
     }
 
@@ -113,17 +104,13 @@ public class PlayerLogic {
                                 String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
                                 IslandInfo islandInfo = plugin.getIslandInfo(islandName);
                                 if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
-                                    onlinePlayer.sendMessage(new String[]{
-                                            tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
-                                            tr("\u00a7eSending you to spawn.")
-                                    });
+                                    onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
+                                        tr("\u00a7eSending you to spawn."));
                                     plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
                                 } else if (islandInfo != null && islandInfo.isLocked()) {
                                     if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
-                                        onlinePlayer.sendMessage(new String[]{
-                                                tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
-                                                tr("\u00a7eSending you to spawn.")
-                                        });
+                                        onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
+                                            tr("\u00a7eSending you to spawn."));
                                         plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
                                     }
                                 }
@@ -165,7 +152,7 @@ public class PlayerLogic {
     }
 
     public void removeActivePlayer(PlayerInfo pi) {
-        playerCache.invalidate(pi.getPlayerName());
+        playerCache.invalidate(pi.getPlayerId());
     }
 
     public void shutdown() {

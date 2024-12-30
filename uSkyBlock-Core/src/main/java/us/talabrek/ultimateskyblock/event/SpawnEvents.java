@@ -46,8 +46,8 @@ public class SpawnEvents implements Listener {
 
     @EventHandler
     public void onSpawnEggEvent(PlayerInteractEvent event) {
-        Player player = event != null ? event.getPlayer() : null;
-        if (player == null || event.isCancelled() || !plugin.getWorldManager().isSkyWorld(player.getWorld())) {
+        Player player = event.getPlayer();
+        if (event.useItemInHand() == Event.Result.DENY || !plugin.getWorldManager().isSkyWorld(player.getWorld())) {
             return; // Bail out, we don't care
         }
         if (player.hasPermission("usb.mod.bypassprotection") || player.isOp()) {
@@ -61,8 +61,9 @@ public class SpawnEvents implements Listener {
                 return;
             }
 
+            //noinspection deprecation
             checkLimits(event, spawnEggMeta.getSpawnedType(), player.getLocation());
-            if (event.isCancelled()) {
+            if (event.useItemInHand() == Event.Result.DENY) {
                 plugin.notifyPlayer(player, tr("\u00a7cYou have reached your spawn-limit for your island."));
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);

@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -14,29 +15,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Common file-utilities.
  */
 public enum FileUtil {
     ;
     private static final Logger log = Logger.getLogger(FileUtil.class.getName());
-    private static final Collection<String> allwaysOverwrite = new ArrayList<>();
+    private static final Collection<String> alwaysOverwrite = new ArrayList<>();
     private static final Collection<String> neverOverwrite = new ArrayList<>();
     private static final Map<String, FileConfiguration> configFiles = new ConcurrentHashMap<>();
     private static Locale locale = Locale.getDefault();
     private static File dataFolder;
 
-    public static void setAllwaysOverwrite(String... configs) {
+    public static void setAlwaysOverwrite(String... configs) {
         for (String s : configs) {
-            if (!allwaysOverwrite.contains(s)) {
-                allwaysOverwrite.add(s);
+            if (!alwaysOverwrite.contains(s)) {
+                alwaysOverwrite.add(s);
             }
         }
     }
 
     public static void readConfig(FileConfiguration config, File file) {
         if (file == null) {
-            log.log(Level.INFO, "No " + file + " found, it will be created");
+            log.log(Level.INFO, "No config file found, it will be created");
             return;
         }
         File configFile = file;
@@ -48,7 +51,7 @@ public enum FileUtil {
             log.log(Level.INFO, "No " + configFile + " found, it will be created");
             return;
         }
-        try (Reader rdr = new InputStreamReader(new FileInputStream(configFile), "UTF-8")) {
+        try (Reader rdr = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
             config.load(rdr);
         } catch (InvalidConfigurationException e) {
             log.log(Level.SEVERE, "Unable to read config file " + configFile, e);
@@ -68,7 +71,7 @@ public enum FileUtil {
         if (inputStream == null) {
             return;
         }
-        try (Reader rdr = new InputStreamReader(inputStream, "UTF-8")) {
+        try (Reader rdr = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             config.load(rdr);
         } catch (InvalidConfigurationException | IOException e) {
             log.log(Level.SEVERE, "Unable to read configuration", e);
@@ -76,7 +79,7 @@ public enum FileUtil {
     }
 
     public static String getBasename(String file) {
-        String[] lastPart = file.split("(/|\\\\)");
+        String[] lastPart = file.split("([/\\\\])");
         file = lastPart[lastPart.length - 1];
         if (file != null && file.lastIndexOf('.') != -1) {
             return file.substring(0, file.lastIndexOf('.'));
@@ -138,7 +141,7 @@ public enum FileUtil {
                         Files.move(Paths.get(configFile.toURI()),
                             Paths.get(new File(backupFolder, bakFile).toURI()),
                             StandardCopyOption.REPLACE_EXISTING);
-                        if (allwaysOverwrite.contains(configName)) {
+                        if (alwaysOverwrite.contains(configName)) {
                             FileUtil.copy(getResource(configName), configFile);
                             config = configJar;
                         } else {
@@ -202,8 +205,6 @@ public enum FileUtil {
         dest.setDefaults(src);
         dest.options().copyDefaults(true);
         dest.set("version", version);
-        dest.options().copyHeader(false);
-        src.options().copyHeader(false);
         removeExcludes(dest);
         moveNodes(src, dest);
         replaceDefaults(src, dest);
@@ -216,7 +217,7 @@ public enum FileUtil {
     private static void removeExcludes(FileConfiguration dest) {
         List<String> keys = dest.getStringList("merge-ignore");
         for (String key : keys) {
-            dest.getDefaults().set(key, null);
+            requireNonNull(dest.getDefaults()).set(key, null);
         }
     }
 
@@ -233,7 +234,7 @@ public enum FileUtil {
             }
         }
         dest.set("force-replace", null);
-        dest.getDefaults().set("force-replace", null);
+        requireNonNull(dest.getDefaults()).set("force-replace", null);
     }
 
     private static void moveNodes(FileConfiguration src, FileConfiguration dest) {
@@ -259,7 +260,7 @@ public enum FileUtil {
             }
         }
         dest.set("move-nodes", null);
-        dest.getDefaults().set("move-nodes", null);
+        requireNonNull(dest.getDefaults()).set("move-nodes", null);
     }
 
     public static void setDataFolder(File dataFolder) {

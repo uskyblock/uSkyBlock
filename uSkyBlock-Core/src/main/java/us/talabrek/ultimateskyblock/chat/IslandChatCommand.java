@@ -53,7 +53,7 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
                 showUsage(commandSender, 1);
                 return true;
             }
-            String message = AbstractCommand.join(args);
+            String message = String.join(" ", args);
             Bukkit.getServer().getPluginManager().callEvent(new IslandChatEvent(player, type, message));
         } else {
             commandSender.sendMessage(tr("\u00a7cCommand only available to players"));

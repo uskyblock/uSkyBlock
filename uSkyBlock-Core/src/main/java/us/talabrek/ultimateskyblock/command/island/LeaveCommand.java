@@ -11,7 +11,6 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
-@SuppressWarnings("deprecation")
 public class LeaveCommand extends RequireIslandCommand {
 
     public LeaveCommand(uSkyBlock plugin) {

@@ -70,7 +70,7 @@ public class EntityMatch {
 
     private boolean matchFieldGetter(Entity entity, String key, Object value) {
         try {
-            Method method = entity.getClass().getMethod("get" + key, null);
+            Method method = entity.getClass().getMethod("get" + key);
             Object entityValue = method.invoke(entity);
             return matchValues(entityValue, value);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -84,7 +84,7 @@ public class EntityMatch {
     private boolean matchField(Entity entity, String key, Object value) {
         try {
             Field field = entity.getClass().getDeclaredField(key);
-            boolean wasAccessible = field.isAccessible();
+            boolean wasAccessible = field.canAccess(this);
             if (!wasAccessible) {
                 field.setAccessible(true);
             }
@@ -102,9 +102,9 @@ public class EntityMatch {
 
     private boolean matchValues(Object entityValue, Object value) {
         if (value instanceof Number && entityValue instanceof Enum) {
-            return ((Number) value).intValue() == ((Enum) entityValue).ordinal();
+            return ((Number) value).intValue() == ((Enum<?>) entityValue).ordinal();
         } else if (value instanceof String && entityValue instanceof Enum) {
-            return ((String) value).equalsIgnoreCase(((Enum) entityValue).name());
+            return ((String) value).equalsIgnoreCase(((Enum<?>) entityValue).name());
         }
         return ("" + entityValue).equalsIgnoreCase("" + value);
     }
@@ -158,6 +158,7 @@ public class EntityMatch {
      * @return Corresponding DyeColor, defaults to WHITE on invalid or NULL input.
      * @deprecated To be used for legacy challenge configs only, use {@link EntityMatch#getColor(String)}.
      */
+    @Deprecated(since = "2.11")
     private @NotNull DyeColor getColor(@Nullable Number input) {
         if (input == null) {
             return DyeColor.WHITE;

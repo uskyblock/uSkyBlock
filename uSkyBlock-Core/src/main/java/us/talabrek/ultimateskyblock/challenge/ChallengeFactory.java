@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.challenge;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -85,8 +86,8 @@ public class ChallengeFactory {
                 String meta = m.group("meta");
                 String countStr = m.group("count");
                 int count = countStr != null ? Integer.parseInt(countStr, 10) : 1;
-                EntityType entityType = EntityType.fromName(type);
-                Map<String, Object> map = meta != null ? MetaUtil.createMap(meta.substring(1)) : new HashMap<String, Object>(); // skip the leading ':'
+                EntityType entityType = Registry.ENTITY_TYPE.match(type);
+                Map<String, Object> map = meta != null ? MetaUtil.createMap(meta.substring(1)) : new HashMap<>(); // skip the leading ':'
                 if (entityType != null) {
                     entities.add(new EntityMatch(entityType, map, count));
                 } else {

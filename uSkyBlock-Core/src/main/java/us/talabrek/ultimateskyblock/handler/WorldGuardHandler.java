@@ -29,7 +29,6 @@ import us.talabrek.ultimateskyblock.util.LogUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -75,7 +74,7 @@ public class WorldGuardHandler {
         try {
             RegionManager regionManager = getRegionManager(plugin.getWorldManager().getWorld());
             String regionName = islandConfig.getName() + "island";
-            if (islandConfig != null && noOrOldRegion(regionManager, regionName, islandConfig)) {
+            if (noOrOldRegion(regionManager, regionName, islandConfig)) {
                 updateRegion(islandConfig);
                 islandConfig.setRegionVersion(getVersion());
                 return true;
@@ -121,6 +120,7 @@ public class WorldGuardHandler {
         return setRegionFlags(islandConfig, regionName);
     }
 
+    @SuppressWarnings("deprecation") // WorldGuard flags are deprecated to warn developers without replacement option
     private static ProtectedCuboidRegion setRegionFlags(IslandInfo islandConfig, String regionName) {
         Location islandLocation = islandConfig.getIslandLocation();
         BlockVector3 minPoint = getProtectionVectorRight(islandLocation);
@@ -308,11 +308,7 @@ public class WorldGuardHandler {
         RegionManager regionManager = getRegionManager(islandLocation.getWorld());
         ApplicableRegionSet applicableRegions = regionManager.getApplicableRegions(getIslandRegion(islandLocation));
         Set<ProtectedRegion> regions = getRegions(applicableRegions);
-        for (Iterator<ProtectedRegion> iterator = regions.iterator(); iterator.hasNext(); ) {
-            if (iterator.next() instanceof GlobalProtectedRegion) {
-                iterator.remove();
-            }
-        }
+        regions.removeIf(protectedRegion -> protectedRegion instanceof GlobalProtectedRegion);
         log.exiting(CN, "getIntersectingRegions");
         return regions;
     }

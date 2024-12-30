@@ -3,10 +3,9 @@ package us.talabrek.ultimateskyblock.command;
 import org.junit.Test;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by R4zorax on 04/07/2016.

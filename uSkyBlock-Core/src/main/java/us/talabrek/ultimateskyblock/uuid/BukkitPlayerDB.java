@@ -45,7 +45,6 @@ public class BukkitPlayerDB implements PlayerDB {
 
     @Override
     public String getDisplayName(String playerName) {
-        //noinspection deprecation
         Player player = Bukkit.getPlayer(playerName);
         return player != null ? player.getDisplayName() : null;
     }
@@ -74,7 +73,6 @@ public class BukkitPlayerDB implements PlayerDB {
 
     @Override
     public Player getPlayer(String name) {
-        //noinspection deprecation
         return Bukkit.getPlayer(name);
     }
 

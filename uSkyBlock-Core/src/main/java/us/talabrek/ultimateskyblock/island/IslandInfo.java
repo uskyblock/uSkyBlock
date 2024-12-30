@@ -205,7 +205,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         if (isLeader(member)) {
             String oldLeaderName = getLeader();
             config.set("party.leader", member.getName());
-            updateRegion |= !oldLeaderName.equals(member.getName());
+            updateRegion = !oldLeaderName.equals(member.getName());
         }
         ConfigurationSection section = config.getConfigurationSection("party.members." + member.getUniqueId());
         boolean dirty = false;
@@ -385,7 +385,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         return hasPerm(plugin.getPlayerDB().getUUIDFromName(playerName), perm);
     }
 
-    private boolean hasPerm(UUID uuid, String perm) {
+    public boolean hasPerm(UUID uuid, String perm) {
         return uuid.equals(getLeaderUniqueId()) || config.getBoolean("party.members." + UUIDUtil.asString(uuid) + "." + perm);
     }
 
@@ -415,17 +415,26 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         save();
     }
 
+    // TODO: deprecate and replace all string-based methods
+    // TODO: unify all methods to take/return a custom Profile type that is guaranteed to contain a UUID and a name
     public boolean togglePerm(@NotNull final String playername, @NotNull final String perm) {
         Validate.notNull(playername, "Playername cannot be null");
         Validate.notEmpty(playername, "Playername cannot be empty");
+
+        UUID uuid = plugin.getPlayerDB().getUUIDFromName(playername);
+        return togglePerm(uuid, perm);
+    }
+
+    public boolean togglePerm(@NotNull final UUID playerId, @NotNull final String perm) {
+        Validate.notNull(playerId, "Playername cannot be null");
         Validate.notNull(perm, "Perm cannot be null");
         Validate.notEmpty(perm, "Perm cannot be empty");
 
-        String uuidString = UUIDUtil.asString(plugin.getPlayerDB().getUUIDFromName(playername));
+        String uuidString = UUIDUtil.asString(playerId);
         ConfigurationSection memberSection = config.getConfigurationSection("party.members." + uuidString);
         try {
             if (memberSection == null) {
-                log.info("Perms for " + playername + " failed to toggle because player is not a part of that island!");
+                log.info("Perms for " + playerId + " failed to toggle because player is not a part of that island!");
                 return false;
             }
             if (memberSection.getBoolean(perm, false)) {
@@ -436,7 +445,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
             save();
             return true;
         } catch (NullPointerException e) {
-            log.info("Perms for " + playername + " failed to toggle because player is not a part of that island!");
+            log.info("Perms for " + playerId + " failed to toggle because player is not a part of that island!");
             return false;
         }
     }
@@ -507,7 +516,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 sb.append(";").append(arg);
             }
         }
-        log.add(0, sb.toString());
+        log.addFirst(sb.toString());
         int logSize = plugin.getConfig().getInt("options.island.log-size", 10);
         if (log.size() > logSize) {
             log = log.subList(0, logSize);
@@ -524,16 +533,20 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public boolean isLeader(@NotNull OfflinePlayer target) {
         Validate.notNull(target, "Target cannot be null");
 
-        return target.getUniqueId().equals(getLeaderUniqueId());
+        return isLeader(target.getUniqueId());
     }
 
     @Override
-    public boolean isLeader(Player player) {
-        return player.getUniqueId().equals(getLeaderUniqueId());
+    public boolean isLeader(@NotNull Player player) {
+        return isLeader(player.getUniqueId());
     }
 
     public boolean isLeader(String playerName) {
         return getLeaderUniqueId().equals(plugin.getPlayerDB().getUUIDFromName(playerName));
+    }
+
+    public boolean isLeader(@NotNull UUID playerId) {
+        return getLeaderUniqueId().equals(playerId);
     }
 
     public boolean hasWarp() {
