@@ -82,13 +82,12 @@ import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.signs.SignEvents;
 import us.talabrek.ultimateskyblock.signs.SignLogic;
+import us.talabrek.ultimateskyblock.storage.Storage;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.PlayerUtil;
 import us.talabrek.ultimateskyblock.util.ServerUtil;
-import us.talabrek.ultimateskyblock.uuid.BukkitPlayerDB;
-import us.talabrek.ultimateskyblock.uuid.FilePlayerDB;
-import us.talabrek.ultimateskyblock.uuid.MemoryPlayerDB;
+import us.talabrek.ultimateskyblock.uuid.LegacyPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -141,6 +140,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private USBImporterExecutor importer;
 
+    private Storage storage;
+
     private static uSkyBlock instance;
     // TODO: 28/06/2016 - R4zorax: These two should probably be moved to the proper classes
     public File directoryPlayers;
@@ -189,6 +190,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         playerDB.shutdown(); // Must be before playerNameChangeManager!!
         AsyncWorldEditHandler.onDisable(this);
         DebugCommand.disableLogging(null);
+
+        storage.destruct();
     }
 
     @Override
@@ -216,6 +219,14 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         // Converter has to run before the plugin loads its config files.
         convertConfigItemsTo1_20_6IfRequired();
         convertConfigToBlockRequirements();
+
+        try {
+            storage = new Storage(this);
+        } catch (RuntimeException ex) {
+            getLogger().severe("Failed to connect to provided database. Shutting down plugin...");
+            ex.printStackTrace();
+            return;
+        }
 
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
@@ -755,14 +766,16 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         // Update all of the loaded configs.
         FileUtil.reload();
 
-        String playerDbStorage = getConfig().getString("options.advanced.playerdb.storage", "yml");
-        if (playerDbStorage.equalsIgnoreCase("yml")) {
-            playerDB = new FilePlayerDB(this);
-        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-            playerDB = new MemoryPlayerDB(getConfig());
-        } else {
-            playerDB = new BukkitPlayerDB();
-        }
+//        String playerDbStorage = getConfig().getString("options.advanced.playerdb.storage", "yml");
+//        if (playerDbStorage.equalsIgnoreCase("yml")) {
+//            playerDB = new FilePlayerDB(this);
+//        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
+//            playerDB = new MemoryPlayerDB(getConfig());
+//        } else {
+//            playerDB = new BukkitPlayerDB();
+//        }
+
+        playerDB = new LegacyPlayerDB(this);
 
         getServer().getPluginManager().registerEvents(playerDB, this);
         worldManager = new WorldManager(this);
@@ -1159,6 +1172,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         for (String cmd : cmdList) {
             execCommand(player, cmd, false);
         }
+    }
+
+    public Storage getStorage() {
+        return storage;
     }
 
     /**

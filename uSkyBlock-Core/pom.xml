@@ -212,6 +212,7 @@
                 <filtering>false</filtering>
                 <directory>src/main/resources</directory>
                 <includes>
+                    <include>db/**</include>
                     <include>schematics/*</include>
                     <include>structures/*</include>
                 </includes>
@@ -510,6 +511,21 @@
             <artifactId>maven-artifact</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- SQL / Storage -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- TESTING -->
         <dependency>
             <groupId>org.hamcrest</groupId>
