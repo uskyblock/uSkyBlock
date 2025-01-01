@@ -54,6 +54,7 @@ public class H2Connection extends SqlStorage {
         Flyway flyway = Flyway.configure(plugin.getClass().getClassLoader())
             .dataSource(ds)
             .locations("classpath:db/h2")
+            .table("usb_flyway_history")
             .load();
 
         flyway.migrate();

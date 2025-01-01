@@ -58,6 +58,7 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
+import us.talabrek.ultimateskyblock.imports.storage.PlayerDbImporter;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -92,6 +93,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -766,16 +768,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         // Update all of the loaded configs.
         FileUtil.reload();
 
-//        String playerDbStorage = getConfig().getString("options.advanced.playerdb.storage", "yml");
-//        if (playerDbStorage.equalsIgnoreCase("yml")) {
-//            playerDB = new FilePlayerDB(this);
-//        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-//            playerDB = new MemoryPlayerDB(getConfig());
-//        } else {
-//            playerDB = new BukkitPlayerDB();
-//        }
-
         playerDB = new LegacyPlayerDB(this);
+        if (Files.exists(getDataFolder().toPath().resolve("uuid2name.yml"))) {
+            getLogger().info("Importing old uuid2name.yml...");
+            new PlayerDbImporter(this);
+        }
 
         getServer().getPluginManager().registerEvents(playerDB, this);
         worldManager = new WorldManager(this);
