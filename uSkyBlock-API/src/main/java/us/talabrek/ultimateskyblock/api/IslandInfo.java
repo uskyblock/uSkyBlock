@@ -3,11 +3,13 @@ package us.talabrek.ultimateskyblock.api;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,9 +77,28 @@ public interface IslandInfo {
 
     /**
      * The name of the biome.
+     *
+     * @deprecated Unsafe String value, use {@link #getIslandBiome()} or {@link #getBiomeName()} instead.
      * @return The name of the biome.
      */
-    String getBiome();
+    @Deprecated(since="3.1.0")
+    default String getBiome() {
+        return getIslandBiome().name().toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * The biome of the island.
+     *
+     * @return The iceland's biome.
+     */
+    Biome getIslandBiome();
+
+    /**
+     * The name of the biome.
+     *
+     * @return The name of the biome.
+     */
+    String getBiomeName();
 
     /**
      * The current party-size of the island.

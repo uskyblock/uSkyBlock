@@ -109,7 +109,7 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
             case "usb_island_animals": return "" + plugin.getLimitLogic().getCreatureCount(islandInfo).get(LimitLogic.CreatureType.ANIMAL);
             case "usb_island_villagers": return "" + plugin.getLimitLogic().getCreatureCount(islandInfo).get(LimitLogic.CreatureType.VILLAGER);
             case "usb_island_partysize": return "" + islandInfo.getPartySize();
-            case "usb_island_biome": return islandInfo.getBiome();
+            case "usb_island_biome": return islandInfo.getBiomeName();
             case "usb_island_bans": return ""+islandInfo.getBans();
             case "usb_island_members": return ""+islandInfo.getMembers();
             case "usb_island_trustees": return ""+islandInfo.getTrustees();
