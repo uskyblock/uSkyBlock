@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static java.util.Objects.requireNonNull;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
@@ -28,7 +29,7 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
  * Not as fast as WorldEditRegenTask, but more versatile.
  */
 public class WorldEditClearFlatlandTask extends IncrementalRunnable {
-    private static final BlockState AIR = BlockTypes.AIR.getDefaultState();
+    private static final BlockState AIR = requireNonNull(BlockTypes.AIR).getDefaultState();
 
     private final Set<Region> borderRegions;
     private final Set<BlockVector2> innerChunks;
@@ -51,7 +52,7 @@ public class WorldEditClearFlatlandTask extends IncrementalRunnable {
         bukkitWorld = new BukkitWorld(plugin.getWorldManager().getWorld());
         minY = Math.min(region.getMinimumPoint().getBlockY(), region.getMaximumPoint().getBlockY());
         maxY = Math.max(region.getMinimumPoint().getBlockY(), region.getMaximumPoint().getBlockY());
-        maxBlocks = 2*Math.max(region.getLength(), region.getWidth())*16*(maxY-minY);
+        maxBlocks = 2 * Math.max(region.getLength(), region.getWidth()) * 16 * (maxY - minY);
     }
 
     @Override
@@ -59,32 +60,32 @@ public class WorldEditClearFlatlandTask extends IncrementalRunnable {
         Iterator<BlockVector2> inner = innerChunks.iterator();
         Iterator<Region> border = borderRegions.iterator();
         while (!isComplete()) {
-            EditSession editSession = AsyncWorldEditHandler.createEditSession(bukkitWorld, maxBlocks);
-            editSession.setSideEffectApplier(SideEffectSet.defaults());
-            editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
-            if (inner.hasNext()) {
-                BlockVector2 chunk = inner.next();
-                inner.remove();
-                try {
-                    int x = chunk.getX() << 4;
-                    int z = chunk.getZ() << 4;
-                    editSession.setBlocks(new CuboidRegion(bukkitWorld,
-                                    BlockVector3.at(x, minY, z),
-                                    BlockVector3.at(x + 15, maxY, z + 15)),
+            try (EditSession editSession = AsyncWorldEditHandler.createEditSession(bukkitWorld, maxBlocks)) {
+                editSession.setSideEffectApplier(SideEffectSet.defaults());
+                editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
+                if (inner.hasNext()) {
+                    BlockVector2 chunk = inner.next();
+                    inner.remove();
+                    try {
+                        int x = chunk.getX() << 4;
+                        int z = chunk.getZ() << 4;
+                        editSession.setBlocks(new CuboidRegion(bukkitWorld,
+                                BlockVector3.at(x, minY, z),
+                                BlockVector3.at(x + 15, maxY, z + 15)),
                             AIR);
-                } catch (MaxChangedBlocksException e) {
-                    plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
-                }
-            } else if (border.hasNext()) {
-                Region borderRegion = border.next();
-                border.remove();
-                try {
-                    editSession.setBlocks(borderRegion, AIR);
-                } catch (MaxChangedBlocksException e) {
-                    plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
+                    } catch (MaxChangedBlocksException e) {
+                        plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
+                    }
+                } else if (border.hasNext()) {
+                    Region borderRegion = border.next();
+                    border.remove();
+                    try {
+                        editSession.setBlocks(borderRegion, AIR);
+                    } catch (MaxChangedBlocksException e) {
+                        plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
+                    }
                 }
             }
-            editSession.flushSession();
             if (!tick()) {
                 break;
             }

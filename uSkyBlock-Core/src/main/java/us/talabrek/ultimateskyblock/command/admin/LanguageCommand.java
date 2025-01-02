@@ -53,7 +53,7 @@ public class LanguageCommand extends AbstractCommand {
                     if (line.startsWith("---")) {
                         header = false;
                     } else if (!header && line.contains("|")) {
-                        String parts[] = line.split("\\|");
+                        String[] parts = line.split("\\|");
                         if (parts.length == 7) {
                             sb.append(tr("\u00a7f{0} \u00a77{1} \u00a79 by {2} \u00a77{3}\n", parts[1].trim(), parts[0].trim(), parts[6].trim(), parts[2].trim()));
                         }

@@ -100,6 +100,7 @@ public interface IslandInfo {
      * @return True if the player has been banned from this island.
      * @deprecated Use {@link IslandInfo#isBanned(OfflinePlayer)}
      */
+    @Deprecated(since = "2.7.10")
     boolean isBanned(Player player);
 
     /**
@@ -164,6 +165,7 @@ public interface IslandInfo {
      * @return List of players trusted on this island.
      * @deprecated Use #getTrusteeUUIDs instead
      */
+    @Deprecated(since = "2.7")
     List<String> getTrustees();
 
     /**

@@ -170,11 +170,11 @@ public class WorldEditHandler {
      *     M(x) = X mod 16, i.e. Mc = C mod 16.
      *
      * Borders:
-     *     O = A + 16 - Ma   | A > 0
-     *       = A - Ma        | A <= 0
+     *     {@code O = A + 16 - Ma   | A > 0}
+     *     {@code   = A - Ma        | A <= 0}
      *
-     *     Q = C - Mc - 1    | C > 0 && Mc != 15
-     *       = C + Mc - 16   | C < 0 && Mc != -1
+     *     {@code Q = C - Mc - 1    | C > 0 && Mc != 15}
+     *     {@code   = C + Mc - 16   | C < 0 && Mc != -1}
      * </pre>
      */
     public static Set<Region> getBorderRegions(Region region) {

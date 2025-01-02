@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -17,6 +16,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
@@ -76,27 +76,19 @@ public class IslandLogic {
         cache = CacheBuilder
                 .from(plugin.getConfig().getString("options.advanced.islandCache",
                         "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-                .removalListener(new RemovalListener<String, IslandInfo>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<String, IslandInfo> removal) {
-                        log.fine("Removing island-info " + removal.getKey() + " from cache");
-                        removal.getValue().saveToFile();
-                    }
+                .removalListener((RemovalListener<String, IslandInfo>) removal -> {
+                    log.fine("Removing island-info " + removal.getKey() + " from cache");
+                    removal.getValue().saveToFile();
                 })
-                .build(new CacheLoader<String, IslandInfo>() {
+                .build(new CacheLoader<>() {
                     @Override
-                    public IslandInfo load(String islandName) throws Exception {
+                    public @NotNull IslandInfo load(@NotNull String islandName) {
                         log.fine("Loading island-info " + islandName + " to cache!");
                         return new IslandInfo(islandName, plugin);
                     }
                 });
         long every = TimeUtil.secondsAsMillis(plugin.getConfig().getInt("options.advanced.island.saveEvery", 30));
-        saveTask = plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                saveDirtyToFiles();
-            }
-        }, every, every);
+        saveTask = plugin.async(this::saveDirtyToFiles, every, every);
     }
 
     private void saveDirtyToFiles() {
@@ -118,7 +110,7 @@ public class IslandLogic {
             throw new IllegalStateException("Unable to load island", e);
         }
     }
-    
+
     public IslandInfo getIslandInfo(PlayerInfo playerInfo) {
         if (playerInfo != null && playerInfo.getHasIsland()) {
             return getIslandInfo(playerInfo.locationForParty());
@@ -217,7 +209,7 @@ public class IslandLogic {
                 page = 1;
             }
             sender.sendMessage(tr("\u00a7eWALL OF FAME (page {0} of {1}):", page, maxpage));
-            if (ranks == null || ranks.isEmpty()) {
+            if (ranks.isEmpty()) {
                 if (Settings.island_useTopTen) {
                     sender.sendMessage(tr("\u00a74Top ten list is empty! Only islands above level {0} is considered.", topTenCutoff));
                 } else {
@@ -239,8 +231,7 @@ public class IslandLogic {
                 }
                 String message = String.format(tr("\u00a7a#%2d \u00a77(%5.2f): \u00a7e%s \u00a77%s"),
                         place, level.getScore(), level.getLeaderName(), members);
-                if (sender instanceof Player) {
-                    Player target = (Player) sender;
+                if (sender instanceof Player target) {
                     String warpString = getJsonWarpString(
                             message,
                             tr("Click to warp to the island!"),
@@ -360,7 +351,7 @@ public class IslandLogic {
     public synchronized void deleteIslandConfig(final String location) {
         try {
             IslandInfo islandInfo = cache.get(location);
-            updateRank(islandInfo, new IslandScore(0, Collections.EMPTY_LIST));
+            updateRank(islandInfo, new IslandScore(0, Collections.emptyList()));
             if (islandInfo.exists()) {
                 islandInfo.delete();
             }
@@ -389,13 +380,11 @@ public class IslandLogic {
     }
 
     public IslandRank getRank(String islandName) {
-        if (ranks != null) {
-            ArrayList<IslandLevel> rankList = new ArrayList<>(ranks);
-            for (int i = 0; i < rankList.size(); i++) {
-                IslandLevel level = rankList.get(i);
-                if (level.getIslandName().equalsIgnoreCase(islandName)) {
-                    return new IslandRank(level, i+1);
-                }
+        ArrayList<IslandLevel> rankList = new ArrayList<>(ranks);
+        for (int i = 0; i < rankList.size(); i++) {
+            IslandLevel level = rankList.get(i);
+            if (level.getIslandName().equalsIgnoreCase(islandName)) {
+                return new IslandRank(level, i+1);
             }
         }
         return null;

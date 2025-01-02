@@ -9,10 +9,11 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class WorldEditHandlerTest {
 
@@ -207,7 +208,7 @@ public class WorldEditHandlerTest {
     public void testGetBorderRegionsAligned4Quadrants() throws Exception {
         Region region = new CuboidRegion(BlockVector3.at(-64,0,-64), BlockVector3.at(63, 15, 63));
         Set<Region> borderRegions = WorldEditHandler.getBorderRegions(region);
-        Set<Region> expectedBorder = new HashSet<>(Arrays.<Region>asList());
+        Set<Region> expectedBorder = new HashSet<>();
         Set<BlockVector2> expectedInner = new HashSet<>();
         for (int x = -4; x <= 3; x++) {
             for (int z = -4; z <= 3; z++) {

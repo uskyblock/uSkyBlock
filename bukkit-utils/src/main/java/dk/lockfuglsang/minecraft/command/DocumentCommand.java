@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,7 +62,7 @@ public class DocumentCommand extends AbstractCommand {
         }
         File docFile = new File(plugin.getDataFolder(), filename);
         try (FileOutputStream fos = new FileOutputStream(docFile);
-             PrintStream ps = new PrintStream(fos, true, "UTF-8"))
+             PrintStream ps = new PrintStream(fos, true, StandardCharsets.UTF_8))
         {
             visitor.writeTo(ps);
             sender.sendMessage(tr("Wrote documentation to {0}", docFile));

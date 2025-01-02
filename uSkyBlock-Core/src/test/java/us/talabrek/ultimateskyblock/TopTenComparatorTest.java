@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TopTenComparatorTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         Map<String, Double> testMap = new HashMap<>();
         testMap.put("test A", 10.2);
         testMap.put("test B", 10.3);

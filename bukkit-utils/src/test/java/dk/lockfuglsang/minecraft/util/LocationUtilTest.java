@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,5 +60,4 @@ public class LocationUtilTest {
         String key = "world/1_12,-34_12,2_00";
         assertThat(LocationUtil.asString(LocationUtil.fromString(key)), is(LocationUtil.asString(loc)));
     }
-
 }

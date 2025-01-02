@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import static dk.lockfuglsang.minecraft.util.FormatUtil.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class FormatUtilTest {
 
