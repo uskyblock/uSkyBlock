@@ -77,6 +77,8 @@ public class BiomeCommand extends RequireIslandCommand {
                 minP.subtract(buffer, 0, buffer);
                 maxP.add(buffer, 0, buffer);
             }
+            boolean changeEntireIslandBiome;
+
             if (args.length == 2 && args[1].matches("[0-9]+")) {
                 int radius = Integer.parseInt(args[1], 10);
                 minP = BlockVector3.at(Math.max(location.getBlockX() - radius, minP.getBlockX()),
@@ -85,18 +87,24 @@ public class BiomeCommand extends RequireIslandCommand {
                 maxP = BlockVector3.at(Math.min(location.getBlockX() + radius, maxP.getBlockX()),
                     Math.min(location.getBlockY() + radius, maxP.getBlockY()),
                     Math.min(location.getBlockZ() + radius, maxP.getBlockZ()));
+                changeEntireIslandBiome = false;
                 player.sendMessage(tr("\u00a77The pixies are busy changing the biome near you to \u00a79{0}\u00a77, be patient.", biomeKey));
             } else if (args.length == 2 && args[1].equalsIgnoreCase("chunk")) {
                 Chunk chunk = location.clone().getChunk();
                 minP = BlockVector3.at(chunk.getX() << 4, location.getWorld().getMinHeight(), chunk.getZ() << 4);
                 maxP = BlockVector3.at((chunk.getX() << 4) + 15, location.getWorld().getMaxHeight(), (chunk.getZ() << 4) + 15);
+                changeEntireIslandBiome = false;
                 player.sendMessage(tr("\u00a77The pixies are busy changing the biome in your current chunk to \u00a79{0}\u00a77, be patient.", biomeKey));
             } else if (args.length < 2 || args[1].equalsIgnoreCase("all")) {
+                changeEntireIslandBiome = true;
                 player.sendMessage(tr("\u00a77The pixies are busy changing the biome of your island to \u00a79{0}\u00a77, be patient.", biomeKey));
+            } else {
+                player.sendMessage(tr("\u00a7cInvalid arguments. Use /is biome <biome> [radius|chunk|all]"));
+                return true;
             }
             new SetBiomeTask(plugin, player.getWorld(), minP, maxP, biome, () -> {
                 String biomeName = biome.getKey().getKey();
-                if (args.length == 1) {
+                if (changeEntireIslandBiome) {
                     island.setBiome(biome);
                     player.sendMessage(tr("\u00a7aYou have changed your island''s biome to {0}", biomeName));
                     island.sendMessageToIslandGroup(true, marktr("{0} changed the island biome to {1}"), player.getName(), biomeName);
