@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class BukkitServerMock {
@@ -36,6 +35,7 @@ public class BukkitServerMock {
         return serverMock;
     }
 
+    @SuppressWarnings("deprecation")
     public static Server createServerMock() {
         Server serverMock = mock(Server.class);
         ItemFactory itemFactoryMock = mock(ItemFactory.class);
@@ -84,11 +84,12 @@ public class BukkitServerMock {
         when(serverMock.getItemFactory()).thenReturn(itemFactoryMock);
 
         UnsafeValues unsafeMock = mock(UnsafeValues.class);
-        when(unsafeMock.fromLegacy(any(Material.class))).thenAnswer(a -> (Material) a.getArguments()[0]);
+        when(unsafeMock.fromLegacy(any(Material.class))).thenAnswer(a -> a.getArguments()[0]);
         when(serverMock.getUnsafe()).thenReturn(unsafeMock);
         return serverMock;
     }
 
+    @SuppressWarnings("unchecked")
     public static ItemMeta createItemMetaStub() {
         if (!useMetaData) {
             return null;
@@ -103,7 +104,7 @@ public class BukkitServerMock {
             if (displayName.isEmpty()) {
                 metaData.remove("displayName");
             } else {
-                metaData.put("displayName", "" + displayName);
+                metaData.put("displayName", displayName);
             }
             return null;
         }).when(meta).setDisplayName(any(String.class));

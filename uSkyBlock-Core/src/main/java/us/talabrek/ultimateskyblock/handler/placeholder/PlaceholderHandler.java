@@ -10,9 +10,9 @@ import java.util.List;
 
 public class PlaceholderHandler {
     private static final String[] ADAPTORS = {
-            ChatPlaceholder.class.getName(),
-            ServerCommandPlaceholder.class.getName(),
-            "us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI",
+        ChatPlaceholder.class.getName(),
+        ServerCommandPlaceholder.class.getName(),
+        "us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI",
     };
 
     private static PlaceholderAPI.PlaceholderReplacer replacer;
@@ -24,10 +24,9 @@ public class PlaceholderHandler {
             String baseName = FileUtil.getExtension(className);
             if (plugin.getConfig().getBoolean("placeholder." + baseName.toLowerCase(), false)) {
                 try {
-                    Class<?> aClass = Class.forName(className);
-                    Object o = aClass.newInstance();
-                    if (o instanceof PlaceholderAPI) {
-                        PlaceholderAPI api = (PlaceholderAPI) o;
+                    Class<?> clazz = Class.forName(className);
+                    Object o = clazz.getDeclaredConstructor().newInstance();
+                    if (o instanceof PlaceholderAPI api) {
                         if (api.registerPlaceholder(plugin, placeholderReplacer)) {
                             plugin.getLogger().info("uSkyBlock hooked into " + baseName);
                             apis.add(api);
@@ -35,8 +34,7 @@ public class PlaceholderHandler {
                             plugin.getLogger().info("uSkyBlock failed to hook into " + baseName);
                         }
                     }
-                } catch (Throwable e) {
-                    // Ignore
+                } catch (Exception e) {
                     plugin.getLogger().info("uSkyBlock failed to hook into " + baseName);
                 }
             }
@@ -45,7 +43,7 @@ public class PlaceholderHandler {
 
     public static void unregister(uSkyBlock plugin) {
         PlaceholderAPI.PlaceholderReplacer placeholderReplacer = getReplacer(plugin);
-        for (Iterator<PlaceholderAPI> it = apis.iterator(); it.hasNext();) {
+        for (Iterator<PlaceholderAPI> it = apis.iterator(); it.hasNext(); ) {
             it.next().unregisterPlaceholder(plugin, placeholderReplacer);
             it.remove();
         }

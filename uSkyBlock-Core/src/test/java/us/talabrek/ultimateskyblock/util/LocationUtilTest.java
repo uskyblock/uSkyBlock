@@ -5,7 +5,7 @@ import org.junit.Test;
 import us.talabrek.ultimateskyblock.Settings;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LocationUtilTest {
 

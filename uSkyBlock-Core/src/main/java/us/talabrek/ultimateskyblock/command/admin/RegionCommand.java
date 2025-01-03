@@ -255,6 +255,6 @@ public class RegionCommand extends CompositeCommand {
     }
 
     public synchronized void addAnimation(Player player, List<Location> points) {
-        animationHandler.addAnimation(new BlockAnimation(player, points, material, (byte) 0));
+        animationHandler.addAnimation(new BlockAnimation(player, points, material.createBlockData()));
     }
 }

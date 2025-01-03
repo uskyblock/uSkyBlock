@@ -1,6 +1,7 @@
 package dk.lockfuglsang.minecraft.nbt;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests the NBTUtil
@@ -25,10 +26,10 @@ public class NBTUtilTest {
         String jsonString = "{\"Potion\":\"minecraft:empty\",\"CustomPotionEffects\":[{\"Id\":1},{\"Id\":2}]}";
         Gson gson = new Gson();
 
-        Map<String, Object> map = (Map<String, Object>) gson.fromJson(new StringReader(jsonString), Map.class);
+        Map<String, Object> map = gson.fromJson(new StringReader(jsonString), new TypeToken<Map<String, Object>>(){}.getType());
         assertThat(map.get("Potion"), CoreMatchers.is("minecraft:empty"));
         assertThat(map.get("CustomPotionEffects"), instanceOf(List.class));
-        assertThat(((List)map.get("CustomPotionEffects")).get(0), instanceOf(Map.class));
+        assertThat(((List<?>)map.get("CustomPotionEffects")).getFirst(), instanceOf(Map.class));
     }
 
     @Test

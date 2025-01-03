@@ -72,7 +72,6 @@ public class AdminIslandCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 IslandInfo islandInfo = null;
                 if (args.length == 2) {
-                    //noinspection deprecation
                     islandInfo = plugin.getIslandInfo(Bukkit.getPlayer(args[1]));
                 } else if (args.length == 1 && sender instanceof Player) {
                     String islandName = WorldGuardHandler.getIslandNameAt(((Player) sender).getLocation());
@@ -109,7 +108,11 @@ public class AdminIslandCommand extends CompositeCommand {
                         sender.sendMessage(tr("\u00a74That player has no island."));
                         return false;
                     }
-                    setBiome(sender, playerInfo, plugin.getIslandInfo(playerInfo), args[1]);
+                    Biome biome = plugin.getBiome(args[0]);
+                    if (biome == null) {
+                        return false;
+                    }
+                    setBiome(sender, playerInfo, plugin.getIslandInfo(playerInfo), biome);
                     return true;
                 } else if (args.length == 1 && sender instanceof Player) {
                     Biome biome = plugin.getBiome(args[0]);
@@ -122,7 +125,7 @@ public class AdminIslandCommand extends CompositeCommand {
                         sender.sendMessage(tr("\u00a74No valid island at your location"));
                         return false;
                     }
-                    setBiome(sender, islandInfo, biome.name());
+                    setBiome(sender, islandInfo, biome);
                     return true;
                 }
                 return false;
@@ -133,8 +136,7 @@ public class AdminIslandCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 String cmd = "/usb island purge";
                 IslandInfo islandInfo = null;
-                if (args.length == 0 && sender instanceof Player) {
-                    Player player = (Player) sender;
+                if (args.length == 0 && sender instanceof Player player) {
                     String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
                     islandInfo = plugin.getIslandInfo(islandName);
                 } else if (args.length == 1) {
@@ -187,29 +189,21 @@ public class AdminIslandCommand extends CompositeCommand {
         playerInfo.save();
     }
 
-    private void setBiome(CommandSender sender, IslandInfo islandInfo, String biome) {
-        if (uSkyBlock.getInstance().setBiome(islandInfo.getIslandLocation(), biome)) {
-            islandInfo.setBiome(biome);
-            sender.sendMessage(tr("\u00a7eChanged biome of {0}s island to {1}.", islandInfo.getLeader(), biome));
-        } else {
-            islandInfo.setBiome("OCEAN");
-            sender.sendMessage(tr("\u00a7eChanged biome of {0}s island to OCEAN.", islandInfo.getLeader()));
-        }
+    private void setBiome(CommandSender sender, IslandInfo islandInfo, Biome biome) {
+        uSkyBlock.getInstance().setBiome(islandInfo.getIslandLocation(), biome);
+        islandInfo.setBiome(biome);
+        sender.sendMessage(tr("\u00a7eChanged biome of {0}s island to {1}.", islandInfo.getLeader(), biome));
         sender.sendMessage(tr("\u00a7aYou may need to go to spawn, or relog, to see the changes."));
     }
 
-    private void setBiome(CommandSender sender, PlayerInfo playerInfo, IslandInfo islandInfo, String biome) {
+    private void setBiome(CommandSender sender, PlayerInfo playerInfo, IslandInfo islandInfo, Biome biome) {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             sender.sendMessage(tr("\u00a74That player has no island."));
             return;
         }
-        if (uSkyBlock.getInstance().setBiome(playerInfo.getIslandLocation(), biome)) {
-            islandInfo.setBiome(biome);
-            sender.sendMessage(tr("\u00a7e{0} has had their biome changed to {1}.", playerInfo.getPlayerName(), biome));
-        } else {
-            islandInfo.setBiome("OCEAN");
-            sender.sendMessage(tr("\u00a7e{0} has had their biome changed to OCEAN.", playerInfo.getPlayerName()));
-        }
+        uSkyBlock.getInstance().setBiome(playerInfo.getIslandLocation(), biome);
+        islandInfo.setBiome(biome);
+        sender.sendMessage(tr("\u00a7e{0} has had their biome changed to {1}.", playerInfo.getPlayerName(), biome));
         sender.sendMessage(tr("\u00a7aYou may need to go to spawn, or relog, to see the changes."));
     }
 

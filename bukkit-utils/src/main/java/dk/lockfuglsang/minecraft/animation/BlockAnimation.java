@@ -1,7 +1,7 @@
 package dk.lockfuglsang.minecraft.animation;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -12,15 +12,13 @@ import java.util.List;
 public class BlockAnimation implements Animation {
     private final Player player;
     private final List<Location> points;
-    private final Material material;
-    private final byte data;
+    private final BlockData blockData;
     private volatile boolean shown;
 
-    public BlockAnimation(Player player, List<Location> points, Material material, byte data) {
+    public BlockAnimation(Player player, List<Location> points, BlockData blockData) {
         this.player = player;
         this.points = points;
-        this.material = material;
-        this.data = data;
+        this.blockData = blockData;
         shown = false;
     }
 
@@ -33,9 +31,7 @@ public class BlockAnimation implements Animation {
             return false;
         }
         for (Location loc : points) {
-            if (!PlayerHandler.sendBlockChange(player, loc, material, data)) {
-                return false;
-            }
+            player.sendBlockChange(loc, blockData);
         }
         shown = true;
         return true;
@@ -43,19 +39,12 @@ public class BlockAnimation implements Animation {
 
     @Override
     public boolean hide() {
-        try {
-            if (shown) {
-                for (Location loc : points) {
-                    if (!PlayerHandler.sendBlockChange(player, loc, loc.getBlock().getType(), loc.getBlock().getData())) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
-        } finally {
+        if (shown) {
             shown = false;
+            player.sendBlockChanges(points.stream().map(loc -> loc.getBlock().getState()).toList());
+            return true;
         }
+        return false;
     }
 
     @Override

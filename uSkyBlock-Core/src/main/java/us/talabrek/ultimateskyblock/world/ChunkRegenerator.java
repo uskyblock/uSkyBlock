@@ -1,26 +1,23 @@
 package us.talabrek.ultimateskyblock.world;
 
 import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.generator.ChunkGenerator.ChunkData;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
-import static org.bukkit.World.Environment;
 
 /**
  * Class responsible for regenerating chunks.
@@ -52,7 +49,7 @@ public class ChunkRegenerator {
         task = scheduler.runTaskTimer(plugin, () -> {
             for (int i = 0; i <= CHUNKS_PER_TICK; i++) {
                 if (!chunkList.isEmpty()) {
-                    Chunk chunk = chunkList.remove(0);
+                    Chunk chunk = chunkList.removeFirst();
                     regenerateChunk(chunk);
                 } else {
                     if (onCompletion != null) {
@@ -74,15 +71,25 @@ public class ChunkRegenerator {
 
         spawnTeleportPlayers(chunk);
 
-        Random random = new Random();
-        BiomeGrid biomeGrid = new DefaultBiomeGrid(world.getEnvironment());
-        ChunkData chunkData = chunkGen.generateChunkData(world, random, chunk.getX(), chunk.getZ(), biomeGrid);
+        Random random = new Random(world.getSeed() + (long) chunk.getX() * (long) chunk.getZ());
+
+        World world = chunk.getWorld();
+
+        ChunkData chunkData = Bukkit.createChunkData(world);
+        chunkGen.generateNoise(world, random, chunk.getX(), chunk.getZ(), chunkData);
+        chunkGen.generateSurface(world, random, chunk.getX(), chunk.getZ(), chunkData);
+        chunkGen.generateBedrock(world, random, chunk.getX(), chunk.getZ(), chunkData);
+        chunkGen.generateCaves(world, random, chunk.getX(), chunk.getZ(), chunkData);
+
+        BiomeProvider biomeProvider = chunkGen.getDefaultBiomeProvider(world);
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < chunk.getWorld().getMaxHeight(); y++) {
+                for (int y = world.getMinHeight(); y < world.getMaxHeight(); y++) {
+                    if (biomeProvider != null) {
+                        chunk.getBlock(x, y, z).setBiome(biomeProvider.getBiome(world, x, y, z));
+                    }
                     chunk.getBlock(x, y, z).setBlockData(chunkData.getBlockData(x, y, z));
-                    chunk.getBlock(x, y, z).setBiome(biomeGrid.getBiome(x, y, z));
                 }
             }
         }
@@ -109,51 +116,6 @@ public class ChunkRegenerator {
             if (entity instanceof Player) {
                 uSkyBlock.getInstance().getTeleportLogic().spawnTeleport((Player) entity, true);
             }
-        }
-    }
-
-    /**
-     * Default BiomeGrid used by uSkyBlock when regenerating chunks.
-     */
-    static class DefaultBiomeGrid implements BiomeGrid {
-        private Biome defaultBiome;
-
-        DefaultBiomeGrid(Environment env) {
-            switch (env) {
-                case THE_END:
-                    defaultBiome = Biome.THE_END;
-                    break;
-                case NETHER:
-                    defaultBiome = Biome.NETHER_WASTES;
-                    break;
-                default:
-                    defaultBiome = Biome.valueOf(Settings.general_defaultBiome);
-                    break;
-            }
-        }
-
-        @NotNull
-        @Deprecated
-        @Override
-        public Biome getBiome(int x, int z) {
-            return defaultBiome;
-        }
-
-        @NotNull
-        @Override
-        public Biome getBiome(int x, int y, int z) {
-            return defaultBiome;
-        }
-
-        @Deprecated
-        @Override
-        public void setBiome(int x, int z, @NotNull Biome bio) {
-            defaultBiome = bio;
-        }
-
-        @Override
-        public void setBiome(int x, int y, int z, @NotNull Biome bio) {
-            defaultBiome = bio;
         }
     }
 }

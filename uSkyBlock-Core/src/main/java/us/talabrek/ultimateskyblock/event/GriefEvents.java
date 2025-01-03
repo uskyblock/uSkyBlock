@@ -195,7 +195,7 @@ public class GriefEvents implements Listener {
 
     private @Nullable String getOwningIsland(@NotNull Wither wither) {
         PersistentDataContainer container = wither.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(plugin, WitherTagListener.ENTITY_ORIGIN_METADATA);
+        NamespacedKey key = new NamespacedKey(plugin, WitherTagEvents.ENTITY_ORIGIN_METADATA);
         if (container.has(key, PersistentDataType.STRING)) {
             return container.get(key, PersistentDataType.STRING);
         } else {

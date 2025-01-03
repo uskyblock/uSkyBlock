@@ -24,6 +24,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.api.PlayerInfo {
     private static final String CN = PlayerInfo.class.getName();
     private static final Logger log = Logger.getLogger(CN);
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final int YML_VERSION = 1;
     private final uSkyBlock plugin;
@@ -114,6 +116,10 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     @Override
     public String getPlayerName() {
         return this.playerName;
+    }
+
+    public UUID getPlayerId() {
+        return this.uuid;
     }
 
     public void setIslandLocation(final Location l) {

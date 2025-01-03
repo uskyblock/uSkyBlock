@@ -131,13 +131,13 @@ public enum I18nUtil {
     @Contract("null -> null")
     public static Locale getLocale(@Nullable String lang) {
         if (lang != null) {
-            String[] parts = lang.split("[_\\-]");
+            String[] parts = lang.split("[-_]");
             if (parts.length >= 3) {
-                return new Locale(parts[0], parts[1], parts[2]);
+                return Locale.of(parts[0], parts[1], parts[2]);
             } else if (parts.length == 2) {
-                return new Locale(parts[0], parts[1]);
+                return Locale.of(parts[0], parts[1]);
             } else {
-                return new Locale(parts[0]);
+                return Locale.of(parts[0]);
             }
         }
         return null;

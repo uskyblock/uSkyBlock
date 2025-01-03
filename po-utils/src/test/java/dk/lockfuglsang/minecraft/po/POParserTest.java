@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class POParserTest {
 
@@ -74,5 +74,4 @@ public class POParserTest {
             assertThat(properties.getProperty(key), is(value));
         }
     }
-
 }

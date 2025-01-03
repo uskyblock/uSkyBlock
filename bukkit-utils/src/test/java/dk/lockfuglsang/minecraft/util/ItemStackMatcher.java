@@ -44,15 +44,10 @@ public class ItemStackMatcher extends TypeSafeDiagnosingMatcher<ItemStack> {
 
     @Factory
     public static Matcher<Iterable<? extends ItemStack>> itemStacks(ItemStack... items) {
-        List<Matcher<? super ItemStack>> matchers = new ArrayList();
-        ItemStack[] arr$ = items;
-        int len$ = items.length;
-
-        for(int i$ = 0; i$ < len$; ++i$) {
-            ItemStack item = arr$[i$];
+        List<Matcher<? super ItemStack>> matchers = new ArrayList<>();
+        for (ItemStack item : items) {
             matchers.add(itemStack(item));
         }
-
-        return contains((List)matchers);
+        return contains(matchers);
     }
 }

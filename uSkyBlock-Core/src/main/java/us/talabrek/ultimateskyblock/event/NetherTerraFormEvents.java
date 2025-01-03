@@ -38,7 +38,7 @@ import java.util.Random;
  */
 public class NetherTerraFormEvents implements Listener {
     private final uSkyBlock plugin;
-    private final Map<Material,List<MaterialUtil.MaterialProbability>> terraFormMap = new HashMap<>();
+    private final Map<Material, List<MaterialUtil.MaterialProbability>> terraFormMap = new HashMap<>();
     private final Map<String, Double> toolWeights = new HashMap<>();
     private static final Random RND = new Random(System.currentTimeMillis());
     private final double maxScan;
@@ -104,8 +104,7 @@ public class NetherTerraFormEvents implements Listener {
         if (!terraFormMap.containsKey(block.getType())) {
             return; // Not a block we terra-form on.
         }
-        // TODO: 10/07/2016 - R4zorax: Handle dual-wielding (would break 1.8 compatibility)
-        ItemStack tool = event.getPlayer().getItemInHand();
+        ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
         if (event.getBlock().getDrops(tool).isEmpty()) {
             return; // Only terra-form when stuff is mined correctly
         }
@@ -132,7 +131,7 @@ public class NetherTerraFormEvents implements Listener {
     }
 
     private void spawnBlock(Material type, Location location, Vector v, ProtectedCuboidRegion islandRegion) {
-        Location spawnLoc = null;
+        Location spawnLoc;
         if (MaterialUtil.isFallingMaterial(type)) {
             spawnLoc = findSolidSpawnLocation(location, v, islandRegion);
         } else {
@@ -146,18 +145,18 @@ public class NetherTerraFormEvents implements Listener {
     private Location findAirSpawnLocation(Location location, Vector v, ProtectedCuboidRegion islandRegion) {
         // Searches in a cone for an air block
         Location lookAt = new Location(location.getWorld(),
-                Math.round(location.getX() + v.getX()),
-                Math.round(location.getY() + v.getY()),
-                Math.round(location.getZ() + v.getZ()));
+            Math.round(location.getX() + v.getX()),
+            Math.round(location.getY() + v.getY()),
+            Math.round(location.getZ() + v.getZ()));
         while (v.length() < maxScan) {
             for (Location loc : getLocationsInPlane(lookAt, v)) {
                 if (loc.getBlock().getType() == Material.AIR && isAdjacentToSolid(loc)
-                        && isInIslandRegion(islandRegion, loc)) {
+                    && isInIslandRegion(islandRegion, loc)) {
                     return loc;
                 }
             }
             double n = v.length();
-            v.normalize().multiply(n+1);
+            v.normalize().multiply(n + 1);
         }
         return null;
     }
@@ -180,22 +179,22 @@ public class NetherTerraFormEvents implements Listener {
         while (v.length() < maxScan) {
             for (Location loc : getLocationsInPlane(location, v)) {
                 if (loc.getBlock().getType() == Material.AIR
-                        && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()
-                        && isInIslandRegion(islandRegion, loc)) {
+                    && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()
+                    && isInIslandRegion(islandRegion, loc)) {
                     return loc;
                 }
             }
             double n = v.length();
-            v.normalize().multiply(n+1);
+            v.normalize().multiply(n + 1);
         }
         return null;
     }
 
     private List<Location> getLocationsInPlane(Location location, Vector v) {
         Location lookAt = new Location(location.getWorld(),
-                Math.round(location.getX() + v.getX()),
-                Math.round(location.getY() + v.getY()),
-                Math.round(location.getZ() + v.getZ()));
+            Math.round(location.getX() + v.getX()),
+            Math.round(location.getY() + v.getY()),
+            Math.round(location.getZ() + v.getZ()));
         List<Location> locs = new ArrayList<>();
         boolean xFixed = Math.abs(v.getX()) > Math.abs(v.getZ());
         for (int r = 1; r <= v.length(); r++) {
@@ -210,14 +209,14 @@ public class NetherTerraFormEvents implements Listener {
             }
         }
         Collections.shuffle(locs);
-        locs = locs.subList(0, locs.size()/2); // Only try half
+        locs = locs.subList(0, locs.size() / 2); // Only try half
         return locs;
     }
 
     public List<Material> getYield(Material material, double toolWeight) {
         List<Material> copy = new ArrayList<>();
         for (MaterialUtil.MaterialProbability e : terraFormMap.get(material)) {
-            if (RND.nextDouble() < e.getProbability()*toolWeight) {
+            if (RND.nextDouble() < e.getProbability() * toolWeight) {
                 copy.add(e.getMaterial());
             }
         }
@@ -230,8 +229,7 @@ public class NetherTerraFormEvents implements Listener {
             return; // Bail out, not our problem
         }
         // TODO: 23/09/2015 - R4zorax: Perhaps enable this when island has a certain level?
-        if (event.getEntity() instanceof Fireball) {
-            Fireball fireball = (Fireball) event.getEntity();
+        if (event.getEntity() instanceof Fireball fireball) {
             fireball.setIsIncendiary(false);
             fireball.setFireTicks(0);
             event.setCancelled(true);
@@ -239,8 +237,7 @@ public class NetherTerraFormEvents implements Listener {
     }
 
     /**
-     * Comes AFTER the SpawnEvents{@link #onCreatureSpawn(CreatureSpawnEvent)} - so cancelled will have effect
-     * @param e
+     * Comes AFTER the {@link SpawnEvents#onCreatureSpawn(CreatureSpawnEvent)} - so cancelled will have effect
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent e) {
@@ -264,9 +261,9 @@ public class NetherTerraFormEvents implements Listener {
                     WitherSkeleton mob = (WitherSkeleton) e.getLocation().getWorld().spawnEntity(
                         e.getLocation(), EntityType.WITHER_SKELETON);
                     mob.getEquipment().setItemInMainHand(new ItemStack(Material.STONE_SWORD, 1));
-                } else if (p <= chanceWither+chanceBlaze) {
+                } else if (p <= chanceWither + chanceBlaze) {
                     e.getLocation().getWorld().spawnEntity(e.getLocation(), EntityType.BLAZE);
-                } else if (p <= chanceWither+chanceBlaze+chanceSkeleton) {
+                } else if (p <= chanceWither + chanceBlaze + chanceSkeleton) {
                     e.getLocation().getWorld().spawnEntity(e.getLocation(), EntityType.SKELETON);
                 } else {
                     e.setCancelled(false); // Spawn PigZombie

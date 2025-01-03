@@ -2,15 +2,13 @@ package us.talabrek.ultimateskyblock.island;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests the OrphanComparator
@@ -24,7 +22,7 @@ public class OrphanComparatorTest {
         List<OrphanLogic.Orphan> list = Arrays.asList(o1,o2,o3);
         List<OrphanLogic.Orphan> expected = Arrays.asList(o3,o2,o1);
 
-        Collections.sort(list, new OrphanComparator());
+        list.sort(new OrphanComparator());
         assertThat(list, is(expected));
     }
 
