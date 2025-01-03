@@ -41,6 +41,7 @@ public class H2Connection extends SqlStorage {
 
     protected Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
+            plugin.getLogger().info("Connecting to " + getUrl());
             connection = createConnection();
         }
 
@@ -66,17 +67,16 @@ public class H2Connection extends SqlStorage {
 
     @Override
     public PlayerInfo getPlayerInfo(UUID uuid) throws SQLException {
-        try (Connection c = getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement("SELECT uuid, username, display_name FROM usb_players WHERE uuid = ?")) {
-                ps.setString(1, uuid.toString());
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return new PlayerInfo(
-                            UUID.fromString(
-                                rs.getString("uuid")),
-                                rs.getString("username"),
-                                rs.getString("display_name"));
-                    }
+        Connection c = getConnection();
+        try (PreparedStatement ps = c.prepareStatement("SELECT uuid, username, display_name FROM usb_players WHERE uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new PlayerInfo(
+                        UUID.fromString(
+                            rs.getString("uuid")),
+                            rs.getString("username"),
+                            rs.getString("display_name"));
                 }
             }
         }
@@ -86,17 +86,16 @@ public class H2Connection extends SqlStorage {
 
     @Override
     public PlayerInfo getPlayerInfo(String username) throws SQLException {
-        try (Connection c = getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement("SELECT uuid, username, display_name FROM usb_players WHERE username = ?")) {
-                ps.setString(1, username);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return new PlayerInfo(
-                            UUID.fromString(
-                                rs.getString("uuid")),
-                            rs.getString("username"),
-                            rs.getString("display_name"));
-                    }
+        Connection c = getConnection();
+        try (PreparedStatement ps = c.prepareStatement("SELECT uuid, username, display_name FROM usb_players WHERE username = ?")) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new PlayerInfo(
+                        UUID.fromString(
+                            rs.getString("uuid")),
+                        rs.getString("username"),
+                        rs.getString("display_name"));
                 }
             }
         }
@@ -106,13 +105,12 @@ public class H2Connection extends SqlStorage {
 
     @Override
     public void savePlayerInfo(PlayerInfo playerInfo) throws SQLException {
-        try (Connection c = getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement("INSERT INTO usb_players (uuid, username, display_name) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE username=VALUES(username), display_name=VALUES(display_name)")) {
-                ps.setString(1, playerInfo.getUuid().toString());
-                ps.setString(2, playerInfo.getName());
-                ps.setString(3, playerInfo.getDisplayName());
-                ps.execute();
-            }
+        Connection c = getConnection();
+        try (PreparedStatement ps = c.prepareStatement("INSERT INTO usb_players (uuid, username, display_name) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE username=VALUES(username), display_name=VALUES(display_name)")) {
+            ps.setString(1, playerInfo.getUuid().toString());
+            ps.setString(2, playerInfo.getName());
+            ps.setString(3, playerInfo.getDisplayName());
+            ps.execute();
         }
     }
 }

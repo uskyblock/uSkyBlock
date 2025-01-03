@@ -69,7 +69,20 @@ public class LegacyPlayerDB implements PlayerDB {
 
     @Override
     public String getName(UUID uuid) {
+        // Lookup, but cache in our database afterwards.
+        if (UNKNOWN_PLAYER_UUID.equals(uuid)) {
+            return UNKNOWN_PLAYER_NAME;
+        }
+
         PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(uuid).join();
+
+        if (playerInfo == null) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+            if (offlinePlayer.hasPlayedBefore()) {
+                updatePlayer(offlinePlayer.getUniqueId(), offlinePlayer.getName(), offlinePlayer.getName());
+                return offlinePlayer.getName();
+            }
+        }
         return playerInfo != null ? playerInfo.getName() : null;
     }
 
@@ -78,6 +91,7 @@ public class LegacyPlayerDB implements PlayerDB {
         if (UNKNOWN_PLAYER_NAME.equalsIgnoreCase(name)) {
             return UNKNOWN_PLAYER_UUID;
         }
+
         PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(name).join();
         return playerInfo != null ? playerInfo.getUuid() : Bukkit.getOfflinePlayer(name).getUniqueId();
     }
