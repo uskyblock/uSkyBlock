@@ -1,16 +1,18 @@
 package us.talabrek.ultimateskyblock;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import org.bukkit.Registry;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import us.talabrek.ultimateskyblock.command.island.BiomeCommand;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Settings {
@@ -32,7 +34,8 @@ public class Settings {
     public static int general_cooldownInfo;
     public static int general_cooldownRestart;
     public static int general_biomeChange;
-    public static String general_defaultBiome;
+    public static Biome general_defaultBiome;
+    public static Biome general_defaultNetherBiome;
     public static boolean extras_sendToSpawn;
     public static boolean extras_respawnAtIsland;
     public static boolean extras_obsidianToLava;
@@ -87,14 +90,9 @@ public class Settings {
         } catch (Exception e) {
             general_biomeChange = 3600;
         }
-        try {
-            general_defaultBiome = config.getString("options.general.defaultBiome");
-            if (!BiomeCommand.biomeExists(general_defaultBiome)) {
-                general_defaultBiome = "OCEAN";
-            }
-        } catch (Exception e) {
-            general_defaultBiome = "OCEAN";
-        }
+        general_defaultBiome = loadBiome(config, "options.general.defaultBiome", Biome.OCEAN);
+        general_defaultNetherBiome = loadBiome(config, "options.general.defaultNetherBiome", Biome.NETHER_WASTES);
+
         try {
             general_cooldownRestart = config.getInt("options.general.cooldownRestart");
             if (general_cooldownRestart < 0) {
@@ -120,9 +118,7 @@ public class Settings {
             changed = true;
         }
         general_spawnSize = config.getInt("options.general.spawnSize", 50);
-        island_chestItems = ItemStackUtil.createItemList(
-                config.getStringList("options.island.chestItems")
-        );
+        island_chestItems = ItemStackUtil.createItemList(config.getStringList("options.island.chestItems"));
 
         island_schematicName = config.getString("options.island.schematicName");
         if (island_schematicName == null || "yourschematicname".equals(island_schematicName) || "uSkyBlockDefault".equals(island_schematicName)) {
@@ -159,8 +155,22 @@ public class Settings {
             changed = true;
         }
         nether_lava_level = config.getInt("nether.lava_level", config.getInt("nether.lava-level", 32));
-        nether_height = config.getInt("nether.height", island_height/2);
+        nether_height = config.getInt("nether.height", island_height / 2);
         return changed;
+    }
+
+    private static Biome loadBiome(FileConfiguration config, String path, Biome defaultBiome) {
+        try {
+            String biomeKey = config.getString(path, defaultBiome.getKey().getKey());
+            Biome parsedBiome = Registry.BIOME.match(biomeKey);
+            if (parsedBiome == null) {
+                log.log(Level.WARNING, "Invalid Biome in '{0}': {1}", new Object[]{path, biomeKey});
+                parsedBiome = defaultBiome;
+            }
+            return parsedBiome;
+        } catch (Exception e) {
+            return defaultBiome;
+        }
     }
 
     public static List<ItemStack> getIslandChestItems() {

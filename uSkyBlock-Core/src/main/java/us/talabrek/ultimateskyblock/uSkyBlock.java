@@ -10,6 +10,7 @@ import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,8 +48,17 @@ import us.talabrek.ultimateskyblock.command.ChallengeCommand;
 import us.talabrek.ultimateskyblock.command.IslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
-import us.talabrek.ultimateskyblock.command.island.BiomeCommand;
-import us.talabrek.ultimateskyblock.event.*;
+import us.talabrek.ultimateskyblock.event.ExploitEvents;
+import us.talabrek.ultimateskyblock.event.GriefEvents;
+import us.talabrek.ultimateskyblock.event.InternalEvents;
+import us.talabrek.ultimateskyblock.event.ItemDropEvents;
+import us.talabrek.ultimateskyblock.event.MenuEvents;
+import us.talabrek.ultimateskyblock.event.NetherTerraFormEvents;
+import us.talabrek.ultimateskyblock.event.PlayerEvents;
+import us.talabrek.ultimateskyblock.event.SpawnEvents;
+import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
+import us.talabrek.ultimateskyblock.event.WitherTagEvents;
+import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -593,19 +603,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return playerLogic.getPlayerInfo(playerName);
     }
 
-    public boolean setBiome(final Location loc, final String bName) {
-        Biome biome = getBiome(bName);
-        if (biome == null) return false;
-        setBiome(loc, biome);
-        return true;
+    // TODO: move these to Biome/World related classes
+    public @Nullable Biome getBiome(String biomeName) {
+        if (biomeName == null) return null;
+        return Registry.BIOME.match(biomeName);
     }
 
-    public Biome getBiome(String bName) {
-        if (bName == null) return null;
-        return BiomeCommand.BIOMES.get(bName.toLowerCase());
-    }
-
-    private void setBiome(Location loc, Biome biome) {
+    public void setBiome(Location loc, Biome biome) {
         new SetBiomeTask(this, loc, biome, null).runTask(this);
     }
 

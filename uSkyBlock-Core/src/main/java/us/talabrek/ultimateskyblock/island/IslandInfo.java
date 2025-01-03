@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Registry;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -390,15 +392,24 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     }
 
     @Override
-    public String getBiome() {
-        return config.getString("general.biome", Settings.general_defaultBiome).toUpperCase();
+    public Biome getIslandBiome() {
+        String biomeKey = config.getString("general.biome", Settings.general_defaultBiome.getKey().getKey());
+        Biome biome = Registry.BIOME.match(biomeKey);
+        if (biome != null) {
+            return biome;
+        } else {
+            return Settings.general_defaultNetherBiome;
+        }
     }
 
-    public void setBiome(@NotNull String biome) {
-        Validate.notNull(biome, "Biome cannot be null");
-        Validate.notEmpty(biome, "Biome cannot be empty");
+    @Override
+    public String getBiomeName() {
+        return getIslandBiome().getKey().getKey();
+    }
 
-        config.set("general.biome", biome.toUpperCase());
+    public void setBiome(@NotNull Biome biome) {
+        Validate.notNull(biome, "Biome cannot be null");
+        config.set("general.biome", biome.getKey().getKey());
         save();
     }
 
@@ -981,7 +992,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         String str = "\u00a7bIsland Info:\n";
         str += ChatColor.GRAY + "  - level: " + ChatColor.DARK_AQUA + String.format("%5.2f", getLevel()) + "\n";
         str += ChatColor.GRAY + "  - location: " + ChatColor.DARK_AQUA + name + "\n";
-        str += ChatColor.GRAY + "  - biome: " + ChatColor.DARK_AQUA + getBiome() + "\n";
+        str += ChatColor.GRAY + "  - biome: " + ChatColor.DARK_AQUA + getBiomeName() + "\n";
         str += ChatColor.GRAY + "  - schematic: " + ChatColor.DARK_AQUA + getSchematicName() + "\n";
         str += ChatColor.GRAY + "  - warp: " + ChatColor.DARK_AQUA + hasWarp() + "\n";
         if (hasWarp()) {
