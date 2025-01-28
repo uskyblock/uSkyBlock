@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
@@ -410,7 +411,8 @@ public class ChallengeLogic implements Listener {
             lores.add(tr("\u00a74\u00a7lYou can't repeat this challenge."));
         }
         if (completion.getTimesCompleted() > 0) {
-            meta.addEnchant(Enchantment.LOYALTY, 0, true);
+            meta.addEnchant(Enchantment.LOYALTY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         meta.setLore(lores);
         currentChallengeItem.setItemMeta(meta);
