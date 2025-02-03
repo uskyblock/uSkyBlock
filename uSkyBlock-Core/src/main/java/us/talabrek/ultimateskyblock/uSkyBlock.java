@@ -59,6 +59,8 @@ import us.talabrek.ultimateskyblock.event.SpawnEvents;
 import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
 import us.talabrek.ultimateskyblock.event.WitherTagEvents;
 import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
+import us.talabrek.ultimateskyblock.gui.GuiListener;
+import us.talabrek.ultimateskyblock.gui.GuiManager;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -141,6 +143,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private PerkLogic perkLogic;
     private TeleportLogic teleportLogic;
     private LimitLogic limitLogic;
+    private GuiManager guiManager;
 
     /* MANAGERS */
     private HookManager hookManager;
@@ -252,7 +255,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 if (getWorldManager().getNetherWorld() != null) {
                     WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
                 }
-                registerEventsAndCommands();
+                registerEventsAndCommands(uSkyBlock.this.guiManager);
 
                 getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
                 log(Level.INFO, getVersionInfo(false));
@@ -326,11 +329,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return uSkyBlock.instance;
     }
 
-    public void registerEvents() {
+    public void registerEvents(GuiManager guiManager) {
         final PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new InternalEvents(this), this);
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new MenuEvents(this), this);
+        manager.registerEvents(new GuiListener(guiManager), this);
         manager.registerEvents(new ExploitEvents(this), this);
         manager.registerEvents(new WitherTagEvents(this), this);
         if (getConfig().getBoolean("options.protection.enabled", true)) {
@@ -725,7 +729,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Override
     public void reloadConfig() {
         reloadConfigs();
-        registerEventsAndCommands();
+        registerEventsAndCommands(this.guiManager);
     }
 
     private void reloadConfigs() {
@@ -783,13 +787,14 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             autoRecalculateTask.cancel();
         }
         chatLogic = new ChatLogic(this);
+        this.guiManager = new GuiManager();
     }
 
-    public void registerEventsAndCommands() {
+    public void registerEventsAndCommands(GuiManager guiManager) {
         if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
             return;
         }
-        registerEvents();
+        registerEvents(guiManager);
         int refreshEveryMinute = getConfig().getInt("options.island.autoRefreshScore", 0);
         if (refreshEveryMinute > 0) {
             int refreshTicks = refreshEveryMinute * 1200; // Ticks per minute
