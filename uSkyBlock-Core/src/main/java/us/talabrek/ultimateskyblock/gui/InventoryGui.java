@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.gui;
 
+import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -46,6 +47,7 @@ public abstract class InventoryGui implements InventoryHandler {
         requireNonNull(player);
         this.buttonMap.forEach((slot, button) -> {
             ItemStack icon = button.getIconCreator().apply(player);
+            icon = ItemStackUtil.asDisplayItem(icon);
             this.inventory.setItem(slot, icon);
         });
     }

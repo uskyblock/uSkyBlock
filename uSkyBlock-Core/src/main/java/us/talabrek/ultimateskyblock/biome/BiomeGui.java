@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.biome;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -79,6 +80,7 @@ public class BiomeGui extends InventoryGui {
         );
         if (biomeEntry.biome().equals(currentBiome)) {
             lore.add(tr("\u00a72\u00a7lThis is your current biome."));
+            itemMeta.addEnchant(Enchantment.LOYALTY, 1, true);
         } else {
             lore.add(tr("\u00a7e\u00a7lClick to change to this biome."));
         }
