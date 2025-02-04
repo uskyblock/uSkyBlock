@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.gui.InventoryButton;
 import us.talabrek.ultimateskyblock.gui.InventoryGui;
 
@@ -31,10 +32,10 @@ public class BiomeGui extends InventoryGui {
     private final int inventorySize;
     private String radius = "all";
 
-    public BiomeGui(List<BiomeEntry> biomes, Biome currentBiome) {
+    public BiomeGui(@NotNull List<BiomeEntry> biomes, @NotNull Biome currentBiome) {
         super(createInventory(computeInventorySize(biomes.size())));
-        this.biomes = biomes;
-        this.currentBiome = currentBiome;
+        this.biomes = requireNonNull(biomes);
+        this.currentBiome = requireNonNull(currentBiome);;
         this.inventorySize = computeInventorySize(biomes.size());
     }
 
@@ -51,7 +52,7 @@ public class BiomeGui extends InventoryGui {
     }
 
     @Override
-    public void decorate(Player player) {
+    public void decorate(@NotNull Player player) {
         decorateBiomes();
         decorateRadiusControls();
         decorateBackButton();

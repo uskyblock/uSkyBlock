@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.util.Objects.requireNonNull;
+
 public abstract class InventoryGui implements InventoryHandler {
 
     private static final Set<ClickType> REGULAR_CLICK_TYPES = Set.of(
@@ -28,18 +30,20 @@ public abstract class InventoryGui implements InventoryHandler {
     private final Map<Integer, InventoryButton> buttonMap = new HashMap<>();
 
     public InventoryGui(@NotNull Inventory inventory) {
-        this.inventory = inventory;
+        this.inventory = requireNonNull(inventory);
     }
 
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return this.inventory;
     }
 
-    public void addButton(int slot, InventoryButton button) {
+    public void addButton(int slot, @NotNull InventoryButton button) {
+        requireNonNull(button);
         this.buttonMap.put(slot, button);
     }
 
-    public void decorate(Player player) {
+    public void decorate(@NotNull Player player) {
+        requireNonNull(player);
         this.buttonMap.forEach((slot, button) -> {
             ItemStack icon = button.getIconCreator().apply(player);
             this.inventory.setItem(slot, icon);
@@ -47,7 +51,8 @@ public abstract class InventoryGui implements InventoryHandler {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(@NotNull InventoryClickEvent event) {
+        requireNonNull(event);
         if (!Objects.equals(event.getClickedInventory(), this.inventory)) {
             // Ignore clicks in other (lower) inventory our outside the inventory.
             return;
@@ -64,11 +69,12 @@ public abstract class InventoryGui implements InventoryHandler {
     }
 
     @Override
-    public void onOpen(InventoryOpenEvent event) {
+    public void onOpen(@NotNull InventoryOpenEvent event) {
+        requireNonNull(event);
         this.decorate((Player) event.getPlayer());
     }
 
     @Override
-    public void onClose(InventoryCloseEvent event) {
+    public void onClose(@NotNull InventoryCloseEvent event) {
     }
 }
