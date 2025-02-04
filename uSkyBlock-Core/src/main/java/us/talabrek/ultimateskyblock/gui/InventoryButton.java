@@ -3,30 +3,36 @@ package us.talabrek.ultimateskyblock.gui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import static java.util.Objects.requireNonNull;
 
 public class InventoryButton {
 
     private Function<Player, ItemStack> iconCreator;
-    private Consumer<InventoryClickEvent> eventConsumer;
+    private BiConsumer<Player, InventoryClickEvent> eventConsumer = (player, event) -> {
+    };
 
-    public InventoryButton creator(Function<Player, ItemStack> iconCreator) {
+    public @NotNull InventoryButton creator(@NotNull Function<Player, ItemStack> iconCreator) {
         this.iconCreator = iconCreator;
         return this;
     }
 
-    public InventoryButton consumer(Consumer<InventoryClickEvent> eventConsumer) {
+    public @NotNull InventoryButton consumer(@NotNull BiConsumer<Player, InventoryClickEvent> eventConsumer) {
         this.eventConsumer = eventConsumer;
         return this;
     }
 
-    public Consumer<InventoryClickEvent> getEventConsumer() {
+    public @NotNull BiConsumer<Player, InventoryClickEvent> getEventConsumer() {
+        requireNonNull(this.eventConsumer, "EventConsumer is not set");
         return this.eventConsumer;
     }
 
-    public Function<Player, ItemStack> getIconCreator() {
+    public @NotNull Function<Player, ItemStack> getIconCreator() {
+        requireNonNull(this.iconCreator, "IconCreator is not set");
         return this.iconCreator;
     }
 }
