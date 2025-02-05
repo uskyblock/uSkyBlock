@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.biome;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.gui.GuiManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -9,6 +10,7 @@ public class Biomes {
     private final GuiManager guiManager;
     private final BiomeConfig biomeConfig;
 
+    @Inject
     public Biomes(GuiManager guiManager, BiomeConfig biomeConfig) {
         this.guiManager = guiManager;
         this.biomeConfig = biomeConfig;

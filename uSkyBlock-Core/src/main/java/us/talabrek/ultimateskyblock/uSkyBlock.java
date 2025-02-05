@@ -1,5 +1,8 @@
 package us.talabrek.ultimateskyblock;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.Command;
@@ -40,6 +43,7 @@ import us.talabrek.ultimateskyblock.api.impl.UltimateSkyblockApi;
 import us.talabrek.ultimateskyblock.api.uSkyBlockAPI;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
+import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
 import us.talabrek.ultimateskyblock.chat.ChatLogic;
@@ -145,8 +149,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private PerkLogic perkLogic;
     private TeleportLogic teleportLogic;
     private LimitLogic limitLogic;
+    // TODO: eventually get rid of these global references and move them to a proper API instead
+    @Inject
     private GuiManager guiManager;
+    @Inject
     private Biomes biomes;
+    @Inject
     private BiomeConfig biomeConfig;
 
     /* MANAGERS */
@@ -791,9 +799,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             autoRecalculateTask.cancel();
         }
         chatLogic = new ChatLogic(this);
-        this.guiManager = new GuiManager();
-        this.biomeConfig = new BiomeConfig(getLogger());
-        this.biomes = new Biomes(this.guiManager, this.biomeConfig);
+
+        // TODO: move this to the main enable once everything supports injection
+        Injector injector = Guice.createInjector(new SkyblockModule());
+        injector.injectMembers(this);
     }
 
     public void registerEventsAndCommands(GuiManager guiManager, Biomes biomes, BiomeConfig biomeConfig) {
