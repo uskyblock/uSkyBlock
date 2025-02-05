@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.command.admin.AbstractPlayerInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminChallengeCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminIslandCommand;
@@ -44,12 +45,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
  * The new admin command, alias /usb
  */
 public class AdminCommand extends BaseCommandExecutor {
-    public AdminCommand(final uSkyBlock plugin, ConfirmHandler confirmHandler, AnimationHandler animationHandler) {
+    public AdminCommand(final uSkyBlock plugin, ConfirmHandler confirmHandler, AnimationHandler animationHandler,
+                        BiomeConfig biomeConfig) {
         super("usb", null, marktr("Ultimate SkyBlock Admin"));
         OnlinePlayerTabCompleter playerCompleter = new OnlinePlayerTabCompleter();
         TabCompleter challengeCompleter = new ChallengeTabCompleter();
         TabCompleter allPlayerCompleter = new AllPlayerTabCompleter(playerCompleter);
-        TabCompleter biomeCompleter = new BiomeTabCompleter();
+        TabCompleter biomeCompleter = new BiomeTabCompleter(biomeConfig);
         addTab("oplayer", playerCompleter);
         addTab("player", allPlayerCompleter);
         addTab("island", allPlayerCompleter);

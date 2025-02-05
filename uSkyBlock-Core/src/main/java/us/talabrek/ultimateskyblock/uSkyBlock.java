@@ -38,6 +38,8 @@ import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockScoreChangedEvent;
 import us.talabrek.ultimateskyblock.api.impl.UltimateSkyblockApi;
 import us.talabrek.ultimateskyblock.api.uSkyBlockAPI;
+import us.talabrek.ultimateskyblock.biome.BiomeConfig;
+import us.talabrek.ultimateskyblock.biome.Biomes;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
 import us.talabrek.ultimateskyblock.chat.ChatLogic;
@@ -59,6 +61,8 @@ import us.talabrek.ultimateskyblock.event.SpawnEvents;
 import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
 import us.talabrek.ultimateskyblock.event.WitherTagEvents;
 import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
+import us.talabrek.ultimateskyblock.gui.GuiListener;
+import us.talabrek.ultimateskyblock.gui.GuiManager;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -120,13 +124,13 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
     private static final String[][] depends = new String[][]{
-            new String[]{"Vault", "1.7.1", "optional"},
-            new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
-            new String[]{"WorldGuard", "7.0.8"},
-            new String[]{"FastAsyncWorldEdit", "2.4.3", "optional"},
-            new String[]{"Multiverse-Core", "4.3.1", "optional"},
-            new String[]{"Multiverse-Portals", "4.2.1", "optional"},
-            new String[]{"Multiverse-NetherPortals", "4.2.1", "optional"},
+        new String[]{"Vault", "1.7.1", "optional"},
+        new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
+        new String[]{"WorldGuard", "7.0.8"},
+        new String[]{"FastAsyncWorldEdit", "2.4.3", "optional"},
+        new String[]{"Multiverse-Core", "4.3.1", "optional"},
+        new String[]{"Multiverse-Portals", "4.2.1", "optional"},
+        new String[]{"Multiverse-NetherPortals", "4.2.1", "optional"},
     };
     private static String missingRequirements = null;
     private static final Random RND = new Random(System.currentTimeMillis());
@@ -141,6 +145,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private PerkLogic perkLogic;
     private TeleportLogic teleportLogic;
     private LimitLogic limitLogic;
+    private GuiManager guiManager;
+    private Biomes biomes;
+    private BiomeConfig biomeConfig;
 
     /* MANAGERS */
     private HookManager hookManager;
@@ -252,7 +259,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 if (getWorldManager().getNetherWorld() != null) {
                     WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
                 }
-                registerEventsAndCommands();
+                registerEventsAndCommands(uSkyBlock.this.guiManager, uSkyBlock.this.biomes, uSkyBlock.this.biomeConfig);
 
                 getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
                 log(Level.INFO, getVersionInfo(false));
@@ -269,8 +276,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public synchronized boolean isRequirementsMet(CommandSender sender, Command command, String... args) {
         if (maintenanceMode && !(
-                (command instanceof AdminCommand && args != null && args.length > 0 && args[0].equals("maintenance")) ||
-                        command instanceof SetMaintenanceCommand)) {
+            (command instanceof AdminCommand && args != null && args.length > 0 && args[0].equals("maintenance")) ||
+                command instanceof SetMaintenanceCommand)) {
             sender.sendMessage(tr("\u00a7cMAINTENANCE:\u00a7e uSkyBlock is currently in maintenance mode"));
             return false;
         }
@@ -326,11 +333,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return uSkyBlock.instance;
     }
 
-    public void registerEvents() {
+    public void registerEvents(GuiManager guiManager) {
         final PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new InternalEvents(this), this);
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new MenuEvents(this), this);
+        manager.registerEvents(new GuiListener(guiManager), this);
         manager.registerEvents(new ExploitEvents(this), this);
         manager.registerEvents(new WitherTagEvents(this), this);
         if (getConfig().getBoolean("options.protection.enabled", true)) {
@@ -490,7 +498,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (pi.getHasIsland()) {
             Location oldLoc = pi.getIslandLocation();
             if (oldLoc != null
-                    && !(newLoc.getBlockX() == oldLoc.getBlockX() && newLoc.getBlockZ() == oldLoc.getBlockZ())) {
+                && !(newLoc.getBlockX() == oldLoc.getBlockX() && newLoc.getBlockZ() == oldLoc.getBlockZ())) {
                 deleteOldIsland = true;
             }
         }
@@ -521,12 +529,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public boolean playerIsOnIsland(final Player player) {
         return playerIsOnOwnIsland(player)
-                || playerIsTrusted(player);
+            || playerIsTrusted(player);
     }
 
     public boolean playerIsOnOwnIsland(Player player) {
         return locationIsOnIsland(player, player.getLocation())
-                || locationIsOnNetherIsland(player, player.getLocation());
+            || locationIsOnNetherIsland(player, player.getLocation());
     }
 
     private boolean playerIsTrusted(Player player) {
@@ -725,7 +733,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Override
     public void reloadConfig() {
         reloadConfigs();
-        registerEventsAndCommands();
+        registerEventsAndCommands(this.guiManager, this.biomes, this.biomeConfig);
     }
 
     private void reloadConfigs() {
@@ -783,13 +791,16 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             autoRecalculateTask.cancel();
         }
         chatLogic = new ChatLogic(this);
+        this.guiManager = new GuiManager();
+        this.biomeConfig = new BiomeConfig(getLogger());
+        this.biomes = new Biomes(this.guiManager, this.biomeConfig);
     }
 
-    public void registerEventsAndCommands() {
+    public void registerEventsAndCommands(GuiManager guiManager, Biomes biomes, BiomeConfig biomeConfig) {
         if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
             return;
         }
-        registerEvents();
+        registerEvents(guiManager);
         int refreshEveryMinute = getConfig().getInt("options.island.autoRefreshScore", 0);
         if (refreshEveryMinute > 0) {
             int refreshTicks = refreshEveryMinute * 1200; // Ticks per minute
@@ -800,9 +811,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         confirmHandler = new ConfirmHandler(this, getConfig().getInt("options.advanced.confirmTimeout", 10));
         cooldownHandler = new CooldownHandler(this);
         animationHandler = new AnimationHandler(this);
-        getCommand("island").setExecutor(new IslandCommand(this, menu));
+        getCommand("island").setExecutor(new IslandCommand(this, menu, biomes, biomeConfig));
         getCommand("challenges").setExecutor(new ChallengeCommand(this));
-        getCommand("usb").setExecutor(new AdminCommand(this, confirmHandler, animationHandler));
+        getCommand("usb").setExecutor(new AdminCommand(this, confirmHandler, animationHandler, biomeConfig));
         getCommand("islandtalk").setExecutor(new IslandTalkCommand(this, chatLogic));
         getCommand("partytalk").setExecutor(new PartyTalkCommand(this, chatLogic));
     }
@@ -832,10 +843,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             return;
         }
         command = command
-                .replaceAll("\\{player\\}", Matcher.quoteReplacement(player.getName()))
-                .replaceAll("\\{playerName\\}", Matcher.quoteReplacement(player.getDisplayName()))
-                .replaceAll("\\{playername\\}", Matcher.quoteReplacement(player.getDisplayName()))
-                .replaceAll("\\{position\\}", Matcher.quoteReplacement(LocationUtil.asString(player.getLocation()))); // Figure out what this should be
+            .replaceAll("\\{player\\}", Matcher.quoteReplacement(player.getName()))
+            .replaceAll("\\{playerName\\}", Matcher.quoteReplacement(player.getDisplayName()))
+            .replaceAll("\\{playername\\}", Matcher.quoteReplacement(player.getDisplayName()))
+            .replaceAll("\\{position\\}", Matcher.quoteReplacement(LocationUtil.asString(player.getLocation()))); // Figure out what this should be
         Matcher m = Pattern.compile("^\\{p=(?<prob>0?\\.[0-9]+)\\}(.*)$").matcher(command);
         if (m.matches()) {
             double p = Double.parseDouble(m.group("prob"));
@@ -946,8 +957,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public IslandRank getIslandRank(Player player) {
         PlayerInfo playerInfo = getPlayerInfo(player);
         return islandLogic != null && playerInfo != null && playerInfo.getHasIsland() ?
-                islandLogic.getRank(playerInfo.locationForParty())
-                : null;
+            islandLogic.getRank(playerInfo.locationForParty())
+            : null;
     }
 
     @Override
@@ -967,7 +978,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public void fireAsyncEvent(final Event event) {
         getServer().getScheduler().runTaskAsynchronously(this,
-                () -> getServer().getPluginManager().callEvent(event)
+            () -> getServer().getPluginManager().callEvent(event)
         );
     }
 
@@ -1115,13 +1126,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public BukkitTask async(Runnable runnable, long delayMs) {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(this, runnable,
-                TimeUtil.millisAsTicks(delayMs));
+            TimeUtil.millisAsTicks(delayMs));
     }
 
     public BukkitTask async(Runnable runnable, long delay, long every) {
         return Bukkit.getScheduler().runTaskTimerAsynchronously(this, runnable,
-                TimeUtil.millisAsTicks(delay),
-                TimeUtil.millisAsTicks(every));
+            TimeUtil.millisAsTicks(delay),
+            TimeUtil.millisAsTicks(every));
     }
 
     public BukkitTask sync(Runnable runnable) {
@@ -1130,13 +1141,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public BukkitTask sync(Runnable runnable, long delayMs) {
         return Bukkit.getScheduler().runTaskLater(this, runnable,
-                TimeUtil.millisAsTicks(delayMs));
+            TimeUtil.millisAsTicks(delayMs));
     }
 
     public BukkitTask sync(Runnable runnable, long delay, long every) {
         return Bukkit.getScheduler().runTaskTimer(this, runnable,
-                TimeUtil.millisAsTicks(delay),
-                TimeUtil.millisAsTicks(every));
+            TimeUtil.millisAsTicks(delay),
+            TimeUtil.millisAsTicks(every));
     }
 
     public void execCommands(Player player, List<String> cmdList) {

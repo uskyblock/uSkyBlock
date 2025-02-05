@@ -5,7 +5,6 @@ import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,7 +22,6 @@ import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.GuiItemUtil;
-import us.talabrek.ultimateskyblock.util.PlayerUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,69 +82,6 @@ public class SkyBlockMenu {
                 other players from the island,
                 but they are unable to kick
                 the island leader."""))
-    );
-    private final List<BiomeMenuItem> biomeMenus = Arrays.asList(
-        new BiomeMenuItem(new ItemStack(Material.TROPICAL_FISH, 1),
-            Biome.OCEAN, tr("Ocean"),
-            tr("The ocean biome is the basic\nstarting biome for all islands.\npassive mobs like animals will\nnot spawn. Hostile mobs will\nspawn normally.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.SPRUCE_SAPLING, 1),
-            Biome.FOREST, tr("Forest"),
-            tr("The forest biome will allow\nyour island to spawn passive.\nmobs like animals (including\nwolves). Hostile mobs will\nspawn normally.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.SAND, 1),
-            Biome.DESERT, tr("Desert"),
-            tr("The desert biome makes it so\nthat there is no rain or snow\non your island. Passive mobs\nwon't spawn. Hostile mobs will\nspawn normally.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.JUNGLE_SAPLING, 1),
-            Biome.JUNGLE, tr("Jungle"),
-            tr("The jungle biome is bright\nand colorful. Passive mobs\n(including ocelots) will\nspawn. Hostile mobs will\nspawn normally.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.LILY_PAD, 1),
-            Biome.SWAMP, tr("Swampland"),
-            tr("The swamp biome is dark\nand dull. Passive mobs\nwill spawn normally and\nslimes have a small chance\nto spawn at night depending\non the moon phase.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.SNOW, 1),
-            Biome.TAIGA, tr("Taiga"),
-            tr("The taiga biome has snow\ninstead of rain. Passive\nmobs will spawn normally\n(including wolves) and\nhostile mobs will spawn.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.RED_MUSHROOM, 1),
-            Biome.MUSHROOM_FIELDS, tr("Mushroom"),
-            tr("The mushroom biome is\nbright and colorful.\nMooshrooms are the only\nmobs that will spawn.\nNo other passive or\nhostile mobs will spawn.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.NETHER_BRICK, 1),
-            Biome.NETHER_WASTES, tr("Hell"),
-            tr("The hell biome looks\ndark and dead. Some\nmobs from the nether will\nspawn in this biome\n(excluding ghasts and\nblazes).")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.ENDER_EYE, 1),
-            Biome.THE_END, tr("Sky"),
-            tr("The sky biome gives your\nisland a special dark sky.\nOnly endermen will spawn\nin this biome.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.TALL_GRASS, 1),
-            Biome.PLAINS, tr("Plains"),
-            tr("The plains biome has rain\ninstead of snow. Passive\nmobs will spawn normally\n(including horses) and\nhostile mobs will spawn.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.EMERALD_ORE, 1),
-            Biome.WINDSWEPT_HILLS, tr("Extreme Hills"),
-            tr("The extreme hills biome.\nPassive mobs will spawn \nnormally and hostile\nmobs will spawn.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.ROSE_BUSH, 1),
-            Biome.FLOWER_FOREST, tr("Flower Forest"),
-            tr("The flower forest biome.\nPassive mobs will spawn \nnormally and hostile\nmobs will spawn.")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.PRISMARINE_SHARD, 1),
-            Biome.DEEP_OCEAN, tr("Deep Ocean"),
-            tr("""
-                The deep-ocean biome is an advanced
-                biome. Passive mobs like animals will
-                not spawn. Hostile mobs\s
-                (including Guardians) will
-                spawn normally.""")
-        ),
-        new BiomeMenuItem(new ItemStack(Material.PACKED_ICE, 1),
-            Biome.SNOWY_PLAINS, tr("Ice Plains"),
-            tr("The ice-plains biome is an advanced biome.\nMobs will spawn naturally.\nincluding polar-bears")
-        )
     );
 
     public SkyBlockMenu(uSkyBlock plugin, ChallengeLogic challengeLogic) {
@@ -284,93 +219,6 @@ public class SkyBlockMenu {
         menu.setItem(8, menuItem);
         lores.clear();
         return menu;
-    }
-
-    public Inventory displayBiomeGUI(final Player player) {
-        List<String> lores = new ArrayList<>();
-        String title = "\u00a79" + tr("Island Biome");
-        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 27, title);
-        ItemMeta meta4 = requireNonNull(requireNonNull(sign.getItemMeta()));
-        meta4.setDisplayName("\u00a7h" + tr("Island Biome"));
-        addLore(lores, tr("\u00a7eClick here to return to\n\u00a7ethe main island screen."));
-        meta4.setLore(lores);
-        sign.setItemMeta(meta4);
-        menu.addItem(sign);
-        lores.clear();
-        Biome currentBiome = plugin.getIslandInfo(player).getIslandBiome();
-        for (BiomeMenuItem biomeMenu : biomeMenus) {
-            ItemStack menuItem = biomeMenu.getIcon();
-            meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-            if (player.hasPermission("usb.biome." + biomeMenu.getBiome().getKey().getKey())) {
-                meta4.setDisplayName("\u00a7a" + tr("Biome: {0}", biomeMenu.getTitle()));
-                addLore(lores, "\u00a7f", biomeMenu.getDescription());
-                if (biomeMenu.getBiome().equals(currentBiome)) {
-                    addLore(lores, tr("\u00a72\u00a7lThis is your current biome."));
-                } else {
-                    addLore(lores, tr("\u00a7e\u00a7lClick to change to this biome."));
-                }
-            } else {
-                meta4.setDisplayName("\u00a78" + tr("Biome: {0}", biomeMenu.getTitle()));
-                lores.add("\u00a7c" + tr("You cannot use this biome."));
-                addLore(lores, "\u00a77", biomeMenu.getDescription());
-            }
-            meta4.setLore(lores);
-            menuItem.setItemMeta(meta4);
-            menu.addItem(menuItem);
-            lores.clear();
-        }
-
-        updateBiomeRadius(player, menu);
-
-
-        return menu;
-    }
-
-    private void updateBiomeRadius(Player player, Inventory menu) {
-        String radius = PlayerUtil.getMetadata(player, "biome.radius", "all");
-        String radiusDisplay = switch (radius) {
-            case "chunk" -> tr("\u00a72chunk");
-            case "all" -> tr("\u00a7call");
-            default -> tr("\u00a7e{0}", radius);
-        };
-
-        List<String> lores = new ArrayList<>();
-        ItemStack menuItem = new ItemStack(Material.RED_CARPET);
-        ItemMeta itemMeta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        itemMeta.setDisplayName(tr("\u00a7c-"));
-        lores.add(tr("Decrease radius of biome-change"));
-        lores.add(tr(tr("Current radius: {0}", radiusDisplay)));
-        itemMeta.setLore(lores);
-        menuItem.setItemMeta(itemMeta);
-        menu.setItem(21, menuItem);
-
-        lores.clear();
-        menuItem = new ItemStack(Material.GRASS_BLOCK);
-        if (radius.matches("[0-9]+")) {
-            int radiusInt = Integer.parseInt(radius, 10);
-            if (radiusInt <= menuItem.getType().getMaxStackSize()) {
-                menuItem.setAmount(radiusInt);
-            } else {
-                menuItem.setAmount(1);
-            }
-        } else {
-            menuItem.setAmount(1);
-        }
-        itemMeta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        itemMeta.setDisplayName(tr("Current radius: {0}", radiusDisplay));
-        itemMeta.setLore(lores);
-        menuItem.setItemMeta(itemMeta);
-        menu.setItem(22, menuItem);
-
-        lores.clear();
-        menuItem = new ItemStack(Material.GREEN_CARPET);
-        itemMeta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        itemMeta.setDisplayName(tr("\u00a72+"));
-        lores.add(tr("Increase radius of biome-change"));
-        lores.add(tr(tr("Current radius: {0}", radiusDisplay)));
-        itemMeta.setLore(lores);
-        menuItem.setItemMeta(itemMeta);
-        menu.setItem(23, menuItem);
     }
 
     private void addExtraMenus(Player player, Inventory menu) {
@@ -786,8 +634,6 @@ public class SkyBlockMenu {
             onClickPartyMenu(event, currentItem, p, meta, skull, slotIndex);
         } else if (inventoryName.contains(stripFormatting(tr("Permissions")))) {
             onClickPermissionMenu(event, currentItem, p, inventoryName, slotIndex);
-        } else if (inventoryName.equalsIgnoreCase(stripFormatting(tr("Island Biome")))) {
-            onClickBiomeMenu(event, currentItem, p, slotIndex);
         } else if (inventoryName.contains(stripFormatting(tr("Challenge Menu")))) {
             onClickChallengeMenu(event, currentItem, p, inventoryName);
         } else if (inventoryName.equalsIgnoreCase(stripFormatting(tr("Island Log")))) {
@@ -1055,43 +901,6 @@ public class SkyBlockMenu {
     private boolean isAirOrLocked(ItemStack currentItem) {
         return currentItem != null && currentItem.getType() == Material.AIR ||
             currentItem != null && currentItem.getItemMeta() != null && currentItem.getItemMeta().getDisplayName().equals(tr("\u00a74\u00a7lLocked Challenge"));
-    }
-
-    private void onClickBiomeMenu(InventoryClickEvent event, ItemStack currentItem, Player p, int slotIndex) {
-        event.setCancelled(true);
-        if (slotIndex < 0 || slotIndex > 35) {
-            return;
-        }
-        if (slotIndex == 0 && currentItem.getType() == Material.OAK_SIGN) {
-            p.performCommand("island");
-            return;
-        }
-        if (slotIndex >= 21 && slotIndex <= 23) {
-            List<String> radii = Arrays.asList("10", "chunk", "20", "30", "40", "50", "60", "70", "80", "90", "100", "all");
-            String radius = PlayerUtil.getMetadata(p, "biome.radius", "all");
-            int ix = radii.indexOf(radius);
-            if (ix == -1) {
-                ix = 1;
-            }
-            if (currentItem.getType() == Material.RED_CARPET && ix > 0) {
-                ix--;
-            } else if (currentItem.getType() == Material.GREEN_CARPET && ix < radii.size() - 1) {
-                ix++;
-            }
-            radius = radii.get(ix);
-            PlayerUtil.setMetadata(p, "biome.radius", radius);
-            updateBiomeRadius(p, event.getInventory());
-            event.setCancelled(true);
-            return;
-        }
-        for (BiomeMenuItem biomeMenu : biomeMenus) {
-            ItemStack menuIcon = biomeMenu.getIcon();
-            if (currentItem.getType() == menuIcon.getType()) {
-                String radius = PlayerUtil.getMetadata(p, "biome.radius", "all");
-                p.performCommand("island biome " + biomeMenu.getBiome().getKey().getKey() + " " + radius);
-                return;
-            }
-        }
     }
 
     private void onClickPermissionMenu(InventoryClickEvent event, ItemStack currentItem, Player p, String inventoryName, int slotIndex) {

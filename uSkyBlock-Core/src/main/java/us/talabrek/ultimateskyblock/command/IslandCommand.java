@@ -5,6 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.biome.BiomeConfig;
+import us.talabrek.ultimateskyblock.biome.Biomes;
 import us.talabrek.ultimateskyblock.command.completion.AllPlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.BiomeTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.MemberTabCompleter;
@@ -49,7 +51,7 @@ public class IslandCommand extends BaseCommandExecutor {
     private final uSkyBlock plugin;
     private final SkyBlockMenu menu;
 
-    public IslandCommand(uSkyBlock plugin, SkyBlockMenu menu) {
+    public IslandCommand(uSkyBlock plugin, SkyBlockMenu menu, Biomes biomes, BiomeConfig biomeConfig) {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
         this.menu = menu;
@@ -66,7 +68,7 @@ public class IslandCommand extends BaseCommandExecutor {
         addTab("island", playerTabCompleter);
         addTab("player", playerTabCompleter);
         addTab("oplayer", onlinePlayerTabCompleter);
-        addTab("biome", new BiomeTabCompleter());
+        addTab("biome", new BiomeTabCompleter(biomeConfig));
         addTab("member", new MemberTabCompleter(plugin));
         addTab("schematic", new SchematicTabCompleter(plugin));
         addTab("perm", new PermissionTabCompleter(plugin));
@@ -85,7 +87,7 @@ public class IslandCommand extends BaseCommandExecutor {
         if (Settings.island_useTopTen) {
             add(new TopCommand(plugin));
         }
-        add(new BiomeCommand(plugin, menu));
+        add(new BiomeCommand(plugin, biomes, biomeConfig));
         add(new LevelCommand(plugin));
         add(new InfoCommand(plugin));
         add(new InviteCommand(plugin, inviteHandler));
@@ -106,8 +108,7 @@ public class IslandCommand extends BaseCommandExecutor {
         if (!plugin.isRequirementsMet(sender, this, args)) {
             return true;
         }
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             if (args.length == 0) {
                 player.openInventory(menu.displayIslandGUI(player));
                 return true;
