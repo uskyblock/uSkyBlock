@@ -1,6 +1,10 @@
 package us.talabrek.ultimateskyblock.storage;
 
-import us.talabrek.ultimateskyblock.api.model.PlayerInfo;
+import us.talabrek.ultimateskyblock.api.model.ChallengeCompletion;
+import us.talabrek.ultimateskyblock.api.model.Island;
+import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.api.storage.Storage;
+import us.talabrek.ultimateskyblock.api.storage.StorageRunnable;
 import us.talabrek.ultimateskyblock.storage.sql.H2Connection;
 import us.talabrek.ultimateskyblock.storage.sql.SqlStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -12,13 +16,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ForkJoinPool;
 
-public class Storage {
+public class SkyStorage implements Storage {
     protected final uSkyBlock plugin;
     protected SqlStorage storage;
 
     protected final ForkJoinPool pool;
 
-    public Storage(uSkyBlock plugin) {
+    public SkyStorage(uSkyBlock plugin) {
         this.plugin = plugin;
         this.pool = new ForkJoinPool(8);
 
@@ -42,16 +46,34 @@ public class Storage {
         }
     }
 
-    public CompletableFuture<PlayerInfo> getPlayerInfo(UUID uuid) {
-        return future(() -> storage.getPlayerInfo(uuid));
+    @Override
+    public CompletableFuture<Void> saveChallengeCompletion(ChallengeCompletion challengeCompletion) {
+        return future(() -> storage.saveChallengeCompletion(challengeCompletion));
     }
 
-    public CompletableFuture<PlayerInfo> getPlayerInfo(String username) {
-        return future(() -> storage.getPlayerInfo(username));
+    @Override
+    public CompletableFuture<UUID> getIslandByName(String name) {
+        return future(() -> storage.getIslandByName(name));
     }
 
-    public CompletableFuture<Void> savePlayerInfo(PlayerInfo playerInfo) {
-        return future(() -> storage.savePlayerInfo(playerInfo));
+    @Override
+    public CompletableFuture<Void> saveIsland(Island island) {
+        return future(() -> storage.saveIsland(island));
+    }
+
+    @Override
+    public CompletableFuture<Player> getPlayer(UUID uuid) {
+        return future(() -> storage.getPlayer(uuid));
+    }
+
+    @Override
+    public CompletableFuture<Player> getPlayer(String username) {
+        return future(() -> storage.getPlayer(username));
+    }
+
+    @Override
+    public CompletableFuture<Void> savePlayer(Player player) {
+        return future(() -> storage.savePlayer(player));
     }
 
     private <T> CompletableFuture<T> future(Callable<T> callable) {

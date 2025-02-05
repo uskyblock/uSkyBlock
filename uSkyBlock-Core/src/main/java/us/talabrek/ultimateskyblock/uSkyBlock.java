@@ -68,7 +68,9 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
-import us.talabrek.ultimateskyblock.imports.storage.PlayerDbImporter;
+import us.talabrek.ultimateskyblock.imports.storage.CompletionImporter;
+import us.talabrek.ultimateskyblock.imports.storage.IslandImporter;
+import us.talabrek.ultimateskyblock.imports.storage.PlayerImporter;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -93,7 +95,7 @@ import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.signs.SignEvents;
 import us.talabrek.ultimateskyblock.signs.SignLogic;
-import us.talabrek.ultimateskyblock.storage.Storage;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.PlayerUtil;
@@ -153,7 +155,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private USBImporterExecutor importer;
 
-    private Storage storage;
+    private SkyStorage storage;
 
     private static uSkyBlock instance;
     // TODO: 28/06/2016 - R4zorax: These two should probably be moved to the proper classes
@@ -234,7 +236,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         convertConfigToBlockRequirements();
 
         try {
-            storage = new Storage(this);
+            storage = new SkyStorage(this);
         } catch (RuntimeException ex) {
             getLogger().severe("Failed to connect to provided database. Shutting down plugin...");
             ex.printStackTrace();
@@ -765,7 +767,17 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         playerDB = new LegacyPlayerDB(this);
         if (Files.exists(getDataFolder().toPath().resolve("uuid2name.yml"))) {
             getLogger().info("Importing old uuid2name.yml...");
-            new PlayerDbImporter(this);
+            new PlayerImporter(this);
+        }
+
+        if (Files.exists(getDataFolder().toPath().resolve("islands"))) {
+            getLogger().info("Importing old islands...");
+            new IslandImporter(this);
+        }
+
+        if (Files.exists(getDataFolder().toPath().resolve("completion"))) {
+            getLogger().info("Importing old completions...");
+            new CompletionImporter(this);
         }
 
         getServer().getPluginManager().registerEvents(playerDB, this);
@@ -1155,7 +1167,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
-    public Storage getStorage() {
+    public SkyStorage getStorage() {
         return storage;
     }
 

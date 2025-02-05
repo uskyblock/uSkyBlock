@@ -2,11 +2,11 @@ package us.talabrek.ultimateskyblock.uuid;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
-import us.talabrek.ultimateskyblock.api.model.PlayerInfo;
+import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Set;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * Legacy {@link PlayerDB} implementation that queries the new SQL-based
- * {@link us.talabrek.ultimateskyblock.storage.Storage} system.
+ * {@link SkyStorage} system.
  */
 public class LegacyPlayerDB implements PlayerDB {
     private final uSkyBlock plugin;
@@ -35,19 +35,19 @@ public class LegacyPlayerDB implements PlayerDB {
     }
 
     @Override
-    public Player getPlayer(String name) {
+    public org.bukkit.entity.Player getPlayer(String name) {
         return Bukkit.getPlayer(name);
     }
 
     @Override
-    public Player getPlayer(UUID uuid) {
+    public org.bukkit.entity.Player getPlayer(UUID uuid) {
         return plugin.getServer().getPlayer(uuid);
     }
 
     @Override
     public void updatePlayer(UUID uuid, String name, String displayName) {
-        PlayerInfo playerInfo = new PlayerInfo(uuid, name, displayName);
-        plugin.getStorage().savePlayerInfo(playerInfo);
+        Player player = new Player(uuid, name, displayName);
+        plugin.getStorage().savePlayer(player);
     }
 
     @Override
@@ -57,13 +57,13 @@ public class LegacyPlayerDB implements PlayerDB {
 
     @Override
     public String getDisplayName(String playerName) {
-        PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(playerName).join();
+        Player playerInfo = plugin.getStorage().getPlayer(playerName).join();
         return playerInfo != null ? playerInfo.getDisplayName() : null;
     }
 
     @Override
     public String getDisplayName(UUID uuid) {
-        PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(uuid).join();
+        Player playerInfo = plugin.getStorage().getPlayer(uuid).join();
         return playerInfo != null ? playerInfo.getName() : null;
     }
 
@@ -74,7 +74,7 @@ public class LegacyPlayerDB implements PlayerDB {
             return UNKNOWN_PLAYER_NAME;
         }
 
-        PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(uuid).join();
+        Player playerInfo = plugin.getStorage().getPlayer(uuid).join();
 
         if (playerInfo == null) {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
@@ -92,7 +92,7 @@ public class LegacyPlayerDB implements PlayerDB {
             return UNKNOWN_PLAYER_UUID;
         }
 
-        PlayerInfo playerInfo = plugin.getStorage().getPlayerInfo(name).join();
+        Player playerInfo = plugin.getStorage().getPlayer(name).join();
         return playerInfo != null ? playerInfo.getUuid() : Bukkit.getOfflinePlayer(name).getUniqueId();
     }
 

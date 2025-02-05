@@ -1,4 +1,4 @@
-package us.talabrek.ultimateskyblock.storage;
+package us.talabrek.ultimateskyblock.api.storage;
 
 /**
  * A SQL-related runnable _is_ allowed to throw an exception, which will be handled correctly.
