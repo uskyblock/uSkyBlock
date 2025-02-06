@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,6 +28,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
@@ -42,6 +45,7 @@ import java.util.*;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
+@Singleton
 public class PlayerEvents implements Listener {
     private static final Set<EntityDamageEvent.DamageCause> FIRE_TRAP = new HashSet<>(Arrays.asList(
         EntityDamageEvent.DamageCause.LAVA,
@@ -66,7 +70,8 @@ public class PlayerEvents implements Listener {
         Material.JUNGLE_LEAVES, Material.JUNGLE_SAPLING,
         Material.DARK_OAK_LEAVES, Material.DARK_OAK_SAPLING);
 
-    public PlayerEvents(uSkyBlock plugin) {
+    @Inject
+    public PlayerEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         FileConfiguration config = plugin.getConfig();
         visitorFallProtected = config.getBoolean("options.protection.visitors.fall", true);

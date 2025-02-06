@@ -1,8 +1,11 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
@@ -17,11 +20,12 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 /**
  * Main event-handler for internal uSkyBlock events
  */
-@SuppressWarnings("WeakerAccess")
+@Singleton
 public class InternalEvents implements Listener {
     private final uSkyBlock plugin;
 
-    public InternalEvents(uSkyBlock plugin) {
+    @Inject
+    public InternalEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
     }
 

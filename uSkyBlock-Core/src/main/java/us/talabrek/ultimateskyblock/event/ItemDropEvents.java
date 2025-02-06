@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +13,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.ArrayList;
@@ -21,11 +24,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Handles the internal item-drop protection.
  */
+@Singleton
 public class ItemDropEvents implements Listener {
     private final uSkyBlock plugin;
     private final boolean visitorsCanDrop;
 
-    public ItemDropEvents(uSkyBlock plugin) {
+    @Inject
+    public ItemDropEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         visitorsCanDrop = plugin.getConfig().getBoolean("options.protection.visitors.item-drops", true);
     }

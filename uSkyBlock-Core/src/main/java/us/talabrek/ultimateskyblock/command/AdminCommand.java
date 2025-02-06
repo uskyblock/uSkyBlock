@@ -1,10 +1,13 @@
 package us.talabrek.ultimateskyblock.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.command.admin.AbstractPlayerInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminChallengeCommand;
@@ -18,9 +21,9 @@ import us.talabrek.ultimateskyblock.command.admin.FlushCommand;
 import us.talabrek.ultimateskyblock.command.admin.GenTopTenCommand;
 import us.talabrek.ultimateskyblock.command.admin.GotoIslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.ImportCommand;
+import us.talabrek.ultimateskyblock.command.admin.ItemInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.JobsCommand;
 import us.talabrek.ultimateskyblock.command.admin.LanguageCommand;
-import us.talabrek.ultimateskyblock.command.admin.ItemInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.OrphanCommand;
 import us.talabrek.ultimateskyblock.command.admin.PerkCommand;
 import us.talabrek.ultimateskyblock.command.admin.ProtectAllCommand;
@@ -44,9 +47,16 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 /**
  * The new admin command, alias /usb
  */
+@Singleton
 public class AdminCommand extends BaseCommandExecutor {
-    public AdminCommand(final uSkyBlock plugin, ConfirmHandler confirmHandler, AnimationHandler animationHandler,
-                        BiomeConfig biomeConfig) {
+
+    @Inject
+    public AdminCommand(
+        @NotNull uSkyBlock plugin,
+        @NotNull ConfirmHandler confirmHandler,
+        @NotNull AnimationHandler animationHandler,
+        @NotNull BiomeConfig biomeConfig
+    ) {
         super("usb", null, marktr("Ultimate SkyBlock Admin"));
         OnlinePlayerTabCompleter playerCompleter = new OnlinePlayerTabCompleter();
         TabCompleter challengeCompleter = new ChallengeTabCompleter();

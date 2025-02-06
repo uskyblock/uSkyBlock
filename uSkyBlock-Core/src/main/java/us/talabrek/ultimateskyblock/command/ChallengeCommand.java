@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,9 +18,11 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Primary challenges command
  */
+@Singleton
 public class ChallengeCommand extends BaseCommandExecutor {
     private final uSkyBlock plugin;
 
+    @Inject
     public ChallengeCommand(uSkyBlock plugin) {
         super("challenges|c", "usb.island.challenges", marktr("complete and list challenges"));
         this.plugin = plugin;

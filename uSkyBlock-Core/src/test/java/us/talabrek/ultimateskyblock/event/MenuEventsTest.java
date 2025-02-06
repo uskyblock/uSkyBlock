@@ -14,7 +14,6 @@ import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.UUID;
 
@@ -28,17 +27,13 @@ public class MenuEventsTest {
 
     @Before
     public void setUp() {
-        uSkyBlock fakePlugin = mock(uSkyBlock.class);
         fakeConfigMenu = mock(ConfigMenu.class);
         fakeMenu = mock(SkyBlockMenu.class);
 
         doNothing().when(fakeConfigMenu).onClick(any(InventoryClickEvent.class));
         doNothing().when(fakeMenu).onClick(any(InventoryClickEvent.class));
 
-        doReturn(fakeConfigMenu).when(fakePlugin).getConfigMenu();
-        doReturn(fakeMenu).when(fakePlugin).getMenu();
-
-        menuEvents = new MenuEvents(fakePlugin);
+        menuEvents = new MenuEvents(fakeMenu, fakeConfigMenu);
     }
 
     @Test

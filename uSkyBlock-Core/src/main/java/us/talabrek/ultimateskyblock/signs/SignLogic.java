@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.signs;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Location;
@@ -14,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
@@ -22,6 +25,8 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,19 +42,33 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 /**
  * Responsible for keeping track of signs.
  */
+@Singleton
 public class SignLogic {
-    private static final Logger log = Logger.getLogger(SignLogic.class.getName());
     private static final int SIGN_LINE_WIDTH = 11; // Actually more like 15, but we break after.
+
     private final FileConfiguration config;
     private final File configFile;
+    private final Logger logger;
     private final uSkyBlock plugin;
+    private final Scheduler scheduler;
     private final ChallengeLogic challengeLogic;
+    private final WorldManager worldManager;
 
-    public SignLogic(uSkyBlock plugin) {
+    @Inject
+    public SignLogic(
+        @NotNull Logger logger,
+        @NotNull uSkyBlock plugin,
+        @NotNull Scheduler scheduler,
+        @NotNull ChallengeLogic challengeLogic,
+        @NotNull WorldManager worldManager
+    ) {
+        this.logger = logger;
         this.plugin = plugin;
-        configFile = new File(plugin.getDataFolder(), "signs.yml");
-        config = FileUtil.getYmlConfiguration("signs.yml");
-        challengeLogic = plugin.getChallengeLogic();
+        this.scheduler = scheduler;
+        this.challengeLogic = challengeLogic;
+        this.worldManager = worldManager;
+        this.configFile = new File(plugin.getDataFolder(), "signs.yml");
+        this.config = FileUtil.getYmlConfiguration("signs.yml");
     }
 
     void addSign(Sign block, String[] lines, Chest chest) {
@@ -79,7 +98,7 @@ public class SignLogic {
     }
 
     void removeSign(final Location loc) {
-        plugin.async(() -> removeSignAsync(loc));
+        scheduler.async(() -> removeSignAsync(loc));
     }
 
     private void removeSignAsync(Location loc) {
@@ -98,7 +117,7 @@ public class SignLogic {
     }
 
     void removeChest(final Location loc) {
-        plugin.async(() -> removeChestAsync(loc));
+        scheduler.async(() -> removeChestAsync(loc));
     }
 
     private void removeChestAsync(Location loc) {
@@ -112,7 +131,7 @@ public class SignLogic {
     }
 
     void updateSignsOnContainer(final Location... containerLocations) {
-        plugin.async(() -> {
+        scheduler.async(() -> {
             for (Location loc : containerLocations) {
                 if (loc == null) {
                     continue;
@@ -154,7 +173,7 @@ public class SignLogic {
     }
 
     private void updateSignAsync(final Location chestLoc) {
-        if (chestLoc == null || !plugin.getWorldManager().isSkyAssociatedWorld(chestLoc.getWorld())) {
+        if (chestLoc == null || !worldManager.isSkyAssociatedWorld(chestLoc.getWorld())) {
             return;
         }
         String locString = LocationUtil.asKey(chestLoc);
@@ -202,7 +221,7 @@ public class SignLogic {
         final boolean challengeLocked = !isChallengeAvailable;
         final Map<ItemStack, Integer> requiredItemsFinal = requiredItems;
         // Back to sync
-        plugin.sync(() -> updateSignFromChestSync(chestLoc, signLocation, challenge, requiredItemsFinal, challengeLocked));
+        scheduler.sync(() -> updateSignFromChestSync(chestLoc, signLocation, challenge, requiredItemsFinal, challengeLocked));
     }
 
     private void updateSignFromChestSync(Location chestLoc, Location signLoc, Challenge challenge, Map<ItemStack, Integer> requiredItems, boolean challengeLocked) {
@@ -219,7 +238,7 @@ public class SignLogic {
                     int requiredAmount = required.getValue();
                     if (!chest.getInventory().containsAtLeast(requiredType, requiredAmount)) {
                         // Max shouldn't be needed, provided containsAtLeast matches getCountOf... but it might not
-                        missing += Math.max(0, requiredAmount - plugin.getChallengeLogic().getCountOf(chest.getInventory(), requiredType));
+                        missing += Math.max(0, requiredAmount - challengeLogic.getCountOf(chest.getInventory(), requiredType));
                     }
                 }
             }
@@ -250,7 +269,7 @@ public class SignLogic {
                 sign.setLine(3, "");
             }
             if (!sign.update()) {
-                log.info("Unable to update sign at " + LocationUtil.asString(signLoc));
+                logger.info("Unable to update sign at " + LocationUtil.asString(signLoc));
             }
         }
     }
@@ -260,7 +279,7 @@ public class SignLogic {
     }
 
     private void saveAsync() {
-        plugin.async(this::save);
+        scheduler.async(this::save);
     }
 
     private void save() {
@@ -268,13 +287,13 @@ public class SignLogic {
             try {
                 config.save(configFile);
             } catch (IOException e) {
-                log.info("Unable to save to " + configFile);
+                logger.info("Unable to save to " + configFile);
             }
         }
     }
 
     void signClicked(final Player player, final Location location) {
-        plugin.async(() -> tryCompleteAsync(player, location));
+        scheduler.async(() -> tryCompleteAsync(player, location));
     }
 
     private void tryCompleteAsync(final Player player, Location location) {
@@ -297,7 +316,7 @@ public class SignLogic {
                     player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
                     return;
                 }
-                plugin.sync(() -> tryComplete(player, chestLoc, challenge));
+                scheduler.sync(() -> tryComplete(player, chestLoc, challenge));
             }
         }
     }
@@ -323,10 +342,10 @@ public class SignLogic {
             int requiredAmount = required.getValue();
             int diff = 0;
             if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                diff = requiredAmount - plugin.getChallengeLogic().getCountOf(player.getInventory(), requiredType);
+                diff = requiredAmount - challengeLogic.getCountOf(player.getInventory(), requiredType);
             }
             if (diff > 0 && !chest.getInventory().containsAtLeast(requiredType, diff)) {
-                diff -= plugin.getChallengeLogic().getCountOf(chest.getInventory(), requiredType);
+                diff -= challengeLogic.getCountOf(chest.getInventory(), requiredType);
             } else {
                 diff = 0;
             }
@@ -335,7 +354,7 @@ public class SignLogic {
         if (missing == 0) {
             boolean successfulItemTransfer = attemptToMoveItemsToPlayerInventory(player.getInventory(), chest.getInventory(), requiredItems);
             if (successfulItemTransfer) {
-                plugin.getChallengeLogic().completeChallenge(player, challenge.getName());
+                challengeLogic.completeChallenge(player, challenge.getName());
             } else {
                 player.sendMessage(tr("\u00a7cWARNING:\u00a7e Could not transfer all the required items to your inventory!"));
             }

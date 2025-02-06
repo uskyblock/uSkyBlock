@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.signs;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -21,16 +23,19 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 /**
  * Handles USB Signs
  */
+@Singleton
 public class SignEvents implements Listener {
     private final uSkyBlock plugin;
     private final SignLogic logic;
 
-    public SignEvents(uSkyBlock plugin, SignLogic logic) {
+    @Inject
+    public SignEvents(@NotNull uSkyBlock plugin, @NotNull SignLogic logic) {
         this.plugin = plugin;
         this.logic = logic;
     }

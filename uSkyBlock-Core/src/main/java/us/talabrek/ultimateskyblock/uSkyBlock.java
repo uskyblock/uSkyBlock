@@ -19,7 +19,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -43,35 +42,17 @@ import us.talabrek.ultimateskyblock.api.impl.UltimateSkyblockApi;
 import us.talabrek.ultimateskyblock.api.uSkyBlockAPI;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
+import us.talabrek.ultimateskyblock.bootstrap.SkyblockApp;
 import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
-import us.talabrek.ultimateskyblock.chat.ChatEvents;
 import us.talabrek.ultimateskyblock.chat.ChatLogic;
-import us.talabrek.ultimateskyblock.chat.IslandTalkCommand;
-import us.talabrek.ultimateskyblock.chat.PartyTalkCommand;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
-import us.talabrek.ultimateskyblock.command.ChallengeCommand;
-import us.talabrek.ultimateskyblock.command.IslandCommand;
-import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
-import us.talabrek.ultimateskyblock.event.ExploitEvents;
-import us.talabrek.ultimateskyblock.event.GriefEvents;
-import us.talabrek.ultimateskyblock.event.InternalEvents;
-import us.talabrek.ultimateskyblock.event.ItemDropEvents;
-import us.talabrek.ultimateskyblock.event.MenuEvents;
-import us.talabrek.ultimateskyblock.event.NetherTerraFormEvents;
-import us.talabrek.ultimateskyblock.event.PlayerEvents;
-import us.talabrek.ultimateskyblock.event.SpawnEvents;
-import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
-import us.talabrek.ultimateskyblock.event.WitherTagEvents;
-import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
-import us.talabrek.ultimateskyblock.gui.GuiListener;
 import us.talabrek.ultimateskyblock.gui.GuiManager;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
@@ -97,8 +78,6 @@ import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.player.PlayerNotifier;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
-import us.talabrek.ultimateskyblock.signs.SignEvents;
-import us.talabrek.ultimateskyblock.signs.SignLogic;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.PlayerUtil;
@@ -136,6 +115,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     };
     private static String missingRequirements = null;
     private static final Random RND = new Random(System.currentTimeMillis());
+
+    private SkyblockApp skyBlock;
 
     // TODO: eventually get rid of these global references and move them to a proper API instead
     @Inject
@@ -214,24 +195,17 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         deregisterApi(api);
         api = null;
 
-        HandlerList.unregisterAll(this);
-        Bukkit.getScheduler().cancelTasks(this);
+        if (this.skyBlock != null) {
+            this.skyBlock.shutdown(this);
+            this.skyBlock = null;
+        }
+
         try {
+            // TODO: make WorldManager an object
             WorldManager.skyBlockWorld = null; // Force a reload on config.
         } catch (Exception e) {
             log(Level.INFO, tr("Something went wrong saving the island and/or party data!"), e);
         }
-        PlaceholderHandler.unregister(this);
-        if (animationHandler != null) {
-            animationHandler.stop();
-        }
-        challengeLogic.shutdown();
-        eventLogic.shutdown();
-        playerLogic.shutdown();
-        islandLogic.shutdown();
-        playerDB.shutdown(); // Must be before playerNameChangeManager!!
-        AsyncWorldEditHandler.onDisable(this);
-        DebugCommand.disableLogging(null);
     }
 
     @Override
@@ -269,27 +243,25 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         api = new UltimateSkyblockApi(this);
         registerApi(api);
 
-        getServer().getScheduler().runTaskLater(getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                ServerUtil.init(uSkyBlock.this);
-                if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
-                    return;
-                }
-                uSkyBlock.this.getHookManager().setupMultiverse();
-                uSkyBlock.this.getHookManager().setupEconomyHook();
-                uSkyBlock.this.getHookManager().setupPermissionsHook();
-                AsyncWorldEditHandler.onEnable(uSkyBlock.this);
-                WorldGuardHandler.setupGlobal(getWorldManager().getWorld());
-                if (getWorldManager().getNetherWorld() != null) {
-                    WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
-                }
-                registerEventsAndCommands(uSkyBlock.this.guiManager, uSkyBlock.this.biomes, uSkyBlock.this.biomeConfig);
-
-                getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
-                log(Level.INFO, getVersionInfo(false));
+        getScheduler().sync(() -> {
+            ServerUtil.init(uSkyBlock.this);
+            if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
+                return;
             }
-        }, getConfig().getLong("init.initDelay", 50L));
+            uSkyBlock.this.getHookManager().setupMultiverse();
+            uSkyBlock.this.getHookManager().setupEconomyHook();
+            uSkyBlock.this.getHookManager().setupPermissionsHook();
+            AsyncWorldEditHandler.onEnable(uSkyBlock.this);
+            WorldGuardHandler.setupGlobal(getWorldManager().getWorld());
+            if (getWorldManager().getNetherWorld() != null) {
+                WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
+            }
+
+            uSkyBlock.this.skyBlock.delayedEnable(uSkyBlock.this);
+
+            getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
+            log(Level.INFO, getVersionInfo(false));
+        }, TimeUtil.ticksAsDuration(getConfig().getLong("init.initDelay", 50L)));
 
         getScheduler().async(() -> getUpdateChecker().checkForUpdates(), Duration.ZERO, Duration.ofHours(4));
     }
@@ -351,39 +323,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public static uSkyBlock getInstance() {
         return uSkyBlock.instance;
-    }
-
-    public void registerEvents(GuiManager guiManager) {
-        final PluginManager manager = getServer().getPluginManager();
-        manager.registerEvents(new InternalEvents(this), this);
-        manager.registerEvents(new PlayerEvents(this), this);
-        manager.registerEvents(new MenuEvents(this), this);
-        manager.registerEvents(new GuiListener(guiManager), this);
-        manager.registerEvents(new ExploitEvents(this), this);
-        manager.registerEvents(new WitherTagEvents(this), this);
-        if (getConfig().getBoolean("options.protection.enabled", true)) {
-            manager.registerEvents(new GriefEvents(this), this);
-            if (getConfig().getBoolean("options.protection.item-drops", true)) {
-                manager.registerEvents(new ItemDropEvents(this), this);
-            }
-        }
-        if (getConfig().getBoolean("options.island.spawn-limits.enabled", true)) {
-            manager.registerEvents(new SpawnEvents(this), this);
-        }
-        if (getConfig().getBoolean("options.protection.visitors.block-banned-entry", true)) {
-            manager.registerEvents(new WorldGuardEvents(this), this);
-        }
-        if (Settings.nether_enabled) {
-            manager.registerEvents(new NetherTerraFormEvents(this), this);
-        }
-        if (getConfig().getBoolean("tool-menu.enabled", true)) {
-            manager.registerEvents(new ToolMenuEvents(this), this);
-        }
-        if (getConfig().getBoolean("signs.enabled", true)) {
-            manager.registerEvents(new SignEvents(this, new SignLogic(this)), this);
-        }
-        PlaceholderHandler.register(this);
-        manager.registerEvents(new ChatEvents(chatLogic, this), this);
     }
 
     public Location getSafeHomeLocation(final PlayerInfo p) {
@@ -748,31 +687,29 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Override
     public void reloadConfig() {
         reloadConfigs();
-        registerEventsAndCommands(this.guiManager, this.biomes, this.biomeConfig);
+        startAutoIslandLevelRefreshTask();
+        this.skyBlock.delayedEnable(this);
     }
 
+    // TODO: split into shutdown and startup
     private void reloadConfigs() {
+
+        if (this.skyBlock != null) {
+            this.skyBlock.shutdown(this);
+            this.skyBlock = null;
+        }
+
         createFolders();
-        HandlerList.unregisterAll(this);
-        if (challengeLogic != null) {
-            challengeLogic.shutdown();
-        }
-        if (playerLogic != null) {
-            playerLogic.shutdown();
-        }
-        if (islandLogic != null) {
-            islandLogic.shutdown();
-        }
-        PlaceholderHandler.unregister(this);
-        if (Settings.loadPluginConfig(getConfig())) {
-            saveConfig();
-        }
+        saveConfig();
         I18nUtil.clearCache();
         // Update all of the loaded configs.
         FileUtil.reload();
 
+        // TODO: move to enable method
         Injector injector = Guice.createInjector(new SkyblockModule(this));
+        this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
+        this.skyBlock.startup(this);
 
         getServer().getPluginManager().registerEvents(playerDB, this);
         PlayerUtil.loadConfig(playerDB, getConfig());
@@ -783,11 +720,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
-    public void registerEventsAndCommands(GuiManager guiManager, Biomes biomes, BiomeConfig biomeConfig) {
+    // TODO: move to its own class
+    public void startAutoIslandLevelRefreshTask() {
         if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
             return;
         }
-        registerEvents(guiManager);
         int refreshEveryMinute = getConfig().getInt("options.island.autoRefreshScore", 0);
         if (refreshEveryMinute > 0) {
             int refreshTicks = refreshEveryMinute * 1200; // Ticks per minute
@@ -795,11 +732,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         } else {
             autoRecalculateTask = null;
         }
-        getCommand("island").setExecutor(new IslandCommand(this, menu, biomes, biomeConfig));
-        getCommand("challenges").setExecutor(new ChallengeCommand(this));
-        getCommand("usb").setExecutor(new AdminCommand(this, confirmHandler, animationHandler, biomeConfig));
-        getCommand("islandtalk").setExecutor(new IslandTalkCommand(this, chatLogic));
-        getCommand("partytalk").setExecutor(new PartyTalkCommand(this, chatLogic));
     }
 
     public IslandLogic getIslandLogic() {

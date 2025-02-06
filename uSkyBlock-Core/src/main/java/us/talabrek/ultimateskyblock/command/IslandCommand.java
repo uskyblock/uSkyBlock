@@ -1,9 +1,12 @@
 package us.talabrek.ultimateskyblock.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
@@ -47,11 +50,18 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * The main /island command
  */
+@Singleton
 public class IslandCommand extends BaseCommandExecutor {
     private final uSkyBlock plugin;
     private final SkyBlockMenu menu;
 
-    public IslandCommand(uSkyBlock plugin, SkyBlockMenu menu, Biomes biomes, BiomeConfig biomeConfig) {
+    @Inject
+    public IslandCommand(
+        @NotNull uSkyBlock plugin,
+        @NotNull SkyBlockMenu menu,
+        @NotNull Biomes biomes,
+        @NotNull BiomeConfig biomeConfig
+    ) {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
         this.menu = menu;

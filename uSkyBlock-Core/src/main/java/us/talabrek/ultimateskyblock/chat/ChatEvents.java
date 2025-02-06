@@ -1,10 +1,13 @@
 package us.talabrek.ultimateskyblock.chat;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -12,11 +15,13 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
  * @see us.talabrek.ultimateskyblock.api.event.IslandChatEvent
  * @see IslandChatCommand
  */
+@Singleton
 public class ChatEvents implements Listener {
     private final ChatLogic logic;
     private final uSkyBlock plugin;
 
-    public ChatEvents(ChatLogic logic, uSkyBlock plugin) {
+    @Inject
+    public ChatEvents(@NotNull ChatLogic logic, @NotNull uSkyBlock plugin) {
         this.logic = logic;
         this.plugin = plugin;
     }
