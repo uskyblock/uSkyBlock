@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeScanTask;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeTask;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -23,7 +25,8 @@ public class PurgeCommand extends AbstractCommand {
     private PurgeTask purgeTask;
     private String days = null;
 
-    public PurgeCommand(uSkyBlock plugin) {
+    @Inject
+    public PurgeCommand(@NotNull uSkyBlock plugin) {
         super("purge", "usb.admin.purge", "time-in-days|stop|confirm ?level ?force", marktr("purges all abandoned islands"));
         this.plugin = plugin;
     }

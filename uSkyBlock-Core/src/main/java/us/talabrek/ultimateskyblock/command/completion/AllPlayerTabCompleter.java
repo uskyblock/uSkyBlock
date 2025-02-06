@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.completion;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -15,6 +16,7 @@ import java.util.Set;
 public class AllPlayerTabCompleter extends AbstractTabCompleter {
     private final OnlinePlayerTabCompleter online;
 
+    @Inject
     public AllPlayerTabCompleter(OnlinePlayerTabCompleter online) {
         this.online = online;
     }

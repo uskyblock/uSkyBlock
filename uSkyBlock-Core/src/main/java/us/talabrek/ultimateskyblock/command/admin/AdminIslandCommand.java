@@ -1,11 +1,13 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -23,7 +25,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class AdminIslandCommand extends CompositeCommand {
     private final uSkyBlock plugin;
 
-    public AdminIslandCommand(final uSkyBlock plugin, final ConfirmHandler confirmHandler) {
+    @Inject
+    public AdminIslandCommand(@NotNull uSkyBlock plugin, @NotNull ConfirmHandler confirmHandler) {
         super("island|is", "usb.admin.island", marktr("manage islands"));
         this.plugin = plugin;
         add(new AbstractIslandInfoCommand("protect", "usb.admin.protect", marktr("protects the island")) {

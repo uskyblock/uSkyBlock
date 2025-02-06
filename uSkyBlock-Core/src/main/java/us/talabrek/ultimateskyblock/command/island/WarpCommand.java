@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -14,7 +16,8 @@ public class WarpCommand extends RequirePlayerCommand {
 
     private final uSkyBlock plugin;
 
-    public WarpCommand(uSkyBlock plugin) {
+    @Inject
+    public WarpCommand(@NotNull uSkyBlock plugin) {
         super("warp|w", "usb.island.warp", "island", marktr("warp to another player''s island"));
         this.plugin = plugin;
     }

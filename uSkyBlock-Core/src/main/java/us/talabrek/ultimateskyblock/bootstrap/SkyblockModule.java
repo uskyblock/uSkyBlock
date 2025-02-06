@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.animation.AnimationHandler;
+import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
@@ -38,7 +39,8 @@ public class SkyblockModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
+    public static
+    @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
         String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
         if (playerDbStorage.equalsIgnoreCase("yml")) {
             return new FilePlayerDB(plugin, scheduler, logger);
@@ -51,7 +53,12 @@ public class SkyblockModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public @NotNull AnimationHandler provideAnimationHandler(Plugin plugin) {
+    public static @NotNull AnimationHandler provideAnimationHandler(Plugin plugin) {
         return new AnimationHandler(plugin);
+    }
+
+    @Provides
+    public static @NotNull DocumentCommand provideDocumentCommand(uSkyBlock plugin) {
+        return new DocumentCommand(plugin, "doc", "usb.admin.doc");
     }
 }

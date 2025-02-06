@@ -1,6 +1,9 @@
 package us.talabrek.ultimateskyblock.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -8,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.AcceptEvent;
 import us.talabrek.ultimateskyblock.api.event.InviteEvent;
 import us.talabrek.ultimateskyblock.api.event.RejectEvent;
@@ -15,7 +19,6 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,13 +32,14 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Responsible for holding out-standing invites, and carrying out a transfer of invitation.
  */
-@SuppressWarnings("deprecation")
+@Singleton
 public class InviteHandler implements Listener {
     private final Map<UUID, Invite> inviteMap = new HashMap<>();
     private final Map<String, Map<UUID, String>> waitingInvites = new HashMap<>();
     private final uSkyBlock plugin;
 
-    public InviteHandler(uSkyBlock plugin) {
+    @Inject
+    public InviteHandler(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
     }
 
@@ -65,17 +69,12 @@ public class InviteHandler implements Listener {
         waitingInvites.put(island.getName(), invites);
         player.sendMessage(tr("\u00a7aInvite sent to {0}", otherPlayer.getDisplayName()));
         otherPlayer.sendMessage(new String[]{
-                tr("{0}\u00a7e has invited you to join their island!", player.getDisplayName()),
-                tr("\u00a7f/island [accept/reject]\u00a7e to accept or reject the invite."),
-                tr("\u00a74WARNING: You will lose your current island if you accept!")
+            tr("{0}\u00a7e has invited you to join their island!", player.getDisplayName()),
+            tr("\u00a7f/island [accept/reject]\u00a7e to accept or reject the invite."),
+            tr("\u00a74WARNING: You will lose your current island if you accept!")
         });
         long timeout = TimeUtil.secondsAsMillis(plugin.getConfig().getInt("options.party.invite-timeout", 30));
-        BukkitTask timeoutTask = plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                uninvite(island, uniqueId);
-            }
-        }, timeout);
+        BukkitTask timeoutTask = plugin.async(() -> uninvite(island, uniqueId), timeout);
         invite.setTimeoutTask(timeoutTask);
         island.sendMessageToIslandGroup(true, I18nUtil.marktr("{0}\u00a7d invited {1}"), player.getDisplayName(), otherPlayer.getDisplayName());
     }
@@ -121,14 +120,11 @@ public class InviteHandler implements Listener {
             if (uuids != null) {
                 uuids.remove(uuid);
             }
-            Runnable joinIsland = new Runnable() {
-                @Override
-                public void run() {
-                    player.sendMessage(tr("\u00a7aYou have joined an island! Use /island party to see the other members."));
-                    addPlayerToParty(player, island);
-                    plugin.getTeleportLogic().homeTeleport(player, true);
-                    plugin.clearPlayerInventory(player);
-                }
+            Runnable joinIsland = () -> {
+                player.sendMessage(tr("\u00a7aYou have joined an island! Use /island party to see the other members."));
+                addPlayerToParty(player, island);
+                plugin.getTeleportLogic().homeTeleport(player, true);
+                plugin.clearPlayerInventory(player);
             };
             if (deleteOldIsland) {
                 plugin.deletePlayerIsland(player.getName(), joinIsland);

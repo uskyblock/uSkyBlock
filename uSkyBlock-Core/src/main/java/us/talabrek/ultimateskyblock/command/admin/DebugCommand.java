@@ -1,9 +1,11 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 
@@ -29,7 +31,8 @@ public class DebugCommand extends CompositeCommand {
     public static final Logger log = Logger.getLogger("us.talabrek.ultimateskyblock");
     private static Handler logHandler = null;
 
-    public DebugCommand(final uSkyBlock plugin) {
+    @Inject
+    public DebugCommand(@NotNull uSkyBlock plugin) {
         super("debug", "usb.admin.debug", marktr("control debugging"));
         add(new AbstractCommand("setlevel", null, "level", marktr("set debug-level")) {
             @Override

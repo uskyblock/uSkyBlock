@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -16,7 +18,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class SetMaintenanceCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public SetMaintenanceCommand(uSkyBlock plugin) {
+    @Inject
+    public SetMaintenanceCommand(@NotNull uSkyBlock plugin) {
         super("maintenance", "usb.admin.maintenance", "true|false", marktr("toggles maintenance mode"));
         this.plugin = plugin;
     }

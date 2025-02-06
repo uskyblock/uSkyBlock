@@ -36,7 +36,6 @@ public class Commands {
         this.partyTalkCommand = partyTalkCommand;
     }
 
-
     public void registerCommands(JavaPlugin plugin) {
         requireNonNull(plugin.getCommand("island")).setExecutor(islandCommand);
         requireNonNull(plugin.getCommand("challenges")).setExecutor(challengeCommand);

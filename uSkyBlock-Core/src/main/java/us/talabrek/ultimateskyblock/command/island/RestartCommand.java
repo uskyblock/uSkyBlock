@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.event.RestartIslandEvent;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -13,7 +15,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class RestartCommand extends RequireIslandCommand {
-    public RestartCommand(uSkyBlock plugin) {
+
+    @Inject
+    public RestartCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "restart|reset", "usb.island.restart", "?schematic", marktr("delete your island and start a new one."));
         addFeaturePermission("usb.exempt.cooldown.restart", tr("exempt player from restart-cooldown"));
     }

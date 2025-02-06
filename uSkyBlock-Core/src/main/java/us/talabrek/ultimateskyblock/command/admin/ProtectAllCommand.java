@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.task.ProtectAllTask;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
@@ -18,7 +20,8 @@ public class ProtectAllCommand extends AbstractCommand {
     private final uSkyBlock plugin;
     private ProtectAllTask task;
 
-    public ProtectAllCommand(uSkyBlock plugin) {
+    @Inject
+    public ProtectAllCommand(@NotNull uSkyBlock plugin) {
         super("protectall", "usb.admin.protectall", marktr("protects all islands (time consuming)"));
         this.plugin = plugin;
     }

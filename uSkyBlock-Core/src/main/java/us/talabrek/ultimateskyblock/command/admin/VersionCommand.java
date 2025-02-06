@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -15,7 +17,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 public class VersionCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public VersionCommand(uSkyBlock plugin) {
+    @Inject
+    public VersionCommand(@NotNull uSkyBlock plugin) {
         super("version|v", "usb.admin.version", null, marktr("displays version information"), null, UUID.fromString("97e8584c-438c-43cf-8b58-4e56c52398ed"));
         this.plugin = plugin;
     }

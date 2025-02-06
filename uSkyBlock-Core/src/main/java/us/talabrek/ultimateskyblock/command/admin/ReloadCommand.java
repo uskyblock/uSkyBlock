@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
  * Reloads the config-files for USB.
  */
 public class ReloadCommand extends AbstractCommand {
+
+    @Inject
     public ReloadCommand() {
         super("reload", "usb.admin.reload", marktr("reload configuration from file."));
     }

@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
@@ -19,7 +21,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class InfoCommand extends RequireIslandCommand {
-    public InfoCommand(uSkyBlock plugin) {
+
+    @Inject
+    public InfoCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "info", "usb.island.info", "?island", marktr("check your or another''s island info"));
         addFeaturePermission("usb.island.info.other", tr("allows user to see others island info"));
     }

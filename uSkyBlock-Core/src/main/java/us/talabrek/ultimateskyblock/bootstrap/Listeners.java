@@ -22,6 +22,7 @@ import us.talabrek.ultimateskyblock.event.WitherTagEvents;
 import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
 import us.talabrek.ultimateskyblock.gui.GuiListener;
 import us.talabrek.ultimateskyblock.signs.SignEvents;
+import us.talabrek.ultimateskyblock.command.InviteHandler;
 
 @Singleton
 public class Listeners {
@@ -42,6 +43,7 @@ public class Listeners {
     private final ToolMenuEvents toolMenuEvents;
     private final SignEvents signEvents;
     private final ChatEvents chatEvents;
+    private final InviteHandler inviteHandler;
 
     @Inject
     public Listeners(
@@ -59,7 +61,8 @@ public class Listeners {
         @NotNull NetherTerraFormEvents netherTerraFormEvents,
         @NotNull ToolMenuEvents toolMenuEvents,
         @NotNull SignEvents signEvents,
-        @NotNull ChatEvents chatEvents
+        @NotNull ChatEvents chatEvents,
+        @NotNull InviteHandler inviteHandler
     ) {
         this.config = config;
         this.guiListener = guiListener;
@@ -76,6 +79,7 @@ public class Listeners {
         this.toolMenuEvents = toolMenuEvents;
         this.signEvents = signEvents;
         this.chatEvents = chatEvents;
+        this.inviteHandler = inviteHandler;
     }
 
     public void registerListeners(Plugin plugin) {
@@ -88,6 +92,7 @@ public class Listeners {
         manager.registerEvents(exploitEvents, plugin);
         manager.registerEvents(witherTagEvents, plugin);
         manager.registerEvents(chatEvents, plugin);
+        manager.registerEvents(inviteHandler, plugin);
 
         // TODO minoneer 06.02.2025: Move this logic. Either into the appropriate listener, or into submodules if we don't want all features active (e.g., the nether)
         if (config.getYamlConfig().getBoolean("options.protection.enabled", true)) {

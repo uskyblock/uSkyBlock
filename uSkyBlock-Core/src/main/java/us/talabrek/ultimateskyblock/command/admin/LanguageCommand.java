@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -22,7 +24,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class LanguageCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public LanguageCommand(uSkyBlock plugin) {
+    @Inject
+    public LanguageCommand(@NotNull uSkyBlock plugin) {
         super("lang|l", "usb.admin.lang", "language", marktr("changes the language of the plugin, and reloads"));
         this.plugin = plugin;
     }

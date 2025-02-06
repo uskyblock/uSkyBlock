@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -14,7 +16,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class BanCommand extends RequireIslandCommand {
-    public BanCommand(uSkyBlock plugin) {
+
+    @Inject
+    public BanCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "ban|unban", "usb.island.ban", "player", marktr("ban/unban a player from your island."));
         addFeaturePermission("usb.exempt.ban", tr("exempts user from being banned"));
     }

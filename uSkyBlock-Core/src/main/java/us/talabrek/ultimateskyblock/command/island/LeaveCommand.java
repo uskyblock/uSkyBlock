@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -13,7 +15,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class LeaveCommand extends RequireIslandCommand {
 
-    public LeaveCommand(uSkyBlock plugin) {
+    @Inject
+    public LeaveCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "leave", "usb.party.leave", marktr("leave your party"));
     }
 

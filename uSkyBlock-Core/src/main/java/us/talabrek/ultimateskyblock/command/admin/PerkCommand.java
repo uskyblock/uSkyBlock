@@ -1,9 +1,11 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -14,7 +16,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 
 public class PerkCommand extends CompositeCommand {
-    public PerkCommand(final uSkyBlock plugin) {
+
+    @Inject
+    public PerkCommand(@NotNull uSkyBlock plugin) {
         super("perk", "usb.admin.perk", marktr("shows perk-information"));
         add(new AbstractCommand("list", "lists all perks") {
             @Override

@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -12,7 +14,9 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 
 public class KickCommand extends RequireIslandCommand {
-    public KickCommand(uSkyBlock plugin) {
+
+    @Inject
+    public KickCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "kick|remove", "usb.party.kick", "player", marktr("remove a member from your island."));
     }
 

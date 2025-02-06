@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -15,7 +17,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class GenTopTenCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public GenTopTenCommand(uSkyBlock plugin) {
+    @Inject
+    public GenTopTenCommand(@NotNull uSkyBlock plugin) {
         super("topten", "usb.mod.topten", marktr("manually update the top 10 list"));
         this.plugin = plugin;
     }

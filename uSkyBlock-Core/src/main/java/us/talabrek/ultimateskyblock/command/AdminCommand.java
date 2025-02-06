@@ -5,11 +5,7 @@ import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.biome.BiomeConfig;
-import us.talabrek.ultimateskyblock.command.admin.AbstractPlayerInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminChallengeCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminIslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.ChunkCommand;
@@ -26,6 +22,7 @@ import us.talabrek.ultimateskyblock.command.admin.JobsCommand;
 import us.talabrek.ultimateskyblock.command.admin.LanguageCommand;
 import us.talabrek.ultimateskyblock.command.admin.OrphanCommand;
 import us.talabrek.ultimateskyblock.command.admin.PerkCommand;
+import us.talabrek.ultimateskyblock.command.admin.PlayerInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.ProtectAllCommand;
 import us.talabrek.ultimateskyblock.command.admin.PurgeCommand;
 import us.talabrek.ultimateskyblock.command.admin.RegionCommand;
@@ -39,7 +36,6 @@ import us.talabrek.ultimateskyblock.command.completion.ChallengeTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.OnlinePlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.RankTabCompleter;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
-import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -55,50 +51,74 @@ public class AdminCommand extends BaseCommandExecutor {
         @NotNull uSkyBlock plugin,
         @NotNull ConfirmHandler confirmHandler,
         @NotNull AnimationHandler animationHandler,
-        @NotNull BiomeConfig biomeConfig
+
+        @NotNull OnlinePlayerTabCompleter playerCompleter,
+        @NotNull ChallengeTabCompleter challengeCompleter,
+        @NotNull AllPlayerTabCompleter allPlayerCompleter,
+        @NotNull BiomeTabCompleter biomeCompleter,
+        @NotNull RankTabCompleter rankTabCompleter,
+
+        @NotNull ReloadCommand reloadCommand,
+        @NotNull ImportCommand importCommand,
+        @NotNull GenTopTenCommand genTopTenCommand,
+        @NotNull AdminChallengeCommand adminChallengeCommand,
+        @NotNull OrphanCommand orphanCommand,
+        @NotNull AdminIslandCommand adminIslandCommand,
+        @NotNull PurgeCommand purgeCommand,
+        @NotNull GotoIslandCommand gotoIslandCommand,
+        @NotNull PlayerInfoCommand playerInfoCommand,
+        @NotNull FlatlandFixCommand flatlandFixCommand,
+        @NotNull DebugCommand debugCommand,
+        @NotNull WGCommand wgCommand,
+        @NotNull VersionCommand versionCommand,
+        @NotNull CooldownCommand cooldownCommand,
+        @NotNull PerkCommand perkCommand,
+        @NotNull LanguageCommand languageCommand,
+        @NotNull FlushCommand flushCommand,
+        @NotNull JobsCommand jobsCommand,
+        @NotNull ConfigCommand configCommand,
+        @NotNull DocumentCommand documentCommand,
+        @NotNull RegionCommand regionCommand,
+        @NotNull SetMaintenanceCommand setMaintenanceCommand,
+        @NotNull ItemInfoCommand itemInfoCommand,
+        @NotNull ProtectAllCommand protectAllCommand,
+        @NotNull ChunkCommand chunkCommand
+
     ) {
         super("usb", null, marktr("Ultimate SkyBlock Admin"));
-        OnlinePlayerTabCompleter playerCompleter = new OnlinePlayerTabCompleter();
-        TabCompleter challengeCompleter = new ChallengeTabCompleter();
-        TabCompleter allPlayerCompleter = new AllPlayerTabCompleter(playerCompleter);
-        TabCompleter biomeCompleter = new BiomeTabCompleter(biomeConfig);
+
         addTab("oplayer", playerCompleter);
         addTab("player", allPlayerCompleter);
         addTab("island", allPlayerCompleter);
         addTab("leader", allPlayerCompleter);
         addTab("challenge", challengeCompleter);
         addTab("biome", biomeCompleter);
-        addTab("rank", new RankTabCompleter(plugin));
-        add(new ReloadCommand());
-        add(new ImportCommand());
-        add(new GenTopTenCommand(plugin));
-        //add(new RegisterIslandToPlayerCommand());
-        add(new AdminChallengeCommand(plugin));
-        add(new OrphanCommand(plugin));
-        add(new AdminIslandCommand(plugin, confirmHandler));
-        add(new PurgeCommand(plugin));
-        add(new GotoIslandCommand(plugin));
-        add(new AbstractPlayerInfoCommand("info", "usb.admin.info", marktr("show player-information")) {
-            @Override
-            protected void doExecute(CommandSender sender, PlayerInfo playerInfo) {
-                sender.sendMessage(playerInfo.toString());
-            }
-        });
-        add(new FlatlandFixCommand(plugin));
-        add(new DebugCommand(plugin));
-        add(new WGCommand(plugin));
-        add(new VersionCommand(plugin));
-        add(new CooldownCommand(plugin));
-        add(new PerkCommand(plugin));
-        add(new LanguageCommand(plugin));
-        add(new FlushCommand(plugin));
-        add(new JobsCommand(plugin));
-        add(new ConfigCommand(plugin));
-        add(new DocumentCommand(plugin, "doc", "usb.admin.doc"));
-        add(new RegionCommand(plugin, animationHandler));
-        add(new SetMaintenanceCommand(plugin));
-        add(new ItemInfoCommand());
-        add(new ProtectAllCommand(plugin));
-        add(new ChunkCommand(plugin));
+        addTab("rank", rankTabCompleter);
+
+        add(reloadCommand);
+        add(importCommand);
+        add(genTopTenCommand);
+        add(adminChallengeCommand);
+        add(orphanCommand);
+        add(adminIslandCommand);
+        add(purgeCommand);
+        add(gotoIslandCommand);
+        add(playerInfoCommand);
+        add(flatlandFixCommand);
+        add(debugCommand);
+        add(wgCommand);
+        add(versionCommand);
+        add(cooldownCommand);
+        add(perkCommand);
+        add(languageCommand);
+        add(flushCommand);
+        add(jobsCommand);
+        add(configCommand);
+        add(documentCommand);
+        add(regionCommand);
+        add(setMaintenanceCommand);
+        add(itemInfoCommand);
+        add(protectAllCommand);
+        add(chunkCommand);
     }
 }

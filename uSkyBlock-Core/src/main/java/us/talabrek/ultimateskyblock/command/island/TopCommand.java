@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -12,7 +14,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class TopCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public TopCommand(uSkyBlock plugin) {
+    @Inject
+    public TopCommand(@NotNull uSkyBlock plugin) {
         super("top", "usb.island.top", "?page", marktr("display the top10 of islands"));
         this.plugin = plugin;
         addFeaturePermission("usb.admin.topten", tr("enables user to all-ways generate top-ten (no caching)"));
