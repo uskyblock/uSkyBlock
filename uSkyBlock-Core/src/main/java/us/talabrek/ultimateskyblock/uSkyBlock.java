@@ -174,18 +174,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public void onDisable() {
         deregisterApi(api);
         api = null;
-
-        if (this.skyBlock != null) {
-            this.skyBlock.shutdown(this);
-            this.skyBlock = null;
-        }
-
-        try {
-            // TODO: make WorldManager an object
-            WorldManager.skyBlockWorld = null; // Force a reload on config.
-        } catch (Exception e) {
-            log(Level.INFO, tr("Something went wrong saving the island and/or party data!"), e);
-        }
+        shutdown();
     }
 
     @Override
@@ -205,8 +194,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     @Override
     public void onEnable() {
-        WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
-        WorldManager.skyBlockNetherWorld = null;
         missingRequirements = null;
         instance = this;
 
@@ -214,7 +201,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         convertConfigItemsTo1_20_6IfRequired();
         convertConfigToBlockRequirements();
 
-        reloadConfigs();
+        startup();
+        reloadLegacyStuff();
 
         api = new UltimateSkyblockApi(this);
         registerApi(api);
@@ -225,7 +213,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 return;
             }
 
-            uSkyBlock.this.skyBlock.delayedEnable(uSkyBlock.this);
+            delayedEnable();
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
             log(Level.INFO, getVersionInfo(false));
@@ -651,30 +639,48 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     @Override
     public void reloadConfig() {
-        reloadConfigs();
-        this.skyBlock.delayedEnable(this);
+        reload();
     }
 
-    // TODO: split into shutdown and startup
-    private void reloadConfigs() {
+    private void reload() {
+        shutdown();
+        reloadLegacyStuff();
+        startup();
+        delayedEnable();
+    }
 
+    private void shutdown() {
         if (this.skyBlock != null) {
             this.skyBlock.shutdown(this);
             this.skyBlock = null;
         }
+        WorldManager.skyBlockWorld = null; // Force a reload on config.
+    }
 
-        createFolders();
-        saveConfig();
-        // Update all of the loaded configs.
-        FileUtil.reload();
+    private void startup() {
+        if (this.skyBlock != null) {
+            throw new IllegalStateException("Skyblock already started");
+        }
 
-        // TODO: move to enable method
+        WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
+        WorldManager.skyBlockNetherWorld = null;
+
         Injector injector = Guice.createInjector(new SkyblockModule(this));
         this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
         this.skyBlock.startup(this);
     }
 
+    private void delayedEnable() {
+        this.skyBlock.delayedEnable(this);
+    }
+
+    private void reloadLegacyStuff() {
+        createFolders();
+        saveConfig();
+        // Update all of the loaded configs.
+        FileUtil.reload();
+    }
 
     public IslandLogic getIslandLogic() {
         return islandLogic;
