@@ -2,41 +2,39 @@ package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.island.level.yml.LevelConfigYmlReader;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public abstract class CommonLevelLogic implements LevelLogic {
-    static final String CN = CommonLevelLogic.class.getName();
-    protected static final Logger log = Logger.getLogger(CN);
-    protected final uSkyBlock plugin;
-    protected final FileConfiguration config;
+    FileConfiguration levelConfig;
+    private final WorldManager worldManager;
 
     BlockLevelConfigMap scoreMap;
     private final int pointsPerLevel;
     final int activateNetherAtLevel;
 
-    CommonLevelLogic(uSkyBlock plugin, FileConfiguration config) {
-        this.plugin = plugin;
-        this.config = config;
-        activateNetherAtLevel = config.getInt("nether.activate-at.level", 100);
-        pointsPerLevel = config.getInt("general.pointsPerLevel");
+    CommonLevelLogic(FileConfiguration levelConfig, WorldManager worldManager) {
+        this.levelConfig = levelConfig;
+        activateNetherAtLevel = levelConfig.getInt("nether.activate-at.level", 100);
+        pointsPerLevel = levelConfig.getInt("general.pointsPerLevel");
+        this.worldManager = worldManager;
         load();
     }
 
     private void load() {
-        scoreMap = new LevelConfigYmlReader().readLevelConfig(config);
+        scoreMap = new LevelConfigYmlReader().readLevelConfig(levelConfig);
     }
 
-    Location getNetherLocation(Location l) {
-        Location netherLoc = l.clone();
-        netherLoc.setWorld(plugin.getWorldManager().getNetherWorld());
-        netherLoc.setY(Settings.nether_height);
-        return netherLoc;
+    Location getNetherLocation(Location location) {
+        Location netherLocation = location.clone();
+        netherLocation.setWorld(worldManager.getNetherWorld());
+        netherLocation.setY(Settings.nether_height);
+        return netherLocation;
     }
 
     IslandScore createIslandScore(BlockCountCollection blockCollection) {

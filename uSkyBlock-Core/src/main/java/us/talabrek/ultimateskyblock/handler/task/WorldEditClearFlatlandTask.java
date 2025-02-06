@@ -12,14 +12,18 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.async.IncrementalRunnable;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
@@ -31,25 +35,33 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class WorldEditClearFlatlandTask extends IncrementalRunnable {
     private static final BlockState AIR = requireNonNull(BlockTypes.AIR).getDefaultState();
 
+    private final Logger logger;
     private final Set<Region> borderRegions;
     private final Set<BlockVector2> innerChunks;
-    private final uSkyBlock plugin;
     private final BukkitWorld bukkitWorld;
     private final int minY;
     private final int maxY;
     private final int maxBlocks;
 
-    public WorldEditClearFlatlandTask(final uSkyBlock plugin, final CommandSender commandSender, final Region region, final String format) {
-        super(plugin);
+    public WorldEditClearFlatlandTask(
+        @NotNull Scheduler scheduler,
+        @NotNull PluginConfig config,
+        @NotNull WorldManager worldManager,
+        @NotNull Logger logger,
+        @NotNull CommandSender commandSender,
+        @NotNull Region region,
+        @NotNull String format
+    ) {
+        super(scheduler, config);
+        this.logger = logger;
         setOnCompletion(() -> {
             String duration = TimeUtil.millisAsString(WorldEditClearFlatlandTask.this.getTimeElapsed());
-            log(Level.INFO, String.format("Region %s was cleared in %s", region.toString(), duration));
+            log(Level.INFO, String.format("Region %s was cleared in %s", region, duration));
             commandSender.sendMessage(String.format(format, duration));
         });
-        this.plugin = plugin;
         innerChunks = WorldEditHandler.getInnerChunks(region);
         borderRegions = WorldEditHandler.getBorderRegions(region);
-        bukkitWorld = new BukkitWorld(plugin.getWorldManager().getWorld());
+        bukkitWorld = new BukkitWorld(worldManager.getWorld());
         minY = Math.min(region.getMinimumPoint().getBlockY(), region.getMaximumPoint().getBlockY());
         maxY = Math.max(region.getMinimumPoint().getBlockY(), region.getMaximumPoint().getBlockY());
         maxBlocks = 2 * Math.max(region.getLength(), region.getWidth()) * 16 * (maxY - minY);
@@ -74,7 +86,7 @@ public class WorldEditClearFlatlandTask extends IncrementalRunnable {
                                 BlockVector3.at(x + 15, maxY, z + 15)),
                             AIR);
                     } catch (MaxChangedBlocksException e) {
-                        plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
+                        logger.log(Level.WARNING, "Unable to clear flat-land", e);
                     }
                 } else if (border.hasNext()) {
                     Region borderRegion = border.next();
@@ -82,7 +94,7 @@ public class WorldEditClearFlatlandTask extends IncrementalRunnable {
                     try {
                         editSession.setBlocks(borderRegion, AIR);
                     } catch (MaxChangedBlocksException e) {
-                        plugin.getLogger().log(Level.WARNING, "Unable to clear flat-land", e);
+                        logger.log(Level.WARNING, "Unable to clear flat-land", e);
                     }
                 }
             }

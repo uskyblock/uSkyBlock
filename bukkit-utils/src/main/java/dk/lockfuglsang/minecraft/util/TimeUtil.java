@@ -1,5 +1,6 @@
 package dk.lockfuglsang.minecraft.util;
 
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,5 +89,13 @@ public enum TimeUtil {
 
     public static long ticksAsMillis(int ticks) {
         return ticks * 50;
+    }
+
+    public static long durationAsTicks(Duration duration) {
+        return duration.toMillis() / 50;
+    }
+
+    public static Duration ticksAsDuration(long ticks) {
+        return Duration.ofMillis(ticks * 50);
     }
 }

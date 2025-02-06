@@ -26,7 +26,7 @@ public class SetBiomeTask extends IncrementalRunnable {
     private final Set<BlockVector2> chunks;
 
     public SetBiomeTask(uSkyBlock plugin, Location loc, Biome biome, Runnable onCompletion) {
-        super(plugin, onCompletion);
+        super(plugin.getScheduler(), plugin.getPluginConfig(), onCompletion);
         this.biome = biome;
         ProtectedRegion region = WorldGuardHandler.getIslandRegionAt(loc);
         if (region != null) {
@@ -41,7 +41,7 @@ public class SetBiomeTask extends IncrementalRunnable {
     }
 
     public SetBiomeTask(uSkyBlock plugin, World world, BlockVector3 minP, BlockVector3 maxP, Biome biome, Runnable onCompletion) {
-        super(plugin, onCompletion);
+        super(plugin.getScheduler(), plugin.getPluginConfig(), onCompletion);
         this.biome = biome;
         this.minP = minP;
         this.maxP = maxP;

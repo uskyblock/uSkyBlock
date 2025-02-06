@@ -1,5 +1,8 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
@@ -18,15 +21,31 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
+import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.Perk;
+import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -35,6 +54,7 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 /**
  * The home of challenge business logic.
  */
+@Singleton
 public class ChallengeLogic implements Listener {
     public static final long MS_MIN = 60 * 1000;
     public static final long MS_HOUR = 60 * MS_MIN;
@@ -43,8 +63,12 @@ public class ChallengeLogic implements Listener {
     public static final int ROWS_OF_RANKS = 5;
     public static final int CHALLENGE_PAGESIZE = ROWS_OF_RANKS * COLS_PER_ROW;
 
+    private final Logger logger;
     private final FileConfiguration config;
     private final uSkyBlock plugin;
+    private final PerkLogic perkLogic;
+    private final HookManager hookManager;
+
     private final Map<String, Rank> ranks;
 
     public final ChallengeDefaults defaults;
@@ -52,8 +76,17 @@ public class ChallengeLogic implements Listener {
     private final ItemStack lockedItem;
     private final Map<Challenge.Type, ItemStack> lockedItemMap = new EnumMap<>(Challenge.Type.class);
 
-    public ChallengeLogic(FileConfiguration config, uSkyBlock plugin) {
-        this.config = config;
+    @Inject
+    public ChallengeLogic(
+        @NotNull Logger logger,
+        @NotNull uSkyBlock plugin,
+        @NotNull PerkLogic perkLogic,
+        @NotNull HookManager hookManager
+    ) {
+        this.logger = logger;
+        this.perkLogic = perkLogic;
+        this.hookManager = hookManager;
+        this.config = FileUtil.getYmlConfiguration("challenges.yml");
         this.plugin = plugin;
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
         ranks = ChallengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
@@ -348,12 +381,12 @@ public class ChallengeLogic implements Listener {
         player.sendMessage(tr("\u00a7eExp reward: \u00a7f{0,number,#.#}", reward.getXpReward()));
         if (defaults.enableEconomyPlugin) {
             float rewBonus = 1;
-            Perk perk = plugin.getPerkLogic().getPerk(player);
+            Perk perk = perkLogic.getPerk(player);
             rewBonus += perk.getRewBonus();
             float currencyReward = reward.getCurrencyReward() * rewBonus;
             double percentage = (rewBonus - 1.0) * 100.0;
 
-            plugin.getHookManager().getEconomyHook().ifPresent((hook) -> {
+            hookManager.getEconomyHook().ifPresent((hook) -> {
                 hook.depositPlayer(player, currencyReward);
 
                 player.sendMessage(tr("\u00a7eCurrency reward: \u00a7f{0,number,###.##} {1} \u00a7a ({2,number,##.##})%",
@@ -549,7 +582,7 @@ public class ChallengeLogic implements Listener {
                 }
                 menu.setItem(location, currentChallengeItem);
             } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Invalid challenge " + challenge, e);
+                logger.log(Level.SEVERE, "Invalid challenge " + challenge, e);
             }
         }
         return location;

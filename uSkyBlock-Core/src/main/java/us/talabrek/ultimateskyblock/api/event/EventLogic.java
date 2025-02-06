@@ -1,27 +1,31 @@
 package us.talabrek.ultimateskyblock.api.event;
 
+import com.google.inject.Inject;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 public class EventLogic {
-    private final uSkyBlock plugin;
+    private final Scheduler scheduler;
 
-    public EventLogic(uSkyBlock plugin) {
-        this.plugin = plugin;
+    @Inject
+    public EventLogic(@NotNull Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     /**
      * Fires a new async {@link IslandLeaderChangedEvent}.
      *
-     * @param islandInfo {@link IslandInfo} for the island in the scope of this event.
+     * @param islandInfo         {@link IslandInfo} for the island in the scope of this event.
      * @param originalLeaderInfo {@link PlayerInfo} for the original island leader.
-     * @param newLeaderInfo {@link PlayerInfo} for the new island leader.
+     * @param newLeaderInfo      {@link PlayerInfo} for the new island leader.
      */
     public void fireIslandLeaderChangedEvent(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo,
                                              us.talabrek.ultimateskyblock.api.PlayerInfo originalLeaderInfo,
                                              us.talabrek.ultimateskyblock.api.PlayerInfo newLeaderInfo) {
-        plugin.async(() -> plugin.getServer().getPluginManager().callEvent(new IslandLeaderChangedEvent(islandInfo, originalLeaderInfo, newLeaderInfo)));
+        scheduler.async(() -> Bukkit.getPluginManager().callEvent(new IslandLeaderChangedEvent(islandInfo, originalLeaderInfo, newLeaderInfo)));
     }
 
     /**
@@ -31,17 +35,17 @@ public class EventLogic {
      * @param playerInfo {@link PlayerInfo} for the joined member.
      */
     public void fireMemberJoinedEvent(us.talabrek.ultimateskyblock.island.IslandInfo islandInfo, us.talabrek.ultimateskyblock.player.PlayerInfo playerInfo) {
-        plugin.async(() -> plugin.getServer().getPluginManager().callEvent(new MemberJoinedEvent(islandInfo, playerInfo)));
+        scheduler.async(() -> Bukkit.getPluginManager().callEvent(new MemberJoinedEvent(islandInfo, playerInfo)));
     }
 
     /**
      * Fires a new async {@link MemberLeftEvent}.
      *
      * @param islandInfo {@link IslandInfo} for the island that the member left.
-     * @param member {@link PlayerInfo} for the left member.
+     * @param member     {@link PlayerInfo} for the left member.
      */
     public void fireMemberLeftEvent(IslandInfo islandInfo, PlayerInfo member) {
-        plugin.async(() -> plugin.getServer().getPluginManager().callEvent(new MemberLeftEvent(islandInfo, member)));
+        scheduler.async(() -> Bukkit.getPluginManager().callEvent(new MemberLeftEvent(islandInfo, member)));
     }
 
     public void shutdown() {

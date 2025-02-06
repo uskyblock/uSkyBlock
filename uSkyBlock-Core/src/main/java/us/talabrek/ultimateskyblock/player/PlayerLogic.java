@@ -4,15 +4,21 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -23,38 +29,64 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Holds the active players
  */
+@Singleton
 public class PlayerLogic {
-    private static final Logger log = Logger.getLogger(PlayerLogic.class.getName());
     private static final PlayerInfo UNKNOWN_PLAYER = new PlayerInfo(PlayerDB.UNKNOWN_PLAYER_NAME, PlayerDB.UNKNOWN_PLAYER_UUID, uSkyBlock.getInstance());
+
     private final LoadingCache<UUID, PlayerInfo> playerCache;
     private final uSkyBlock plugin;
     private final BukkitTask saveTask;
     private final PlayerDB playerDB;
+    private final PerkLogic perkLogic;
+    private final IslandLogic islandLogic;
+    private final WorldManager worldManager;
+    private final TeleportLogic teleportLogic;
+    private final Scheduler scheduler;
     private final NotificationManager notificationManager;
+    private final Logger logger;
 
-    public PlayerLogic(uSkyBlock plugin) {
+    @Inject
+    public PlayerLogic(
+        @NotNull uSkyBlock plugin,
+        @NotNull PluginConfig config,
+        @NotNull PlayerDB playerDB,
+        @NotNull Logger logger,
+        @NotNull PerkLogic perkLogic,
+        @NotNull IslandLogic islandLogic,
+        @NotNull WorldManager worldManager,
+        @NotNull TeleportLogic teleportLogic,
+        @NotNull Scheduler scheduler,
+        @NotNull NotificationManager notificationManager
+    ) {
         this.plugin = plugin;
-        playerDB = plugin.getPlayerDB();
-        playerCache = CacheBuilder
-                .from(plugin.getConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-                .removalListener((RemovalListener<UUID, PlayerInfo>) removal -> {
-                    log.fine("Removing player-info for " + removal.getKey() + " from cache");
-                    PlayerInfo playerInfo = removal.getValue();
-                    if (playerInfo.isDirty()) {
-                        playerInfo.saveToFile();
-                    }
-                })
-                .build(new CacheLoader<>() {
-                           @Override
-                           public @NotNull PlayerInfo load(@NotNull UUID s) {
-                               log.fine("Loading player-info from " + s + " into cache!");
-                               return loadPlayerData(s);
-                           }
+        this.playerDB = playerDB;
+        this.perkLogic = perkLogic;
+        this.islandLogic = islandLogic;
+        this.worldManager = worldManager;
+        this.teleportLogic = teleportLogic;
+        this.scheduler = scheduler;
+        this.notificationManager = notificationManager;
+        this.logger = logger;
+
+        this.playerCache = CacheBuilder
+            .from(config.getYamlConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .removalListener((RemovalListener<UUID, PlayerInfo>) removal -> {
+                logger.fine("Removing player-info for " + removal.getKey() + " from cache");
+                PlayerInfo playerInfo = removal.getValue();
+                if (playerInfo.isDirty()) {
+                    playerInfo.saveToFile();
+                }
+            })
+            .build(new CacheLoader<>() {
+                       @Override
+                       public @NotNull PlayerInfo load(@NotNull UUID s) {
+                           logger.fine("Loading player-info from " + s + " into cache!");
+                           return loadPlayerData(s);
                        }
-                );
-        long every = TimeUtil.secondsAsMillis(plugin.getConfig().getInt("options.advanced.player.saveEvery", 2*60));
-        saveTask = plugin.async(this::saveDirtyToFiles, every, every);
-        notificationManager = new NotificationManager(plugin);
+                   }
+            );
+        Duration every = Duration.ofSeconds(plugin.getConfig().getInt("options.advanced.player.saveEvery", 2 * 60));
+        this.saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 
     private void saveDirtyToFiles() {
@@ -80,7 +112,7 @@ public class PlayerLogic {
         if (playerName == null) {
             playerName = "__UNKNOWN__";
         }
-        log.log(Level.FINER, "Loading player data for " + playerUUID + "/" + playerName);
+        logger.log(Level.FINER, "Loading player data for " + playerUUID + "/" + playerName);
 
         final PlayerInfo playerInfo = new PlayerInfo(playerName, playerUUID, plugin);
 
@@ -89,34 +121,31 @@ public class PlayerLogic {
             if (playerInfo.getHasIsland()) {
                 IslandInfo islandInfo = plugin.getIslandInfo(playerInfo);
                 if (islandInfo != null) {
-                    islandInfo.updatePermissionPerks(onlinePlayer, plugin.getPerkLogic().getPerk(onlinePlayer));
+                    islandInfo.updatePermissionPerks(onlinePlayer, perkLogic.getPerk(onlinePlayer));
                 }
             }
-            plugin.sync(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (playerInfo.getHasIsland()) {
-                                WorldGuardHandler.protectIsland(onlinePlayer, playerInfo);
-                                plugin.getIslandLogic().clearFlatland(onlinePlayer, playerInfo.getIslandLocation(), 400);
-                            }
-                            if (plugin.getWorldManager().isSkyAssociatedWorld(onlinePlayer.getWorld()) && !plugin.playerIsOnIsland(onlinePlayer)) {
-                                // Check if banned
-                                String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
-                                IslandInfo islandInfo = plugin.getIslandInfo(islandName);
-                                if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
-                                    onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
-                                        tr("\u00a7eSending you to spawn."));
-                                    plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
-                                } else if (islandInfo != null && islandInfo.isLocked()) {
-                                    if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
-                                        onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
-                                            tr("\u00a7eSending you to spawn."));
-                                        plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
-                                    }
-                                }
+            scheduler.sync(() -> {
+                    if (playerInfo.getHasIsland()) {
+                        WorldGuardHandler.protectIsland(onlinePlayer, playerInfo);
+                        islandLogic.clearFlatland(onlinePlayer, playerInfo.getIslandLocation(), 400);
+                    }
+                    if (worldManager.isSkyAssociatedWorld(onlinePlayer.getWorld()) && !plugin.playerIsOnIsland(onlinePlayer)) {
+                        // Check if banned
+                        String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
+                        IslandInfo islandInfo = plugin.getIslandInfo(islandName);
+                        if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
+                            onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
+                                tr("\u00a7eSending you to spawn."));
+                            teleportLogic.spawnTeleport(onlinePlayer, true);
+                        } else if (islandInfo != null && islandInfo.isLocked()) {
+                            if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
+                                onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
+                                    tr("\u00a7eSending you to spawn."));
+                                teleportLogic.spawnTeleport(onlinePlayer, true);
                             }
                         }
                     }
+                }
             );
         }
         return playerInfo;
@@ -143,12 +172,7 @@ public class PlayerLogic {
     }
 
     public void loadPlayerDataAsync(final Player player) {
-        plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                playerCache.refresh(player.getUniqueId());
-            }
-        });
+        scheduler.async(() -> playerCache.refresh(player.getUniqueId()));
     }
 
     public void removeActivePlayer(PlayerInfo pi) {

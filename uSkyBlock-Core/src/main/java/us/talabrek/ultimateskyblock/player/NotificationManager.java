@@ -1,24 +1,25 @@
 package us.talabrek.ultimateskyblock.player;
 
+import com.google.inject.Inject;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 public class NotificationManager {
-    private final uSkyBlock plugin;
     private final BukkitAudiences audiences;
     private LegacyComponentSerializer legacySerializer;
 
-    public NotificationManager(uSkyBlock plugin) {
-        this.plugin = plugin;
+    @Inject
+    public NotificationManager(Plugin plugin) {
         audiences = BukkitAudiences.create(plugin);
     }
 
     /**
      * Gets a {@link LegacyComponentSerializer} configured for uSkyBlock's (translatable) messages.
+     *
      * @return LegacyComponentSerializer configured for uSkyblock's (translatable) messages.
      */
     public @NotNull LegacyComponentSerializer getLegacySerializer() {
@@ -30,7 +31,8 @@ public class NotificationManager {
 
     /**
      * Sends the given {@link String} as message to the {@link Player}'s ActionBar.
-     * @param player Player to send the given message to
+     *
+     * @param player  Player to send the given message to
      * @param message Message to send to the given player
      */
     public void sendActionBar(@NotNull Player player, @NotNull String message) {
@@ -39,7 +41,8 @@ public class NotificationManager {
 
     /**
      * Sends the given {@link Component} as message to the {@link Player}'s ActionBar.
-     * @param player Player to send the given message to
+     *
+     * @param player    Player to send the given message to
      * @param component Component to send to the given player
      */
     public void sendActionBar(@NotNull Player player, @NotNull Component component) {

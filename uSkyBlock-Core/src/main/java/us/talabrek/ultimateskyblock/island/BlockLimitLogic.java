@@ -1,19 +1,23 @@
 package us.talabrek.ultimateskyblock.island;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
+@Singleton
 public class BlockLimitLogic {
     public enum CanPlace {YES, UNCERTAIN, NO}
 
@@ -23,11 +27,14 @@ public class BlockLimitLogic {
 
     private final boolean limitsEnabled;
 
-    public BlockLimitLogic(uSkyBlock plugin) {
-        FileConfiguration config = plugin.getConfig();
-        limitsEnabled = config.getBoolean("options.island.block-limits.enabled", false);
+    @Inject
+    public BlockLimitLogic(
+        @NotNull PluginConfig config,
+        @NotNull Logger logger
+    ) {
+        limitsEnabled = config.getYamlConfig().getBoolean("options.island.block-limits.enabled", false);
         if (limitsEnabled) {
-            ConfigurationSection section = config.getConfigurationSection("options.island.block-limits");
+            ConfigurationSection section = config.getYamlConfig().getConfigurationSection("options.island.block-limits");
             Set<String> keys = section.getKeys(false);
             keys.remove("enabled");
             for (String key : keys) {
@@ -36,7 +43,7 @@ public class BlockLimitLogic {
                 if (material != null && limit >= 0) {
                     blockLimits.put(material, limit);
                 } else {
-                    plugin.getLogger().warning("Unknown material " + key + " supplied for block-limit, or value not an integer");
+                    logger.warning("Unknown material " + key + " supplied for block-limit, or value not an integer");
                 }
             }
         }

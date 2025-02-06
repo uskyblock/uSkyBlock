@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.imports;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,6 +23,7 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 /**
  * Delegates and batches the import.
  */
+@Singleton
 public class USBImporterExecutor {
     private final uSkyBlock plugin;
     private final ProgressTracker progressTracker;
@@ -30,6 +33,7 @@ public class USBImporterExecutor {
     private volatile int countSkip;
     private volatile int countFailed;
 
+    @Inject
     public USBImporterExecutor(uSkyBlock plugin) {
         this.plugin = plugin;
         double progressEveryPct = plugin.getConfig().getDouble("importer.progressEveryPct", 10);
@@ -125,7 +129,7 @@ public class USBImporterExecutor {
     private void complete(CommandSender sender, USBImporter importer) {
         importer.completed(countSuccess, countFailed, countSkip);
         sender.sendMessage(tr("\u00a7eConverted {0}/{1} files in {2}",
-                countSuccess, (countSuccess + countFailed), TimeUtil.millisAsString(System.currentTimeMillis() - tStart)));
+            countSuccess, (countSuccess + countFailed), TimeUtil.millisAsString(System.currentTimeMillis() - tStart)));
         plugin.getConfig().set("importer." + importer.getName() + ".imported", true);
         plugin.saveConfig();
     }

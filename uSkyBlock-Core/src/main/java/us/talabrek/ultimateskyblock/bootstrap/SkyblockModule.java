@@ -1,10 +1,57 @@
 package us.talabrek.ultimateskyblock.bootstrap;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.animation.AnimationHandler;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.island.level.ChunkSnapshotLevelLogic;
+import us.talabrek.ultimateskyblock.island.level.LevelLogic;
+import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.uuid.BukkitPlayerDB;
+import us.talabrek.ultimateskyblock.uuid.FilePlayerDB;
+import us.talabrek.ultimateskyblock.uuid.MemoryPlayerDB;
+import us.talabrek.ultimateskyblock.uuid.PlayerDB;
+
+import java.nio.file.Path;
+import java.util.logging.Logger;
 
 public class SkyblockModule extends AbstractModule {
 
+    private final uSkyBlock plugin;
+
+    public SkyblockModule(uSkyBlock plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     protected void configure() {
+        // TODO: this should not be injected, but it is here fore legacy reasons. Move all functionality out of the plugin class and into the appropriate classes.
+        bind(uSkyBlock.class).toInstance(plugin);
+        bind(Plugin.class).toInstance(plugin);
+        bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
+        bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
+    }
+
+    @Provides
+    @Singleton
+    public @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
+        String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
+        if (playerDbStorage.equalsIgnoreCase("yml")) {
+            return new FilePlayerDB(plugin, scheduler, logger);
+        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
+            return new MemoryPlayerDB(config);
+        } else {
+            return new BukkitPlayerDB();
+        }
+    }
+
+    @Provides
+    @Singleton
+    public @NotNull AnimationHandler provideAnimationHandler(Plugin plugin) {
+        return new AnimationHandler(plugin);
     }
 }

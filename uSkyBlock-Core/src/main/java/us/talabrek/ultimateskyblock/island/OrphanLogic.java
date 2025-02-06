@@ -1,37 +1,52 @@
 package us.talabrek.ultimateskyblock.island;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.Settings;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Responsible for storing, accessing and handling orphans.
  */
+@Singleton
 public class OrphanLogic {
     // Used in a HACKY way to indicate the origin of an island location as an orphan.
     public static final float ORPHAN_PITCH = -30;
     public static final float ORPHAN_YAW = 90;
 
-    private final uSkyBlock plugin;
+    private final Logger logger;
+    private final WorldManager worldManager;
     private final FileConfiguration config;
     private final File configFile;
-    private SortedSet<Orphan> orphaned = new TreeSet<>(new OrphanComparator());
+    private final SortedSet<Orphan> orphaned = new TreeSet<>(new OrphanComparator());
 
-    public OrphanLogic(uSkyBlock plugin) {
-        this.plugin = plugin;
-        configFile = new File(plugin.getDataFolder(), "orphans.yml");
+    @Inject
+    public OrphanLogic(
+        @NotNull @PluginDataDir Path pluginDir,
+        @NotNull Logger logger,
+        @NotNull WorldManager worldManager
+        ) {
+        this.logger = logger;
+        this.worldManager = worldManager;
+        configFile = pluginDir.resolve("orphans.yml").toFile();
         config = FileUtil.getYmlConfiguration("orphans.yml");
         readOrphans();
     }
@@ -65,7 +80,7 @@ public class OrphanLogic {
         try {
             config.save(configFile);
         } catch (IOException e) {
-            plugin.getLogger().warning("Unable to store orphans: " + e);
+            logger.log(Level.SEVERE, "Unable to store orphans", e);
         }
     }
 
@@ -80,18 +95,19 @@ public class OrphanLogic {
         }
     }
 
-    public Location getNextValidOrphan() {
+    // This is a hacky way to break the dependency cycle between OrphanLogic and IslandLocatorLogic. Refactor.
+    public @Nullable Location getNextValidOrphan(IslandLocatorLogic islandLocatorLogic) {
         if (orphaned.isEmpty()) {
             return null;
         }
         try {
-            World world = plugin.getWorldManager().getWorld();
+            World world = worldManager.getWorld();
             for (Iterator<Orphan> it = orphaned.iterator(); it.hasNext(); ) {
                 Orphan candidate = it.next();
                 if (candidate != null) {
                     it.remove();
                     Location loc = new Location(world, candidate.getX(), Settings.island_height, candidate.getZ(), ORPHAN_YAW, ORPHAN_PITCH);
-                    if (plugin.getIslandLocatorLogic().isAvailableLocation(loc)) {
+                    if (islandLocatorLogic.isAvailableLocation(loc)) {
                         return loc;
                     }
                 }
@@ -112,7 +128,7 @@ public class OrphanLogic {
     }
 
     public List<Orphan> getOrphans() {
-        return Collections.unmodifiableList(new ArrayList<>(orphaned));
+        return List.copyOf(orphaned);
     }
 
     public static class Orphan {
@@ -139,7 +155,7 @@ public class OrphanLogic {
         }
 
         public int distanceSquared() {
-            return x*x + z * z;
+            return x * x + z * z;
         }
 
         @Override
