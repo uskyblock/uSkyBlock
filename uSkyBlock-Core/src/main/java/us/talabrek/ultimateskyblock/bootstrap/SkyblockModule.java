@@ -8,6 +8,8 @@ import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.SkyUpdateChecker;
+import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.island.level.ChunkSnapshotLevelLogic;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -35,6 +37,7 @@ public class SkyblockModule extends AbstractModule {
         bind(Plugin.class).toInstance(plugin);
         bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
+        bind(UpdateChecker.class).to(SkyUpdateChecker.class);
     }
 
     @Provides

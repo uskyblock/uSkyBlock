@@ -7,7 +7,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
@@ -20,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -44,7 +42,6 @@ import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
-import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -90,14 +87,13 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.pre;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static java.util.Objects.requireNonNull;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
-    private static final String[][] depends = new String[][]{
+    public static final String[][] depends = new String[][]{
         new String[]{"Vault", "1.7.1", "optional"},
         new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
         new String[]{"WorldGuard", "7.0.8"},
@@ -201,8 +197,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         convertConfigItemsTo1_20_6IfRequired();
         convertConfigToBlockRequirements();
 
-        startup();
         reloadLegacyStuff();
+        startup();
 
         api = new UltimateSkyblockApi(this);
         registerApi(api);
@@ -216,7 +212,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             delayedEnable();
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
-            log(Level.INFO, getVersionInfo(false));
         }, TimeUtil.ticksAsDuration(getConfig().getLong("init.initDelay", 50L)));
 
         getScheduler().async(() -> getUpdateChecker().checkForUpdates(), Duration.ZERO, Duration.ofHours(4));
@@ -844,48 +839,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         getServer().getScheduler().runTaskAsynchronously(this,
             () -> getServer().getPluginManager().callEvent(event)
         );
-    }
-
-    public String getVersionInfo(boolean checkEnabled) {
-        PluginDescriptionFile description = getDescription();
-        StringBuilder msg = new StringBuilder(pre("\u00a77Name: \u00a7b{0}\n", description.getName()));
-        msg.append(pre("\u00a77Version: \u00a7b{0}\n", description.getVersion()));
-        msg.append(pre("\u00a77Description: \u00a7b{0}\n", description.getDescription()));
-        msg.append(pre("\u00a77Language: \u00a7b{0} ({1})\n", getConfig().get("language", "en"), I18nUtil.getI18n().getLocale()));
-        msg.append(pre("\u00a79  State: d={0}, r={1}, i={2}, p={3}, n={4}, awe={5}\n", Settings.island_distance, Settings.island_radius,
-            islandLogic.getSize(), playerLogic.getSize(),
-            Settings.nether_enabled, AsyncWorldEditHandler.isAWE()));
-        msg.append(pre("\u00a77Server: \u00a7e{0} {1}\n", getServer().getName(), getServer().getVersion()));
-        msg.append(pre("\u00a79  State: online={0}, bungee={1}\n", ServerUtil.isOnlineMode(),
-            ServerUtil.isBungeeEnabled()));
-        msg.append(pre("\u00a77------------------------------\n"));
-        for (String[] dep : depends) {
-            Plugin dependency = getServer().getPluginManager().getPlugin(dep[0]);
-            if (dependency != null) {
-                String status = pre("N/A");
-                if (checkEnabled) {
-                    if (dependency.isEnabled()) {
-                        if (VersionUtil.getVersion(dependency.getDescription().getVersion()).isLT(dep[1])) {
-                            status = pre("\u00a7eWRONG-VERSION");
-                        } else {
-                            status = pre("\u00a72ENABLED");
-                        }
-                    } else {
-                        status = pre("\u00a74DISABLED");
-                    }
-                }
-                msg.append(pre("\u00a77\u00a7d{0} \u00a7f{1} \u00a77({2}\u00a77)\n", dependency.getName(),
-                    dependency.getDescription().getVersion(), status));
-            }
-        }
-        msg.append(pre("\u00a77------------------------------\n"));
-
-        if (getConfig().getBoolean("plugin-updates.check", true) && getUpdateChecker().isUpdateAvailable()) {
-            msg.append(pre("\u00a7bA new update of uSkyBlock is available: \u00a7f{0}\n", getUpdateChecker().getLatestVersion()));
-            msg.append(pre("\u00a7fVisit {0} to download.\n", "https://www.uskyblock.ovh/get"));
-        }
-
-        return msg.toString();
     }
 
     public PlayerDB getPlayerDB() {
