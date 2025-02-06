@@ -78,6 +78,12 @@ public class HookManager {
         hooks.put(hook.getHookName(), hook);
     }
 
+    public void setupHooks() {
+        setupMultiverse();
+        setupEconomyHook();
+        setupPermissionsHook();
+    }
+
     /**
      * Checks and hooks if there are compatible Economy plugins available.
      *

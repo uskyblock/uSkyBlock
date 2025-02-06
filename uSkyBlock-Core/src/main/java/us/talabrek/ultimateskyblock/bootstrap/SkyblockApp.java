@@ -31,7 +31,7 @@ public class SkyblockApp {
     }
 
     public void delayedEnable(uSkyBlock plugin) {
-        services.delayedEnable();
+        services.delayedEnable(plugin);
 
         // do these really have to be delayed?
         commands.registerCommands(plugin);

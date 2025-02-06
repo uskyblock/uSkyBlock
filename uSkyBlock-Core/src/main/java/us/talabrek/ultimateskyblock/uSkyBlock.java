@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
@@ -40,15 +39,11 @@ import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockScoreChangedEvent;
 import us.talabrek.ultimateskyblock.api.impl.UltimateSkyblockApi;
 import us.talabrek.ultimateskyblock.api.uSkyBlockAPI;
-import us.talabrek.ultimateskyblock.biome.BiomeConfig;
-import us.talabrek.ultimateskyblock.biome.Biomes;
 import us.talabrek.ultimateskyblock.bootstrap.SkyblockApp;
 import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
-import us.talabrek.ultimateskyblock.chat.ChatLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
-import us.talabrek.ultimateskyblock.gui.GuiManager;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -140,15 +135,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Inject
     private LimitLogic limitLogic;
     @Inject
-    private GuiManager guiManager;
-    @Inject
-    private Biomes biomes;
-    @Inject
-    private BiomeConfig biomeConfig;
-    @Inject
     private HookManager hookManager;
-    @Inject
-    private MetricsManager metricsManager;
     @Inject
     private WorldManager worldManager;
     @Inject
@@ -164,13 +151,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Inject
     private ConfirmHandler confirmHandler;
     @Inject
-    private AnimationHandler animationHandler;
-    @Inject
     private CooldownHandler cooldownHandler;
     @Inject
     private PlayerLogic playerLogic;
-    @Inject
-    private ChatLogic chatLogic;
     // TODO: don't assign value directly, but use injection instead. Currently, legacy code in PlaceholderHandler accesses it too early for injection to work.
     @Inject
     private PluginConfig config = new PluginConfig();
@@ -247,14 +230,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             ServerUtil.init(uSkyBlock.this);
             if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
                 return;
-            }
-            uSkyBlock.this.getHookManager().setupMultiverse();
-            uSkyBlock.this.getHookManager().setupEconomyHook();
-            uSkyBlock.this.getHookManager().setupPermissionsHook();
-            AsyncWorldEditHandler.onEnable(uSkyBlock.this);
-            WorldGuardHandler.setupGlobal(getWorldManager().getWorld());
-            if (getWorldManager().getNetherWorld() != null) {
-                WorldGuardHandler.setupGlobal(getWorldManager().getNetherWorld());
             }
 
             uSkyBlock.this.skyBlock.delayedEnable(uSkyBlock.this);
@@ -358,13 +333,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public boolean deleteEmptyIsland(String islandName, final Runnable runner) {
         final IslandInfo islandInfo = getIslandInfo(islandName);
         if (islandInfo != null && islandInfo.getMembers().isEmpty()) {
-            islandLogic.clearIsland(islandInfo.getIslandLocation(), new Runnable() {
-                @Override
-                public void run() {
-                    postDelete(islandInfo);
-                    if (runner != null) {
-                        runner.run();
-                    }
+            islandLogic.clearIsland(islandInfo.getIslandLocation(), () -> {
+                postDelete(islandInfo);
+                if (runner != null) {
+                    runner.run();
                 }
             });
             return true;

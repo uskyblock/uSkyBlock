@@ -18,7 +18,9 @@ public class MetricsManager {
     @Inject
     public MetricsManager(uSkyBlock plugin) {
         this.plugin = plugin;
+    }
 
+    public void setup() {
         try {
             setupMetrics(BSTATS_MUSPAH_ID);
             setupMetrics(BSTATS_RLF_ID);
