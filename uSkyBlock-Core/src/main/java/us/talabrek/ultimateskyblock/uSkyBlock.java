@@ -62,7 +62,6 @@ import us.talabrek.ultimateskyblock.island.OrphanLogic;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.island.task.CreateIslandTask;
-import us.talabrek.ultimateskyblock.island.task.RecalculateRunnable;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
@@ -167,7 +166,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public File directoryPlayers;
     public File directoryIslands;
 
-    private BukkitTask autoRecalculateTask;
     private volatile boolean maintenanceMode = false;
 
     private static uSkyBlock instance;
@@ -654,7 +652,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Override
     public void reloadConfig() {
         reloadConfigs();
-        startAutoIslandLevelRefreshTask();
         this.skyBlock.delayedEnable(this);
     }
 
@@ -676,26 +673,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
         this.skyBlock.startup(this);
-
-        if (autoRecalculateTask != null) {
-            autoRecalculateTask.cancel();
-            autoRecalculateTask = null;
-        }
     }
 
-    // TODO: move to its own class
-    public void startAutoIslandLevelRefreshTask() {
-        if (!isRequirementsMet(Bukkit.getConsoleSender(), null)) {
-            return;
-        }
-        int refreshEveryMinute = getConfig().getInt("options.island.autoRefreshScore", 0);
-        if (refreshEveryMinute > 0) {
-            int refreshTicks = refreshEveryMinute * 1200; // Ticks per minute
-            autoRecalculateTask = new RecalculateRunnable(this).runTaskTimer(this, refreshTicks, refreshTicks);
-        } else {
-            autoRecalculateTask = null;
-        }
-    }
 
     public IslandLogic getIslandLogic() {
         return islandLogic;

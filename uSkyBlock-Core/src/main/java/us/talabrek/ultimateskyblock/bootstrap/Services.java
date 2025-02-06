@@ -12,6 +12,7 @@ import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
+import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
@@ -27,6 +28,7 @@ public class Services {
     private final PlayerDB playerDB;
     private final MetricsManager metricsManager;
     private final HookManager hookManager;
+    private final AutoIslandLevelRefresh autoIslandLevelRefresh;
 
     @Inject
     public Services(
@@ -37,7 +39,8 @@ public class Services {
         @NotNull IslandLogic islandLogic,
         @NotNull PlayerDB playerDB,
         @NotNull MetricsManager metricsManager,
-        @NotNull HookManager hookManager
+        @NotNull HookManager hookManager,
+        @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh
     ) {
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
@@ -47,10 +50,12 @@ public class Services {
         this.playerDB = playerDB;
         this.metricsManager = metricsManager;
         this.hookManager = hookManager;
+        this.autoIslandLevelRefresh = autoIslandLevelRefresh;
     }
 
     public void startup() {
         metricsManager.setup();
+        autoIslandLevelRefresh.startup();
     }
 
     public void delayedEnable(uSkyBlock plugin) {
@@ -65,6 +70,7 @@ public class Services {
     }
 
     public void shutdown(uSkyBlock plugin) {
+        autoIslandLevelRefresh.shutdown();
         animationHandler.stop();
         challengeLogic.shutdown();
         eventLogic.shutdown();
