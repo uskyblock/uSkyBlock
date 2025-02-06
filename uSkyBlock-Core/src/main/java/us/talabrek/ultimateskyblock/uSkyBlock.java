@@ -75,7 +75,6 @@ import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import us.talabrek.ultimateskyblock.util.PlayerUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.ServerUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
@@ -217,10 +216,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         convertConfigItemsTo1_20_6IfRequired();
         convertConfigToBlockRequirements();
 
-        CommandManager.registerRequirements(this);
-        FileUtil.setDataFolder(getDataFolder());
-        FileUtil.setAlwaysOverwrite("levelConfig.yml");
-        I18nUtil.setDataFolder(getDataFolder());
         reloadConfigs();
 
         api = new UltimateSkyblockApi(this);
@@ -673,7 +668,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         createFolders();
         saveConfig();
-        I18nUtil.clearCache();
         // Update all of the loaded configs.
         FileUtil.reload();
 
@@ -682,9 +676,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
         this.skyBlock.startup(this);
-
-        getServer().getPluginManager().registerEvents(playerDB, this);
-        PlayerUtil.loadConfig(playerDB, getConfig());
 
         if (autoRecalculateTask != null) {
             autoRecalculateTask.cancel();

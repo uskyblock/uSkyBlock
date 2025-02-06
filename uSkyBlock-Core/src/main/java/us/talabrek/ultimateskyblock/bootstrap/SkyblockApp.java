@@ -2,6 +2,9 @@ package us.talabrek.ultimateskyblock.bootstrap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.command.CommandManager;
+import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
@@ -15,11 +18,7 @@ public class SkyblockApp {
     private final Listeners listeners;
 
     @Inject
-    public SkyblockApp(
-        @NotNull Services services,
-        @NotNull Commands commands,
-        @NotNull Listeners listeners
-    ) {
+    public SkyblockApp(@NotNull Services services, @NotNull Commands commands, @NotNull Listeners listeners) {
         this.services = services;
         this.commands = commands;
         this.listeners = listeners;
@@ -27,6 +26,11 @@ public class SkyblockApp {
 
 
     public void startup(uSkyBlock plugin) {
+        CommandManager.registerRequirements(plugin);
+        FileUtil.setDataFolder(plugin.getDataFolder());
+        FileUtil.setAlwaysOverwrite("levelConfig.yml");
+        I18nUtil.setDataFolder(plugin.getDataFolder());
+
         services.startup();
     }
 
@@ -46,5 +50,8 @@ public class SkyblockApp {
         Bukkit.getScheduler().cancelTasks(plugin);
         listeners.unregisterListeners(plugin);
         services.shutdown(plugin);
+
+        I18nUtil.clearCache();
+
     }
 }

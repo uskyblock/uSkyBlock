@@ -34,8 +34,8 @@ import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import us.talabrek.ultimateskyblock.util.PlayerUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
@@ -70,6 +70,7 @@ public class IslandLogic {
     private final PluginConfig config;
     private final File directoryIslands;
     private final OrphanLogic orphanLogic;
+    private final PlayerDB playerDB;
 
     private final LoadingCache<String, IslandInfo> cache;
     private final boolean showMembers;
@@ -90,7 +91,8 @@ public class IslandLogic {
         @NotNull Scheduler scheduler,
         @NotNull PluginConfig config,
         @NotNull @PluginDataDir Path dataPath,
-        @NotNull OrphanLogic orphanLogic
+        @NotNull OrphanLogic orphanLogic,
+        @NotNull PlayerDB playerDB
     ) {
         this.logger = logger;
         this.plugin = plugin;
@@ -98,6 +100,7 @@ public class IslandLogic {
         this.teleportLogic = teleportLogic;
         this.scheduler = scheduler;
         this.config = config;
+        this.playerDB = playerDB;
         Path islandDirectory = dataPath.resolve("islands");
         try {
             Files.createDirectories(islandDirectory);
@@ -363,9 +366,9 @@ public class IslandLogic {
         memberList.remove(partyLeader);
         List<String> names = new ArrayList<>();
         if (useDisplayNames) {
-            partyLeaderName = PlayerUtil.getPlayerDisplayName(partyLeader);
+            partyLeaderName = playerDB.getDisplayName(partyLeader);
             for (String name : memberList) {
-                String displayName = PlayerUtil.getPlayerDisplayName(name);
+                String displayName = playerDB.getDisplayName(name);
                 if (displayName != null) {
                     names.add(displayName);
                 }
