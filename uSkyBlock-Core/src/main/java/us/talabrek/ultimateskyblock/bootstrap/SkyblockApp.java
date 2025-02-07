@@ -2,8 +2,6 @@ package us.talabrek.ultimateskyblock.bootstrap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.command.CommandManager;
-import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +24,6 @@ public class SkyblockApp {
 
 
     public void startup(uSkyBlock plugin) {
-        CommandManager.registerRequirements(plugin);
-        FileUtil.setDataFolder(plugin.getDataFolder());
-        FileUtil.setAlwaysOverwrite("levelConfig.yml");
-        I18nUtil.setDataFolder(plugin.getDataFolder());
-
         services.startup();
     }
 
@@ -52,6 +45,5 @@ public class SkyblockApp {
         services.shutdown(plugin);
 
         I18nUtil.clearCache();
-
     }
 }

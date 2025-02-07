@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
@@ -670,11 +671,21 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         this.skyBlock.delayedEnable(this);
     }
 
+    /**
+     * Initializes/reloads the legacy static services. This has to be done before the object-oriented services are
+     * created, as some use the static services in their constructors. This should be refactored and integrated with
+     * the new system in the future.
+     */
     private void reloadLegacyStuff() {
+        CommandManager.registerRequirements(this);
+        FileUtil.setDataFolder(getDataFolder());
+        FileUtil.setAlwaysOverwrite("levelConfig.yml");
+        I18nUtil.setDataFolder(getDataFolder());
         createFolders();
         saveConfig();
         // Update all of the loaded configs.
         FileUtil.reload();
+        I18nUtil.getI18n();
     }
 
     public IslandLogic getIslandLogic() {
