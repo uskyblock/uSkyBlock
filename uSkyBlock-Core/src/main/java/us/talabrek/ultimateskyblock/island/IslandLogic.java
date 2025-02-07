@@ -68,7 +68,7 @@ public class IslandLogic {
     private final TeleportLogic teleportLogic;
     private final Scheduler scheduler;
     private final PluginConfig config;
-    private final File directoryIslands;
+    private final Path directoryIslands;
     private final OrphanLogic orphanLogic;
     private final PlayerDB playerDB;
 
@@ -107,7 +107,7 @@ public class IslandLogic {
         } catch (IOException e) {
             logger.severe("Unable to create island directory: " + islandDirectory);
         }
-        this.directoryIslands = islandDirectory.toFile();
+        this.directoryIslands = islandDirectory;
         this.orphanLogic = orphanLogic;
         this.showMembers = config.getYamlConfig().getBoolean("options.island.topTenShowMembers", true);
         this.flatlandFix = config.getYamlConfig().getBoolean("options.island.fixFlatland", false);
@@ -124,7 +124,7 @@ public class IslandLogic {
                 @Override
                 public @NotNull IslandInfo load(@NotNull String islandName) {
                     logger.fine("Loading island-info " + islandName + " to cache!");
-                    return new IslandInfo(islandName, plugin);
+                    return new IslandInfo(islandName, plugin, directoryIslands);
                 }
             });
         Duration every = Duration.ofSeconds(config.getYamlConfig().getInt("options.advanced.island.saveEvery", 30));
@@ -332,7 +332,7 @@ public class IslandLogic {
 
     public void generateTopTen(final CommandSender sender) {
         List<IslandLevel> topTen = new ArrayList<>();
-        final String[] listOfFiles = directoryIslands.list(IslandUtil.createIslandFilenameFilter());
+        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter());
         for (String file : listOfFiles) {
             String islandName = FileUtil.getBasename(file);
             try {
@@ -413,7 +413,7 @@ public class IslandLogic {
     }
 
     public boolean hasIsland(Location loc) {
-        return loc == null || new File(directoryIslands, LocationUtil.getIslandName(loc) + ".yml").exists();
+        return loc == null || new File(directoryIslands.toFile(), LocationUtil.getIslandName(loc) + ".yml").exists();
     }
 
     public IslandRank getRank(String islandName) {
@@ -456,7 +456,14 @@ public class IslandLogic {
     }
 
     public int getSize() {
-        String[] list = directoryIslands.list();
-        return list != null ? list.length : 0;
+        try (var stream = Files.list(directoryIslands)) {
+            return (int) stream.count();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Path getIslandDirectory() {
+        return directoryIslands;
     }
 }

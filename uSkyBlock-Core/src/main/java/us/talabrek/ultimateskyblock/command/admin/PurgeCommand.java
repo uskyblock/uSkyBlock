@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeScanTask;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeTask;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 
@@ -20,15 +21,17 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public class PurgeCommand extends AbstractCommand {
     private final uSkyBlock plugin;
+    private final IslandLogic islandLogic;
 
     private PurgeScanTask scanTask;
     private PurgeTask purgeTask;
     private String days = null;
 
     @Inject
-    public PurgeCommand(@NotNull uSkyBlock plugin) {
+    public PurgeCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic) {
         super("purge", "usb.admin.purge", "time-in-days|stop|confirm ?level ?force", marktr("purges all abandoned islands"));
         this.plugin = plugin;
+        this.islandLogic = islandLogic;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class PurgeCommand extends AbstractCommand {
 
         final int time = Integer.parseInt(days, 10) * 24;
         sender.sendMessage(tr("\u00a7eFinding all islands that have been abandoned for more than {0} days below level {1}", args[0], purgeLevel));
-        scanTask = new PurgeScanTask(plugin, plugin.directoryIslands, time, purgeLevel, sender, () -> {
+        scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {

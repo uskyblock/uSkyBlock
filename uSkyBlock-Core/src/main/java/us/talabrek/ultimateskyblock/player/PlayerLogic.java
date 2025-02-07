@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
@@ -18,6 +19,9 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -31,8 +35,6 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 @Singleton
 public class PlayerLogic {
-    private static final PlayerInfo UNKNOWN_PLAYER = new PlayerInfo(PlayerDB.UNKNOWN_PLAYER_NAME, PlayerDB.UNKNOWN_PLAYER_UUID, uSkyBlock.getInstance());
-
     private final LoadingCache<UUID, PlayerInfo> playerCache;
     private final uSkyBlock plugin;
     private final BukkitTask saveTask;
@@ -44,6 +46,7 @@ public class PlayerLogic {
     private final Scheduler scheduler;
     private final NotificationManager notificationManager;
     private final Logger logger;
+    private final Path playerDataDirectory;
 
     @Inject
     public PlayerLogic(
@@ -56,7 +59,8 @@ public class PlayerLogic {
         @NotNull WorldManager worldManager,
         @NotNull TeleportLogic teleportLogic,
         @NotNull Scheduler scheduler,
-        @NotNull NotificationManager notificationManager
+        @NotNull NotificationManager notificationManager,
+        @NotNull @PluginDataDir Path pluginDataDir
     ) {
         this.plugin = plugin;
         this.playerDB = playerDB;
@@ -67,6 +71,12 @@ public class PlayerLogic {
         this.scheduler = scheduler;
         this.notificationManager = notificationManager;
         this.logger = logger;
+        this.playerDataDirectory = pluginDataDir.resolve("players");
+        try {
+            Files.createDirectories(playerDataDirectory);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to create player data directory", e);
+        }
 
         this.playerCache = CacheBuilder
             .from(config.getYamlConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
@@ -99,10 +109,14 @@ public class PlayerLogic {
     }
 
     private PlayerInfo loadPlayerData(UUID uuid) {
-        if (UNKNOWN_PLAYER.getUniqueId().equals(uuid)) {
-            return UNKNOWN_PLAYER;
+        if (PlayerDB.UNKNOWN_PLAYER_UUID.equals(uuid)) {
+            return loadUnknownPlayer();
         }
         return loadPlayerData(uuid, playerDB.getName(uuid));
+    }
+
+    private PlayerInfo loadUnknownPlayer() {
+        return new PlayerInfo(PlayerDB.UNKNOWN_PLAYER_NAME, PlayerDB.UNKNOWN_PLAYER_UUID, plugin, playerDataDirectory);
     }
 
     private PlayerInfo loadPlayerData(UUID playerUUID, String playerName) {
@@ -114,7 +128,7 @@ public class PlayerLogic {
         }
         logger.log(Level.FINER, "Loading player data for " + playerUUID + "/" + playerName);
 
-        final PlayerInfo playerInfo = new PlayerInfo(playerName, playerUUID, plugin);
+        final PlayerInfo playerInfo = new PlayerInfo(playerName, playerUUID, plugin, playerDataDirectory);
 
         final Player onlinePlayer = uSkyBlock.getInstance().getPlayerDB().getPlayer(playerUUID);
         if (onlinePlayer != null && onlinePlayer.isOnline()) {
@@ -192,8 +206,11 @@ public class PlayerLogic {
     }
 
     public int getSize() {
-        String[] list = plugin.directoryPlayers.list();
-        return list != null ? list.length : 0;
+        try (var stream = Files.list(playerDataDirectory)) {
+            return (int) stream.count();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public @NotNull NotificationManager getNotificationManager() {

@@ -32,6 +32,7 @@ import us.talabrek.ultimateskyblock.util.UUIDUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -59,7 +60,6 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private static final Logger log = Logger.getLogger(IslandInfo.class.getName());
     private static final Pattern OLD_LOG_PATTERN = Pattern.compile("\u00a7d\\[(?<date>[^\\]]+)\\]\u00a77 (?<msg>.*)");
     private static final int YML_VERSION = 3;
-    private static File directory = new File(".");
 
     private final uSkyBlock plugin;
     private File file;
@@ -68,13 +68,13 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private boolean dirty = false;
     private boolean toBeDeleted = false;
 
-    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin) {
+    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin, @NotNull Path islandDirectory) {
         Validate.notNull(islandName, "IslandName cannot be null");
         Validate.notEmpty(islandName, "IslandName cannot be empty");
 
         this.plugin = plugin;
         config = new YamlConfiguration();
-        file = new File(directory, islandName + ".yml");
+        file = islandDirectory.resolve(islandName + ".yml").toFile();
         name = islandName;
         if (file.exists()) {
             readConfig(config, file);
@@ -115,10 +115,6 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
             config.set("version", 1);
         }
         save();
-    }
-
-    public static void setDirectory(@NotNull File dir) {
-        directory = dir;
     }
 
     public void resetIslandConfig(@NotNull final String leader) {

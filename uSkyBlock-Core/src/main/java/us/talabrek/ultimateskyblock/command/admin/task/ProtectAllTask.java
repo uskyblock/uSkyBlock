@@ -12,6 +12,7 @@ import us.talabrek.ultimateskyblock.util.LogUtil;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,13 +26,15 @@ public class ProtectAllTask extends BukkitRunnable {
     private final CommandSender sender;
     private final uSkyBlock plugin;
     private final ProgressTracker tracker;
+    private final Path islandDirectory;
 
     private volatile boolean active;
 
-    public ProtectAllTask(final uSkyBlock plugin, final CommandSender sender, ProgressTracker tracker) {
+    public ProtectAllTask(final uSkyBlock plugin, final CommandSender sender, Path islandDirectory, ProgressTracker tracker) {
         this.plugin = plugin;
         this.tracker = tracker;
         this.sender = sender;
+        this.islandDirectory = islandDirectory;
     }
 
     public boolean isActive() {
@@ -50,7 +53,7 @@ public class ProtectAllTask extends BukkitRunnable {
         long skipped = 0;
         long tStart = System.currentTimeMillis();
         try {
-            String[] list = plugin.directoryIslands.list(IslandUtil.createIslandFilenameFilter());
+            String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter());
             long total = list != null ? list.length : 0;
             if (list != null) {
                 for (String fileName : list) {

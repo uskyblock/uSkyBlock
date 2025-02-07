@@ -77,7 +77,6 @@ import us.talabrek.ultimateskyblock.util.ServerUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import java.io.File;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -158,10 +157,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private SkyUpdateChecker updateChecker;
 
     private UltimateSkyblockApi api;
-
-    // TODO: 28/06/2016 - R4zorax: These two should probably be moved to the proper classes
-    public File directoryPlayers;
-    public File directoryIslands;
 
     private volatile boolean maintenanceMode = false;
 
@@ -258,19 +253,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
-    private void createFolders() {
+    private void createDataFolder() {
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
-        directoryPlayers = new File(getDataFolder() + File.separator + "players");
-        if (!directoryPlayers.exists()) {
-            directoryPlayers.mkdirs();
-        }
-        directoryIslands = new File(getDataFolder() + File.separator + "islands");
-        if (!directoryIslands.exists()) {
-            directoryIslands.mkdirs();
-        }
-        IslandInfo.setDirectory(directoryIslands);
     }
 
     public static uSkyBlock getInstance() {
@@ -677,11 +663,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
      * the new system in the future.
      */
     private void reloadLegacyStuff() {
+        createDataFolder();
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAlwaysOverwrite("levelConfig.yml");
         I18nUtil.setDataFolder(getDataFolder());
-        createFolders();
         saveConfig();
         // Update all of the loaded configs.
         FileUtil.reload();

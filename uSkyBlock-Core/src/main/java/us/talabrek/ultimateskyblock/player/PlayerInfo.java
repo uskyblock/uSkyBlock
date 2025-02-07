@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -57,13 +58,15 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     private boolean islandGenerating = false;
     private boolean dirty = false;
 
-    public PlayerInfo(String currentPlayerName, UUID playerUUID, uSkyBlock plugin) {
+    public PlayerInfo(String currentPlayerName, UUID playerUUID, uSkyBlock plugin, Path playerDataDirectory) {
         this.plugin = plugin;
         this.uuid = playerUUID;
         this.playerName = currentPlayerName;
         // Prefer UUID over Name
-        playerConfigFile = new File(uSkyBlock.getInstance().directoryPlayers, UUIDUtil.asString(playerUUID) + ".yml");
-        File nameFile = new File(uSkyBlock.getInstance().directoryPlayers, playerName + ".yml");
+        // TODO: decouple serialization from player data.
+        // TODO: remove legacy player name support - all data should be converted by now.
+        playerConfigFile = playerDataDirectory.resolve(UUIDUtil.asString(playerUUID) + ".yml").toFile();
+        File nameFile = playerDataDirectory.resolve(playerName + ".yml").toFile();
         if (!playerConfigFile.exists() && nameFile.exists() && !currentPlayerName.equals(PlayerDB.UNKNOWN_PLAYER_NAME)) {
             nameFile.renameTo(playerConfigFile);
         }
@@ -222,11 +225,11 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
             this.displayName = playerData.getString("player.displayName", playerName);
             this.uuid = UUIDUtil.fromString(playerData.getString("player.uuid", null));
             this.islandLocation = new Location(uSkyBlock.getInstance().getWorldManager().getWorld(),
-                    playerData.getInt("player.islandX"), playerData.getInt("player.islandY"), playerData.getInt("player.islandZ"));
+                playerData.getInt("player.islandX"), playerData.getInt("player.islandY"), playerData.getInt("player.islandZ"));
             this.homeLocation = new Location(uSkyBlock.getInstance().getWorldManager().getWorld(),
-                    playerData.getInt("player.homeX") + 0.5, playerData.getInt("player.homeY") + 0.2, playerData.getInt("player.homeZ") + 0.5,
-                    (float) playerData.getDouble("player.homeYaw", 0.0),
-                    (float) playerData.getDouble("player.homePitch", 0.0));
+                playerData.getInt("player.homeX") + 0.5, playerData.getInt("player.homeY") + 0.2, playerData.getInt("player.homeZ") + 0.5,
+                (float) playerData.getDouble("player.homeYaw", 0.0),
+                (float) playerData.getDouble("player.homePitch", 0.0));
 
             log.exiting(CN, "loadPlayer");
             return this;
