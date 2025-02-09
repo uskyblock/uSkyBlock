@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -11,6 +12,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class ToggleWarp extends RequireIslandCommand {
+
+    @Inject
     public ToggleWarp(uSkyBlock plugin) {
         super(plugin, "togglewarp|tw", "usb.island.togglewarp", marktr("enable/disable warping to your island."));
     }

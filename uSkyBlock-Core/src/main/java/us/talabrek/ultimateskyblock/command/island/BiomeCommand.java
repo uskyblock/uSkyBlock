@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Chunk;
@@ -7,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
@@ -25,7 +27,8 @@ public class BiomeCommand extends RequireIslandCommand {
     private final Biomes biomes;
     private final BiomeConfig biomeConfig;
 
-    public BiomeCommand(uSkyBlock plugin, Biomes biomes, BiomeConfig biomeConfig) {
+    @Inject
+    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig) {
         super(plugin, "biome|b", null, "biome ?radius", marktr("change the biome of the island"));
         this.biomes = biomes;
         this.biomeConfig = biomeConfig;

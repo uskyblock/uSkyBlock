@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.async.JobManager;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
@@ -21,7 +23,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class JobsCommand extends CompositeCommand {
     private final uSkyBlock plugin;
 
-    public JobsCommand(uSkyBlock plugin) {
+    @Inject
+    public JobsCommand(@NotNull uSkyBlock plugin) {
         super("jobs|j", "usb.admin.jobs", marktr("controls async jobs"));
         this.plugin = plugin;
         /*

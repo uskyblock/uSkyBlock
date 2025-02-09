@@ -10,13 +10,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.UUIDUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,45 +31,43 @@ import java.util.logging.Logger;
  * PlayerDB backed by a simple yml-uuid2NameFile.
  */
 public class FilePlayerDB implements PlayerDB {
-    private static final Logger log = Logger.getLogger(FilePlayerDB.class.getName());
+    private final Logger logger;
+    private final Scheduler scheduler;
 
     private final File uuid2NameFile;
     private final FileConfiguration uuid2NameConfig;
-    private final uSkyBlock plugin;
 
     private boolean isShuttingDown = false;
     private volatile BukkitTask saveTask;
-    private final long saveDelay;
+    private final Duration saveDelay;
 
     // These caches should NOT be guavaCaches, we need them alive most of the time
     private final Map<String, UUID> name2uuidCache = new ConcurrentHashMap<>();
     private final Map<UUID, String> uuid2nameCache = new ConcurrentHashMap<>();
 
-    public FilePlayerDB(uSkyBlock plugin) {
-        this.plugin = plugin;
+    public FilePlayerDB(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler, @NotNull Logger logger) {
+        this.scheduler = scheduler;
+        this.logger = logger;
         uuid2NameFile = new File(plugin.getDataFolder(), "uuid2name.yml");
         uuid2NameConfig = new YamlConfiguration();
         if (uuid2NameFile.exists()) {
             FileUtil.readConfig(uuid2NameConfig, uuid2NameFile);
         }
         // Save max every 10 seconds
-        saveDelay = plugin.getConfig().getInt("playerdb.saveDelay", 10000);
-        plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (uuid2NameConfig) {
-                    Set<String> uuids = uuid2NameConfig.getKeys(false);
-                    for (String uuid : uuids) {
-                        UUID id = UUIDUtil.fromString(uuid);
-                        String name = uuid2NameConfig.getString(uuid + ".name", null);
-                        if (name != null && id != null) {
-                            uuid2nameCache.put(id, name);
-                            name2uuidCache.put(name, id);
-                            List<String> akas = uuid2NameConfig.getStringList(uuid + ".aka");
-                            for (String aka : akas) {
-                                if (!name2uuidCache.containsKey(aka)) {
-                                    name2uuidCache.put(aka, id);
-                                }
+        saveDelay = Duration.ofMillis(plugin.getConfig().getInt("playerdb.saveDelay", 10000));
+        plugin.async(() -> {
+            synchronized (uuid2NameConfig) {
+                Set<String> uuids = uuid2NameConfig.getKeys(false);
+                for (String uuid : uuids) {
+                    UUID id = UUIDUtil.fromString(uuid);
+                    String name = uuid2NameConfig.getString(uuid + ".name", null);
+                    if (name != null && id != null) {
+                        uuid2nameCache.put(id, name);
+                        name2uuidCache.put(name, id);
+                        List<String> akas = uuid2NameConfig.getStringList(uuid + ".aka");
+                        for (String aka : akas) {
+                            if (!name2uuidCache.containsKey(aka)) {
+                                name2uuidCache.put(aka, id);
                             }
                         }
                     }
@@ -147,12 +147,7 @@ public class FilePlayerDB implements PlayerDB {
     public Set<String> getNames(String search) {
         HashSet<String> names = new HashSet<>(uuid2nameCache.values());
         String lowerSearch = search != null ? search.toLowerCase() : null;
-        for (Iterator<String> it = names.iterator(); it.hasNext(); ) {
-            String name = it.next();
-            if (name == null || (search != null && !name.toLowerCase().startsWith(lowerSearch))) {
-                it.remove();
-            }
-        }
+        names.removeIf(name -> name == null || (search != null && !name.toLowerCase().startsWith(lowerSearch)));
         return names;
     }
 
@@ -164,12 +159,7 @@ public class FilePlayerDB implements PlayerDB {
         } else {
             if (saveTask == null) {
                 // Only have one pending save-task at a time
-                saveTask = plugin.async(new Runnable() {
-                    @Override
-                    public void run() {
-                        saveToFile();
-                    }
-                }, saveDelay);
+                saveTask = scheduler.async(this::saveToFile, saveDelay);
             }
         }
     }
@@ -213,7 +203,7 @@ public class FilePlayerDB implements PlayerDB {
                 uuid2NameConfig.save(uuid2NameFile);
             }
         } catch (IOException e) {
-            log.log(Level.INFO, "Error saving playerdb", e);
+            logger.log(Level.INFO, "Error saving playerdb", e);
         } finally {
             saveTask = null;
         }

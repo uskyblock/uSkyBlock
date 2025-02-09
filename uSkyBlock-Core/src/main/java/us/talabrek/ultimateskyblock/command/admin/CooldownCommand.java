@@ -1,11 +1,13 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
@@ -21,7 +23,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * Manages player cooldowns
  */
 public class CooldownCommand extends CompositeCommand {
-    public CooldownCommand(final uSkyBlock plugin) {
+
+    @Inject
+    public CooldownCommand(@NotNull uSkyBlock plugin) {
         super("cooldown|cd", "usb.admin.cooldown", marktr("Controls player-cooldowns"));
         add(new AbstractCommand("clear|c", null, "player command", marktr("clears the cooldown on a command (* = all)")) {
             @Override

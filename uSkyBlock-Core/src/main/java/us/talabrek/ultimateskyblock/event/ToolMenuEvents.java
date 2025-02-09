@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -11,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -20,13 +23,15 @@ import java.util.Map;
 /**
  * Events triggering the tool-menu
  */
+@Singleton
 public class ToolMenuEvents implements Listener {
     public static final String COMPLETE_CHALLENGE_CMD = "challenges complete ";
     private final uSkyBlock plugin;
     private final ItemStack tool;
-    private final Map<String,String> commandMap = new HashMap<>();
+    private final Map<String, String> commandMap = new HashMap<>();
 
-    public ToolMenuEvents(uSkyBlock plugin) {
+    @Inject
+    public ToolMenuEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         tool = ItemStackUtil.createItemStack(plugin.getConfig().getString("tool-menu.tool", Material.OAK_SAPLING.toString()));
         registerChallenges();
@@ -92,6 +97,7 @@ public class ToolMenuEvents implements Listener {
 
     /**
      * Checks if the given {@link ItemStack} is the configured tool for the tool menu.
+     *
      * @param item ItemStack to check.
      * @return True if it is the configured tool, false otherwise.
      */

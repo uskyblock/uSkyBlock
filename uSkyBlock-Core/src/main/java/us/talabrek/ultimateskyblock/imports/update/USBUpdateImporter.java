@@ -6,6 +6,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * An importer that simply loads all island-infos into memory - activating the built-in yml
@@ -34,7 +35,10 @@ public class USBUpdateImporter implements USBImporter {
 
     @Override
     public File[] getFiles() {
-        return plugin.directoryIslands.listFiles(IslandUtil.createIslandFilenameFilter());
+        var result = plugin.getDataFolder().toPath()
+            .resolve("islands").toFile()
+            .listFiles(IslandUtil.createIslandFilenameFilter());
+        return Objects.requireNonNullElseGet(result, () -> new File[0]);
     }
 
     @Override

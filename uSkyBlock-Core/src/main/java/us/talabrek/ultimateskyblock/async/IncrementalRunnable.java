@@ -1,8 +1,9 @@
 package us.talabrek.ultimateskyblock.async;
 
-import org.bukkit.scheduler.BukkitRunnable;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import org.bukkit.scheduler.BukkitRunnable;
+import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 /**
  * Convenience template class for executing heavy tasks on the main thread.
@@ -23,7 +24,7 @@ import dk.lockfuglsang.minecraft.util.TimeUtil;
  * </pre>
  */
 public abstract class IncrementalRunnable extends BukkitRunnable {
-    private final uSkyBlock plugin;
+    private final Scheduler scheduler;
     private Runnable onCompletion;
     /**
      * The maximum number of consecutive ms to execute a task.
@@ -67,24 +68,24 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
      */
     private volatile int ticks = 0;
 
-    public IncrementalRunnable(uSkyBlock plugin) {
-        this(plugin, null,
-                plugin.getConfig().getInt("async.maxMs", 15),
-                plugin.getConfig().getInt("async.maxConsecutiveTicks", 20),
-                plugin.getConfig().getInt("async.yieldDelay", 2)
+    public IncrementalRunnable(Scheduler scheduler, PluginConfig config) {
+        this(scheduler, null,
+            config.getYamlConfig().getInt("async.maxMs", 15),
+            config.getYamlConfig().getInt("async.maxConsecutiveTicks", 20),
+            config.getYamlConfig().getInt("async.yieldDelay", 2)
         );
     }
 
-    public IncrementalRunnable(uSkyBlock plugin, Runnable onCompletion) {
-        this(plugin, onCompletion,
-                plugin.getConfig().getInt("async.maxMs", 15),
-                plugin.getConfig().getInt("async.maxConsecutiveTicks", 20),
-                plugin.getConfig().getInt("async.yieldDelay", 2)
+    public IncrementalRunnable(Scheduler scheduler, PluginConfig config, Runnable onCompletion) {
+        this(scheduler, onCompletion,
+            config.getYamlConfig().getInt("async.maxMs", 15),
+            config.getYamlConfig().getInt("async.maxConsecutiveTicks", 20),
+            config.getYamlConfig().getInt("async.yieldDelay", 2)
         );
     }
 
-    public IncrementalRunnable(uSkyBlock plugin, Runnable onCompletion, int maxMs, int maxConsecutive, int yieldDelay) {
-        this.plugin = plugin;
+    public IncrementalRunnable(Scheduler scheduler, Runnable onCompletion, int maxMs, int maxConsecutive, int yieldDelay) {
+        this.scheduler = scheduler;
         this.onCompletion = onCompletion;
         this.maxMs = maxMs;
         this.maxConsecutive = maxConsecutive;
@@ -97,6 +98,7 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
 
     /**
      * Used by sub-classes to see how much time they have left.
+     *
      * @return The number of ms the current #execute() has been running.
      */
     protected long millisActive() {
@@ -108,12 +110,8 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
     }
 
     public boolean stillTime() {
-        double millisPerTick = getTimeUsed()/(iterations != 0 ? iterations : 1);
+        double millisPerTick = getTimeUsed() / (iterations != 0 ? iterations : 1);
         return millisPerTick < millisLeft();
-    }
-
-    public uSkyBlock getPlugin() {
-        return plugin;
     }
 
     protected boolean tick() {
@@ -123,12 +121,14 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
 
     /**
      * Executes a potentially heavy task
+     *
      * @return <code>true</code> if done, <code>false</code> otherwise.
      */
     protected abstract boolean execute();
 
     /**
      * Returns the number of ms the task has been active.
+     *
      * @return the number of ms the task has been active.
      */
     public long getTimeElapsed() {
@@ -143,10 +143,11 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
 
     /**
      * Returns the number of ms the task has been actively executing.
+     *
      * @return the number of ms the task has been actively executing.
      */
     public double getTimeUsed() {
-        return tUsed + (tRunning != 0 ? t()-tRunning : 0);
+        return tUsed + (tRunning != 0 ? t() - tRunning : 0);
     }
 
     public void cancel() {
@@ -163,10 +164,10 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
         try {
             consecutiveRuns++;
             if (!execute() && !isCancelled) {
-                plugin.sync(this, TimeUtil.ticksAsMillis(consecutiveRuns < maxConsecutive ? 0 : yieldDelay));
+                scheduler.sync(this, TimeUtil.ticksAsDuration(consecutiveRuns < maxConsecutive ? 0 : yieldDelay));
             } else {
                 if (onCompletion != null && !isCancelled) {
-                    plugin.sync(onCompletion);
+                    scheduler.sync(onCompletion);
                 }
                 complete();
             }
@@ -181,7 +182,7 @@ public abstract class IncrementalRunnable extends BukkitRunnable {
     }
 
     private static double t() {
-        return System.nanoTime()/1000000d;
+        return System.nanoTime() / 1000000d;
     }
 
     protected void setOnCompletion(Runnable onCompletion) {

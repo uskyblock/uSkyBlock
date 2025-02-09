@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,6 +40,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 /**
  * Handling of mob-related events.
  */
+@Singleton
 public class GriefEvents implements Listener {
 
     private final uSkyBlock plugin;
@@ -49,7 +52,8 @@ public class GriefEvents implements Listener {
     private final boolean witherEnabled;
     private final boolean hatchingEnabled;
 
-    public GriefEvents(uSkyBlock plugin) {
+    @Inject
+    public GriefEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         FileConfiguration config = plugin.getConfig();
         creeperEnabled = config.getBoolean("options.protection.creepers", true);

@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -17,6 +18,7 @@ public class ImportCommand extends AbstractCommand {
 
     private final ImportTabCompleter completer;
 
+    @Inject
     public ImportCommand() {
         super("import", "usb.admin.import", "format", marktr("imports players and islands from other formats"));
         completer = new ImportTabCompleter();

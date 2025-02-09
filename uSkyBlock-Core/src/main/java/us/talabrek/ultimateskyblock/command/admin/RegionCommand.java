@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -15,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -36,7 +38,8 @@ public class RegionCommand extends CompositeCommand {
     private int dash;
     private Material material;
 
-    public RegionCommand(uSkyBlock plugin, final AnimationHandler animationHandler) {
+    @Inject
+    public RegionCommand(@NotNull AnimationHandler animationHandler) {
         super("region|rg", "usb.admin.region", marktr("region manipulations"));
         this.animationHandler = animationHandler;
         add(new AbstractCommand("show", marktr("shows the borders of the current island")) {

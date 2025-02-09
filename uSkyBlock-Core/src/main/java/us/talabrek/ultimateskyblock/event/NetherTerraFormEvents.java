@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -20,6 +22,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -36,6 +39,7 @@ import java.util.Random;
 /**
  * Responsible for forming the correct blocks in nether on block-breaks.
  */
+@Singleton
 public class NetherTerraFormEvents implements Listener {
     private final uSkyBlock plugin;
     private final Map<Material, List<MaterialUtil.MaterialProbability>> terraFormMap = new HashMap<>();
@@ -50,7 +54,8 @@ public class NetherTerraFormEvents implements Listener {
     private final double minPitch;
     private final double maxPitch;
 
-    public NetherTerraFormEvents(uSkyBlock plugin) {
+    @Inject
+    public NetherTerraFormEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         // TODO: 23/09/2015 - R4zorax: Allow this to be perk-based?
         terraformEnabled = plugin.getConfig().getBoolean("nether.terraform-enabled", true);

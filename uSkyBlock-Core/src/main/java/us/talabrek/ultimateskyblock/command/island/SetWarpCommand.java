@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -11,7 +13,9 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 
 public class SetWarpCommand extends RequireIslandCommand {
-    public SetWarpCommand(uSkyBlock plugin) {
+
+    @Inject
+    public SetWarpCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "setwarp|warpset", "usb.island.setwarp", marktr("set your island''s warp location"));
     }
 

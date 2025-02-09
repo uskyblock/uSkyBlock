@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.async.Callback;
@@ -14,7 +16,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class LevelCommand extends RequireIslandCommand {
-    public LevelCommand(uSkyBlock plugin) {
+
+    @Inject
+    public LevelCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "level", "usb.island.level", "?island", marktr("check your or anothers island level"));
         addFeaturePermission("usb.island.level.other", tr("allows user to query for others levels"));
     }

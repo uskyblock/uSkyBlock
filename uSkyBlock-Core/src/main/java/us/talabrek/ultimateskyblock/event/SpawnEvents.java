@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -36,6 +38,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Responsible for controlling spawns on uSkyBlock islands.
  */
+@Singleton
 public class SpawnEvents implements Listener {
     private static final Set<Action> RIGHT_CLICKS = Set.of(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK);
 
@@ -44,7 +47,8 @@ public class SpawnEvents implements Listener {
     private boolean phantomsInOverworld;
     private boolean phantomsInNether;
 
-    public SpawnEvents(uSkyBlock plugin) {
+    @Inject
+    public SpawnEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
         phantomsInOverworld = plugin.getConfig().getBoolean("options.spawning.phantoms.overworld", true);
         phantomsInNether = plugin.getConfig().getBoolean("options.spawning.phantoms.nether", false);

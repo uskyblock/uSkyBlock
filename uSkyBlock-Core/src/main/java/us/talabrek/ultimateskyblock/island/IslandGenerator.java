@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.island;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,12 +9,13 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
@@ -24,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,31 +41,39 @@ import java.util.zip.ZipInputStream;
 /**
  * The factory for creating islands (actual blocks).
  */
+@Singleton
 public class IslandGenerator {
-    private static final Logger log = Logger.getLogger(IslandGenerator.class.getName());
+    private final Logger logger;
     private final File[] schemFiles;
     private final File netherSchematic;
     private final File directorySchematics;
 
-    public IslandGenerator(@NotNull File dataFolder, @NotNull FileConfiguration config) {
-        directorySchematics = new File(dataFolder + File.separator + "schematics");
+    @Inject
+    public IslandGenerator(
+        @NotNull Logger logger,
+        @NotNull @PluginDataDir Path dataFolder,
+        @NotNull PluginConfig config
+    ) {
+        this.logger = logger;
+        directorySchematics = dataFolder.resolve("schematics").toFile();
         if (!directorySchematics.exists()) {
             //noinspection ResultOfMethodCallIgnored
             directorySchematics.mkdir();
         }
         copySchematicsFromJar();
-        netherSchematic =  getSchematicFile(config.getString("nether.schematicName", "uSkyBlockNether"));
+        netherSchematic = getSchematicFile(config.getYamlConfig().getString("nether.schematicName", "uSkyBlockNether"));
 
         schemFiles = loadSchematics(config);
         if (schemFiles == null) {
-            log.info("[uSkyBlock] No schematic file loaded.");
+            logger.info("No schematic file loaded.");
         } else {
-            log.info("[uSkyBlock] " + schemFiles.length + " schematics loaded.");
+            logger.info(schemFiles.length + " schematics loaded.");
         }
     }
 
     /**
      * Gets a {@link List} of available schematic names.
+     *
      * @return List of available schematic names.
      */
     public List<String> getSchemeNames() {
@@ -75,9 +87,10 @@ public class IslandGenerator {
 
     /**
      * Generate an island at the given {@link Location}.
+     *
      * @param playerPerk PlayerPerk object for the island owner.
-     * @param next Location to generate an island.
-     * @param cSchem New island schematic.
+     * @param next       Location to generate an island.
+     * @param cSchem     New island schematic.
      * @return True if the island was generated, false otherwise.
      */
     public boolean createIsland(@NotNull PlayerPerk playerPerk, @NotNull Location next, @Nullable String cSchem) {
@@ -106,8 +119,9 @@ public class IslandGenerator {
     /**
      * Find the nearest chest at the given {@link Location} and fill the chest with the starter and {@link Perk}
      * based items.
+     *
      * @param location Location to search for a chest.
-     * @param perk Perk containing extra perk-based items to add.
+     * @param perk     Perk containing extra perk-based items to add.
      * @return True if the chest is found and filled, false otherwise.
      */
     public boolean findAndSetChest(@NotNull Location location, @NotNull Perk perk) {
@@ -117,8 +131,9 @@ public class IslandGenerator {
 
     /**
      * Fill the {@link Inventory} of the given chest {@link Location} with the starter and {@link Perk} based items.
+     *
      * @param chestLocation Location of the chest block.
-     * @param perk Perk containing extra perk-based items to add.
+     * @param perk          Perk containing extra perk-based items to add.
      * @return True if the chest is found and filled, false otherwise.
      */
     public boolean setChest(@Nullable Location chestLocation, @NotNull Perk perk) {
@@ -159,36 +174,36 @@ public class IslandGenerator {
                         try (InputStream inputStream = uSkyBlock.class.getClassLoader().getResourceAsStream(entry.getName())) {
                             FileUtil.copy(inputStream, f);
                         } catch (IOException e) {
-                            log.log(Level.WARNING, "Unable to load schematic " + entry.getName(), e);
+                            logger.log(Level.WARNING, "Unable to load schematic " + entry.getName(), e);
                         }
                     }
                 }
                 zin.closeEntry();
             }
         } catch (IOException e) {
-            log.log(Level.WARNING, "Unable to find schematics in plugin JAR", e);
+            logger.log(Level.WARNING, "Unable to find schematics in plugin JAR", e);
         }
     }
 
-    private File[] loadSchematics(@NotNull FileConfiguration config) {
+    private File[] loadSchematics(@NotNull PluginConfig config) {
         return directorySchematics.listFiles((dir, name) -> {
             String basename = FileUtil.getBasename(name);
-            boolean enabled = config.getBoolean("island-schemes." + basename + ".enabled", true);
+            boolean enabled = config.getYamlConfig().getBoolean("island-schemes." + basename + ".enabled", true);
             return enabled &&
-                    name != null &&
-                    (name.endsWith(".schematic") || name.endsWith(".schem")) &&
-                    !name.startsWith("uSkyBlock") &&
-                    !basename.toLowerCase().endsWith("nether");
+                name != null &&
+                (name.endsWith(".schematic") || name.endsWith(".schem")) &&
+                !name.startsWith("uSkyBlock") &&
+                !basename.toLowerCase().endsWith("nether");
         });
     }
 
     private File getSchematicFile(String cSchem) {
         List<String> extensions = Arrays.asList("schematic", "schem");
         return extensions.stream()
-                .map(f -> new File(directorySchematics, cSchem + "." + f))
-                .filter(f -> f.exists() && f.canRead())
-                .findFirst()
-                .orElse(null);
+            .map(f -> new File(directorySchematics, cSchem + "." + f))
+            .filter(f -> f.exists() && f.canRead())
+            .findFirst()
+            .orElse(null);
     }
 
     private boolean isSchematicFile(ZipEntry entry, String prefix) {

@@ -1,9 +1,11 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.island.RequirePlayerCommand;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -22,7 +24,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class WGCommand extends CompositeCommand {
     private final uSkyBlock plugin;
 
-    public WGCommand(final uSkyBlock plugin) {
+    @Inject
+    public WGCommand(@NotNull final uSkyBlock plugin) {
         super("wg", "usb.admin.wg", marktr("various WorldGuard utilities"));
         this.plugin = plugin;
         add(new RequirePlayerCommand("refresh", null, marktr("refreshes the chunks around the player")) {

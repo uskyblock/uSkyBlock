@@ -1,9 +1,11 @@
 package us.talabrek.ultimateskyblock.command.challenge;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 
 import java.util.Map;
 
@@ -14,11 +16,12 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * Complete Challenge Command
  */
 public class ChallengeCompleteCommand extends AbstractCommand {
-    private final uSkyBlock plugin;
+    private final ChallengeLogic challengeLogic;
 
-    public ChallengeCompleteCommand(uSkyBlock plugin) {
+    @Inject
+    public ChallengeCompleteCommand(@NotNull ChallengeLogic challengeLogic) {
         super("complete|c", "usb.island.challenges", "challenge", marktr("try to complete a challenge"));
-        this.plugin = plugin;
+        this.challengeLogic = challengeLogic;
     }
 
     @Override
@@ -30,11 +33,8 @@ public class ChallengeCompleteCommand extends AbstractCommand {
         if (args == null || args.length == 0) {
             return false;
         }
-        String challengeName = "";
-        for (String arg : args) {
-            challengeName += " " + arg;
-        }
-        plugin.getChallengeLogic().completeChallenge((Player) sender, challengeName.trim());
+        String challengeName = String.join(" ", args);
+        challengeLogic.completeChallenge((Player) sender, challengeName);
         return true;
     }
 }

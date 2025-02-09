@@ -1,11 +1,13 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -14,11 +16,10 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class ChunkCommand extends CompositeCommand {
-    private final uSkyBlock plugin;
 
-    public ChunkCommand(uSkyBlock plugin) {
+    @Inject
+    public ChunkCommand(@NotNull uSkyBlock plugin) {
         super("chunk", "usb.admin.chunk", marktr("various chunk commands"));
-        this.plugin = plugin;
 
         add(new RequireChunkCommand("regen", marktr("regenerate current chunk")) {
             @Override

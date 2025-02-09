@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.completion;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import us.talabrek.ultimateskyblock.menu.PartyPermissionMenuItem;
@@ -9,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionTabCompleter extends AbstractTabCompleter {
-    private uSkyBlock plugin;
+    private final uSkyBlock plugin;
 
+    @Inject
     public PermissionTabCompleter(uSkyBlock plugin) {
         this.plugin = plugin;
     }
@@ -23,5 +25,4 @@ public class PermissionTabCompleter extends AbstractTabCompleter {
         }
         return list;
     }
-
 }

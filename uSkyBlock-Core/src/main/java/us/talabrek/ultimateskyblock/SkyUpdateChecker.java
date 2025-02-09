@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.inject.Inject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,15 +17,28 @@ import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SkyUpdateChecker implements UpdateChecker {
+
+    private final Logger logger;
+    private final PluginConfig config;
+    private final uSkyBlock plugin;
+
     private String latestVersion;
 
     private final Gson gson = new Gson();
-    private final uSkyBlock plugin;
 
-    public SkyUpdateChecker(uSkyBlock plugin) {
+    @Inject
+    public SkyUpdateChecker(
+        @NotNull uSkyBlock plugin,
+        @NotNull PluginConfig config,
+        @NotNull Logger logger
+    ) {
         this.plugin = plugin;
+        this.config = config;
+        this.logger = logger;
     }
 
     /**
@@ -34,19 +48,19 @@ public class SkyUpdateChecker implements UpdateChecker {
     public void checkForUpdates() {
         URI uri = URL_RELEASE;
 
-        if (plugin.getConfig().getString("plugin-updates.branch", "RELEASE").equalsIgnoreCase("STAGING")) {
+        if (config.getYamlConfig().getString("plugin-updates.branch", "RELEASE").equalsIgnoreCase("STAGING")) {
             uri = URL_STAGING;
         }
 
         fetchLatestVersion(uri).thenAccept(version -> {
             latestVersion = version;
             if (latestVersion == null) {
-                plugin.getLogger().info("Failed to check for new uSkyBlock versions.");
+                logger.info("Failed to check for new uSkyBlock versions.");
             }
 
             if (isUpdateAvailable()) {
-                plugin.getLogger().info("There is a new version of uSkyBlock available: " + getLatestVersion());
-                plugin.getLogger().info("Visit https://www.uskyblock.ovh/get to download.");
+                logger.info("There is a new version of uSkyBlock available: " + getLatestVersion());
+                logger.info("Visit https://www.uskyblock.ovh/get to download.");
             }
         });
     }
@@ -97,8 +111,7 @@ public class SkyUpdateChecker implements UpdateChecker {
                     }
                 }
             } catch (Exception ex) {
-                plugin.getLogger().warning("Exception while trying to fetch latest plugin version.");
-                ex.printStackTrace();
+                logger.log(Level.SEVERE, "Exception while trying to fetch latest plugin version.", ex);
             }
 
             return null;

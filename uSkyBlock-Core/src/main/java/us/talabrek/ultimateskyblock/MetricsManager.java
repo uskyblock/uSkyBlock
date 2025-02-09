@@ -1,10 +1,13 @@
 package us.talabrek.ultimateskyblock;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 
 import java.util.logging.Level;
 
+@Singleton
 public class MetricsManager {
     // Pushing to two accounts at the moment to track both legacy and current installations.
     private static final int BSTATS_MUSPAH_ID = 7525;
@@ -12,9 +15,12 @@ public class MetricsManager {
 
     private final uSkyBlock plugin;
 
+    @Inject
     public MetricsManager(uSkyBlock plugin) {
         this.plugin = plugin;
+    }
 
+    public void setup() {
         try {
             setupMetrics(BSTATS_MUSPAH_ID);
             setupMetrics(BSTATS_RLF_ID);

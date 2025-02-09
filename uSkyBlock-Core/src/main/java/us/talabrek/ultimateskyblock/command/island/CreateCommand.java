@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -14,7 +16,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class CreateCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
 
-    public CreateCommand(uSkyBlock plugin) {
+    @Inject
+    public CreateCommand(@NotNull uSkyBlock plugin) {
         super("create|c", "usb.island.create", "?schematic", marktr("create an island"));
         this.plugin = plugin;
         addFeaturePermission("usb.exempt.cooldown.create", tr("exempt player from create-cooldown"));

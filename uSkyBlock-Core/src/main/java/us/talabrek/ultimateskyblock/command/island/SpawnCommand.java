@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -13,7 +15,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 public class SpawnCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
 
-    public SpawnCommand(uSkyBlock plugin) {
+    @Inject
+    public SpawnCommand(@NotNull uSkyBlock plugin) {
         super("spawn", "usb.island.spawn", marktr("teleports you to the skyblock spawn"));
         this.plugin = plugin;
     }

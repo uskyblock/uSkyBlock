@@ -5,7 +5,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -29,6 +31,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class IslandLocatorLogicTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testNextIslandLocation() throws Exception {
         Settings.island_distance = 1;
@@ -46,7 +52,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservation() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        IslandLocatorLogic locator = new IslandLocatorLogic(plugin);
+        IslandLocatorLogic locator = new IslandLocatorLogic(plugin, tempFolder.newFolder().toPath(), mock(), mock(), mock(), mock());
         Player player = createPlayerMock();
         Location location1 = locator.getNextIslandLocation(player);
         assertThat(location1, notNullValue());
@@ -59,7 +65,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservationConcurrency() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin);
+        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, tempFolder.newFolder().toPath(), mock(), mock(), mock(), mock());
         final List<Location> locations = new ArrayList<>();
         ThreadGroup threadGroup = new ThreadGroup("My");
         for (int i = 0; i < 10; i++) {

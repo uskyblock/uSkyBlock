@@ -1,13 +1,16 @@
 package us.talabrek.ultimateskyblock.player;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
-import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,26 +23,29 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Responsible for calculating player specific perks based on permissions.
  */
+@Singleton
 public class PerkLogic {
-    private final uSkyBlock plugin;
     private final Perk defaultPerk;
-    private Map<String, Perk> donorPerks;
-    private Map<String, IslandPerk> islandPerks;
+    private final Map<String, Perk> donorPerks;
+    private final Map<String, IslandPerk> islandPerks;
 
-    public PerkLogic(uSkyBlock plugin, IslandGenerator islandGenerator) {
-        this.plugin = plugin;
+    @Inject
+    public PerkLogic(
+        @NotNull IslandGenerator islandGenerator,
+        @NotNull PluginConfig config
+    ) {
         defaultPerk = new Perk(Collections.emptyList(), Settings.general_maxPartySize,
-                plugin.getConfig().getInt("options.island.spawn-limits.animals", 30),
-                plugin.getConfig().getInt("options.island.spawn-limits.monsters", 50),
-                plugin.getConfig().getInt("options.island.spawn-limits.villagers", 16),
-                plugin.getConfig().getInt("options.island.spawn-limits.golems", 4),
-                0,
-                0,
-                null, null);
+            config.getYamlConfig().getInt("options.island.spawn-limits.animals", 30),
+            config.getYamlConfig().getInt("options.island.spawn-limits.monsters", 50),
+            config.getYamlConfig().getInt("options.island.spawn-limits.villagers", 16),
+            config.getYamlConfig().getInt("options.island.spawn-limits.golems", 4),
+            0,
+            0,
+            null, null);
         donorPerks = new ConcurrentHashMap<>();
-        addDonorPerks(null, plugin.getConfig().getConfigurationSection("donor-perks"));
-        addExtraPermissionPerks(plugin.getConfig().getConfigurationSection("options.island.extraPermissions"));
-        addPartyPermissionPerks(null, plugin.getConfig().getConfigurationSection("options.party.maxPartyPermissions"));
+        addDonorPerks(null, config.getYamlConfig().getConfigurationSection("donor-perks"));
+        addExtraPermissionPerks(config.getYamlConfig().getConfigurationSection("options.island.extraPermissions"));
+        addPartyPermissionPerks(null, config.getYamlConfig().getConfigurationSection("options.party.maxPartyPermissions"));
         addHungerPerms();
         addDonorRewardPerks();
         List<String> schemeNames = islandGenerator.getSchemeNames();
@@ -47,37 +53,37 @@ public class PerkLogic {
 
         islandPerks = new ConcurrentHashMap<>();
 
-        ConfigurationSection islandSchemes = plugin.getConfig().getConfigurationSection("island-schemes");
+        ConfigurationSection islandSchemes = config.getYamlConfig().getConfigurationSection("island-schemes");
         if (islandSchemes != null) {
             for (String schemeName : islandSchemes.getKeys(false)) {
-                ConfigurationSection config = islandSchemes.getConfigurationSection(schemeName);
-                String perm = config.getString("permission", "usb.schematic." + schemeName);
+                ConfigurationSection configSection = islandSchemes.getConfigurationSection(schemeName);
+                String perm = configSection.getString("permission", "usb.schematic." + schemeName);
                 Perk perk = new PerkBuilder()
-                        .schematics(schemeName)
-                        .maxPartySize(config.getInt("maxPartySize", 0))
-                        .animals(config.getInt("animals", 0))
-                        .monsters(config.getInt("monsters", 0))
-                        .villagers(config.getInt("villagers", 0))
-                        .golems(config.getInt("golems", 0))
-                        .rewBonus(config.getInt("rewardBonus", 0))
-                        .hungerReduction(config.getInt("hungerReduction", 0))
-                        .extraItems(ItemStackUtil.createItemList(config.getStringList("extraItems")))
-                        .build();
+                    .schematics(schemeName)
+                    .maxPartySize(configSection.getInt("maxPartySize", 0))
+                    .animals(configSection.getInt("animals", 0))
+                    .monsters(configSection.getInt("monsters", 0))
+                    .villagers(configSection.getInt("villagers", 0))
+                    .golems(configSection.getInt("golems", 0))
+                    .rewBonus(configSection.getInt("rewardBonus", 0))
+                    .hungerReduction(configSection.getInt("hungerReduction", 0))
+                    .extraItems(ItemStackUtil.createItemList(configSection.getStringList("extraItems")))
+                    .build();
                 ItemStack itemStack = ItemStackUtil.createItemStack(
-                        config.getString("displayItem", Material.OAK_SAPLING.toString()),
-                        schemeName,
-                        config.getString("description", null)
+                    configSection.getString("displayItem", Material.OAK_SAPLING.toString()),
+                    schemeName,
+                    configSection.getString("description", null)
                 );
                 islandPerks.put(schemeName, new IslandPerk(schemeName, perm, itemStack, perk,
-                        config.getDouble("scoreMultiply", 1d), config.getDouble("scoreOffset", 0d)));
+                    configSection.getDouble("scoreMultiply", 1d), configSection.getDouble("scoreOffset", 0d)));
             }
         }
         for (String schemeName : schemeNames) {
             Perk perk = new PerkBuilder(defaultPerk).schematics(schemeName).build();
             if (!islandPerks.containsKey(schemeName)) {
                 islandPerks.put(schemeName, new IslandPerk(schemeName, "usb.schematic." + schemeName,
-                        ItemStackUtil.createItemStack(Material.OAK_SAPLING.toString(), schemeName, null), perk,
-                        1d, 0d));
+                    ItemStackUtil.createItemStack(Material.OAK_SAPLING.toString(), schemeName, null), perk,
+                    1d, 0d));
             }
         }
     }
@@ -105,7 +111,7 @@ public class PerkLogic {
             return islandPerks.get(schemeName);
         }
         return new IslandPerk(schemeName, "usb.schematic." + schemeName,
-                ItemStackUtil.createItemStack(Material.GRASS_BLOCK.toString(), schemeName, null), defaultPerk);
+            ItemStackUtil.createItemStack(Material.GRASS_BLOCK.toString(), schemeName, null), defaultPerk);
     }
 
     private Perk createPerk(Player player) {
@@ -128,15 +134,15 @@ public class PerkLogic {
             } else {
                 // Read leaf
                 donorPerks.put(perm, new Perk(
-                        ItemStackUtil.createItemList(config.getStringList("extraItems")),
-                        config.getInt("maxPartySize", defaultPerk.getMaxPartySize()),
-                        config.getInt("animals", defaultPerk.getAnimals()),
-                        config.getInt("monsters", defaultPerk.getMonsters()),
-                        config.getInt("villagers", defaultPerk.getVillagers()),
-                        config.getInt("golems", defaultPerk.getGolems()),
-                        config.getDouble("rewardBonus", defaultPerk.getRewBonus()),
-                        config.getDouble("hungerReduction", defaultPerk.getHungerReduction()),
-                        config.getStringList("schematics"), null));
+                    ItemStackUtil.createItemList(config.getStringList("extraItems")),
+                    config.getInt("maxPartySize", defaultPerk.getMaxPartySize()),
+                    config.getInt("animals", defaultPerk.getAnimals()),
+                    config.getInt("monsters", defaultPerk.getMonsters()),
+                    config.getInt("villagers", defaultPerk.getVillagers()),
+                    config.getInt("golems", defaultPerk.getGolems()),
+                    config.getDouble("rewardBonus", defaultPerk.getRewBonus()),
+                    config.getDouble("hungerReduction", defaultPerk.getHungerReduction()),
+                    config.getStringList("schematics"), null));
             }
         }
     }
@@ -150,20 +156,20 @@ public class PerkLogic {
             if (items != null && !items.isEmpty()) {
                 String perm = "usb." + key;
                 donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
-                        .extraItems(items)
-                        .build());
+                    .extraItems(items)
+                    .build());
             }
         }
     }
 
     private void addPartyPermissionPerks(String perm, ConfigurationSection config) {
         int[] values = {5, 6, 7, 8};
-        String[] perms = {"usb.extra.partysize1","usb.extra.partysize2","usb.extra.partysize3","usb.extra.partysize"};
+        String[] perms = {"usb.extra.partysize1", "usb.extra.partysize2", "usb.extra.partysize3", "usb.extra.partysize"};
         for (int i = 0; i < values.length; i++) {
             donorPerks.put(perms[i],
-                    new PerkBuilder(donorPerks.get(perms[i]))
-                            .maxPartySize(values[i])
-                            .build());
+                new PerkBuilder(donorPerks.get(perms[i]))
+                    .maxPartySize(values[i])
+                    .build());
         }
 
         if (config == null) {
@@ -175,8 +181,8 @@ public class PerkLogic {
             } else if (config.isInt(key)) {
                 // Read leaf
                 donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
-                        .maxPartySize(config.getInt(key, 0))
-                        .build());
+                    .maxPartySize(config.getInt(key, 0))
+                    .build());
             }
         }
     }
@@ -186,9 +192,9 @@ public class PerkLogic {
         String[] perms = {"usb.extra.hunger4", "usb.extra.hunger3", "usb.extra.hunger2", "usb.extra.hunger"};
         for (int i = 0; i < values.length; i++) {
             donorPerks.put(perms[i],
-                    new PerkBuilder(donorPerks.get(perms[i]))
-                            .hungerReduction(values[i])
-                            .build());
+                new PerkBuilder(donorPerks.get(perms[i]))
+                    .hungerReduction(values[i])
+                    .build());
         }
     }
 
@@ -198,9 +204,9 @@ public class PerkLogic {
         String[] perms = {"group.memberplus", "usb.donor.all", "usb.donor.25", "usb.donor.50", "usb.donor.75", "usb.donor.100"};
         for (int i = 0; i < values.length; i++) {
             donorPerks.put(perms[i],
-                    new PerkBuilder(donorPerks.get(perms[i]))
-                            .rewBonus(values[i])
-                            .build());
+                new PerkBuilder(donorPerks.get(perms[i]))
+                    .rewBonus(values[i])
+                    .build());
         }
     }
 
@@ -211,8 +217,8 @@ public class PerkLogic {
         for (String scheme : schemeNames) {
             String perm = "usb.schematic." + scheme;
             donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
-                    .schematics(scheme)
-                    .build());
+                .schematics(scheme)
+                .build());
         }
     }
 

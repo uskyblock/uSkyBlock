@@ -1,10 +1,12 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.InviteHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
@@ -20,7 +22,8 @@ public class PartyCommand extends CompositeCommand {
     private final uSkyBlock plugin;
     private final SkyBlockMenu menu;
 
-    public PartyCommand(final uSkyBlock plugin, SkyBlockMenu menu, final InviteHandler inviteHandler) {
+    @Inject
+    public PartyCommand(@NotNull uSkyBlock plugin, @NotNull SkyBlockMenu menu, @NotNull InviteHandler inviteHandler) {
         super("party", null, marktr("show party information"));
         this.plugin = plugin;
         this.menu = menu;

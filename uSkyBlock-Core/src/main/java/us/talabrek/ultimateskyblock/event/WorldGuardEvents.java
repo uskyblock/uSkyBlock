@@ -1,11 +1,14 @@
 package us.talabrek.ultimateskyblock.event;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -15,10 +18,12 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Replacement for the WG ENTRY/EXIT deny flags.
  */
+@Singleton
 public class WorldGuardEvents implements Listener {
     private final uSkyBlock plugin;
 
-    public WorldGuardEvents(uSkyBlock plugin) {
+    @Inject
+    public WorldGuardEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
     }
 

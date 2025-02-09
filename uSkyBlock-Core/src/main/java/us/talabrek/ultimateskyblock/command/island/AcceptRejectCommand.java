@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.AcceptEvent;
 import us.talabrek.ultimateskyblock.api.event.RejectEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -13,7 +15,8 @@ public class AcceptRejectCommand extends RequirePlayerCommand {
 
     private final uSkyBlock plugin;
 
-    public AcceptRejectCommand(uSkyBlock plugin) {
+    @Inject
+    public AcceptRejectCommand(@NotNull uSkyBlock plugin) {
         super("accept|reject", "usb.party.join", marktr("accept/reject an invitation."));
         this.plugin = plugin;
     }

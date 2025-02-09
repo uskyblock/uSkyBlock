@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -18,7 +20,8 @@ public class AutoCommand extends AbstractCommand {
     private final CreateCommand create;
     private final HomeCommand home;
 
-    public AutoCommand(uSkyBlock plugin, CreateCommand create, HomeCommand home) {
+    @Inject
+    public AutoCommand(@NotNull uSkyBlock plugin, @NotNull CreateCommand create, @NotNull HomeCommand home) {
         super("auto", "usb.island.create", marktr("teleports you to your island (or create one)"));
         this.plugin = plugin;
         this.create = create;

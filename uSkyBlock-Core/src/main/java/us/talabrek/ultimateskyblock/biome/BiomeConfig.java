@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.biome;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Material;
@@ -18,12 +20,14 @@ import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
+@Singleton
 public class BiomeConfig {
 
     private final Logger logger;
     private final List<BiomeEntry> configuredBiomeEntries;
     private final List<String> configuredBiomeKeys;
 
+    @Inject
     public BiomeConfig(Logger logger) {
         this.logger = logger;
         this.configuredBiomeEntries = loadBiomes();

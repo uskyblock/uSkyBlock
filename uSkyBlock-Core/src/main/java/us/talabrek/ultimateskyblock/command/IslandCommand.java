@@ -1,12 +1,13 @@
 package us.talabrek.ultimateskyblock.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
-import us.talabrek.ultimateskyblock.biome.BiomeConfig;
-import us.talabrek.ultimateskyblock.biome.Biomes;
 import us.talabrek.ultimateskyblock.command.completion.AllPlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.BiomeTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.MemberTabCompleter;
@@ -47,60 +48,94 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * The main /island command
  */
+@Singleton
 public class IslandCommand extends BaseCommandExecutor {
     private final uSkyBlock plugin;
     private final SkyBlockMenu menu;
 
-    public IslandCommand(uSkyBlock plugin, SkyBlockMenu menu, Biomes biomes, BiomeConfig biomeConfig) {
+    @Inject
+    public IslandCommand(
+        @NotNull uSkyBlock plugin,
+        @NotNull SkyBlockMenu menu,
+
+        @NotNull OnlinePlayerTabCompleter onlinePlayerTabCompleter,
+        @NotNull AllPlayerTabCompleter allPlayerTabCompleter,
+        @NotNull BiomeTabCompleter biomeTabCompleter,
+        @NotNull MemberTabCompleter memberTabCompleter,
+        @NotNull SchematicTabCompleter schematicTabCompleter,
+        @NotNull PermissionTabCompleter permissionTabCompleter,
+
+        @NotNull HomeCommand homeCommand,
+        @NotNull LevelCommand levelCommand,
+        @NotNull InfoCommand infoCommand,
+        @NotNull InviteCommand inviteCommand,
+        @NotNull AcceptRejectCommand acceptRejectCommand,
+        @NotNull LeaveCommand leaveCommand,
+        @NotNull KickCommand kickCommand,
+        @NotNull PartyCommand partyCommand,
+        @NotNull MakeLeaderCommand makeLeaderCommand,
+        @NotNull SpawnCommand spawnCommand,
+        @NotNull TrustCommand trustCommand,
+        @NotNull MobLimitCommand mobLimitCommand,
+        @NotNull AutoCommand autoCommand,
+        @NotNull PermCommand permCommand,
+        @NotNull RestartCommand restartCommand,
+        @NotNull LogCommand logCommand,
+        @NotNull CreateCommand createCommand,
+        @NotNull SetHomeCommand setHomeCommand,
+        @NotNull SetWarpCommand setWarpCommand,
+        @NotNull WarpCommand warpCommand,
+        @NotNull ToggleWarp toggleWarpCommand,
+        @NotNull BanCommand banCommand,
+        @NotNull LockUnlockCommand lockUnlockCommand,
+        @NotNull TopCommand topCommand,
+        @NotNull BiomeCommand biomeCommand
+    ) {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
         this.menu = menu;
+
         addFeaturePermission("usb.mod.bypasscooldowns", tr("allows user to bypass cooldowns"));
         addFeaturePermission("usb.mod.bypassprotection", tr("allows user to bypass visitor-protections"));
         addFeaturePermission("usb.mod.bypassteleport", tr("allows user to bypass teleport-delay"));
         addFeaturePermission("usb.island.signs.use", tr("allows user to use [usb] signs"));
         addFeaturePermission("usb.island.signs.place", tr("allows user to place [usb] signs"));
 
-        InviteHandler inviteHandler = new InviteHandler(plugin);
-        plugin.getServer().getPluginManager().registerEvents(inviteHandler, plugin);
-        OnlinePlayerTabCompleter onlinePlayerTabCompleter = new OnlinePlayerTabCompleter();
-        AllPlayerTabCompleter playerTabCompleter = new AllPlayerTabCompleter(onlinePlayerTabCompleter);
-        addTab("island", playerTabCompleter);
-        addTab("player", playerTabCompleter);
+        addTab("island", allPlayerTabCompleter);
+        addTab("player", allPlayerTabCompleter);
         addTab("oplayer", onlinePlayerTabCompleter);
-        addTab("biome", new BiomeTabCompleter(biomeConfig));
-        addTab("member", new MemberTabCompleter(plugin));
-        addTab("schematic", new SchematicTabCompleter(plugin));
-        addTab("perm", new PermissionTabCompleter(plugin));
-        add(new RestartCommand(plugin));
-        add(new LogCommand(plugin, menu));
-        CreateCommand createCommand = new CreateCommand(plugin);
+        addTab("biome", biomeTabCompleter);
+        addTab("member", memberTabCompleter);
+        addTab("schematic", schematicTabCompleter);
+        addTab("perm", permissionTabCompleter);
+
+        add(restartCommand);
+        add(logCommand);
         add(createCommand);
-        add(new SetHomeCommand(plugin));
-        HomeCommand homeCommand = new HomeCommand(plugin);
+        add(setHomeCommand);
         add(homeCommand);
-        add(new SetWarpCommand(plugin));
-        add(new WarpCommand(plugin));
-        add(new ToggleWarp(plugin));
-        add(new BanCommand(plugin));
-        add(new LockUnlockCommand(plugin));
+        add(setWarpCommand);
+        add(warpCommand);
+        add(toggleWarpCommand);
+        add(banCommand);
+        add(lockUnlockCommand);
         if (Settings.island_useTopTen) {
-            add(new TopCommand(plugin));
+            add(topCommand);
         }
-        add(new BiomeCommand(plugin, biomes, biomeConfig));
-        add(new LevelCommand(plugin));
-        add(new InfoCommand(plugin));
-        add(new InviteCommand(plugin, inviteHandler));
-        add(new AcceptRejectCommand(plugin));
-        add(new LeaveCommand(plugin));
-        add(new KickCommand(plugin));
-        add(new PartyCommand(plugin, menu, inviteHandler));
-        add(new MakeLeaderCommand(plugin));
-        add(new SpawnCommand(plugin));
-        add(new TrustCommand(plugin));
-        add(new MobLimitCommand(plugin));
-        add(new AutoCommand(plugin, createCommand, homeCommand));
-        add(new PermCommand(plugin));
+        add(biomeCommand);
+        add(levelCommand);
+        add(infoCommand);
+        add(inviteCommand);
+        add(acceptRejectCommand);
+        add(leaveCommand);
+        add(kickCommand);
+        add(partyCommand);
+        add(makeLeaderCommand);
+        add(spawnCommand);
+        add(trustCommand);
+        add(mobLimitCommand);
+        add(autoCommand);
+        add(permCommand);
     }
 
     @Override

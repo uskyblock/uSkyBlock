@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.gui;
 
+import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -17,6 +18,7 @@ import static java.util.Objects.requireNonNull;
  * This system is designed to be more flexible, easier to use and extend, and to separate concerns.
  * All old GUIs from us.talabrek.ultimateskyblock.menu should be converted to this system.
  */
+@Singleton
 public class GuiManager {
 
     private final Map<Inventory, InventoryHandler> activeInventories = new HashMap<>();

@@ -1,11 +1,14 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
+import us.talabrek.ultimateskyblock.util.PluginInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +29,17 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
  * Debug control.
  */
 public class DebugCommand extends CompositeCommand {
+
+    private final PluginInfo pluginInfo;
+
     public static final Logger log = Logger.getLogger("us.talabrek.ultimateskyblock");
     private static Handler logHandler = null;
 
-    public DebugCommand(final uSkyBlock plugin) {
+    @Inject
+    public DebugCommand(@NotNull uSkyBlock plugin, @NotNull PluginInfo pluginInfo) {
         super("debug", "usb.admin.debug", marktr("control debugging"));
+        this.pluginInfo = pluginInfo;
+
         add(new AbstractCommand("setlevel", null, "level", marktr("set debug-level")) {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
@@ -72,7 +81,7 @@ public class DebugCommand extends CompositeCommand {
         }
     }
 
-    public static void setLogLevel(CommandSender sender, String arg) {
+    public void setLogLevel(CommandSender sender, String arg) {
         try {
             Level level = Level.parse(arg.toUpperCase());
             log.setLevel(level);
@@ -96,7 +105,7 @@ public class DebugCommand extends CompositeCommand {
         logHandler = null;
     }
 
-    public static void enableLogging(CommandSender sender, uSkyBlock plugin) {
+    public void enableLogging(CommandSender sender, uSkyBlock plugin) {
         if (logHandler != null) {
             log.removeHandler(logHandler);
             plugin.getLogger().removeHandler(logHandler);
@@ -104,13 +113,13 @@ public class DebugCommand extends CompositeCommand {
         File logFolder = new File(plugin.getDataFolder(), "logs");
         logFolder.mkdirs();
         try {
-            String logFile = logFolder.toString() + File.separator + "uskyblock.%u.log";
+            String logFile = logFolder + File.separator + "uskyblock.%u.log";
             logHandler = new FileHandler(logFile, true);
             logHandler.setFormatter(new SingleLineFormatter());
             log.addHandler(logHandler);
             plugin.getLogger().addHandler(logHandler);
             Level level = log.getLevel() != null ? log.getLevel() : Level.FINER;
-            log.log(level, FormatUtil.stripFormatting(plugin.getVersionInfo(true)));
+            log.log(level, FormatUtil.stripFormatting(pluginInfo.getVersionInfo(true)));
             sender.sendMessage("\u00a7eLogging to " + logFile);
         } catch (IOException e) {
             log.log(Level.WARNING, "Unable to enable logging", e);

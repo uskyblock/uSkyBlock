@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
@@ -8,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Arrays;
@@ -25,7 +27,8 @@ public class ConfigCommand extends CompositeCommand {
     private final uSkyBlock plugin;
     public static final List<String> CONFIGS = Arrays.asList("config", "levelConfig", "challenges", "signs");
 
-    public ConfigCommand(uSkyBlock plugin) {
+    @Inject
+    public ConfigCommand(@NotNull uSkyBlock plugin) {
         super("config|c", "usb.admin.config", "?config", marktr("open GUI for config"));
         add(new AbstractCommand("search", marktr("searches config for a specific key")) {
             @Override

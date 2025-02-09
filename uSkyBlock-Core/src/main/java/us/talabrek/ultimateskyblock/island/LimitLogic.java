@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.island;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Location;
@@ -15,8 +17,9 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.WaterMob;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,8 +29,10 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
+@Singleton
 public class LimitLogic {
-    public enum CreatureType { UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM }
+    public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM}
+
     static {
         marktr("UNKNOWN");
         marktr("ANIMAL");
@@ -36,10 +41,13 @@ public class LimitLogic {
         marktr("GOLEM");
     }
 
-    private final uSkyBlock plugin;
+    private final WorldManager worldManager;
+    private final BlockLimitLogic blockLimitLogic;
 
-    public LimitLogic(uSkyBlock plugin) {
-        this.plugin = plugin;
+    @Inject
+    public LimitLogic(@NotNull WorldManager worldManager, @NotNull BlockLimitLogic blockLimitLogic) {
+        this.worldManager = worldManager;
+        this.blockLimitLogic = blockLimitLogic;
     }
 
     public Map<CreatureType, Integer> getCreatureCount(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
@@ -51,9 +59,9 @@ public class LimitLogic {
         ProtectedRegion islandRegionAt = WorldGuardHandler.getIslandRegionAt(islandLocation);
         if (islandRegionAt != null) {
             // Nether and Overworld regions are more or less equal (same x,z coords)
-            List<LivingEntity> creatures = WorldGuardHandler.getCreaturesInRegion(plugin.getWorldManager().getWorld(),
-                    islandRegionAt);
-            World nether = plugin.getWorldManager().getNetherWorld();
+            List<LivingEntity> creatures = WorldGuardHandler.getCreaturesInRegion(worldManager.getWorld(),
+                islandRegionAt);
+            World nether = worldManager.getNetherWorld();
             if (nether != null) {
                 creatures.addAll(WorldGuardHandler.getCreaturesInRegion(nether, islandRegionAt));
             }
@@ -78,9 +86,9 @@ public class LimitLogic {
 
     public CreatureType getCreatureType(LivingEntity creature) {
         if (creature instanceof Monster
-                || creature instanceof WaterMob
-                || creature instanceof Slime
-                || creature instanceof Ghast) {
+            || creature instanceof WaterMob
+            || creature instanceof Slime
+            || creature instanceof Ghast) {
             return CreatureType.MONSTER;
         } else if (creature instanceof Animals) {
             return CreatureType.ANIMAL;
@@ -94,10 +102,10 @@ public class LimitLogic {
 
     public CreatureType getCreatureType(EntityType entityType) {
         if (Monster.class.isAssignableFrom(entityType.getEntityClass())
-                || WaterMob.class.isAssignableFrom(entityType.getEntityClass())
-                || Slime.class.isAssignableFrom(entityType.getEntityClass())
-                || Ghast.class.isAssignableFrom(entityType.getEntityClass())
-                ) {
+            || WaterMob.class.isAssignableFrom(entityType.getEntityClass())
+            || Slime.class.isAssignableFrom(entityType.getEntityClass())
+            || Ghast.class.isAssignableFrom(entityType.getEntityClass())
+        ) {
             return CreatureType.MONSTER;
         } else if (Animals.class.isAssignableFrom(entityType.getEntityClass())) {
             return CreatureType.ANIMAL;
@@ -121,10 +129,14 @@ public class LimitLogic {
 
     private int getMax(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo, CreatureType creatureType) {
         switch (creatureType) {
-            case ANIMAL: return islandInfo.getMaxAnimals();
-            case MONSTER: return islandInfo.getMaxMonsters();
-            case VILLAGER: return islandInfo.getMaxVillagers();
-            case GOLEM: return islandInfo.getMaxGolems();
+            case ANIMAL:
+                return islandInfo.getMaxAnimals();
+            case MONSTER:
+                return islandInfo.getMaxMonsters();
+            case VILLAGER:
+                return islandInfo.getMaxVillagers();
+            case GOLEM:
+                return islandInfo.getMaxGolems();
         }
         return Integer.MAX_VALUE;
     }
@@ -139,21 +151,21 @@ public class LimitLogic {
             }
             int cnt = count.containsKey(key) ? count.get(key) : 0;
             int max = creatureMax.get(key);
-            sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})", tr(key.name()), cnt >= max ? tr("\u00a7c{0}",cnt) : cnt, max) + "\n");
+            sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})", tr(key.name()), cnt >= max ? tr("\u00a7c{0}", cnt) : cnt, max) + "\n");
         }
-        Map<Material, Integer> blockLimits = plugin.getBlockLimitLogic().getLimits();
-        for (Map.Entry<Material,Integer> entry : blockLimits.entrySet()) {
-            int blockCount = plugin.getBlockLimitLogic().getCount(entry.getKey(), islandInfo.getIslandLocation());
+        Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
+        for (Map.Entry<Material, Integer> entry : blockLimits.entrySet()) {
+            int blockCount = blockLimitLogic.getCount(entry.getKey(), islandInfo.getIslandLocation());
             if (blockCount >= 0) {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
-                        ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
-                        blockCount >= entry.getValue() ? tr("\u00a7c{0}", blockCount) : blockCount,
-                        entry.getValue()) + "\n");
+                    ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
+                    blockCount >= entry.getValue() ? tr("\u00a7c{0}", blockCount) : blockCount,
+                    entry.getValue()) + "\n");
             } else {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
-                        ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
-                        tr("\u00a7c{0}", "?"),
-                        entry.getValue()) + "\n");
+                    ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
+                    tr("\u00a7c{0}", "?"),
+                    entry.getValue()) + "\n");
             }
         }
         return sb.toString().trim();

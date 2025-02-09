@@ -1,10 +1,12 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -21,7 +23,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class FlatlandFixCommand extends AbstractCommand {
     private final uSkyBlock plugin;
 
-    public FlatlandFixCommand(uSkyBlock plugin) {
+    @Inject
+    public FlatlandFixCommand(@NotNull uSkyBlock plugin) {
         super("fix-flatland", "usb.admin.remove", "?player", marktr("tries to fix the the area of flatland."));
         this.plugin = plugin;
     }

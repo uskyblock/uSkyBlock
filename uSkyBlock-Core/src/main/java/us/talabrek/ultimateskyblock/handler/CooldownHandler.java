@@ -1,34 +1,33 @@
 package us.talabrek.ultimateskyblock.handler;
 
-import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
+import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Responsible for handling various cooldowns on commands.
  */
+@Singleton
 public class CooldownHandler {
-    private final Map<UUID, Map<String,Long>> cooldowns = new WeakHashMap<>();
-    private final uSkyBlock plugin;
+    // TODO: flatten map to use <UUID, String> as key, use time API instead of long
+    private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+    private final Scheduler scheduler;
 
-    public CooldownHandler(uSkyBlock plugin) {
-        this.plugin = plugin;
+    @Inject
+    public CooldownHandler(@NotNull Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
-    /**
-     * Returns the number of seconds left on the cooldown.
-     * <code>0</code> if it's not on cooldown anymore.
-     * @param player The player
-     * @param cmd The command to check
-     * @return
-     */
-    public int getCooldown(org.bukkit.entity.Player player, String cmd) {
+    public int getCooldown(Player player, String cmd) {
         if (player.hasPermission("usb.mod.bypasscooldowns") || player.hasPermission("usb.exempt.cooldown." + cmd)) {
             return 0;
         }
@@ -44,7 +43,7 @@ public class CooldownHandler {
     public void resetCooldown(final Player player, final String cmd, int cooldownSecs) {
         UUID uuid = player.getUniqueId();
         if (!cooldowns.containsKey(uuid)) {
-            Map<String, Long> cdMap = new ConcurrentHashMap<>();
+            Map<String, Long> cdMap = new HashMap<>();
             cooldowns.put(uuid, cdMap);
         }
         if (cooldownSecs == 0) {
@@ -52,15 +51,12 @@ public class CooldownHandler {
             return;
         }
         cooldowns.get(uuid).put(cmd, System.currentTimeMillis() + TimeUtil.secondsAsMillis(cooldownSecs));
-        plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                Map<String, Long> cmdMap = cooldowns.get(player.getUniqueId());
-                if (cmdMap != null) {
-                    cmdMap.remove(cmd);
-                }
+        scheduler.sync((Runnable) () -> {
+            Map<String, Long> cmdMap = cooldowns.get(player.getUniqueId());
+            if (cmdMap != null) {
+                cmdMap.remove(cmd);
             }
-        }, TimeUtil.secondsAsMillis(cooldownSecs));
+        }, Duration.ofSeconds(cooldownSecs));
     }
 
     public boolean clearCooldown(Player player, String cmd) {

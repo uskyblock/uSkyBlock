@@ -8,12 +8,12 @@ import us.talabrek.ultimateskyblock.util.UUIDUtil;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,12 +70,10 @@ public class UUIDLeaderImporter implements USBImporter {
 
     @Override
     public File[] getFiles() {
-        return plugin.directoryIslands.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name != null && name.endsWith(".err");
-            }
-        });
+        var result = plugin.getDataFolder().toPath()
+            .resolve("islands").toFile()
+            .listFiles((dir, name) -> name != null && name.endsWith(".err"));
+        return Objects.requireNonNullElseGet(result, () -> new File[0]);
     }
 
     @Override

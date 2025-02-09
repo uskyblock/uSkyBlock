@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.player;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
@@ -14,8 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,31 +31,43 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 /**
  * Responsible for teleporting (and cancelling teleporting) of players.
  */
+@Singleton
 public class TeleportLogic implements Listener {
-    private static final Logger log = Logger.getLogger(TeleportLogic.class.getName());
-
+    private final Logger logger;
     private final uSkyBlock plugin;
-    private final int teleportDelay;
+    private final WorldManager worldManager;
+    private final Scheduler scheduler;
+    private final Duration teleportDelay;
     private final Map<UUID, PendingTeleport> pendingTeleports = new ConcurrentHashMap<>();
     private final double cancelDistance;
 
-    public TeleportLogic(uSkyBlock plugin) {
+    @Inject
+    public TeleportLogic(
+        @NotNull Logger logger,
+        @NotNull uSkyBlock plugin,
+        @NotNull WorldManager worldManager,
+        @NotNull Scheduler scheduler
+    ) {
+        this.logger = logger;
         this.plugin = plugin;
-        teleportDelay = plugin.getConfig().getInt("options.island.islandTeleportDelay", 2);
+        teleportDelay = Duration.ofSeconds(plugin.getConfig().getInt("options.island.islandTeleportDelay", 2));
         cancelDistance = plugin.getConfig().getDouble("options.island.teleportCancelDistance", 0.2);
+        this.worldManager = worldManager;
+        this.scheduler = scheduler;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**
      * Teleport the given {@link Player} to his island home.
+     *
      * @param player Player to teleport
-     * @param force True to override teleport delay, false otherwise.
+     * @param force  True to override teleport delay, false otherwise.
      */
     public void homeTeleport(@NotNull Player player, boolean force) {
         Validate.notNull(player, "Player cannot be null");
 
         Location homeLocation = null;
-        PlayerInfo playerInfo = plugin.getPlayerLogic().getPlayerInfo(player);
+        PlayerInfo playerInfo = plugin.getPlayerInfo(player);
 
         if (playerInfo != null) {
             homeLocation = plugin.getSafeHomeLocation(playerInfo);
@@ -66,7 +82,7 @@ public class TeleportLogic implements Listener {
             return;
         }
 
-        plugin.getWorldManager().removeCreatures(homeLocation);
+        worldManager.removeCreatures(homeLocation);
         player.sendMessage(tr("\u00a7aTeleporting you to your island."));
         safeTeleport(player, homeLocation, force);
     }
@@ -74,24 +90,25 @@ public class TeleportLogic implements Listener {
     /**
      * Teleport the given {@link Player} to the given {@link Location}, loading the {@link org.bukkit.Chunk} before
      * teleporting and with the configured teleport delay if applicable.
-     * @param player Player to teleport.
+     *
+     * @param player         Player to teleport.
      * @param targetLocation Location to teleport the player to.
-     * @param force True to override teleport delay, false otherwise.
+     * @param force          True to override teleport delay, false otherwise.
      */
     public void safeTeleport(@NotNull Player player, @NotNull Location targetLocation, boolean force) {
         Validate.notNull(player, "Player cannot be null");
         Validate.notNull(targetLocation, "TargetLocation cannot be null");
 
-        log.log(Level.FINER, "safeTeleport " + player + " to " + targetLocation + (force ? " with force" : ""));
+        logger.log(Level.FINER, "safeTeleport " + player + " to " + targetLocation + (force ? " with force" : ""));
         final Location targetLoc = LocationUtil.centerOnBlock(targetLocation.clone());
-        if (player.hasPermission("usb.mod.bypassteleport") || (teleportDelay == 0) || force) {
+        if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             PaperLib.teleportAsync(player, targetLoc);
         } else {
             player.sendMessage(tr("\u00a7aYou will be teleported in {0} seconds.", teleportDelay));
-            BukkitTask tpTask = plugin.sync(() -> {
+            BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 PaperLib.teleportAsync(player, targetLoc);
-            }, TimeUtil.secondsAsMillis(teleportDelay));
+            }, teleportDelay);
             pendingTeleports.put(player.getUniqueId(), new PendingTeleport(player.getLocation(), tpTask));
         }
     }
@@ -99,14 +116,15 @@ public class TeleportLogic implements Listener {
     /**
      * Teleport the given {@link Player} to the spawn in the island world, loading the {@link org.bukkit.Chunk} before
      * teleporting and with the configured teleport delay if applicable.
+     *
      * @param player Player to teleport.
-     * @param force True to override teleport delay, false otherwise.
+     * @param force  True to override teleport delay, false otherwise.
      */
     public void spawnTeleport(@NotNull Player player, boolean force) {
         Validate.notNull(player, "Player cannot be null");
 
-        Location spawnLocation = LocationUtil.centerOnBlock(plugin.getWorldManager().getWorld().getSpawnLocation());
-        if (player.hasPermission("usb.mod.bypassteleport") || (teleportDelay == 0) || force) {
+        Location spawnLocation = LocationUtil.centerOnBlock(worldManager.getWorld().getSpawnLocation());
+        if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             if (Settings.extras_sendToSpawn) {
                 plugin.execCommand(player, "op:spawn", false);
             } else {
@@ -114,23 +132,24 @@ public class TeleportLogic implements Listener {
             }
         } else {
             player.sendMessage(tr("\u00a7aYou will be teleported in {0} seconds.", teleportDelay));
-            BukkitTask tpTask = plugin.sync(() -> {
+            BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 if (Settings.extras_sendToSpawn) {
                     plugin.execCommand(player, "op:spawn", false);
                 } else {
                     PaperLib.teleportAsync(player, spawnLocation);
                 }
-            }, TimeUtil.secondsAsMillis(teleportDelay));
+            }, teleportDelay);
             pendingTeleports.put(player.getUniqueId(), new PendingTeleport(player.getLocation(), tpTask));
         }
     }
 
     /**
      * Teleport the given {@link Player} to the warp location for the given {@link PlayerInfo}.
-     * @param player Player to teleport.
+     *
+     * @param player     Player to teleport.
      * @param playerInfo PlayerInfo to lookup the target warp location.
-     * @param force True to override teleport delay, false otherwise.
+     * @param force      True to override teleport delay, false otherwise.
      */
     public void warpTeleport(@NotNull Player player, @Nullable PlayerInfo playerInfo, boolean force) {
         Validate.notNull(player, "Player cannot be null");
@@ -150,7 +169,7 @@ public class TeleportLogic implements Listener {
         safeTeleport(player, warpLocation, force);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST,  ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onPlayerMove(PlayerMoveEvent e) {
         PendingTeleport pendingTeleport = pendingTeleports.get(e.getPlayer().getUniqueId());

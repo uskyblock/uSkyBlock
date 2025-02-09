@@ -1,10 +1,13 @@
 package us.talabrek.ultimateskyblock.menu;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.ArrayList;
@@ -13,24 +16,27 @@ import java.util.List;
 /**
  * A GUI for managing the uSkyBlock config-files
  */
+@Singleton
 public class ConfigMenu {
 
-    private final FileConfiguration menuConfig;
-    private final uSkyBlock plugin;
-    private final MenuItemFactory factory;
-    private final List<EditMenu> editMenus = new ArrayList<>();
+    private final List<EditMenu> editMenus;
     private final MainConfigMenu mainMenu;
 
-    public ConfigMenu(uSkyBlock plugin) {
-        this.plugin = plugin;
-        menuConfig = new YamlConfiguration();
+    @Inject
+    public ConfigMenu(
+        @NotNull uSkyBlock plugin,
+        @NotNull MenuItemFactory factory
+    ) {
+        FileConfiguration menuConfig = new YamlConfiguration();
         FileUtil.readConfig(menuConfig, getClass().getClassLoader().getResourceAsStream("configmenu.yml"));
-        factory = new MenuItemFactory();
-        mainMenu = new MainConfigMenu(plugin, menuConfig, factory, editMenus);
-        editMenus.add(new IntegerEditMenu(menuConfig, factory, mainMenu));
-        editMenus.add(new BooleanEditMenu(menuConfig));
-        editMenus.add(new StringEditMenu(menuConfig, mainMenu));
-        editMenus.add(mainMenu); // mainMenu goes last (catch all)
+        this.editMenus = new ArrayList<>();
+        this.mainMenu = new MainConfigMenu(plugin, menuConfig, factory, editMenus);
+        this.editMenus.addAll(List.of(
+            new IntegerEditMenu(menuConfig, factory, mainMenu),
+            new BooleanEditMenu(menuConfig),
+            new StringEditMenu(menuConfig, mainMenu),
+            mainMenu // mainMenu goes last (catch all)
+        ));
     }
 
     public void showMenu(Player player, String configName, int page) {

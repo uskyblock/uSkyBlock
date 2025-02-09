@@ -1,15 +1,17 @@
 package us.talabrek.ultimateskyblock.command.challenge;
 
+import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.player.PlayerLogic;
 
 import java.util.Map;
 
@@ -20,28 +22,29 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * Shows information about a challenge
  */
 public class ChallengeInfoCommand extends AbstractCommand {
-    private final uSkyBlock plugin;
 
-    public ChallengeInfoCommand(uSkyBlock plugin) {
+    private final ChallengeLogic challengeLogic;
+    private final PlayerLogic playerLogic;
+
+    @Inject
+    public ChallengeInfoCommand(
+        @NotNull ChallengeLogic challengeLogic,
+        @NotNull PlayerLogic playerLogic
+    ) {
         super("info|i", null, "challenge", marktr("show information about the challenge"));
-        this.plugin = plugin;
+        this.challengeLogic = challengeLogic;
+        this.playerLogic = playerLogic;
     }
 
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(tr("\u00a7cCommand only available for players."));
             return false;
         }
-        String challengeName = "";
-        for (String arg : args) {
-            challengeName += " " + arg;
-        }
-        challengeName = challengeName.trim();
-        ChallengeLogic challengeLogic = plugin.getChallengeLogic();
-        Player player = (Player) sender;
+        String challengeName = String.join(" ", args);
         Challenge challenge = challengeLogic.getChallenge(challengeName);
-        PlayerInfo playerInfo = plugin.getPlayerInfo(player);
+        PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
         if (challenge != null && challenge.getRank().isAvailable(playerInfo)) {
             player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challengeName.toLowerCase());
             if (challengeLogic.getRanks().size() > 1) {

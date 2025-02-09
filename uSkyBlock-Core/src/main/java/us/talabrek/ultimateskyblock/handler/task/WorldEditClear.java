@@ -30,7 +30,7 @@ public class WorldEditClear extends IncrementalRunnable {
     private final List<Region> regions;
 
     public WorldEditClear(uSkyBlock plugin, World world, Set<Region> borderRegions, Runnable onCompletion) {
-        super(plugin, onCompletion);
+        super(plugin.getScheduler(), plugin.getPluginConfig(), onCompletion);
         this.world = world;
         log.log(Level.FINE, "Planning regen of borders: " + borderRegions);
         regions = createRegions(borderRegions);

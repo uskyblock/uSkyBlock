@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.command.island;
 
+import com.google.inject.Inject;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.menu.PartyPermissionMenuItem;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -14,7 +16,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class PermCommand extends RequireIslandCommand {
-    public PermCommand(uSkyBlock plugin) {
+
+    @Inject
+    public PermCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "perm", "usb.island.perm", "member ?perm", marktr("changes a members island-permissions"));
     }
 

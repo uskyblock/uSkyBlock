@@ -1,14 +1,18 @@
 package us.talabrek.ultimateskyblock.chat;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,11 +23,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
-import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.*;
+import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.Type;
 
 /**
  * The primary logic of uSkyBlocks chat-handling
  */
+@Singleton
 public class ChatLogic {
     private static final List<String> ALONE_MESSAGES = Arrays.asList(
         I18nUtil.tr("But you are ALLLLLLL ALOOOOONE!"),
@@ -32,20 +37,24 @@ public class ChatLogic {
         I18nUtil.tr("But you are Talking to your self!")
     );
     private final uSkyBlock plugin;
+    private final WorldManager worldManager;
     private final Map<Type, String> formats = new EnumMap<>(Type.class);
     private final Map<UUID, Type> toggled = new HashMap<>();
 
-    public ChatLogic(uSkyBlock plugin) {
+    @Inject
+    public ChatLogic(@NotNull uSkyBlock plugin, @NotNull PluginConfig config, @NotNull WorldManager worldManager) {
         this.plugin = plugin;
+        this.worldManager = worldManager;
         formats.put(Type.PARTY,
-            plugin.getConfig().getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&d {MESSAGE}"));
+            config.getYamlConfig().getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&d {MESSAGE}"));
         formats.put(Type.ISLAND,
-            plugin.getConfig().getString("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&b {MESSAGE}"));
+            config.getYamlConfig().getString("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&b {MESSAGE}"));
     }
 
     /**
      * Gets a {@link List} containing {@link Player}'s with all the recipients that should receive the given message
      * {@link Type} from the sending {@link Player}. Returns an empty list when there are no recipients.
+     *
      * @param sender   Player sending the message.
      * @param chatType Message type that the player is sending.
      * @return List of all recipients, or an empty list if there are none.
@@ -55,8 +64,8 @@ public class ChatLogic {
             IslandInfo islandInfo = plugin.getIslandInfo(sender);
             return islandInfo != null ? islandInfo.getOnlineMembers() : Collections.singletonList(sender);
         } else if (chatType == Type.ISLAND) {
-            if (plugin.getWorldManager().isSkyWorld(sender.getWorld())) {
-                return WorldGuardHandler.getPlayersInRegion(plugin.getWorldManager().getWorld(),
+            if (worldManager.isSkyWorld(sender.getWorld())) {
+                return WorldGuardHandler.getPlayersInRegion(worldManager.getWorld(),
                     WorldGuardHandler.getIslandRegionAt(sender.getLocation()));
             }
             return Collections.emptyList();
@@ -67,6 +76,7 @@ public class ChatLogic {
     /**
      * Sends the given message to all online partymembers or island visitors on the given {@link Player}'s island,
      * depending on the given {@link Type}.
+     *
      * @param sender  Player sending the message.
      * @param type    Message type to send.
      * @param message Message to send.
@@ -90,6 +100,7 @@ public class ChatLogic {
 
     /**
      * Gets the message format for the given {@link Type}.
+     *
      * @param type Island chat type to lookup.
      * @return Message format.
      */
@@ -99,6 +110,7 @@ public class ChatLogic {
 
     /**
      * Toggle the {@link Type} on or off for the given {@link Player}, returns true if it is toggled on.
+     *
      * @param player Player to toggle the chat type for.
      * @param type   Chat type to toggle.
      * @return True if it is toggled on, false otherwise.
@@ -116,6 +128,7 @@ public class ChatLogic {
 
     /**
      * Gets the current {@link Type} toggle for the given {@link Player}, or null if none exists.
+     *
      * @param player Player to lookup.
      * @return The current Type toggle, or null if none exists.
      */
