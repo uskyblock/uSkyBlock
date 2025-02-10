@@ -10,40 +10,32 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.junit.Before;
 import org.junit.Test;
-import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MenuEventsTest {
-    private ConfigMenu fakeConfigMenu;
     private SkyBlockMenu fakeMenu;
 
     private MenuEvents menuEvents;
 
     @Before
     public void setUp() {
-        fakeConfigMenu = mock(ConfigMenu.class);
         fakeMenu = mock(SkyBlockMenu.class);
 
-        doNothing().when(fakeConfigMenu).onClick(any(InventoryClickEvent.class));
         doNothing().when(fakeMenu).onClick(any(InventoryClickEvent.class));
 
-        menuEvents = new MenuEvents(fakeMenu, fakeConfigMenu);
-    }
-
-    @Test
-    public void testOnGuiClick_configMenu() {
-        UltimateHolder holder = new UltimateHolder(getFakePlayer(), "Config: config.yml (1/2)", MenuType.CONFIG);
-        InventoryClickEvent event = getEvent(holder);
-
-        menuEvents.guiClick(event);
-        verify(fakeConfigMenu).onClick(event);
-        verify(fakeMenu, times(0)).onClick(any());
+        menuEvents = new MenuEvents(fakeMenu);
     }
 
     @Test
@@ -52,7 +44,6 @@ public class MenuEventsTest {
         InventoryClickEvent event = getEvent(holder);
 
         menuEvents.guiClick(event);
-        verify(fakeConfigMenu, times(0)).onClick(any());
         verify(fakeMenu).onClick(event);
     }
 
@@ -62,7 +53,6 @@ public class MenuEventsTest {
         InventoryClickEvent event = getEvent(holder);
 
         menuEvents.guiClick(event);
-        verify(fakeConfigMenu, times(0)).onClick(any());
         verify(fakeMenu, times(0)).onClick(event);
     }
 

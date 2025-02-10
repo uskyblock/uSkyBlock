@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.AdminChallengeCommand;
 import us.talabrek.ultimateskyblock.command.admin.AdminIslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.ChunkCommand;
-import us.talabrek.ultimateskyblock.command.admin.ConfigCommand;
 import us.talabrek.ultimateskyblock.command.admin.CooldownCommand;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
 import us.talabrek.ultimateskyblock.command.admin.FlatlandFixCommand;
@@ -76,7 +75,6 @@ public class AdminCommand extends BaseCommandExecutor {
         @NotNull LanguageCommand languageCommand,
         @NotNull FlushCommand flushCommand,
         @NotNull JobsCommand jobsCommand,
-        @NotNull ConfigCommand configCommand,
         @NotNull DocumentCommand documentCommand,
         @NotNull RegionCommand regionCommand,
         @NotNull SetMaintenanceCommand setMaintenanceCommand,
@@ -113,7 +111,6 @@ public class AdminCommand extends BaseCommandExecutor {
         add(languageCommand);
         add(flushCommand);
         add(jobsCommand);
-        add(configCommand);
         add(documentCommand);
         add(regionCommand);
         add(setMaintenanceCommand);

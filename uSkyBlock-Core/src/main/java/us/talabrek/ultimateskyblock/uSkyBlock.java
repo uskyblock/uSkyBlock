@@ -60,7 +60,6 @@ import us.talabrek.ultimateskyblock.island.level.IslandScore;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.island.task.CreateIslandTask;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
-import us.talabrek.ultimateskyblock.menu.ConfigMenu;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
@@ -109,8 +108,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     // TODO: eventually get rid of these global references and move them to a proper API instead
     @Inject
     private SkyBlockMenu menu;
-    @Inject
-    private ConfigMenu configMenu;
     @Inject
     private ChallengeLogic challengeLogic;
     @Inject
@@ -598,10 +595,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public SkyBlockMenu getMenu() {
         return menu;
-    }
-
-    public ConfigMenu getConfigMenu() {
-        return configMenu;
     }
 
     public ChallengeLogic getChallengeLogic() {
