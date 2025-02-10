@@ -67,7 +67,6 @@ public class SkyBlockMenu {
     private final IslandGenerator islandGenerator;
     private final LimitLogic limitLogic;
     private final ConfirmHandler confirmHandler;
-    private final ConfigMenu configMenu;
     private final Scheduler scheduler;
 
     private final ItemStack sign = new ItemStack(Material.OAK_SIGN, 1);
@@ -113,7 +112,6 @@ public class SkyBlockMenu {
         @NotNull IslandGenerator islandGenerator,
         @NotNull LimitLogic limitLogic,
         @NotNull ConfirmHandler confirmHandler,
-        @NotNull ConfigMenu configMenu,
         @NotNull Scheduler scheduler
     ) {
         this.plugin = plugin;
@@ -123,7 +121,6 @@ public class SkyBlockMenu {
         this.islandGenerator = islandGenerator;
         this.limitLogic = limitLogic;
         this.confirmHandler = confirmHandler;
-        this.configMenu = configMenu;
         this.scheduler = scheduler;
     }
 
@@ -682,8 +679,6 @@ public class SkyBlockMenu {
             onClickCreateMenu(event, p, meta, slotIndex, menuSize);
         } else if (inventoryName.equalsIgnoreCase(stripFormatting(tr("Island Restart Menu")))) {
             onClickRestartMenu(event, p, meta, slotIndex, currentItem);
-        } else if (inventoryName.startsWith(stripFormatting(tr("Config:"))) && event.getWhoClicked() instanceof Player) {
-            configMenu.onClick(event);
         }
     }
 
