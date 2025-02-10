@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -32,9 +33,9 @@ public class RestartCommand extends RequireIslandCommand {
             }
             return true;
         }
-        int cooldown = plugin.getCooldownHandler().getCooldown(player, "restart");
-        if (cooldown > 0) {
-            player.sendMessage(tr("\u00a7cYou can restart your island in {0} seconds.", cooldown));
+        Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "restart");
+        if (cooldown.isPositive()) {
+            player.sendMessage(tr("\u00a7cYou can restart your island in {0} seconds.", cooldown.toSeconds()));
             return true;
         } else {
             if (pi.isIslandGenerating()) {

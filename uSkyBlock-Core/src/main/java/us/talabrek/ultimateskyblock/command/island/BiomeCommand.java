@@ -18,6 +18,7 @@ import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -64,9 +65,9 @@ public class BiomeCommand extends RequireIslandCommand {
                 player.sendMessage(tr("\u00a7cYou have misspelled the biome name. Must be one of {0}", biomeConfig.getConfiguredBiomeKeys()));
                 return true;
             }
-            int cooldown = plugin.getCooldownHandler().getCooldown(player, "biome");
-            if (cooldown > 0) {
-                player.sendMessage(tr("\u00a7eYou can change your biome again in {0,number,#} minutes.", cooldown / 60));
+            Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "biome");
+            if (cooldown.isPositive()) {
+                player.sendMessage(tr("\u00a7eYou can change your biome again in {0,number,#} seconds.", cooldown.toSeconds()));
                 return true;
             }
             if (!player.hasPermission("usb.biome." + biomeKey.toLowerCase())) {

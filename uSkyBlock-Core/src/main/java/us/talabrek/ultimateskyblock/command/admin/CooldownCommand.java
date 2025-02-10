@@ -4,14 +4,16 @@ import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +35,16 @@ public class CooldownCommand extends CompositeCommand {
                 if (args.length < 2) {
                     return false;
                 }
-                //noinspection deprecation
-                Player p = Bukkit.getPlayer(args[0]);
-                if (p == null || !p.isOnline()) {
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null || !player.isOnline()) {
                     sender.sendMessage(tr("\u00a7eThe player is not currently online"));
                     return false;
                 }
                 if ("restart|biome".contains(args[1])) {
-                    if (plugin.getCooldownHandler().clearCooldown(p, args[1])) {
-                        sender.sendMessage(tr("Cleared cooldown on {0} for {1}", args[1], p.getDisplayName()));
+                    if (plugin.getCooldownHandler().clearCooldown(player, args[1])) {
+                        sender.sendMessage(tr("Cleared cooldown on {0} for {1}", args[1], player.getDisplayName()));
                     } else {
-                        sender.sendMessage(tr("No active cooldown on {0} for {1} detected!", args[1], p.getDisplayName()));
+                        sender.sendMessage(tr("No active cooldown on {0} for {1} detected!", args[1], player.getDisplayName()));
                     }
                     return true;
                 } else {
@@ -58,16 +59,15 @@ public class CooldownCommand extends CompositeCommand {
                 if (args.length < 2) {
                     return false;
                 }
-                //noinspection deprecation
-                Player p = Bukkit.getPlayer(args[0]);
-                if (p == null || !p.isOnline()) {
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null || !player.isOnline()) {
                     sender.sendMessage(tr("\u00a7eThe player is not currently online"));
                     return false;
                 }
                 if ("restart|biome".contains(args[1])) {
-                    int cooldown = getCooldown(args[1]);
-                    plugin.getCooldownHandler().resetCooldown(p, args[1], cooldown);
-                    sender.sendMessage(tr("\u00a7eReset cooldown on {0} for {1}\u00a7e to {2} seconds", args[1], p.getDisplayName(), cooldown));
+                    Duration cooldown = getCooldown(args[1]);
+                    plugin.getCooldownHandler().resetCooldown(player, args[1], cooldown);
+                    sender.sendMessage(tr("\u00a7eReset cooldown on {0} for {1}\u00a7e to {2} seconds", args[1], player.getDisplayName(), cooldown));
                     return true;
                 } else {
                     sender.sendMessage(tr("Invalid command supplied, only restart and biome supported!"));
@@ -81,19 +81,20 @@ public class CooldownCommand extends CompositeCommand {
                 if (args.length < 1) {
                     return false;
                 }
-                //noinspection deprecation
-                Player p = Bukkit.getPlayer(args[0]);
-                if (p == null || !p.isOnline()) {
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null || !player.isOnline()) {
                     sender.sendMessage(tr("\u00a7eThe player is not currently online"));
                     return false;
                 }
-                Map<String, Long> map = plugin.getCooldownHandler().getCooldowns(p.getUniqueId());
+                Map<String, Instant> map = plugin.getCooldownHandler().getCooldowns(player.getUniqueId());
                 StringBuilder sb = new StringBuilder();
                 if (map != null && !map.isEmpty()) {
-                    long now = System.currentTimeMillis();
-                    sb.append(tr("\u00a7eCmd Cooldown") + "\n");
-                    for (String cmd : map.keySet()) {
-                        sb.append(tr("\u00a7a{0} \u00a7c{1}", cmd, TimeUtil.millisAsString(map.get(cmd) - now)) + "\n");
+                    Instant now = Instant.now();
+                    sb.append(tr("\u00a7eCmd Cooldown")).append("\n");
+                    for (var entry : map.entrySet()) {
+                        String cmd = entry.getKey();
+                        Duration remainingCooldown = Duration.between(now, entry.getValue());
+                        sb.append(tr("\u00a7a{0} \u00a7c{1}", cmd, TimeUtil.durationAsString(remainingCooldown))).append("\n");
                     }
                 } else {
                     sb.append(tr("\u00a7eNo active cooldowns for \u00a79{0}\u00a7e found.", data.get("playerName")));
@@ -110,12 +111,11 @@ public class CooldownCommand extends CompositeCommand {
         });
     }
 
-    private int getCooldown(String cmd) {
-        switch (cmd) {
-            case "restart": return Settings.general_cooldownRestart;
-            case "biome": return Settings.general_biomeChange;
-        }
-        return 0;
+    private Duration getCooldown(String cmd) {
+        return switch (cmd) {
+            case "restart" -> Settings.general_cooldownRestart;
+            case "biome" -> Settings.general_biomeChange;
+            default -> Duration.ZERO;
+        };
     }
-
 }

@@ -39,10 +39,14 @@ public enum TimeUtil {
     }
 
     public static String millisAsString(long millis) {
-        long d = millis / DAYS;
-        long h = (millis % DAYS) / HOUR;
-        long m = (millis % HOUR) / MIN;
-        long s = (millis % MIN) / SEC;
+        return durationAsString(Duration.ofMillis(millis));
+    }
+
+    public static String durationAsString(Duration duration) {
+        long d = duration.toDaysPart();
+        long h = duration.toHoursPart();
+        long m = duration.toMinutesPart();
+        long s = duration.toSecondsPart();
         String str = "";
         if (d > 0) {
             str += " " + d + tr("d");

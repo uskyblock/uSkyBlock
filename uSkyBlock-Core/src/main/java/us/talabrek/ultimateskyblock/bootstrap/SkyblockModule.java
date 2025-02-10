@@ -20,6 +20,7 @@ import us.talabrek.ultimateskyblock.uuid.MemoryPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.nio.file.Path;
+import java.time.Clock;
 import java.util.logging.Logger;
 
 public class SkyblockModule extends AbstractModule {
@@ -38,6 +39,7 @@ public class SkyblockModule extends AbstractModule {
         bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
         bind(UpdateChecker.class).to(SkyUpdateChecker.class);
+        bind(Clock.class).toInstance(Clock.systemUTC());
     }
 
     @Provides

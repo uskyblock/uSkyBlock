@@ -2,75 +2,65 @@ package us.talabrek.ultimateskyblock.handler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
+import java.time.Clock;
 import java.time.Duration;
-import java.util.Collections;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for handling various cooldowns on commands.
  */
 @Singleton
 public class CooldownHandler {
-    // TODO: flatten map to use <UUID, String> as key, use time API instead of long
-    private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+
+    private final Map<KeyPair, Instant> cooldownExpires = new HashMap<>();
+    private final Clock clock;
     private final Scheduler scheduler;
 
+    private record KeyPair(@NotNull UUID uuid, @NotNull String cmd) {
+    }
+
     @Inject
-    public CooldownHandler(@NotNull Scheduler scheduler) {
+    public CooldownHandler(@NotNull Clock clock, @NotNull Scheduler scheduler) {
+        this.clock = clock;
         this.scheduler = scheduler;
     }
 
-    public int getCooldown(Player player, String cmd) {
+    public Duration getCooldown(@NotNull Player player, @NotNull String cmd) {
         if (player.hasPermission("usb.mod.bypasscooldowns") || player.hasPermission("usb.exempt.cooldown." + cmd)) {
-            return 0;
+            return Duration.ZERO;
         }
-        Map<String, Long> map = cooldowns.get(player.getUniqueId());
-        if (map != null) {
-            Long timeout = map.get(cmd);
-            long now = System.currentTimeMillis();
-            return timeout != null && timeout > now ? TimeUtil.millisAsSeconds(timeout - now) : 0;
-        }
-        return 0;
+        var now = clock.instant();
+        var end = cooldownExpires.getOrDefault(new KeyPair(player.getUniqueId(), cmd), now);
+        var remaining = Duration.between(now, end);
+        return remaining.isNegative() ? Duration.ZERO : remaining;
     }
 
-    public void resetCooldown(final Player player, final String cmd, int cooldownSecs) {
-        UUID uuid = player.getUniqueId();
-        if (!cooldowns.containsKey(uuid)) {
-            Map<String, Long> cdMap = new HashMap<>();
-            cooldowns.put(uuid, cdMap);
+    public void resetCooldown(@NotNull Player player, @NotNull String cmd, @NotNull Duration cooldown) {
+        var key = new KeyPair(player.getUniqueId(), cmd);
+        if (cooldown.isZero() || cooldown.isNegative()) {
+            cooldownExpires.remove(key);
+        } else {
+            cooldownExpires.put(key, clock.instant().plus(cooldown));
+            scheduler.sync(() -> cooldownExpires.remove(key), cooldown.plusSeconds(1));
         }
-        if (cooldownSecs == 0) {
-            cooldowns.get(uuid).remove(cmd);
-            return;
-        }
-        cooldowns.get(uuid).put(cmd, System.currentTimeMillis() + TimeUtil.secondsAsMillis(cooldownSecs));
-        scheduler.sync((Runnable) () -> {
-            Map<String, Long> cmdMap = cooldowns.get(player.getUniqueId());
-            if (cmdMap != null) {
-                cmdMap.remove(cmd);
-            }
-        }, Duration.ofSeconds(cooldownSecs));
     }
 
-    public boolean clearCooldown(Player player, String cmd) {
-        Map<String, Long> cmdMap = cooldowns.get(player.getUniqueId());
-        if (cmdMap != null) {
-            return cmdMap.remove(cmd) != null;
-        }
-        return false;
+    public boolean clearCooldown(@NotNull Player player, @NotNull String cmd) {
+        var key = new KeyPair(player.getUniqueId(), cmd);
+        return cooldownExpires.remove(key) != null;
     }
 
-    public Map<String, Long> getCooldowns(UUID uuid) {
-        if (cooldowns.containsKey(uuid)) {
-            return cooldowns.get(uuid);
-        }
-        return Collections.emptyMap();
+    public Map<String, Instant> getCooldowns(@NotNull UUID uuid) {
+        return cooldownExpires.entrySet().stream()
+            .filter(e -> e.getKey().uuid().equals(uuid))
+            .collect(Collectors.toMap(e -> e.getKey().cmd(), Map.Entry::getValue));
     }
 }

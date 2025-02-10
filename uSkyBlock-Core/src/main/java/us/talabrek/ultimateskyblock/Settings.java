@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -32,8 +33,8 @@ public class Settings {
     public static boolean island_useIslandLevel;
     public static boolean island_useTopTen;
     public static int general_cooldownInfo;
-    public static int general_cooldownRestart;
-    public static int general_biomeChange;
+    public static Duration general_cooldownRestart;
+    public static Duration general_biomeChange;
     public static Biome general_defaultBiome;
     public static Biome general_defaultNetherBiome;
     public static boolean extras_sendToSpawn;
@@ -83,23 +84,23 @@ public class Settings {
             general_cooldownInfo = 60;
         }
         try {
-            general_biomeChange = config.getInt("options.general.biomeChange");
-            if (general_biomeChange < 0) {
-                general_biomeChange = 0;
+            general_biomeChange = Duration.ofSeconds(config.getInt("options.general.biomeChange"));
+            if (general_biomeChange.isNegative()) {
+                general_biomeChange = Duration.ZERO;
             }
         } catch (Exception e) {
-            general_biomeChange = 3600;
+            general_biomeChange = Duration.ofHours(1);
         }
         general_defaultBiome = loadBiome(config, "options.general.defaultBiome", Biome.OCEAN);
         general_defaultNetherBiome = loadBiome(config, "options.general.defaultNetherBiome", Biome.NETHER_WASTES);
 
         try {
-            general_cooldownRestart = config.getInt("options.general.cooldownRestart");
-            if (general_cooldownRestart < 0) {
-                general_cooldownRestart = 0;
+            general_cooldownRestart = Duration.ofSeconds(config.getInt("options.general.cooldownRestart"));
+            if (general_cooldownRestart.isNegative()) {
+                general_cooldownRestart = Duration.ZERO;
             }
         } catch (Exception e) {
-            general_cooldownRestart = 60;
+            general_cooldownRestart = Duration.ofHours(1);
         }
         try {
             island_height = config.getInt("options.island.height");
