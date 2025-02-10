@@ -23,7 +23,7 @@ public class RecalculateRunnable extends BukkitRunnable {
             }
         }
         if (!recalcIslands.isEmpty()) {
-            RecalculateTopTen runnable = new RecalculateTopTen(plugin, recalcIslands);
+            RecalculateTopTen runnable = new RecalculateTopTen(plugin, plugin.getScheduler(), recalcIslands);
             runnable.runTaskAsynchronously(plugin);
         }
     }

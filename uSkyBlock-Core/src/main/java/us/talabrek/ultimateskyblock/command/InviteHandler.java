@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.command;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -19,7 +18,9 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +38,12 @@ public class InviteHandler implements Listener {
     private final Map<UUID, Invite> inviteMap = new HashMap<>();
     private final Map<String, Map<UUID, String>> waitingInvites = new HashMap<>();
     private final uSkyBlock plugin;
+    private final Scheduler scheduler;
 
     @Inject
-    public InviteHandler(@NotNull uSkyBlock plugin) {
+    public InviteHandler(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler) {
         this.plugin = plugin;
+        this.scheduler = scheduler;
     }
 
     private synchronized void invite(Player player, final IslandInfo island, Player otherPlayer) {
@@ -73,8 +76,8 @@ public class InviteHandler implements Listener {
             tr("\u00a7f/island [accept/reject]\u00a7e to accept or reject the invite."),
             tr("\u00a74WARNING: You will lose your current island if you accept!")
         });
-        long timeout = TimeUtil.secondsAsMillis(plugin.getConfig().getInt("options.party.invite-timeout", 30));
-        BukkitTask timeoutTask = plugin.async(() -> uninvite(island, uniqueId), timeout);
+        Duration timeout = Duration.ofSeconds(plugin.getConfig().getInt("options.party.invite-timeout", 30));
+        BukkitTask timeoutTask = scheduler.async(() -> uninvite(island, uniqueId), timeout);
         invite.setTimeoutTask(timeoutTask);
         island.sendMessageToIslandGroup(true, I18nUtil.marktr("{0}\u00a7d invited {1}"), player.getDisplayName(), otherPlayer.getDisplayName());
     }
@@ -212,6 +215,7 @@ public class InviteHandler implements Listener {
         }
     }
 
+    // TODO: cleanup
     @SuppressWarnings("UnusedDeclaration")
     private static class Invite {
         private final long time;

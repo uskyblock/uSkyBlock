@@ -55,7 +55,7 @@ public class FilePlayerDB implements PlayerDB {
         }
         // Save max every 10 seconds
         saveDelay = Duration.ofMillis(plugin.getConfig().getInt("playerdb.saveDelay", 10000));
-        plugin.async(() -> {
+        scheduler.async(() -> {
             synchronized (uuid2NameConfig) {
                 Set<String> uuids = uuid2NameConfig.getKeys(false);
                 for (String uuid : uuids) {

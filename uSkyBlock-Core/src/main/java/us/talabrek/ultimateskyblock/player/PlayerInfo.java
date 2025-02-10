@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.player;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,6 +20,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.LogUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.UUIDUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
@@ -44,6 +46,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     private static final long serialVersionUID = 1L;
     private static final int YML_VERSION = 1;
     private final uSkyBlock plugin;
+    private final Scheduler scheduler;
     private final String playerName;
     private String displayName;
     private UUID uuid;
@@ -60,6 +63,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     public PlayerInfo(String currentPlayerName, UUID playerUUID, uSkyBlock plugin, Path playerDataDirectory) {
         this.plugin = plugin;
+        this.scheduler = plugin.getScheduler();
         this.uuid = playerUUID;
         this.playerName = currentPlayerName;
         // Prefer UUID over Name
@@ -408,11 +412,11 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     public void onTeleport(final Player player) {
         if (isClearInventoryOnNextEntry()) {
-            uSkyBlock.getInstance().sync(() -> uSkyBlock.getInstance().clearPlayerInventory(player), 50);
+            scheduler.sync(() -> plugin.clearPlayerInventory(player), TimeUtil.ticksAsDuration(1));
         }
         List<String> pending = playerData.getStringList("pending-commands");
         if (!pending.isEmpty()) {
-            uSkyBlock.getInstance().execCommands(player, pending);
+            plugin.execCommands(player, pending);
             playerData.set("pending-commands", null);
             save();
         }

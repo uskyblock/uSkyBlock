@@ -25,7 +25,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
@@ -155,6 +154,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private BlockLimitLogic blockLimitLogic;
     @Inject
     private SkyUpdateChecker updateChecker;
+    @Inject
+    private Scheduler scheduler;
 
     private UltimateSkyblockApi api;
 
@@ -713,9 +714,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             }
         }
         m = Pattern.compile("^\\{d=(?<delay>[0-9]+)\\}(.*)$").matcher(command);
-        int delay = 0;
+        Duration delay = Duration.ZERO;
         if (m.matches()) {
-            delay = Integer.parseInt(m.group("delay"));
+            delay = Duration.ofMillis(Long.parseLong(m.group("delay")));
             command = m.group(2);
         }
         if (command.contains("{party}")) {
@@ -729,11 +730,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
-    private void doExecCommand(final Player player, final String command, int delay) {
-        if (delay == 0) {
-            sync(() -> doExecCommand(player, command));
-        } else if (delay > 0) {
-            sync(() -> doExecCommand(player, command), delay);
+    private void doExecCommand(final Player player, final String command, Duration delay) {
+        if (delay.isZero()) {
+            scheduler.sync(() -> doExecCommand(player, command));
+        } else if (delay.isPositive()) {
+            scheduler.sync(() -> doExecCommand(player, command), delay);
         } else {
             log(Level.INFO, "WARN: Misconfigured command found, with negative delay! " + command);
         }
@@ -935,36 +936,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             sender.sendMessage(tr("\u00a7cCommand is currently disabled!"));
         }
         return true;
-    }
-
-    public BukkitTask async(Runnable runnable) {
-        return Bukkit.getScheduler().runTaskAsynchronously(this, runnable);
-    }
-
-    public BukkitTask async(Runnable runnable, long delayMs) {
-        return Bukkit.getScheduler().runTaskLaterAsynchronously(this, runnable,
-            TimeUtil.millisAsTicks(delayMs));
-    }
-
-    public BukkitTask async(Runnable runnable, long delay, long every) {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(this, runnable,
-            TimeUtil.millisAsTicks(delay),
-            TimeUtil.millisAsTicks(every));
-    }
-
-    public BukkitTask sync(Runnable runnable) {
-        return Bukkit.getScheduler().runTask(this, runnable);
-    }
-
-    public BukkitTask sync(Runnable runnable, long delayMs) {
-        return Bukkit.getScheduler().runTaskLater(this, runnable,
-            TimeUtil.millisAsTicks(delayMs));
-    }
-
-    public BukkitTask sync(Runnable runnable, long delay, long every) {
-        return Bukkit.getScheduler().runTaskTimer(this, runnable,
-            TimeUtil.millisAsTicks(delay),
-            TimeUtil.millisAsTicks(every));
     }
 
     public void execCommands(Player player, List<String> cmdList) {

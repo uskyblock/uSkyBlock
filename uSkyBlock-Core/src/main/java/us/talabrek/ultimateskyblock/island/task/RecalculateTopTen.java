@@ -1,34 +1,35 @@
 package us.talabrek.ultimateskyblock.island.task;
 
 import org.bukkit.scheduler.BukkitRunnable;
-import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.api.async.Callback;
+import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- */
 public class RecalculateTopTen extends BukkitRunnable {
-    private final List<String> locations;
+    private final Queue<String> locations;
     private final uSkyBlock plugin;
+    private final Scheduler scheduler;
 
-    public RecalculateTopTen(uSkyBlock plugin, Set<String> locations) {
+    public RecalculateTopTen(uSkyBlock plugin, Scheduler scheduler, Collection<String> locations) {
+        this.locations = new ConcurrentLinkedQueue<>(locations);
         this.plugin = plugin;
-        this.locations = new ArrayList<>(locations);
+        this.scheduler = scheduler;
     }
 
     @Override
     public void run() {
-        if (!locations.isEmpty()) {
-            String islandName = locations.remove(0);
+        String islandName = locations.poll();
+        if (islandName != null) {
             plugin.calculateScoreAsync(null, islandName, new Callback<>() {
                 @Override
                 public void run() {
                     // We use the deprecated on purpose (the other would fail).
-                    plugin.async(RecalculateTopTen.this);
+                    scheduler.async(RecalculateTopTen.this);
                 }
             });
         } else {

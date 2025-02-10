@@ -12,19 +12,22 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import us.talabrek.ultimateskyblock.util.LogUtil;
 
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 public class InfoCommand extends RequireIslandCommand {
 
+    private final Logger logger;
+
     @Inject
-    public InfoCommand(@NotNull uSkyBlock plugin) {
+    public InfoCommand(@NotNull uSkyBlock plugin, @NotNull Logger logger) {
         super(plugin, "info", "usb.island.info", "?island", marktr("check your or another''s island info"));
+        this.logger = logger;
         addFeaturePermission("usb.island.info.other", tr("allows user to see others island info"));
     }
 
@@ -96,14 +99,12 @@ public class InfoCommand extends RequireIslandCommand {
                 PatienceTester.stopRunning(player, "usb.island.info.active");
             }
         };
-        plugin.sync(() -> {
-            try {
-                PatienceTester.startRunning(player, "usb.island.info.active");
-                plugin.calculateScoreAsync(player, playerInfo.locationForParty(), showInfo);
-            } catch (Exception e) {
-                LogUtil.log(Level.SEVERE, "Error while calculating Island Level", e);
-            }
-        }, 1L);
+        try {
+            PatienceTester.startRunning(player, "usb.island.info.active");
+            plugin.calculateScoreAsync(player, playerInfo.locationForParty(), showInfo);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while calculating Island Level", e);
+        }
         return true;
     }
 }

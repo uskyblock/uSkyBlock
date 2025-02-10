@@ -110,7 +110,7 @@ public enum AsyncWorldEditHandler {;
 
         @Override
         public void regenerate(final Region region, final Runnable onCompletion) {
-            uSkyBlock.getInstance().sync(() -> {
+            uSkyBlock.getInstance().getScheduler().sync(() -> {
                 try (EditSession editSession = WorldEditHandler.createEditSession(region.getWorld(), (int) region.getVolume())) {
                     editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
                     editSession.setSideEffectApplier(SideEffectSet.defaults());

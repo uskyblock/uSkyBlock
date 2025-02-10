@@ -11,6 +11,9 @@ import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
+
+import java.time.Duration;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
@@ -19,6 +22,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public class GenerateTask extends BukkitRunnable {
     private final uSkyBlock plugin;
+    private final Scheduler scheduler;
     private final Player player;
     private final PlayerInfo pi;
     private final Location next;
@@ -29,6 +33,7 @@ public class GenerateTask extends BukkitRunnable {
 
     public GenerateTask(uSkyBlock plugin, final Player player, final PlayerInfo pi, final Location next, PlayerPerk playerPerk, String schematicName) {
         this.plugin = plugin;
+        this.scheduler = plugin.getScheduler();
         this.player = player;
         this.pi = pi;
         this.next = next;
@@ -59,33 +64,30 @@ public class GenerateTask extends BukkitRunnable {
         WorldGuardHandler.updateRegion(islandInfo);
         plugin.getCooldownHandler().resetCooldown(player, "restart", Settings.general_cooldownRestart);
 
-        plugin.sync(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (pi != null) {
-                            pi.setIslandGenerating(false);
+        scheduler.sync(() -> {
+                if (pi != null) {
+                    pi.setIslandGenerating(false);
+                }
+                plugin.clearPlayerInventory(player);
+                if (player != null && player.isOnline()) {
+                    if (plugin.getConfig().getBoolean("options.restart.teleportWhenReady", true)) {
+                        player.sendMessage(tr("\u00a7aCongratulations! \u00a7eYour island has appeared."));
+                        if (AsyncWorldEditHandler.isAWE()) {
+                            player.sendMessage(tr("\u00a7cNote:\u00a7e Construction might still be ongoing."));
                         }
-                        plugin.clearPlayerInventory(player);
-                        if (player != null && player.isOnline()) {
-                            if (plugin.getConfig().getBoolean("options.restart.teleportWhenReady", true)) {
-                                player.sendMessage(tr("\u00a7aCongratulations! \u00a7eYour island has appeared."));
-                                if (AsyncWorldEditHandler.isAWE()) {
-                                    player.sendMessage(tr("\u00a7cNote:\u00a7e Construction might still be ongoing."));
-                                }
-                                plugin.getTeleportLogic().homeTeleport(player, true);
-                            } else {
-                                player.sendMessage(new String[]{
-                                        tr("\u00a7aCongratulations! \u00a7eYour island has appeared."),
-                                        tr("Use \u00a79/is h\u00a7r or the \u00a79/is\u00a7r menu to go there."),
-                                        tr("\u00a7cNote:\u00a7e Construction might still be ongoing.")});
-                            }
-                        }
-                        for (String command : plugin.getConfig().getStringList("options.restart.extra-commands")) {
-                            plugin.execCommand(player, command, true);
-                        }
+                        plugin.getTeleportLogic().homeTeleport(player, true);
+                    } else {
+                        player.sendMessage(
+                            tr("\u00a7aCongratulations! \u00a7eYour island has appeared."),
+                            tr("Use \u00a79/is h\u00a7r or the \u00a79/is\u00a7r menu to go there."),
+                            tr("\u00a7cNote:\u00a7e Construction might still be ongoing.")
+                        );
                     }
-                }, plugin.getConfig().getInt("options.restart.teleportDelay", 2000)
+                }
+                for (String command : plugin.getConfig().getStringList("options.restart.extra-commands")) {
+                    plugin.execCommand(player, command, true);
+                }
+            }, Duration.ofMillis(plugin.getConfig().getInt("options.restart.teleportDelay", 2000))
         );
     }
 }
-

@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +36,14 @@ import static dk.lockfuglsang.minecraft.util.ItemStackUtil.builder;
 public class MainConfigMenu extends AbstractConfigMenu implements EditMenu {
     private final uSkyBlock plugin;
     private final MenuItemFactory factory;
+    private final Scheduler scheduler;
     private final List<EditMenu> editMenus;
 
-    public MainConfigMenu(uSkyBlock plugin, FileConfiguration menuConfig, MenuItemFactory factory, List<EditMenu> editMenus) {
+    public MainConfigMenu(uSkyBlock plugin, FileConfiguration menuConfig, MenuItemFactory factory, Scheduler scheduler, List<EditMenu> editMenus) {
         super(menuConfig);
         this.plugin = plugin;
         this.factory = factory;
+        this.scheduler = scheduler;
         this.editMenus = editMenus;
     }
 
@@ -131,27 +134,20 @@ public class MainConfigMenu extends AbstractConfigMenu implements EditMenu {
     }
 
     private void saveConfig(final Player player, final String configName, final int page) {
-        plugin.async(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FileConfiguration config = FileUtil.getYmlConfiguration(configName);
-                    config.set("dirty", null);
-                    config.save(new File(plugin.getDataFolder(), configName));
-                    plugin.sync(new Runnable() {
-                        @Override
-                        public void run() {
-                            plugin.reloadConfig();
-                            player.sendMessage(tr("\u00a7eConfiguration saved and reloaded."));
-                            player.openInventory(createEditMenu(configName, null, page));
-                        }
-                    });
-                } catch (IOException e) {
-                    player.sendMessage(tr("\u00a7cError! \u00a79Unable to save config file!"));
-                }
+        scheduler.async(() -> {
+            try {
+                FileConfiguration config = FileUtil.getYmlConfiguration(configName);
+                config.set("dirty", null);
+                config.save(new File(plugin.getDataFolder(), configName));
+                scheduler.sync(() -> {
+                    plugin.reloadConfig();
+                    player.sendMessage(tr("\u00a7eConfiguration saved and reloaded."));
+                    player.openInventory(createEditMenu(configName, null, page));
+                });
+            } catch (IOException e) {
+                player.sendMessage(tr("\u00a7cError! \u00a79Unable to save config file!"));
             }
         });
-
     }
 
     private Inventory createFileMenu(String filename, int page) {

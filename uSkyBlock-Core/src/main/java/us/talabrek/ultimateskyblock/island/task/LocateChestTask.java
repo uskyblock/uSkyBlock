@@ -1,27 +1,28 @@
 package us.talabrek.ultimateskyblock.island.task;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 /**
  * A task that looks for a chest at an island location.
  */
 public class LocateChestTask extends BukkitRunnable {
-    private final uSkyBlock plugin;
     private final Player player;
     private final Location islandLocation;
     private final GenerateTask onCompletion;
+    private final Scheduler scheduler;
     private final long timeout;
 
     private long tStart;
 
     public LocateChestTask(uSkyBlock plugin, Player player, Location islandLocation, GenerateTask onCompletion) {
-        this.plugin = plugin;
+        this.scheduler = plugin.getScheduler();
         this.player = player;
         this.islandLocation = islandLocation;
         this.onCompletion = onCompletion;
@@ -40,11 +41,11 @@ public class LocateChestTask extends BukkitRunnable {
         } else {
             cancel();
             if (chestLocation == null && player != null && player.isOnline()) {
-                player.sendMessage(I18nUtil.tr("\u00a7cWatchdog!\u00a79 Unable to locate a chest within {0}, bailing out.", TimeUtil.millisAsString(timeout-tStart)));
+                player.sendMessage(I18nUtil.tr("\u00a7cWatchdog!\u00a79 Unable to locate a chest within {0}, bailing out.", TimeUtil.millisAsString(timeout - tStart)));
             }
             if (onCompletion != null) {
                 onCompletion.setChestLocation(chestLocation);
-                plugin.sync(onCompletion);
+                scheduler.sync(onCompletion);
             }
         }
     }

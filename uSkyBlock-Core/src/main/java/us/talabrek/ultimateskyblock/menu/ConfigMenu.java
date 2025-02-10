@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,13 @@ public class ConfigMenu {
     @Inject
     public ConfigMenu(
         @NotNull uSkyBlock plugin,
-        @NotNull MenuItemFactory factory
+        @NotNull MenuItemFactory factory,
+        @NotNull Scheduler scheduler
     ) {
         FileConfiguration menuConfig = new YamlConfiguration();
         FileUtil.readConfig(menuConfig, getClass().getClassLoader().getResourceAsStream("configmenu.yml"));
         this.editMenus = new ArrayList<>();
-        this.mainMenu = new MainConfigMenu(plugin, menuConfig, factory, editMenus);
+        this.mainMenu = new MainConfigMenu(plugin, menuConfig, factory, scheduler, editMenus);
         this.editMenus.addAll(List.of(
             new IntegerEditMenu(menuConfig, factory, mainMenu),
             new BooleanEditMenu(menuConfig),
