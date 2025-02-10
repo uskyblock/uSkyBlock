@@ -646,8 +646,8 @@ public class SkyBlockMenu {
             menuItem.setItemMeta(meta4);
             menu.setItem(17, menuItem);
             lores.clear();
-            long millisLeft = confirmHandler.millisLeft(player, "/is leave");
-            if (millisLeft > 0) {
+            Duration durationLeft = confirmHandler.durationLeft(player, "/is leave");
+            if (durationLeft.isPositive()) {
                 updateLeaveMenuItemTimer(player, menu, menuItem);
             }
         }
@@ -695,7 +695,7 @@ public class SkyBlockMenu {
             String schemeName = stripFormatting(meta.getDisplayName());
             IslandPerk islandPerk = perkLogic.getIslandPerk(schemeName);
             if (perkLogic.getSchemes(p).contains(schemeName) && p.hasPermission(islandPerk.getPermission())) {
-                if (confirmHandler.millisLeft(p, "/is restart") > 0) {
+                if (confirmHandler.durationLeft(p, "/is restart").isPositive()) {
                     p.performCommand("island restart " + schemeName);
                 } else {
                     p.performCommand("island restart " + schemeName);
@@ -711,7 +711,7 @@ public class SkyBlockMenu {
             if (inventory.getViewers().contains(p)) {
                 updateRestartMenu(inventory, p, islandGenerator.getSchemeNames());
             }
-            if (confirmHandler.millisLeft(p, "/is restart") <= 0 || !inventory.getViewers().contains(p)) {
+            if (!confirmHandler.durationLeft(p, "/is restart").isPositive() || !inventory.getViewers().contains(p)) {
                 if (hackySharing.length > 0 && hackySharing[0] != null) {
                     hackySharing[0].cancel();
                 }
@@ -737,68 +737,68 @@ public class SkyBlockMenu {
         }
     }
 
-    private void onClickMainMenu(InventoryClickEvent event, ItemStack currentItem, Player p, int slotIndex) {
+    private void onClickMainMenu(InventoryClickEvent event, ItemStack currentItem, Player player, int slotIndex) {
         event.setCancelled(true);
         if (slotIndex < 0 || slotIndex > 35) {
             return;
         }
-        PlayerInfo playerInfo = plugin.getPlayerInfo(p);
+        PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         IslandInfo islandInfo = plugin.getIslandInfo(playerInfo);
         if (currentItem.getType() == Material.JUNGLE_SAPLING) {
-            p.performCommand("island biome");
+            player.performCommand("island biome");
         } else if (currentItem.getType() == Material.PLAYER_HEAD) {
-            p.performCommand("island party");
+            player.performCommand("island party");
         } else if (currentItem.getType() == Material.RED_BED) {
-            p.performCommand("island sethome");
-            p.performCommand("island");
+            player.performCommand("island sethome");
+            player.performCommand("island");
         } else if (currentItem.getType() == Material.SHORT_GRASS) {
-            p.performCommand("island spawn");
+            player.performCommand("island spawn");
         } else if (currentItem.getType() == Material.HOPPER) {
-            p.performCommand("island setwarp");
-            p.performCommand("island");
+            player.performCommand("island setwarp");
+            player.performCommand("island");
         } else if (currentItem.getType() == Material.WRITABLE_BOOK) {
-            p.performCommand("island log");
+            player.performCommand("island log");
         } else if (currentItem.getType() == Material.OAK_DOOR) {
-            p.performCommand("island home");
+            player.performCommand("island home");
         } else if (currentItem.getType() == Material.EXPERIENCE_BOTTLE) {
-            p.performCommand("island level");
+            player.performCommand("island level");
         } else if (currentItem.getType() == Material.DIAMOND_ORE) {
-            p.performCommand("c");
+            player.performCommand("c");
         } else if (currentItem.getType() == Material.END_STONE || currentItem.getType() == Material.END_PORTAL_FRAME) {
-            p.performCommand("island togglewarp");
-            p.performCommand("island");
+            player.performCommand("island togglewarp");
+            player.performCommand("island");
         } else if (currentItem.getType() == Material.IRON_BARS && islandInfo.isLocked()) {
-            p.performCommand("island unlock");
-            p.performCommand("island");
+            player.performCommand("island unlock");
+            player.performCommand("island");
         } else if (currentItem.getType() == Material.IRON_BARS && !islandInfo.isLocked()) {
-            p.performCommand("island lock");
-            p.performCommand("island");
+            player.performCommand("island lock");
+            player.performCommand("island");
         } else if (slotIndex == 17) {
-            if (islandInfo.isLeader(p) && config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
-                p.openInventory(createRestartGUI(p));
+            if (islandInfo.isLeader(player) && config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
+                player.openInventory(createRestartGUI(player));
             } else {
-                if (confirmHandler.millisLeft(p, "/is leave") > 0) {
-                    p.performCommand("island leave");
+                if (confirmHandler.durationLeft(player, "/is leave").isPositive()) {
+                    player.performCommand("island leave");
                 } else {
-                    p.performCommand("island leave");
-                    updateLeaveMenuItemTimer(p, event.getInventory(), currentItem);
+                    player.performCommand("island leave");
+                    updateLeaveMenuItemTimer(player, event.getInventory(), currentItem);
                 }
             }
         } else {
-            if (!isExtraMenuAction(p, currentItem)) {
-                p.performCommand("island");
+            if (!isExtraMenuAction(player, currentItem)) {
+                player.performCommand("island");
             }
         }
     }
 
-    private void updateLeaveMenuItemTimer(final Player p, final Inventory inventory, final ItemStack currentItem) {
-        final BukkitTask[] hackySharing = new BukkitTask[1];
+    private void updateLeaveMenuItemTimer(final Player player, final Inventory inventory, final ItemStack currentItem) {
+        BukkitTask[] hackySharing = new BukkitTask[1];
         hackySharing[0] = scheduler.sync(() -> {
-            long millisLeft = confirmHandler.millisLeft(p, "/is leave");
-            if (inventory.getViewers().contains(p)) {
-                updateLeaveMenuItem(inventory, currentItem, millisLeft);
+            Duration durationLeft = confirmHandler.durationLeft(player, "/is leave");
+            if (inventory.getViewers().contains(player)) {
+                updateLeaveMenuItem(inventory, currentItem, durationLeft);
             }
-            if (millisLeft <= 0 || !inventory.getViewers().contains(p)) {
+            if (!durationLeft.isPositive() || !inventory.getViewers().contains(player)) {
                 if (hackySharing.length > 0 && hackySharing[0] != null) {
                     hackySharing[0].cancel();
                 }
@@ -806,14 +806,14 @@ public class SkyBlockMenu {
         }, Duration.ZERO, Duration.ofSeconds(1));
     }
 
-    private void updateLeaveMenuItem(Inventory inventory, ItemStack currentItem, long millisLeft) {
+    private void updateLeaveMenuItem(Inventory inventory, ItemStack currentItem, Duration durationLeft) {
         if (currentItem == null || currentItem.getItemMeta() == null || currentItem.getItemMeta().getLore() == null) {
             return;
         }
         ItemMeta meta = requireNonNull(currentItem.getItemMeta());
         List<String> lore = meta.getLore();
-        if (millisLeft >= 0) {
-            lore.set(lore.size() - 1, tr("\u00a7cClick within \u00a79{0}\u00a7c to leave!", TimeUtil.millisAsString(millisLeft)));
+        if (!durationLeft.isNegative()) {
+            lore.set(lore.size() - 1, tr("\u00a7cClick within \u00a79{0}\u00a7c to leave!", TimeUtil.durationAsString(durationLeft)));
         } else {
             lore.set(lore.size() - 1, tr("\u00a7cClick to leave"));
         }
@@ -837,7 +837,7 @@ public class SkyBlockMenu {
         lores.clear();
 
         updateRestartMenu(menu, player, schemeNames);
-        if (confirmHandler.millisLeft(player, "/is restart") > 0) {
+        if (confirmHandler.durationLeft(player, "/is restart").isPositive()) {
             updateRestartMenuTimer(player, menu);
         }
         return menu;
@@ -862,9 +862,9 @@ public class SkyBlockMenu {
                 lores = new ArrayList<>();
             }
             if (player.hasPermission(islandPerk.getPermission())) {
-                long millisLeft = confirmHandler.millisLeft(player, "/is restart");
-                if (millisLeft > 0) {
-                    addLore(lores, tr("\u00a7cClick within \u00a79{0}\u00a7c to restart!", TimeUtil.millisAsString(millisLeft)));
+                Duration durationLeft = confirmHandler.durationLeft(player, "/is restart");
+                if (durationLeft.isPositive()) {
+                    addLore(lores, tr("\u00a7cClick within \u00a79{0}\u00a7c to restart!", TimeUtil.durationAsString(durationLeft)));
                 } else {
                     addLore(lores, tr("\u00a7aClick to restart!"));
                 }

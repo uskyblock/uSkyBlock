@@ -1,15 +1,19 @@
 package us.talabrek.ultimateskyblock.async;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static java.lang.Math.max;
+
 /**
  * Responsible for holding ongoing jobs, and recording status.
  */
-public enum JobManager {;
-    private static final ConcurrentMap<String,Stats> jobStats = new ConcurrentHashMap<>();
+public enum JobManager {
+    ;
+    private static final ConcurrentMap<String, Stats> jobStats = new ConcurrentHashMap<>();
 
     public static void addJob(IncrementalRunnable runnable) {
         String jobName = runnable.getClass().getSimpleName();
@@ -27,7 +31,7 @@ public enum JobManager {;
         jobStats.get(jobName).complete(runnable);
     }
 
-    public static Map<String,Stats> getStats() {
+    public static Map<String, Stats> getStats() {
         return Collections.unmodifiableMap(jobStats);
     }
 
@@ -35,8 +39,8 @@ public enum JobManager {;
         private int jobs;
         private int jobsRunning;
         private long ticks;
-        private double timeActive;
-        private double timeElapsed;
+        private Duration timeActive;
+        private Duration timeElapsed;
 
         public Stats() {
         }
@@ -48,9 +52,9 @@ public enum JobManager {;
 
         public synchronized void complete(IncrementalRunnable runnable) {
             jobsRunning--;
-            ticks += runnable.getTicks();
-            timeActive += runnable.getTimeUsed();
-            timeElapsed += runnable.getTimeElapsed();
+            ticks += runnable.getTicksConsumed();
+            timeActive = timeActive.plus(runnable.getProcessingTimeUsed());
+            timeElapsed = timeElapsed.plus(runnable.getTimeElapsed());
         }
 
         public int getJobs() {
@@ -61,24 +65,24 @@ public enum JobManager {;
             return ticks;
         }
 
-        public double getTimeActive() {
+        public Duration getTimeActive() {
             return timeActive;
         }
 
-        public double getTimeElapsed() {
+        public Duration getTimeElapsed() {
             return timeElapsed;
         }
 
-        public double getAvgMsActivePerTick() {
-            return timeActive / (ticks > 0 ? ticks : 1);
+        public Duration getAvgRunningTimePerTick() {
+            return timeActive.dividedBy(max(1, ticks));
         }
 
-        public double getAvgMsActivePerJob() {
-            return timeActive / (jobs > 0 ? jobs : 1);
+        public Duration getAvgRunningTimePerJob() {
+            return timeActive.dividedBy(max(1, jobs));
         }
 
-        public double getAvgMsElapsedPerJob() {
-            return timeElapsed *1d / (jobs > 0 ? jobs : 1);
+        public Duration getAvgTimeElapsedPerJob() {
+            return timeElapsed.dividedBy(max(1, jobs));
         }
 
         public int getRunningJobs() {

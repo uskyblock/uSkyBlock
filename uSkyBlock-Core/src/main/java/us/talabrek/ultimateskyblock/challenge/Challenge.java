@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.util.FormatUtil.*;
+import static dk.lockfuglsang.minecraft.util.FormatUtil.join;
+import static dk.lockfuglsang.minecraft.util.FormatUtil.prefix;
+import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 
 /**
  * The data-object for a challenge
@@ -49,7 +52,7 @@ public class Challenge {
     private final List<String> requiredChallenges;
     private final double requiredLevel;
     private final Rank rank;
-    private final int resetInHours;
+    private final Duration resetDuration;
     private final ItemStack displayItem;
     private final String tool;
     private final ItemStack lockedItem;
@@ -63,7 +66,7 @@ public class Challenge {
     public Challenge(String name, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
                      @NotNull List<BlockRequirement> requiredBlocks, List<EntityMatch> requiredEntities,
                      List<String> requiredChallenges, double requiredLevel, Rank rank,
-                     int resetInHours, ItemStack displayItem, String tool, ItemStack lockedItem, int offset,
+                     Duration resetDuration, ItemStack displayItem, String tool, ItemStack lockedItem, int offset,
                      boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
         this.name = name;
         this.displayName = displayName;
@@ -74,7 +77,7 @@ public class Challenge {
         this.requiredChallenges = requiredChallenges;
         this.requiredLevel = requiredLevel;
         this.rank = rank;
-        this.resetInHours = resetInHours;
+        this.resetDuration = resetDuration;
         this.displayItem = displayItem;
         this.tool = tool;
         this.lockedItem = lockedItem;
@@ -140,8 +143,8 @@ public class Challenge {
         return rank;
     }
 
-    public int getResetInHours() {
-        return resetInHours;
+    public Duration getResetDuration() {
+        return resetDuration;
     }
 
     public ItemStack getDisplayItem(ChallengeCompletion completion, boolean withCurrency) {
@@ -153,32 +156,26 @@ public class Challenge {
         if (completion.getTimesCompleted() > 0 && isRepeatable()) {
             currentChallengeItem.setAmount(completion.getTimesCompleted() < currentChallengeItem.getMaxStackSize() ? completion.getTimesCompleted() : currentChallengeItem.getMaxStackSize());
             if (completion.isOnCooldown()) {
-                long cooldown = completion.getCooldownInMillis();
+                Duration cooldown = completion.getCooldown();
                 if (timesCompleted < getRepeatLimit() || getRepeatLimit() <= 0) {
                     if (getRepeatLimit() > 0) {
                         lores.add(tr("\u00a74You can complete this {0} more time(s).", getRepeatLimit() - timesCompleted));
                     }
-                    if (cooldown >= ChallengeLogic.MS_DAY) {
-                        final int days = (int) (cooldown / ChallengeLogic.MS_DAY);
-                        lores.add(tr("\u00a74Requirements will reset in {0} days.", days));
-                    } else if (cooldown >= ChallengeLogic.MS_HOUR) {
-                        final int hours = (int) (cooldown / ChallengeLogic.MS_HOUR);
-                        lores.add(tr("\u00a74Requirements will reset in {0} hours.", hours));
-                    } else if (cooldown >= 0) {
-                        final int minutes = Math.round((float) cooldown / ChallengeLogic.MS_MIN);
-                        lores.add(tr("\u00a74Requirements will reset in {0} minutes.", minutes));
+                    if (cooldown.toDays() > 0) {
+                        lores.add(tr("\u00a74Requirements will reset in {0} days.", cooldown.toDays()));
+                    } else if (cooldown.toHours() > 0) {
+                        lores.add(tr("\u00a74Requirements will reset in {0} hours.", cooldown.toHours()));
+                    } else {
+                        lores.add(tr("\u00a74Requirements will reset in {0} minutes.", cooldown.toMinutes()));
                     }
                 } else {
                     lores.add(tr("\u00a74This challenge is currently unavailable."));
-                    if (cooldown >= ChallengeLogic.MS_DAY) {
-                        final int days = (int) (cooldown / ChallengeLogic.MS_DAY);
-                        lores.add(tr("\u00a74You can complete this again in {0} days.", days));
-                    } else if (cooldown >= ChallengeLogic.MS_HOUR) {
-                        final int hours = (int) (cooldown / ChallengeLogic.MS_HOUR);
-                        lores.add(tr("\u00a74You can complete this again in {0} hours.", hours));
-                    } else if (cooldown >= 0) {
-                        final int minutes = Math.round((float) cooldown / ChallengeLogic.MS_MIN);
-                        lores.add(tr("\u00a74You can complete this again in {0} minutes.", minutes));
+                    if (cooldown.toDays() > 0) {
+                        lores.add(tr("\u00a74You can complete this again in {0} days.", cooldown.toDays()));
+                    } else if (cooldown.toHours() > 0) {
+                        lores.add(tr("\u00a74You can complete this again in {0} hours.", cooldown.toHours()));
+                    } else {
+                        lores.add(tr("\u00a74You can complete this again in {0} minutes.", cooldown.toMinutes()));
                     }
                 }
             }
@@ -234,7 +231,7 @@ public class Challenge {
             lores.add(tr("\u00a7eMust be within {0} meters.", getRadius()));
         }
         List<String> lines = wordWrap("\u00a7a" + reward.getRewardText(), 20, MAX_LINE);
-        lores.add(tr("\u00a76Item Reward: \u00a7a") + lines.get(0));
+        lores.add(tr("\u00a76Item Reward: \u00a7a") + lines.getFirst());
         lores.addAll(lines.subList(1, lines.size()));
         if (withCurrency) {
             lores.add(tr("\u00a76Currency Reward: \u00a7a{0}", reward.getCurrencyReward()));
@@ -298,7 +295,7 @@ public class Challenge {
             ", type=" + type +
             ", requiredItems='" + requiredItems + '\'' +
             ", rank='" + rank + '\'' +
-            ", resetInHours=" + resetInHours +
+            ", resetDuration=" + resetDuration +
             ", displayItem=" + displayItem +
             ", takeItems=" + takeItems +
             ", reward=" + reward +

@@ -4,17 +4,19 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -34,20 +36,15 @@ public class ChallengeCompletionLogic {
         this.plugin = plugin;
         storeOnIsland = config.getString("challengeSharing", "island").equalsIgnoreCase("island");
         completionCache = CacheBuilder
-                .from(plugin.getConfig().getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-                .removalListener(new RemovalListener<String, Map<String, ChallengeCompletion>>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<String, Map<String, ChallengeCompletion>> removal) {
-                        saveToFile(removal.getKey(), removal.getValue());
-                    }
-                })
-                .build(new CacheLoader<String, Map<String, ChallengeCompletion>>() {
-                           @Override
-                           public Map<String, ChallengeCompletion> load(String id) throws Exception {
-                               return loadFromFile(id);
-                           }
+            .from(plugin.getConfig().getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .removalListener((RemovalListener<String, Map<String, ChallengeCompletion>>) removal -> saveToFile(removal.getKey(), removal.getValue()))
+            .build(new CacheLoader<>() {
+                       @Override
+                       public @NotNull Map<String, ChallengeCompletion> load(@NotNull String id) {
+                           return loadFromFile(id);
                        }
-                );
+                   }
+            );
         storageFolder = new File(plugin.getDataFolder(), "completion");
         if (!storageFolder.exists() || !storageFolder.isDirectory()) {
             storageFolder.mkdirs();
@@ -70,7 +67,9 @@ public class ChallengeCompletionLogic {
             String challengeName = entry.getKey();
             ChallengeCompletion completion = entry.getValue();
             ConfigurationSection section = configuration.createSection(challengeName);
-            section.set("firstCompleted", completion.getCooldownUntil());
+            Instant cooldownUntil = completion.cooldownUntil();
+            Long cooldown = cooldownUntil != null ? cooldownUntil.toEpochMilli() : null;
+            section.set("firstCompleted", cooldown);
             section.set("timesCompleted", completion.getTimesCompleted());
             section.set("timesCompletedSinceTimer", completion.getTimesCompletedInCooldown());
         }
@@ -102,11 +101,13 @@ public class ChallengeCompletionLogic {
         plugin.getChallengeLogic().populateChallenges(challengeMap);
         if (root != null) {
             for (String challengeName : challengeMap.keySet()) {
+                long firstCompleted = root.getLong(challengeName + ".firstCompleted", 0);
+                Instant firstCompletedDuration = firstCompleted > 0 ? Instant.ofEpochMilli(firstCompleted) : null;
                 challengeMap.put(challengeName, new ChallengeCompletion(
-                        challengeName,
-                        root.getLong(challengeName + ".firstCompleted", 0),
-                        root.getInt(challengeName + ".timesCompleted", 0),
-                        root.getInt(challengeName + ".timesCompletedSinceTimer", 0)
+                    challengeName,
+                    firstCompletedDuration,
+                    root.getInt(challengeName + ".timesCompleted", 0),
+                    root.getInt(challengeName + ".timesCompletedSinceTimer", 0)
                 ));
             }
         }
@@ -135,10 +136,10 @@ public class ChallengeCompletionLogic {
         } catch (ExecutionException e) {
             plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + id);
         }
-        if ((challengeMap == null || challengeMap.isEmpty())) {
+        if (challengeMap.isEmpty()) {
             // Fetch from the player-yml file
             challengeMap = loadFromConfiguration(playerInfo.getConfig().getConfigurationSection("player.challenges"));
-            if (challengeMap != null && !challengeMap.isEmpty()) {
+            if (!challengeMap.isEmpty()) {
                 completionCache.put(id, challengeMap);
             }
             // Wipe it
@@ -157,12 +158,12 @@ public class ChallengeCompletionLogic {
         if (challenges.containsKey(challengeName)) {
             ChallengeCompletion completion = challenges.get(challengeName);
             if (!completion.isOnCooldown()) {
-                long resetInMillis = uSkyBlock.getInstance().getChallengeLogic().getResetInMillis(challengeName);
-                if (resetInMillis >= 0) {
-                    long now = System.currentTimeMillis();
-                    completion.setCooldownUntil(now + resetInMillis);
+                Duration resetDuration = plugin.getChallengeLogic().getResetDuration(challengeName);
+                if (resetDuration.isPositive()) {
+                    Instant now = Instant.now();
+                    completion.setCooldownUntil(now.plus(resetDuration));
                 } else {
-                    completion.setCooldownUntil(resetInMillis);
+                    completion.setCooldownUntil(null);
                 }
             }
             completion.addTimesCompleted();
@@ -173,7 +174,7 @@ public class ChallengeCompletionLogic {
         Map<String, ChallengeCompletion> challenges = getChallenges(playerInfo);
         if (challenges.containsKey(challenge)) {
             challenges.get(challenge).setTimesCompleted(0);
-            challenges.get(challenge).setCooldownUntil(0L);
+            challenges.get(challenge).setCooldownUntil(null);
         }
     }
 

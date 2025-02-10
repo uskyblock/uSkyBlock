@@ -12,6 +12,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -52,7 +53,7 @@ public class FlatlandFixCommand extends AbstractCommand {
 
     private boolean tryFlatlandFix(CommandSender sender, Location islandLocation) {
         // TODO: 29/12/2014 - R4zorax: Load chunks first?
-        if (!plugin.getIslandLogic().clearFlatland(sender, islandLocation, 0)) {
+        if (!plugin.getIslandLogic().clearFlatland(sender, islandLocation, Duration.ZERO)) {
             sender.sendMessage(tr("\u00a74No flatland detected at {0}''s island!", LocationUtil.asString(islandLocation)));
         }
         return true;

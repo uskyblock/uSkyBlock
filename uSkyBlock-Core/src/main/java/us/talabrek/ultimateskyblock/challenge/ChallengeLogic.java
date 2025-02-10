@@ -31,6 +31,7 @@ import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,9 +57,6 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
  */
 @Singleton
 public class ChallengeLogic implements Listener {
-    public static final long MS_MIN = 60 * 1000;
-    public static final long MS_HOUR = 60 * MS_MIN;
-    public static final long MS_DAY = 24 * MS_HOUR;
     public static final int COLS_PER_ROW = 9;
     public static final int ROWS_OF_RANKS = 5;
     public static final int CHALLENGE_PAGESIZE = ROWS_OF_RANKS * COLS_PER_ROW;
@@ -428,8 +426,8 @@ public class ChallengeLogic implements Listener {
         return true;
     }
 
-    public long getResetInMillis(String challenge) {
-        return getChallenge(challenge).getResetInHours() * MS_HOUR;
+    public Duration getResetDuration(String challenge) {
+        return getChallenge(challenge).getResetDuration();
     }
 
     public ItemStack getItemStack(PlayerInfo playerInfo, String challengeName) {
@@ -457,7 +455,7 @@ public class ChallengeLogic implements Listener {
             for (Challenge challenge : rank.getChallenges()) {
                 String key = challenge.getName().toLowerCase();
                 if (!challengeMap.containsKey(key)) {
-                    challengeMap.put(key, new ChallengeCompletion(key, 0L, 0, 0));
+                    challengeMap.put(key, new ChallengeCompletion(key, null, 0, 0));
                 }
             }
         }

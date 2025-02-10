@@ -1,19 +1,18 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.time.Duration;
+import java.time.Instant;
+
 public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.ChallengeCompletion {
     private String name;
-    private long cooldownUntil;
+    private Instant cooldownUntil;
     private int timesCompleted;
     private int timesCompletedInCooldown;
 
-    public ChallengeCompletion(final String name) {
-        super();
-        this.name = name;
-        this.cooldownUntil = 0L;
-        this.timesCompleted = 0;
-    }
-
-    public ChallengeCompletion(final String name, final long cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
+    public ChallengeCompletion(final String name, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
         super();
         this.name = name;
         this.cooldownUntil = cooldownUntil;
@@ -26,22 +25,23 @@ public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.Cha
         return this.name;
     }
 
-    public long getCooldownUntil() {
+    @Override
+    public @Nullable Instant cooldownUntil() {
         return this.cooldownUntil;
     }
 
     @Override
     public boolean isOnCooldown() {
-        return cooldownUntil < 0 || cooldownUntil > System.currentTimeMillis();
+        return getCooldown().isPositive();
     }
 
     @Override
-    public long getCooldownInMillis() {
-        if (cooldownUntil < 0) {
-            return -1;
+    public @NotNull Duration getCooldown() {
+        if (cooldownUntil == null) {
+            return Duration.ZERO;
         }
-        long now = System.currentTimeMillis();
-        return cooldownUntil > now ? cooldownUntil - now : 0;
+        Duration remainingCooldown = Duration.between(Instant.now(), cooldownUntil);
+        return remainingCooldown.isNegative() ? Duration.ZERO : remainingCooldown;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.Cha
         return isOnCooldown() ? this.timesCompletedInCooldown : timesCompleted > 0 ? 1 : 0;
     }
 
-    public void setCooldownUntil(final long newCompleted) {
-        this.cooldownUntil = newCompleted;
+    public void setCooldownUntil(@Nullable Instant newCooldown) {
+        this.cooldownUntil = newCooldown;
         this.timesCompletedInCooldown = 0;
     }
 

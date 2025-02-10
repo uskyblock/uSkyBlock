@@ -1,5 +1,8 @@
 package dk.lockfuglsang.minecraft.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,97 +12,60 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public enum TimeUtil {
     ;
     private static final Pattern TIME_PATTERN = Pattern.compile("((?<d>[0-9]+)d)?\\s*((?<h>[0-9]+)h)?\\s*((?<m>[0-9]+)m)?\\s*((?<s>[0-9]+)s)?\\s*((?<ms>[0-9]+)ms)?");
-    private static final long SEC = 1000;
-    private static final long MIN = 60 * SEC;
-    private static final long HOUR = 60 * MIN;
-    private static final long DAYS = 24 * HOUR;
 
-    public static long stringAsMillis(String s) {
-        Matcher m = TIME_PATTERN.matcher(s);
-        if (m.matches()) {
-            long t = 0;
-            if (m.group("d") != null) {
-                t += Integer.parseInt(m.group("d"), 10) * DAYS;
+    public static @Nullable Duration stringAsDuration(@NotNull String specification) {
+        Matcher matcher = TIME_PATTERN.matcher(specification);
+        if (matcher.matches()) {
+            Duration result = Duration.ZERO;
+            if (matcher.group("d") != null) {
+                result = result.plusDays(Long.parseLong(matcher.group("d")));
             }
-            if (m.group("h") != null) {
-                t += Integer.parseInt(m.group("h"), 10) * HOUR;
+            if (matcher.group("h") != null) {
+                result = result.plusHours(Long.parseLong(matcher.group("h")));
             }
-            if (m.group("m") != null) {
-                t += Integer.parseInt(m.group("m"), 10) * MIN;
+            if (matcher.group("m") != null) {
+                result = result.plusMinutes(Long.parseLong(matcher.group("m")));
             }
-            if (m.group("s") != null) {
-                t += Integer.parseInt(m.group("s"), 10) * SEC;
+            if (matcher.group("s") != null) {
+                result = result.plusSeconds(Long.parseLong(matcher.group("s")));
             }
-            if (m.group("ms") != null) {
-                t += Integer.parseInt(m.group("ms"), 10);
+            if (matcher.group("ms") != null) {
+                result = result.plusMillis(Long.parseLong(matcher.group("ms")));
             }
-            return t;
+            return result;
         }
-        return -1;
+        return null;
     }
 
-    public static String millisAsString(long millis) {
-        return durationAsString(Duration.ofMillis(millis));
+    public static @NotNull String durationAsString(@NotNull Duration duration) {
+        String result = "";
+        if (duration.toDaysPart() > 0) {
+            result += " " + duration.toDaysPart() + tr("d");
+        }
+        if (duration.toHoursPart() > 0) {
+            result += " " + duration.toHoursPart() + tr("h");
+        }
+        if (duration.toMinutesPart() > 0) {
+            result += " " + duration.toMinutesPart() + tr("m");
+        }
+        if (duration.toSecondsPart() > 0 || result.isEmpty()) {
+            result += " " + duration.toSecondsPart() + tr("s");
+        }
+        return result.trim();
     }
 
-    public static String durationAsString(Duration duration) {
-        long d = duration.toDaysPart();
-        long h = duration.toHoursPart();
-        long m = duration.toMinutesPart();
+    public static @NotNull String durationAsShort(@NotNull Duration duration) {
+        long m = duration.toMinutes();
         long s = duration.toSecondsPart();
-        String str = "";
-        if (d > 0) {
-            str += " " + d + tr("d");
-        }
-        if (h > 0) {
-            str += " " + h + tr("h");
-        }
-        if (m > 0) {
-            str += " " + m + tr("m");
-        }
-        if (s > 0 || str.isEmpty()) {
-            str += " " + s + tr("s");
-        }
-        return str.trim();
-    }
-
-    public static String millisAsShort(long millis) {
-        long m = millis / MIN;
-        long s = (millis % MIN) / SEC;
-        long ms = millis % SEC;
+        long ms = duration.toMillisPart();
         return String.format(tr("{0,number,0}:{1,number,00}.{2,number,000}", m, s, ms));
     }
 
-    public static String ticksAsString(int ticks) {
-        return millisAsString(ticks * 50);
-    }
-
-    public static long secondsAsTicks(int secs) {
-        // 20 ticks per second = 50 ms per tick
-        return (secs * 100) / 5;
-    }
-
-    public static long secondsAsMillis(long timeout) {
-        return timeout * 1000;
-    }
-
-    public static int millisAsSeconds(long millis) {
-        return (int) Math.ceil(millis / 1000f);
-    }
-
-    public static long millisAsTicks(long ms) {
-        return ms / 50;
-    }
-
-    public static long ticksAsMillis(int ticks) {
-        return ticks * 50;
-    }
-
-    public static long durationAsTicks(Duration duration) {
+    public static long durationAsTicks(@NotNull Duration duration) {
         return duration.toMillis() / 50;
     }
 
-    public static Duration ticksAsDuration(long ticks) {
+    public static @NotNull Duration ticksAsDuration(long ticks) {
         return Duration.ofMillis(ticks * 50);
     }
 }

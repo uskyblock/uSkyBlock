@@ -67,33 +67,28 @@ public class InviteHandler implements Listener {
         }
         final UUID uniqueId = otherPlayer.getUniqueId();
         invites.put(uniqueId, otherPlayer.getName());
-        final Invite invite = new Invite(island.getName(), uniqueId, player.getDisplayName());
-        inviteMap.put(uniqueId, invite);
-        waitingInvites.put(island.getName(), invites);
         player.sendMessage(tr("\u00a7aInvite sent to {0}", otherPlayer.getDisplayName()));
-        otherPlayer.sendMessage(new String[]{
-            tr("{0}\u00a7e has invited you to join their island!", player.getDisplayName()),
+        otherPlayer.sendMessage(tr("{0}\u00a7e has invited you to join their island!", player.getDisplayName()),
             tr("\u00a7f/island [accept/reject]\u00a7e to accept or reject the invite."),
-            tr("\u00a74WARNING: You will lose your current island if you accept!")
-        });
+            tr("\u00a74WARNING: You will lose your current island if you accept!"));
         Duration timeout = Duration.ofSeconds(plugin.getConfig().getInt("options.party.invite-timeout", 30));
         BukkitTask timeoutTask = scheduler.async(() -> uninvite(island, uniqueId), timeout);
-        invite.setTimeoutTask(timeoutTask);
+        final Invite invite = new Invite(island.getName(), player.getDisplayName(), timeoutTask);
+        inviteMap.put(uniqueId, invite);
+        waitingInvites.put(island.getName(), invites);
         island.sendMessageToIslandGroup(true, I18nUtil.marktr("{0}\u00a7d invited {1}"), player.getDisplayName(), otherPlayer.getDisplayName());
     }
 
     private synchronized boolean reject(Player player) {
         Invite invite = inviteMap.remove(player.getUniqueId());
         if (invite != null) {
-            if (invite.getTimeoutTask() != null) {
-                invite.getTimeoutTask().cancel();
-            }
-            IslandInfo island = plugin.getIslandInfo(invite.getIslandName());
+            invite.timeoutTask().cancel();
+            IslandInfo island = plugin.getIslandInfo(invite.islandName());
             if (island != null) {
                 island.sendMessageToIslandGroup(true, marktr("{0}\u00a7e has rejected the invitation."), player.getDisplayName());
             }
-            if (waitingInvites.containsKey(invite.getIslandName())) {
-                waitingInvites.get(invite.getIslandName()).remove(player.getUniqueId());
+            if (waitingInvites.containsKey(invite.islandName())) {
+                waitingInvites.get(invite.islandName()).remove(player.getUniqueId());
             }
             return true;
         }
@@ -109,17 +104,15 @@ public class InviteHandler implements Listener {
         }
         Invite invite = inviteMap.remove(uuid);
         if (invite != null) {
-            if (invite.getTimeoutTask() != null) {
-                invite.getTimeoutTask().cancel();
-            }
+            invite.timeoutTask().cancel();
             PlayerInfo pi = plugin.getPlayerInfo(player);
-            final IslandInfo island = plugin.getIslandInfo(invite.getIslandName());
+            final IslandInfo island = plugin.getIslandInfo(invite.islandName());
             boolean deleteOldIsland = false;
             if (pi.getHasIsland() && pi.getIslandLocation() != null) {
                 String islandName = WorldGuardHandler.getIslandNameAt(pi.getIslandLocation());
                 deleteOldIsland = !island.getName().equals(islandName);
             }
-            Map<UUID, String> uuids = waitingInvites.get(invite.getIslandName());
+            Map<UUID, String> uuids = waitingInvites.get(invite.islandName());
             if (uuids != null) {
                 uuids.remove(uuid);
             }
@@ -173,10 +166,10 @@ public class InviteHandler implements Listener {
         if (invites != null && invites.contains(uuid)) {
             Invite invite = inviteMap.remove(uuid);
             invites.remove(uuid);
-            if (invite != null && invite.getTimeoutTask() != null) {
-                invite.getTimeoutTask().cancel();
+            if (invite != null) {
+                invite.timeoutTask().cancel();
             }
-            islandInfo.sendMessageToIslandGroup(true, marktr("\u00a7eInvitation for {0}\u00a7e has timedout or been cancelled."), invite.getDisplayName());
+            islandInfo.sendMessageToIslandGroup(true, marktr("\u00a7eInvitation for {0}\u00a7e has timedout or been cancelled."), invite.displayName());
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {
                 player.sendMessage(tr("\u00a7eInvitation for {0}''s island has timedout or been cancelled.", islandInfo.getLeader()));
@@ -215,44 +208,6 @@ public class InviteHandler implements Listener {
         }
     }
 
-    // TODO: cleanup
-    @SuppressWarnings("UnusedDeclaration")
-    private static class Invite {
-        private final long time;
-        private final String islandName;
-        private final UUID uniqueId;
-        private final String displayName;
-        private BukkitTask timeoutTask;
-
-        public Invite(String islandName, UUID uniqueId, String displayName) {
-            this.islandName = islandName;
-            this.uniqueId = uniqueId;
-            this.displayName = displayName;
-            time = System.currentTimeMillis();
-        }
-
-        public long getTime() {
-            return time;
-        }
-
-        public String getIslandName() {
-            return islandName;
-        }
-
-        public UUID getUniqueId() {
-            return uniqueId;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public BukkitTask getTimeoutTask() {
-            return timeoutTask;
-        }
-
-        public void setTimeoutTask(BukkitTask timeoutTask) {
-            this.timeoutTask = timeoutTask;
-        }
+    private record Invite(String islandName, String displayName, BukkitTask timeoutTask) {
     }
 }

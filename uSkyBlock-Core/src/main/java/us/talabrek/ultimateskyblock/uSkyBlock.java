@@ -102,7 +102,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         new String[]{"Multiverse-NetherPortals", "4.2.1", "optional"},
     };
     private static String missingRequirements = null;
-    private static final Random RND = new Random(System.currentTimeMillis());
+    private static final Random RND = new Random();
 
     private SkyblockApp skyBlock;
 

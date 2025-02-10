@@ -1,12 +1,13 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import dk.lockfuglsang.minecraft.util.FormatUtil;
+import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +111,7 @@ public class Rank {
         return leeway;
     }
 
-    public int getResetInHours() {
-        return config.getInt("resetInHours", defaults.resetInHours);
+    public Duration getResetDuration() {
+        return Duration.ofHours(config.getLong("resetInHours", defaults.resetDuration.toHours()));
     }
 }

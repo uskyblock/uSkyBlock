@@ -2,15 +2,16 @@ package us.talabrek.ultimateskyblock.command.admin;
 
 import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeScanTask;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeTask;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -22,16 +23,17 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class PurgeCommand extends AbstractCommand {
     private final uSkyBlock plugin;
     private final IslandLogic islandLogic;
+    private final Scheduler scheduler;
 
     private PurgeScanTask scanTask;
     private PurgeTask purgeTask;
-    private String days = null;
 
     @Inject
-    public PurgeCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic) {
+    public PurgeCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic, Scheduler scheduler) {
         super("purge", "usb.admin.purge", "time-in-days|stop|confirm ?level ?force", marktr("purges all abandoned islands"));
         this.plugin = plugin;
         this.islandLogic = islandLogic;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class PurgeCommand extends AbstractCommand {
             sender.sendMessage(tr("\u00a74You must provide the age in days to purge!"));
             return false;
         }
-        days = args[0];
+        String days = args[0];
         double purgeLevel = plugin.getConfig().getDouble("options.advanced.purgeLevel", 10);
         if (args.length > 1 && args[1].matches("[0-9]+([.,][0-9]+)?")) {
             try {
@@ -54,25 +56,22 @@ public class PurgeCommand extends AbstractCommand {
                 return false;
             }
         }
-        final boolean force = args[args.length-1].equalsIgnoreCase("force");
+        final boolean force = args[args.length - 1].equalsIgnoreCase("force");
 
-        final int time = Integer.parseInt(days, 10) * 24;
+        Duration time = Duration.ofDays(Integer.parseInt(days, 10));
         sender.sendMessage(tr("\u00a7eFinding all islands that have been abandoned for more than {0} days below level {1}", args[0], purgeLevel));
         scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {
-                int timeout = plugin.getConfig().getInt("options.advanced.purgeTimeout", 600000);
-                sender.sendMessage(tr("\u00a74PURGE:\u00a7e Do \u00a79usb purge confirm\u00a7e within {0} to accept.", TimeUtil.millisAsString(timeout)));
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (scanTask.isActive()) {
-                            sender.sendMessage("\u00a77purge timed out");
-                            scanTask.stop();
-                        }
+                Duration timeout = Duration.ofMillis(plugin.getConfig().getLong("options.advanced.purgeTimeout", 600000)); // TODO: this option does not have an entry in plugin.yml
+                sender.sendMessage(tr("\u00a74PURGE:\u00a7e Do \u00a79usb purge confirm\u00a7e within {0} to accept.", TimeUtil.durationAsString(timeout)));
+                scheduler.async(() -> {
+                    if (scanTask.isActive()) {
+                        sender.sendMessage("\u00a77purge timed out");
+                        scanTask.stop();
                     }
-                }.runTaskLaterAsynchronously(plugin, TimeUtil.millisAsTicks(timeout));
+                }, timeout);
             }
         });
         scanTask.runTaskAsynchronously(plugin);

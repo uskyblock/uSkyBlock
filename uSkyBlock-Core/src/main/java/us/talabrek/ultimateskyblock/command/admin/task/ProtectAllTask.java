@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.command.admin.task;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,9 +11,10 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +53,7 @@ public class ProtectAllTask extends BukkitRunnable {
         long failed = 0;
         long success = 0;
         long skipped = 0;
-        long tStart = System.currentTimeMillis();
+        Instant tStart = Instant.now();
         try {
             String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter());
             long total = list != null ? list.length : 0;
@@ -88,7 +90,7 @@ public class ProtectAllTask extends BukkitRunnable {
         LogUtil.log(Level.INFO, message);
     }
 
-    private String getElapsed(long tStart) {
-        return TimeUtil.millisAsString(System.currentTimeMillis() - tStart);
+    private String getElapsed(Instant tStart) {
+        return TimeUtil.durationAsString(Duration.between(tStart, Instant.now()));
     }
 }

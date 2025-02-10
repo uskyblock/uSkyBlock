@@ -16,6 +16,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import dk.lockfuglsang.minecraft.util.Timer;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -228,12 +230,12 @@ public class WorldEditHandler {
 
         log.finer("Clearing island " + region);
         uSkyBlock plugin = uSkyBlock.getInstance();
-        final long t = System.currentTimeMillis();
+        final Timer timer = Timer.start();
         final Region cube = getRegion(islandWorld, region);
         Runnable onCompletion = () -> {
-            long diff = System.currentTimeMillis() - t;
+            Duration elapsed = timer.elapsed();
             LogUtil.log(Level.INFO, String.format("Cleared island on %s in %d.%03d seconds",
-                islandWorld.getName(), (diff / 1000), (diff % 1000)));
+                islandWorld.getName(), elapsed.toSeconds(), elapsed.toMillisPart()));
             if (afterDeletion != null) {
                 afterDeletion.run();
             }

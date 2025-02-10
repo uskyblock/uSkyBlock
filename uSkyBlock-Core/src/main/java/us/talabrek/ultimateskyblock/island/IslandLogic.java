@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,7 +80,7 @@ public class IslandLogic {
     private final BukkitTask saveTask;
     private final double topTenCutoff;
 
-    private volatile long lastGenerate = 0;
+    private volatile Instant lastUpdated = Instant.MIN;
     private final List<IslandLevel> ranks = new ArrayList<>();
 
     @Inject
@@ -198,34 +199,31 @@ public class IslandLogic {
         return netherIsland;
     }
 
-    public boolean clearFlatland(final CommandSender sender, final Location loc, final int delay) {
+    public boolean clearFlatland(final CommandSender sender, final Location loc, Duration delay) {
         if (loc == null) {
             return false;
         }
-        if (delay > 0 && !flatlandFix) {
+        if (delay.isPositive() && !flatlandFix) {
             return false; // Skip
         }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final World w = loc.getWorld();
-                final int px = loc.getBlockX();
-                final int pz = loc.getBlockZ();
-                final int py = 0;
-                final int range = Math.max(Settings.island_protectionRange, Settings.island_distance) + 1;
-                final int radius = range / 2;
-                // 5 sampling points...
-                if (w.getBlockAt(px, py, pz).getType() == BEDROCK
-                    || w.getBlockAt(px + radius, py, pz + radius).getType() == BEDROCK
-                    || w.getBlockAt(px + radius, py, pz - radius).getType() == BEDROCK
-                    || w.getBlockAt(px - radius, py, pz + radius).getType() == BEDROCK
-                    || w.getBlockAt(px - radius, py, pz - radius).getType() == BEDROCK) {
-                    sender.sendMessage(String.format("\u00a7c-----------------------------------\n\u00a7cFlatland detected under your island!\n\u00a7e Clearing it in %s, stay clear.\n\u00a7c-----------------------------------\n", TimeUtil.ticksAsString(delay)));
-                    new WorldEditClearFlatlandTask(scheduler, config, worldManager, logger, sender,
-                        new CuboidRegion(BlockVector3.at(px - radius, 0, pz - radius),
-                            BlockVector3.at(px + radius, 4, pz + radius)),
-                        "\u00a7eFlatland was cleared under your island (%s). Take care.").runTaskLater(plugin, delay);
-                }
+        Runnable runnable = () -> {
+            final World w = loc.getWorld();
+            final int px = loc.getBlockX();
+            final int pz = loc.getBlockZ();
+            final int py = 0;
+            final int range = Math.max(Settings.island_protectionRange, Settings.island_distance) + 1;
+            final int radius = range / 2;
+            // 5 sampling points...
+            if (w.getBlockAt(px, py, pz).getType() == BEDROCK
+                || w.getBlockAt(px + radius, py, pz + radius).getType() == BEDROCK
+                || w.getBlockAt(px + radius, py, pz - radius).getType() == BEDROCK
+                || w.getBlockAt(px - radius, py, pz + radius).getType() == BEDROCK
+                || w.getBlockAt(px - radius, py, pz - radius).getType() == BEDROCK) {
+                sender.sendMessage(String.format("\u00a7c-----------------------------------\n\u00a7cFlatland detected under your island!\n\u00a7e Clearing it in %s, stay clear.\n\u00a7c-----------------------------------\n", TimeUtil.durationAsString(delay)));
+                scheduler.sync(new WorldEditClearFlatlandTask(scheduler, config, worldManager, logger, sender,
+                    new CuboidRegion(BlockVector3.at(px - radius, 0, pz - radius),
+                        BlockVector3.at(px + radius, 4, pz + radius)),
+                    "\u00a7eFlatland was cleared under your island (%s). Take care."), delay);
             }
         };
         if (Bukkit.isPrimaryThread()) {
@@ -308,9 +306,9 @@ public class IslandLogic {
     }
 
     public void showTopTen(final CommandSender sender, final int page) {
-        long t = System.currentTimeMillis();
-        if (t > (lastGenerate + (Settings.island_topTenTimeout * 60000)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
-            lastGenerate = t;
+        Instant now = Instant.now();
+        if (now.isAfter(lastUpdated.plus(Settings.island_topTenTimeout)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
+            lastUpdated = now;
             scheduler.async(() -> {
                 generateTopTen(sender);
                 displayTopTen(sender, page);
@@ -352,7 +350,7 @@ public class IslandLogic {
         }
         Collections.sort(topTen);
         synchronized (ranks) {
-            lastGenerate = System.currentTimeMillis();
+            lastUpdated = Instant.now();
             ranks.clear();
             ranks.addAll(topTen);
         }

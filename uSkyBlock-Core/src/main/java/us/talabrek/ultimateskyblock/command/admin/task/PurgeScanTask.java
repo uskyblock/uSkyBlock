@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.command.admin.task;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
+import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,6 +12,8 @@ import us.talabrek.ultimateskyblock.util.ProgressTracker;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,31 +28,32 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 /**
  * Scans for all players on a list of islands.
  */
+// TODO: test this class!!!
 public class PurgeScanTask extends BukkitRunnable {
     private final List<String> islandList;
     private final List<String> purgeList;
-    private final long cutOff;
+    private final Instant cutOff;
     private final uSkyBlock plugin;
     private final CommandSender sender;
     private final Runnable callback;
     private final double purgeLevel;
     private final ProgressTracker tracker;
-    private final long tStart;
+    private final Timer timer;
     private final PlayerDB playerDB;
     private volatile boolean active;
     private boolean done;
 
-    public PurgeScanTask(uSkyBlock plugin, File islandDir, int time, double purgeLevel, CommandSender sender, Runnable callback) {
+    public PurgeScanTask(uSkyBlock plugin, File islandDir, Duration time, double purgeLevel, CommandSender sender, Runnable callback) {
         this.plugin = plugin;
         this.sender = sender;
         this.callback = callback;
-        this.cutOff = System.currentTimeMillis() - (time * 3600000L);
+        this.cutOff = Instant.now().minus(time);
         String[] islandList = islandDir.list(IslandUtil.createIslandFilenameFilter());
         this.islandList = new ArrayList<>(Arrays.asList(islandList));
         purgeList = new ArrayList<>();
         this.purgeLevel = purgeLevel;
-        int feedbackEvery = plugin.getConfig().getInt("async.long.feedbackEvery", 30000);
-        tStart = System.currentTimeMillis();
+        Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
+        timer = Timer.start();
         tracker = new ProgressTracker(sender, marktr("\u00a77- SCANNING: {0,number,##}% ({1}/{2} failed: {3}) ~ {4}"), 25, feedbackEvery);
         active = true;
         playerDB = plugin.getPlayerDB();
@@ -78,7 +81,7 @@ public class PurgeScanTask extends BukkitRunnable {
                 failed++;
             }
             progress++;
-            tracker.progressUpdate(progress, total, failed, TimeUtil.millisAsString(System.currentTimeMillis()-tStart));
+            tracker.progressUpdate(progress, total, failed, timer.elapsedAsString());
         }
     }
 
@@ -101,7 +104,7 @@ public class PurgeScanTask extends BukkitRunnable {
     private boolean abandonedSince(Set<UUID> members) {
         for (UUID member : members) {
             OfflinePlayer player = playerDB.getOfflinePlayer(member);
-            if (player == null || player.getLastPlayed() > cutOff) {
+            if (player == null || Instant.ofEpochMilli(player.getLastPlayed()).isAfter(cutOff)) {
                 return false;
             }
         }

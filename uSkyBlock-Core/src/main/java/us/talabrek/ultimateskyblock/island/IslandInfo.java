@@ -35,8 +35,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -97,7 +98,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
             int oldMaxSize = config.getInt("maxSize");
             if (oldMaxSize > Settings.general_maxPartySize) {
                 ConfigurationSection leaderSection = config.getConfigurationSection("party.members." +
-                        UUIDUtil.asString(getLeaderUniqueId()));
+                    UUIDUtil.asString(getLeaderUniqueId()));
                 if (leaderSection != null) {
                     leaderSection.set("maxPartySizePermission", oldMaxSize);
                 }
@@ -240,7 +241,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 section.set("blockLimits ", null);
                 if (!blockLimits.isEmpty()) {
                     ConfigurationSection maxBlocks = section.createSection("blockLimits");
-                    for (Map.Entry<Material,Integer> limit : blockLimits.entrySet()) {
+                    for (Map.Entry<Material, Integer> limit : blockLimits.entrySet()) {
                         maxBlocks.set(limit.getKey().name(), limit.getValue());
                     }
                 }
@@ -283,31 +284,31 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     @Override
     public int getMaxPartySize() {
         return getMaxPartyIntValue("maxPartySizePermission",
-                plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getMaxPartySize());
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getMaxPartySize());
     }
 
     @Override
     public int getMaxAnimals() {
         return getMaxPartyIntValue("maxAnimals",
-                plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getAnimals());
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getAnimals());
     }
 
     @Override
     public int getMaxMonsters() {
         return getMaxPartyIntValue("maxMonsters",
-                plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getMonsters());
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getMonsters());
     }
 
     @Override
     public int getMaxVillagers() {
         return getMaxPartyIntValue("maxVillagers",
-                plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getVillagers());
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getVillagers());
     }
 
     @Override
     public int getMaxGolems() {
         return getMaxPartyIntValue("maxGolems",
-                plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getGolems());
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getGolems());
     }
 
     @Override
@@ -327,7 +328,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                                 blockLimitMap.computeIfAbsent(type, (k) -> {
                                     int memberMax = blockLimits.getInt(material, 0);
                                     return blockLimitMap.compute(type, (key, oldValue) ->
-                                            oldValue != null && memberMax > 0 ? Math.max(memberMax, oldValue) : null);
+                                        oldValue != null && memberMax > 0 ? Math.max(memberMax, oldValue) : null);
                                 });
                             }
                         }
@@ -576,6 +577,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     /**
      * Locks the island. Might get cancelled via the fired {@link IslandLockEvent}.
+     *
      * @param player {@link Player} initializing the lock.
      * @return True if the island was locked, false otherwise, e.g. when the event is cancelled.
      */
@@ -602,6 +604,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     /**
      * Unlocks the island. Might get cancelled via the fired {@link IslandUnlockEvent}.
+     *
      * @param player {@link Player} initializing the unlock.
      * @return True if the island was unlocked, false otherwise, e.g. when the event is cancelled.
      */
@@ -926,28 +929,28 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
             log.addAll(config.getStringList("log"));
         }
         List<String> convertedList = new ArrayList<>();
-        long t = System.currentTimeMillis();
+        Instant now = Instant.now();
         for (String logEntry : log) {
             String[] split = logEntry.split(";");
             if (split.length >= 2) {
-                long then = Long.parseLong(split[0]);
+                Instant then = Instant.ofEpochMilli(Long.parseLong(split[0]));
                 String msg = split[1];
                 Object[] args = new Object[split.length - 2];
                 System.arraycopy(split, 2, args, 0, args.length);
-                convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.millisAsString(t - then), tr(msg, args)));
+                convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.durationAsString(Duration.between(then, now)), tr(msg, args)));
             } else {
                 Matcher m = OLD_LOG_PATTERN.matcher(logEntry);
                 if (m.matches()) {
                     String date = m.group("date");
-                    Date parsedDate = null;
+                    Instant parsedDate = null;
                     try {
-                        parsedDate = DateFormat.getDateInstance(3).parse(date);
+                        parsedDate = DateFormat.getDateInstance(DateFormat.SHORT).parse(date).toInstant();
                     } catch (ParseException e) {
                         // Ignore
                     }
                     String msg = m.group("msg");
                     if (parsedDate != null) {
-                        convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.millisAsString(t - parsedDate.getTime()), msg));
+                        convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.durationAsString(Duration.between(parsedDate, now)), msg));
                     } else {
                         convertedList.add(logEntry);
                     }
@@ -969,11 +972,11 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public Location getWarpLocation() {
         if (hasWarp()) {
             return new Location(plugin.getWorldManager().getWorld(),
-                    config.getInt("general.warpLocationX", 0),
-                    config.getInt("general.warpLocationY", 0),
-                    config.getInt("general.warpLocationZ", 0),
-                    (float) config.getDouble("general.warpYaw", 0),
-                    (float) config.getDouble("general.warpPitch", 0));
+                config.getInt("general.warpLocationX", 0),
+                config.getInt("general.warpLocationY", 0),
+                config.getInt("general.warpLocationZ", 0),
+                (float) config.getDouble("general.warpYaw", 0),
+                (float) config.getDouble("general.warpPitch", 0));
         }
         return null;
     }
@@ -1134,6 +1137,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     /**
      * If you need to inject a custom {@link File} for e.g. unit tests, do it here.
+     *
      * @param file Custom File
      */
     public void setFile(File file) {
@@ -1142,6 +1146,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     /**
      * If you need to inject a custom {@link FileConfiguration} for e.g. unit tests, do it here.
+     *
      * @param config Custom FileConfiguration
      */
     public void setConfig(FileConfiguration config) {

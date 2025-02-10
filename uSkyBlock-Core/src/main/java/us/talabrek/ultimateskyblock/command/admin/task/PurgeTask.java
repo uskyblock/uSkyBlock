@@ -1,12 +1,14 @@
 package us.talabrek.ultimateskyblock.command.admin.task;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
+import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -20,34 +22,33 @@ public class PurgeTask extends BukkitRunnable {
     private final List<String> purgeList;
     private final uSkyBlock plugin;
     private final CommandSender sender;
-    private final int feedbackEvery;
     private final ProgressTracker tracker;
-    private final long tStart;
+    private final Timer timer;
     private boolean active;
 
     public PurgeTask(uSkyBlock plugin, List<String> purgeList, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
         this.purgeList = purgeList;
-        tStart = System.currentTimeMillis();
-        feedbackEvery = plugin.getConfig().getInt("async.long.feedbackEvery", 30000);
+        this.timer = Timer.start();
+        Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
         tracker = new ProgressTracker(sender, marktr("- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"), 25, feedbackEvery);
         active = true;
     }
 
     private void doPurge() {
         int total = purgeList.size();
-        int cnt = 0;
+        int completed = 0;
         while (!purgeList.isEmpty()) {
             if (!active) {
                 break;
             }
-            final String islandName = purgeList.remove(0);
+            String islandName = purgeList.removeFirst();
             plugin.getIslandLogic().purge(islandName);
-            cnt++;
-            long elapsed = System.currentTimeMillis() - tStart;
-            long eta = (elapsed/cnt) * (total-cnt);
-            tracker.progressUpdate(cnt, total, TimeUtil.millisAsString(elapsed), TimeUtil.millisAsString(eta));
+            completed++;
+            Duration elapsed = timer.elapsed();
+            Duration eta = elapsed.dividedBy(completed).multipliedBy(total - completed);
+            tracker.progressUpdate(completed, total, TimeUtil.durationAsString(elapsed), TimeUtil.durationAsTicks(eta));
         }
         plugin.getOrphanLogic().save();
     }

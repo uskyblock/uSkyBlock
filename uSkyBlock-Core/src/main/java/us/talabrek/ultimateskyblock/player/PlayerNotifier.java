@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class PlayerNotifier {
-    private final long maxSpam;
+    private final Duration spawnThreshold;
     private final LoadingCache<UUID, NotifyMessage> cache = CacheBuilder
         .newBuilder()
         .expireAfterAccess(10, TimeUnit.SECONDS)
@@ -27,22 +29,22 @@ public class PlayerNotifier {
             new CacheLoader<>() {
                 @Override
                 public @NotNull NotifyMessage load(@NotNull UUID uuid) {
-                    return new NotifyMessage(null, 0);
+                    return new NotifyMessage(null, Instant.MIN);
                 }
             }
         );
 
     @Inject
     public PlayerNotifier(@NotNull PluginConfig config) {
-        maxSpam = config.getYamlConfig().getInt("general.maxSpam", 3000); // every 3 seconds.
+        spawnThreshold = Duration.ofMillis(config.getYamlConfig().getInt("general.maxSpam", 3000)); // every 3 seconds.
     }
 
     public synchronized void notifyPlayer(Player player, String message) {
         UUID uuid = player.getUniqueId();
         try {
             NotifyMessage last = cache.get(uuid);
-            long now = System.currentTimeMillis();
-            if (now >= last.time() + maxSpam || !message.equals(last.message())) {
+            Instant now = Instant.now();
+            if (now.isAfter(last.time().plus(spawnThreshold)) || !message.equals(last.message())) {
                 cache.put(uuid, new NotifyMessage(message, now));
                 player.sendMessage("\u00a7e" + message);
             }
@@ -51,6 +53,6 @@ public class PlayerNotifier {
         }
     }
 
-    private record NotifyMessage(String message, long time) {
+    private record NotifyMessage(String message, Instant time) {
     }
 }

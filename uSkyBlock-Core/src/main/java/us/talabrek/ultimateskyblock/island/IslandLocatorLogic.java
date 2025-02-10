@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ public class IslandLocatorLogic {
     private final uSkyBlock plugin;
     private final File configFile;
     private final FileConfiguration config;
-    private final Map<String, Long> reservations = new ConcurrentHashMap<>();
+    private final Map<String, Instant> reservations = new ConcurrentHashMap<>();
     private Location lastIsland = null;
     private final Duration reservationTimeout;
 
@@ -86,12 +87,12 @@ public class IslandLocatorLogic {
 
     private void reserve(Location islandLocation) {
         final String islandName = LocationUtil.getIslandName(islandLocation);
-        final long tstamp = System.currentTimeMillis();
-        reservations.put(islandName, tstamp);
+        final Instant timeStamp = Instant.now();
+        reservations.put(islandName, timeStamp);
         scheduler.async(() -> {
             synchronized (reservations) {
-                Long tReserved = reservations.get(islandName);
-                if (tReserved != null && tReserved == tstamp) {
+                Instant tReserved = reservations.get(islandName);
+                if (tReserved != null && tReserved == timeStamp) {
                     reservations.remove(islandName);
                 }
             }

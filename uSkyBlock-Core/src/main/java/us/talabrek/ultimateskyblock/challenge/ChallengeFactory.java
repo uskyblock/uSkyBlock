@@ -9,7 +9,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.util.MetaUtil;
 
-import java.util.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +36,7 @@ public class ChallengeFactory {
 
     public static ChallengeDefaults createDefaults(ConfigurationSection section) {
         return new ChallengeDefaults(
-            section.getInt("defaultResetInHours", 144),
+            Duration.ofHours(section.getLong("defaultResetInHours", 144L)),
             section.getBoolean("requiresPreviousRank", true),
             normalize(section.getString("repeatableColor", "&a")),
             normalize(section.getString("finishedColor", "&2")),
@@ -55,7 +61,7 @@ public class ChallengeFactory {
         List<BlockRequirement> requiredBlocks = section.getStringList("requiredBlocks").stream()
             .map(ItemStackUtil::createBlockRequirement).toList();
         List<EntityMatch> requiredEntities = createEntities(section.getStringList("requiredEntities"));
-        int resetInHours = section.getInt("resetInHours", rank.getResetInHours());
+        Duration resetDuration = Duration.ofHours(section.getLong("resetInHours", rank.getResetDuration().toHours()));
         String description = section.getString("description");
         ItemStack displayItem = createItemStack(
             section.getString("displayItem", defaults.displayItem),
@@ -73,7 +79,7 @@ public class ChallengeFactory {
         int repeatLimit = section.getInt("repeatLimit", 0);
         return new Challenge(name, displayName, description, type,
             requiredItems, requiredBlocks, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d),
-            rank, resetInHours, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
+            rank, resetDuration, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
             radius, reward, repeatReward, repeatLimit);
     }
 

@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import java.time.Duration;
+
 public class ChallengeDefaults {
-    public final int resetInHours;
+    public final Duration resetDuration;
     public final String displayItem = "LIME_STAINED_GLASS_PANE";
     public final boolean requiresPreviousRank;
     public final String repeatableColor;
@@ -14,10 +16,10 @@ public class ChallengeDefaults {
     public final boolean showLockedChallengeName;
     public final int repeatLimit;
 
-    ChallengeDefaults(int resetInHours, boolean requiresPreviousRank, String repeatableColor, String finishedColor,
+    ChallengeDefaults(Duration resetDuration, boolean requiresPreviousRank, String repeatableColor, String finishedColor,
                       String challengeColor, int rankLeeway, boolean enableEconomyPlugin, boolean broadcastCompletion,
                       int radius, boolean showLockedChallengeName, int repeatLimit) {
-        this.resetInHours = resetInHours;
+        this.resetDuration = resetDuration;
         this.requiresPreviousRank = requiresPreviousRank;
         this.repeatableColor = repeatableColor;
         this.finishedColor = finishedColor;

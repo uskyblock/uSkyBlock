@@ -44,7 +44,7 @@ public class NetherTerraFormEvents implements Listener {
     private final uSkyBlock plugin;
     private final Map<Material, List<MaterialUtil.MaterialProbability>> terraFormMap = new HashMap<>();
     private final Map<String, Double> toolWeights = new HashMap<>();
-    private static final Random RND = new Random(System.currentTimeMillis());
+    private static final Random RND = new Random();
     private final double maxScan;
     private final double chanceWither;
     private final double chanceSkeleton;

@@ -55,7 +55,7 @@ public class WorldEditClearFlatlandTask extends IncrementalRunnable {
         super(scheduler, config);
         this.logger = logger;
         setOnCompletion(() -> {
-            String duration = TimeUtil.millisAsString(WorldEditClearFlatlandTask.this.getTimeElapsed());
+            String duration = TimeUtil.durationAsShort(WorldEditClearFlatlandTask.this.getTimeElapsed());
             log(Level.INFO, String.format("Region %s was cleared in %s", region, duration));
             commandSender.sendMessage(String.format(format, duration));
         });

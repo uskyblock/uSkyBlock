@@ -4,6 +4,8 @@ import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.logging.Logger;
 
 /**
@@ -12,9 +14,9 @@ import java.util.logging.Logger;
 class PlayerJob {
     private static final Logger log = Logger.getLogger(PlayerJob.class.getName());
     private final Player player;
-    private final long progressEveryMs;
+    private final Duration progressInterval;
     private final double progressEveryPct;
-    private long lastProgressMs;
+    private Instant lastProgress;
     private double percentage;
     private double lastProgressPct;
     private final uSkyBlock plugin;
@@ -27,13 +29,13 @@ class PlayerJob {
     private int maxQueuedBlocks;
     private int startOffset;
 
-    PlayerJob(Player player, long progressEveryMs, double progressEveryPct, uSkyBlock plugin) {
+    PlayerJob(Player player, Duration progressInterval, double progressEveryPct, uSkyBlock plugin) {
         this.player = player;
         this.plugin = plugin;
 
-        this.progressEveryMs = progressEveryMs;
+        this.progressInterval = progressInterval;
         this.progressEveryPct = progressEveryPct;
-        lastProgressMs = System.currentTimeMillis();
+        lastProgress = Instant.now();
         lastProgressPct = 0;
         placedBlocks = 0;
         maxQueuedBlocks = 0;
@@ -58,19 +60,19 @@ class PlayerJob {
             log.finer("waiting: " + this);
             return blocksPlaced;
         }
-        this.placedBlocks = Math.min(blocksPlaced-startOffset, (maxQueuedBlocks-offset));
+        this.placedBlocks = Math.min(blocksPlaced - startOffset, (maxQueuedBlocks - offset));
         this.percentage = Math.floor(Math.min((100d * getPlacedBlocks() / maxQueuedBlocks), 100));
         showProgress(I18nUtil.tr("\u00a79Creating island...\u00a7e{0,number,###}%", percentage));
         log.finer("progress: " + this);
-        return blocksPlaced-placedBlocks;
+        return blocksPlaced - placedBlocks;
     }
 
     private void showProgress(String message) {
-        long t = System.currentTimeMillis();
-        if (t > (lastProgressMs + progressEveryMs) || percentage > (lastProgressPct + progressEveryPct)) {
+        Instant now = Instant.now();
+        if (now.isAfter(lastProgress.plus(progressInterval)) || percentage > (lastProgressPct + progressEveryPct)) {
             plugin.getPlayerLogic().getNotificationManager().sendActionBar(player, message);
-            lastProgressMs = t;
-            lastProgressPct = Math.floor(percentage/ progressEveryPct) * progressEveryPct;
+            lastProgress = now;
+            lastProgressPct = Math.floor(percentage / progressEveryPct) * progressEveryPct;
         }
     }
 
@@ -92,18 +94,18 @@ class PlayerJob {
     @Override
     public String toString() {
         return "PlayerJob{" +
-                "player=" + player +
-                ", startOffset=" + startOffset +
-                ", offset=" + offset +
-                ", placedBlocks=" + placedBlocks +
-                ", maxQueuedBlocks=" + maxQueuedBlocks +
-                ", percentage=" + percentage +
-                '}';
+            "player=" + player +
+            ", startOffset=" + startOffset +
+            ", offset=" + offset +
+            ", placedBlocks=" + placedBlocks +
+            ", maxQueuedBlocks=" + maxQueuedBlocks +
+            ", percentage=" + percentage +
+            '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof PlayerJob && ((PlayerJob)o).getPlayer().getUniqueId().equals(player.getUniqueId());
+        return o instanceof PlayerJob && ((PlayerJob) o).getPlayer().getUniqueId().equals(player.getUniqueId());
     }
 
     @Override

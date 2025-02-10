@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -47,7 +48,8 @@ public class ProtectAllCommand extends AbstractCommand {
             }
         }
         sender.sendMessage(tr("\u00a7eStarting a protect-all task. It will take a while."));
-        ProgressTracker tracker = new ProgressTracker(sender, "\u00a77- Protect-All {0,number,##}% ({1}/{2}, failed:{3}, skipped:{4}) ~ {5}", 10, plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
+        Duration feedbackFrequency = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
+        ProgressTracker tracker = new ProgressTracker(sender, "\u00a77- Protect-All {0,number,##}% ({1}/{2}, failed:{3}, skipped:{4}) ~ {5}", 10, feedbackFrequency);
         task = new ProtectAllTask(plugin, sender, islandLogic.getIslandDirectory(), tracker);
         task.runTaskAsynchronously(plugin);
         return true;

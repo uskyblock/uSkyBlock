@@ -41,7 +41,7 @@ public class Settings {
     public static boolean extras_respawnAtIsland;
     public static boolean extras_obsidianToLava;
     public static String island_schematicName;
-    public static long island_topTenTimeout;
+    public static Duration island_topTenTimeout;
     public static boolean island_allowPvP;
     public static Locale locale = Locale.getDefault();
     public static boolean nether_enabled;
@@ -141,7 +141,7 @@ public class Settings {
         general_worldName = config.getString("options.general.worldName", "skyworld");
         island_removeCreaturesByTeleport = config.getBoolean("options.island.removeCreaturesByTeleport");
         island_allowIslandLock = config.getBoolean("options.island.allowIslandLock");
-        island_topTenTimeout = config.getInt("options.island.topTenTimeout", 7); // Every 7 minutes
+        island_topTenTimeout = Duration.ofMinutes(config.getLong("options.island.topTenTimeout", 7));
         island_allowPvP = config.getString("options.island.allowPvP", "deny").equalsIgnoreCase("allow") ||
             config.getString("options.island.allowPvP", "false").equalsIgnoreCase("true");
         Locale loc = I18nUtil.getLocale(config.getString("language", null));

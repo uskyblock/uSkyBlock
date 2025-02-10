@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import org.bukkit.inventory.ItemStack;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Random;
  * A reward record
  */
 public class Reward {
-    private static final Random RND = new Random(System.currentTimeMillis());
+    private static final Random RND = new Random();
 
     private final List<ItemStackUtil.ItemProbability> itemReward;
     private final String permissionReward;
@@ -62,13 +62,13 @@ public class Reward {
     @Override
     public String toString() {
         return "Reward{" +
-                "itemReward=" + itemReward +
-                ", permissionReward='" + permissionReward + '\'' +
-                ", currencyReward=" + currencyReward +
-                ", xpReward=" + xpReward +
-                ", rewardText='" + rewardText + '\'' +
-                ", commands=" + commands +
-                '}';
+            "itemReward=" + itemReward +
+            ", permissionReward='" + permissionReward + '\'' +
+            ", currencyReward=" + currencyReward +
+            ", xpReward=" + xpReward +
+            ", rewardText='" + rewardText + '\'' +
+            ", commands=" + commands +
+            '}';
     }
 }
 
