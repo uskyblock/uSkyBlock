@@ -312,9 +312,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     @Override
     public Collection<us.talabrek.ultimateskyblock.api.ChallengeCompletion> getChallenges() {
-        Collection<us.talabrek.ultimateskyblock.api.ChallengeCompletion> copy = new ArrayList<>();
-        copy.addAll(uSkyBlock.getInstance().getChallengeLogic().getChallenges(this));
-        return copy;
+        return new ArrayList<>(uSkyBlock.getInstance().getChallengeLogic().getChallenges(this));
     }
 
     @Override

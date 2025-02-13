@@ -45,7 +45,7 @@ public class TextPlaceholder implements PlaceholderAPI {
                         sb.append(message.substring(matcher.start(), matcher.end()));
                     }
                 } else {
-                    sb.append("{" + placeholderString + "}");
+                    sb.append("{").append(placeholderString).append("}");
                 }
                 ix = matcher.end();
             } while (matcher.find());

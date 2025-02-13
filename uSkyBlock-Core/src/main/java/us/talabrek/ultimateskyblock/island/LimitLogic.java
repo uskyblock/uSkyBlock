@@ -151,7 +151,7 @@ public class LimitLogic {
             }
             int cnt = count.containsKey(key) ? count.get(key) : 0;
             int max = creatureMax.get(key);
-            sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})", tr(key.name()), cnt >= max ? tr("\u00a7c{0}", cnt) : cnt, max) + "\n");
+            sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})", tr(key.name()), cnt >= max ? tr("\u00a7c{0}", cnt) : cnt, max)).append("\n");
         }
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
         for (Map.Entry<Material, Integer> entry : blockLimits.entrySet()) {
@@ -160,12 +160,12 @@ public class LimitLogic {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
                     ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
                     blockCount >= entry.getValue() ? tr("\u00a7c{0}", blockCount) : blockCount,
-                    entry.getValue()) + "\n");
+                    entry.getValue())).append("\n");
             } else {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
                     ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
                     tr("\u00a7c{0}", "?"),
-                    entry.getValue()) + "\n");
+                    entry.getValue())).append("\n");
             }
         }
         return sb.toString().trim();
