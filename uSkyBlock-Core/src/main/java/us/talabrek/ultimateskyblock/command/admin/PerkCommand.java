@@ -25,9 +25,9 @@ public class PerkCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 StringBuilder sb = new StringBuilder();
                 for (Map.Entry<String, Perk> entry : plugin.getPerkLogic().getPerkMap().entrySet()) {
-                    sb.append("\u00a79" + entry.getKey() + ":\n");
+                    sb.append("\u00a79").append(entry.getKey()).append(":\n");
                     String value = (entry.getValue().toString().replaceAll("\n", "\n  ")).trim();
-                    sb.append("  " + value + "\n");
+                    sb.append("  ").append(value).append("\n");
                 }
                 sender.sendMessage(sb.toString().split("\n"));
                 return true;
@@ -41,9 +41,9 @@ public class PerkCommand extends CompositeCommand {
                     if (player != null) {
                         StringBuilder sb = new StringBuilder();
                         Perk perk = plugin.getPerkLogic().getPerk(player);
-                        sb.append("\u00a79" + player.getName() + ":\n");
+                        sb.append("\u00a79").append(player.getName()).append(":\n");
                         String value = (perk.toString().replaceAll("\n", "\n  ")).trim();
-                        sb.append("  " + value + "\n");
+                        sb.append("  ").append(value).append("\n");
                         sender.sendMessage(sb.toString().split("\n"));
                         return true;
                     } else {

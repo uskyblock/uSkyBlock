@@ -4,8 +4,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -22,7 +20,7 @@ public class TextPlaceholderTest {
         placeholder.registerPlaceholder(null, new PlaceholderAPI.PlaceholderReplacer() {
             @Override
             public Set<String> getPlaceholders() {
-                return new HashSet<>(Arrays.asList("usb_replaceme"));
+                return Set.of("usb_replaceme");
             }
 
             @Override
@@ -35,6 +33,4 @@ public class TextPlaceholderTest {
         assertThat(placeholder.replacePlaceholders(null, "Hi {usb_island_level}"), is("Hi {usb_island_level}"));
         assertThat(placeholder.replacePlaceholders(null, "Hi {usb_replaceme} please"), is("Hi replaced string please"));
     }
-
-
 }
