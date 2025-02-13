@@ -151,7 +151,7 @@ public class AdminChallengeCommand extends CompositeCommand {
         public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
             if (playerInfo != null && args.length > 0) {
-                String rankName = FormatUtil.join(Arrays.asList(args), " ");
+                String rankName = String.join(" ", args);
                 List<Challenge> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
                 if (challenges == null || challenges.isEmpty()) {
                     sender.sendMessage(I18nUtil.tr("\u00a74No rank named {0} was found!", rankName));

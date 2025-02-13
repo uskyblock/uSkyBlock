@@ -136,15 +136,6 @@ public enum FormatUtil {;
         return format;
     }
 
-    public static String join(List<String> list, String separator) {
-        String joined = "";
-        for (String s : list) {
-            joined += s + separator;
-        }
-        joined = !list.isEmpty() ? joined.substring(0, joined.length() - separator.length()) : joined;
-        return joined;
-    }
-
     public static List<String> prefix(List<String> list, String prefix) {
         List<String> prefixed = new ArrayList<>(list.size());
         for (String s : list) {

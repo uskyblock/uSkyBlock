@@ -173,7 +173,7 @@ public enum ItemStackUtil {
         for (ItemStack item : items) {
             shorts.add(asShortString(item));
         }
-        return "[" + FormatUtil.join(shorts, ", ") + "]";
+        return "[" + String.join(", ", shorts) + "]";
     }
 
     public static String asShortString(ItemStack item) {
