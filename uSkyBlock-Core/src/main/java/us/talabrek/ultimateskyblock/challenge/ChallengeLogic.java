@@ -378,10 +378,10 @@ public class ChallengeLogic implements Listener {
         player.sendMessage(tr("\u00a7eItem reward(s): \u00a7f{0}", reward.getRewardText()));
         player.sendMessage(tr("\u00a7eExp reward: \u00a7f{0,number,#.#}", reward.getXpReward()));
         if (defaults.enableEconomyPlugin) {
-            float rewBonus = 1;
+            double rewBonus = 1;
             Perk perk = perkLogic.getPerk(player);
-            rewBonus += perk.getRewBonus();
-            float currencyReward = reward.getCurrencyReward() * rewBonus;
+            rewBonus +=perk.getRewBonus();
+            double currencyReward = reward.getCurrencyReward() * rewBonus;
             double percentage = (rewBonus - 1.0) * 100.0;
 
             hookManager.getEconomyHook().ifPresent((hook) -> {

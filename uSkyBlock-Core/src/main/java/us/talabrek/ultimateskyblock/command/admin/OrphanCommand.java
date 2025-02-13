@@ -45,7 +45,7 @@ public class OrphanCommand extends CompositeCommand {
                         sender.sendMessage(I18nUtil.tr("\u00a7eNo orphans currently registered."));
                     } else {
                         int pageSize = 50;
-                        int pages = (int)Math.ceil(orphans.size() / pageSize);
+                        int pages = (int) Math.ceil((double) orphans.size() / pageSize);
                         int page = args.length > 0 && args[0].matches("[0-9]+") ? Integer.parseInt(args[0], 10) : 1;
                         if (page < 1) page = 1;
                         if (page > pages) page = pages;
