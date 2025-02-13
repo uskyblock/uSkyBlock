@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.util.FormatUtil.join;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.prefix;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 
@@ -249,7 +248,7 @@ public class Challenge {
     }
 
     private List<String> wrappedDetails(List<String> details) {
-        return wordWrap(join(details, ", "), MAX_LINE);
+        return wordWrap(String.join(", ", details), MAX_LINE);
     }
 
     public ItemStack getDisplayItem() {
