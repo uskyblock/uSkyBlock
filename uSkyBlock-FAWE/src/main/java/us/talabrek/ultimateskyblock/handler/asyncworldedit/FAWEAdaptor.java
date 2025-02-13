@@ -56,10 +56,8 @@ public class FAWEAdaptor implements AWEAdaptor {
 
             BlockVector3 to = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
             EditSession editSession = getEditSession(playerPerk, origin);
-            try {
-                format
-                    .load(file)
-                    .paste(editSession, to, false);
+            try(var schematic = format.load(file)) {
+                schematic.paste(editSession, to, false);
                 editSession.flushQueue();
             } catch (IOException ex) {
                 log.log(Level.INFO, "Unable to paste schematic " + file, ex);
@@ -79,8 +77,7 @@ public class FAWEAdaptor implements AWEAdaptor {
     public void regenerate(final Region region, final Runnable onCompletion) {
         // NOTE: Running this asynchronous MIGHT be a bit dangereous! Since pasting could interfere
         scheduler.async(() -> {
-            try {
-                EditSession editSession = createEditSession(region.getWorld(), -1);
+            try(var editSession = createEditSession(region.getWorld(), -1)) {
                 editSession.regenerate(region);
                 editSession.flushQueue();
             } finally {
