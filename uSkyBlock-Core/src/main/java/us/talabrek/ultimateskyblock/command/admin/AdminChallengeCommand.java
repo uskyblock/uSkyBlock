@@ -117,7 +117,7 @@ public class AdminChallengeCommand extends CompositeCommand {
         return super.execute(sender, alias, data, args);
     }
 
-    private abstract class ChallengeCommand extends AbstractCommand {
+    private abstract static class ChallengeCommand extends AbstractCommand {
         public ChallengeCommand(String name, String permission, String description) {
             super(name, permission, "challenge", description);
         }
