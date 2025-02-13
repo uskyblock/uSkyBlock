@@ -47,7 +47,7 @@ public class ChunkCommand extends CompositeCommand {
         });
     }
 
-    public abstract class RequireChunkCommand extends AbstractCommand {
+    public abstract static class RequireChunkCommand extends AbstractCommand {
         public RequireChunkCommand(String name, String description) {
             super(name, null, "?x ?z ?r", description);
         }
