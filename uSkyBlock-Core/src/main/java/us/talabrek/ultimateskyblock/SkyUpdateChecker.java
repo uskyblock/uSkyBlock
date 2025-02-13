@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
@@ -83,9 +82,8 @@ public class SkyUpdateChecker implements UpdateChecker {
     public CompletableFuture<String> fetchLatestVersion(URI uri) {
         CompletableFuture<String> future = new CompletableFuture<>();
         future.completeAsync(() -> {
-            try {
-                String userAgent = "uSkyBlock-Plugin/v" + getCurrentVersion() + " (www.uskyblock.ovh)";
-                HttpClient httpclient = HttpClients.custom().setUserAgent(userAgent).build();
+            String userAgent = "uSkyBlock-Plugin/v" + getCurrentVersion() + " (www.uskyblock.ovh)";
+            try (var httpclient = HttpClients.custom().setUserAgent(userAgent).build()) {
 
                 int CONNECTION_TIMEOUT_MS = 10 * 1000; // Timeout in millis.
                 RequestConfig requestConfig = RequestConfig.custom()
