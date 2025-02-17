@@ -662,11 +662,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAlwaysOverwrite("levelConfig.yml");
         Settings.loadPluginConfig(new PluginConfig().getYamlConfig());
-        I18nUtil.setDataFolder(getDataFolder());
+        I18nUtil.initialize(getDataFolder(), Settings.locale);
         saveConfig();
         // Update all of the loaded configs.
         FileUtil.reload();
-        I18nUtil.getI18n();
     }
 
     public IslandLogic getIslandLogic() {

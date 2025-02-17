@@ -1,5 +1,6 @@
 package dk.lockfuglsang.minecraft.command;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -7,7 +8,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,6 +25,7 @@ public class BaseCommandExecutorTest {
 
     @BeforeClass
     public static void setUp() {
+        I18nUtil.initialize(new File("."), Locale.ENGLISH);
         mycmd = new BaseCommandExecutor("mycmd", "myplugin.perm.mycmd", "main myplugin command");
         mycmd.add(new AbstractCommand("hello|h", "myplugin.perm.hello", "say hello to the player") {
             @Override

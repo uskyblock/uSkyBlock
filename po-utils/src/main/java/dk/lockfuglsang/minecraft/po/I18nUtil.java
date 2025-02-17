@@ -24,9 +24,13 @@ import java.util.zip.ZipInputStream;
 public enum I18nUtil {
     ;
     private static final Logger log = Logger.getLogger(I18nUtil.class.getName());
-    private static I18n i18n;
-    private static Locale locale;
-    private static File dataFolder = new File(".");
+
+    // Dedicated lock for synchronizing modifications
+    private static final Object LOCK = new Object();
+
+    private static volatile I18n i18n;
+    private static volatile Locale locale;
+    private static volatile File dataFolder;
 
     /**
      * Translates the given {@link String} to the configured language. Returns the given String if no translation is
@@ -56,7 +60,7 @@ public enum I18nUtil {
      * @param key String to mark.
      * @return Input String.
      */
-    @Contract("null -> null")
+    @Contract(value = "null -> null", pure = true)
     public static String marktr(@Nullable String key) {
         return key;
     }
@@ -82,14 +86,30 @@ public enum I18nUtil {
      * @return I18n instance for the configured locale.
      */
     public static I18n getI18n() {
-        if (i18n == null) {
-            i18n = new I18n(getLocale());
+        I18n result = i18n;
+        if (result == null) {
+            throw new IllegalStateException("I18nUtil not initialized!");
         }
-        return i18n;
+        return result;
     }
 
     /**
-     * Returns the configured {@link Locale} or the default if unset.
+     * Initializes the I18nUtil. This method is called whenever the plugin loads or reloads.
+     * Thread safety is ensured by synchronizing modifications of shared fields.
+     *
+     * @param folder The plugin's data folder.
+     * @param loc    The desired Locale. If null, Locale.ENGLISH is used.
+     */
+    public static void initialize(@NotNull File folder, @Nullable Locale loc) {
+        synchronized (LOCK) {
+            dataFolder = folder;
+            locale = loc;
+            i18n = new I18n(getLocale());
+        }
+    }
+
+    /**
+     * Returns the configured {@link Locale} or the default (Locale.ENGLISH) if unset.
      * @return Configured Locale.
      */
     @NotNull
@@ -99,28 +119,24 @@ public enum I18nUtil {
 
     /**
      * Sets the {@link Locale}. Resets to the default locale if NULL is given.
-     * @param locale Locale to set.
+     * The I18n cache is cleared so that translations are reloaded.
+     *
+     * @param loc Locale to set.
      */
-    public static void setLocale(@Nullable Locale locale) {
-        I18nUtil.locale = locale;
-        clearCache();
+    public static void setLocale(@Nullable Locale loc) {
+        synchronized (LOCK) {
+            locale = loc;
+            clearCache();
+        }
     }
 
     /**
-     * Sets the datafolder that is used to look for .po files.
-     * @param folder Location of the datafolder.
-     */
-    public static void setDataFolder(@NotNull File folder) {
-        dataFolder = folder;
-        clearCache();
-    }
-
-    /**
-     * Clears the I18n cache, forces a reload of the .po files the next time that {@link I18nUtil#getLocale()} is
-     * accessed.
+     * Clears the I18n cache, forcing a reload of the .po files the next time that {@link I18nUtil#getLocale()} is accessed.
      */
     public static void clearCache() {
-        i18n = null;
+        synchronized (LOCK) {
+            i18n = new I18n(getLocale());
+        }
     }
 
     /**
@@ -128,7 +144,7 @@ public enum I18nUtil {
      * @param lang Language code..
      * @return Locale based on the given string.
      */
-    @Contract("null -> null")
+    @Contract(value = "null -> null", pure = true)
     public static Locale getLocale(@Nullable String lang) {
         if (lang != null) {
             String[] parts = lang.split("[-_]");

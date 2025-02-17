@@ -1,5 +1,6 @@
 package dk.lockfuglsang.minecraft.command;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matchers;
@@ -7,9 +8,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class CompositeCommandTest {
 
     @BeforeClass
     public static void setupAll() {
+        I18nUtil.initialize(new File("."), Locale.ENGLISH);
         executor = new BaseCommandExecutor("plugin", "plugin", null, "does stuff", ownerUUID);
         CompositeCommand sut = new CompositeCommand("admin", "admin.admin.superadmin", null, "super important admin command", adminUUID) {
             @Override

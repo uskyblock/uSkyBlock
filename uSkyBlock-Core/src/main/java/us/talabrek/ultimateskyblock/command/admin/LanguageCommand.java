@@ -35,7 +35,7 @@ public class LanguageCommand extends AbstractCommand {
         if (args.length == 1) {
             Locale loc = I18nUtil.getLocale(args[0]);
             Settings.locale = loc;
-            I18nUtil.clearCache();
+            I18nUtil.setLocale(loc);
             plugin.getConfig().set("language", args[0]);
             plugin.saveConfig();
             plugin.reloadConfig();

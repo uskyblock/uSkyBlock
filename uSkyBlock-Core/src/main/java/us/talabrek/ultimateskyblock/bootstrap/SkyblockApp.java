@@ -43,7 +43,5 @@ public class SkyblockApp {
         Bukkit.getScheduler().cancelTasks(plugin);
         listeners.unregisterListeners(plugin);
         services.shutdown(plugin);
-
-        I18nUtil.clearCache();
     }
 }

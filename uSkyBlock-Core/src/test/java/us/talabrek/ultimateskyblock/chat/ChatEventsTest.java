@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.chat;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -11,7 +12,9 @@ import org.junit.Test;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class ChatEventsTest {
 
     @Before
     public void setUp() {
+        I18nUtil.initialize(new File("."), Locale.ENGLISH);
         uSkyBlock fakePlugin = mock(uSkyBlock.class);
         Server fakeServer = mock(Server.class);
         when(fakePlugin.getServer()).thenReturn(fakeServer);

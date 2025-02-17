@@ -13,9 +13,9 @@ import static org.junit.Assert.assertNull;
 
 public class I18nUtilTest {
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         URL dataFolderUrl = getClass().getClassLoader().getResource("");
-        I18nUtil.setDataFolder(new File(dataFolderUrl.getFile()));
+        I18nUtil.initialize(new File(dataFolderUrl.getFile()), Locale.ENGLISH);
     }
 
     @Test

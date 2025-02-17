@@ -147,7 +147,6 @@ public class Settings {
         Locale loc = I18nUtil.getLocale(config.getString("language", null));
         if (loc != null) {
             locale = loc;
-            I18nUtil.setLocale(locale);
         }
         nether_enabled = config.getBoolean("nether.enabled", false);
         if (nether_enabled && !WorldEditHandler.isOuterPossible()) {
