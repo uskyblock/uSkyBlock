@@ -190,6 +190,7 @@ public class ChallengeLogic implements Listener {
     }
 
     public Challenge getChallenge(String challengeName) {
+        challengeName = challengeName.replaceAll(" ", "");
         List<Challenge> partialMatch = new ArrayList<>();
         for (Rank rank : ranks.values()) {
             for (Challenge challenge : rank.getChallenges()) {
