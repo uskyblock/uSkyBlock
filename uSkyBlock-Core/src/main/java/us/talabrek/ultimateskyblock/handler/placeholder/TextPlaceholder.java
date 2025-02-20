@@ -1,7 +1,10 @@
 package us.talabrek.ultimateskyblock.handler.placeholder;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,23 +12,23 @@ import java.util.regex.Pattern;
 /**
  * Common PlaceholderAPI for internal placeholders.
  */
+@Singleton
 public class TextPlaceholder implements PlaceholderAPI {
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(?<placeholder>usb_[^}]*)\\}");
-    private uSkyBlock plugin;
-    private PlaceholderReplacer replacer;
 
-    @Override
-    public boolean registerPlaceholder(uSkyBlock plugin, PlaceholderReplacer replacer) {
-        this.plugin = plugin;
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(?<placeholder>usb_[^}]*)\\}");
+    private final PlaceholderReplacer replacer;
+
+    @Inject
+    public TextPlaceholder(@NotNull PlaceholderReplacer replacer) {
         this.replacer = replacer;
-        return true;
     }
 
-    public String replacePlaceholders(Player player, String message) {
+    @Override
+    public @Nullable String replacePlaceholders(@Nullable Player player, @Nullable String message) {
         return replacePlaceholdersInternal(player, message);
     }
 
-    private String replacePlaceholdersInternal(Player player, String message) {
+    private @Nullable String replacePlaceholdersInternal(@Nullable Player player, @Nullable String message) {
         if (message == null) {
             return null;
         }
@@ -35,14 +38,14 @@ public class TextPlaceholder implements PlaceholderAPI {
             int ix = 0;
             StringBuilder sb = new StringBuilder();
             do {
-                sb.append(message.substring(ix, matcher.start()));
+                sb.append(message, ix, matcher.start());
                 String placeholderString = matcher.group("placeholder");
                 if (placeholderString != null && replacer.getPlaceholders().contains(placeholderString)) {
                     String replacement = replacer.replace(null, player, placeholderString);
                     if (replacement != null) {
                         sb.append(replacement);
                     } else {
-                        sb.append(message.substring(matcher.start(), matcher.end()));
+                        sb.append(message, matcher.start(), matcher.end());
                     }
                 } else {
                     sb.append("{").append(placeholderString).append("}");
@@ -55,10 +58,5 @@ public class TextPlaceholder implements PlaceholderAPI {
             result = sb.toString();
         }
         return result;
-    }
-
-    @Override
-    public void unregisterPlaceholder(uSkyBlock plugin, PlaceholderReplacer placeholderReplacer) {
-        // Not needed, since the plugin will unregister all handlers
     }
 }

@@ -2,13 +2,15 @@ package us.talabrek.ultimateskyblock.handler.placeholder;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by R4zorax on 26/04/2016.
@@ -16,10 +18,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class TextPlaceholderTest {
     @Test
     public void replacePlaceholders() throws Exception {
-        TextPlaceholder placeholder = new TextPlaceholder();
-        placeholder.registerPlaceholder(null, new PlaceholderAPI.PlaceholderReplacer() {
+        TextPlaceholder placeholder = new TextPlaceholder(new PlaceholderAPI.PlaceholderReplacer() {
             @Override
-            public Set<String> getPlaceholders() {
+            public @NotNull Collection<String> getPlaceholders() {
                 return Set.of("usb_replaceme");
             }
 

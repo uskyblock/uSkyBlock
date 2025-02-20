@@ -1,45 +1,38 @@
 package us.talabrek.ultimateskyblock.handler.placeholder;
 
-import org.bukkit.Bukkit;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 /**
  * MVdWPlaceholder proxy
  */
+@Singleton
 public class MVdWPlaceholderAPI implements PlaceholderAPI {
-    public boolean isAvailable() {
-        // Might not be enabled yet...
-        return Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null;
+
+    private final PlaceholderReplacer replacer;
+
+    @Inject
+    MVdWPlaceholderAPI(@NotNull PlaceholderReplacer replacer) {
+        this.replacer = replacer;
     }
 
-    @Override
-    public boolean registerPlaceholder(uSkyBlock plugin, final PlaceholderReplacer replacer) {
-        if (isAvailable()) {
-            be.maximvdw.placeholderapi.PlaceholderReplacer proxy = e -> {
-                if (replacer.getPlaceholders().contains(e.getPlaceholder())) {
-                    return replacer.replace(e.getOfflinePlayer(), e.getPlayer(), e.getPlaceholder());
-                }
-                return null;
-            };
-            for (String placeholder : replacer.getPlaceholders()) {
-                be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(plugin, placeholder, proxy);
+    public void setup(uSkyBlock plugin) {
+        be.maximvdw.placeholderapi.PlaceholderReplacer proxy = e -> {
+            if (replacer.getPlaceholders().contains(e.getPlaceholder())) {
+                return replacer.replace(e.getOfflinePlayer(), e.getPlayer(), e.getPlaceholder());
             }
-            return true;
+            return null;
+        };
+        for (String placeholder : replacer.getPlaceholders()) {
+            be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(plugin, placeholder, proxy);
         }
-        return false;
-    }
-
-    @Override
-    public void unregisterPlaceholder(uSkyBlock plugin, PlaceholderReplacer placeholderReplacer) {
-        // Not implemented.
     }
 
     @Override
     public String replacePlaceholders(Player player, String message) {
-        if (isAvailable()) {
-            return be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, message);
-        }
-        return message;
+        return be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, message);
     }
 }

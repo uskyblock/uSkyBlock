@@ -2,18 +2,19 @@ package us.talabrek.ultimateskyblock.handler.placeholder;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
+import java.util.Collection;
 
-/**
- */
 public interface PlaceholderAPI {
+
     interface PlaceholderReplacer {
-        Set<String> getPlaceholders();
-        String replace(OfflinePlayer offlinePlayer, Player player, String placeholder);
+
+        @NotNull Collection<String> getPlaceholders();
+
+        @Nullable String replace(@Nullable OfflinePlayer offlinePlayer, @Nullable Player player, @Nullable String placeholder);
     }
-    String replacePlaceholders(Player player, String message);
-    boolean registerPlaceholder(uSkyBlock plugin, PlaceholderReplacer replacer);
-    void unregisterPlaceholder(uSkyBlock plugin, PlaceholderReplacer placeholderReplacer);
+
+    @Nullable String replacePlaceholders(@Nullable Player player, @Nullable String message);
 }

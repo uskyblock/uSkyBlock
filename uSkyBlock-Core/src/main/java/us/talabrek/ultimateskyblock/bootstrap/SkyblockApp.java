@@ -2,10 +2,8 @@ package us.talabrek.ultimateskyblock.bootstrap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 @Singleton
@@ -24,7 +22,7 @@ public class SkyblockApp {
 
 
     public void startup(uSkyBlock plugin) {
-        services.startup();
+        services.startup(plugin);
     }
 
     public void delayedEnable(uSkyBlock plugin) {
@@ -33,13 +31,9 @@ public class SkyblockApp {
         // do these really have to be delayed?
         commands.registerCommands(plugin);
         listeners.registerListeners(plugin);
-
-        // TODO: make this object oriented
-        PlaceholderHandler.register(plugin);
     }
 
     public void shutdown(uSkyBlock plugin) {
-        PlaceholderHandler.unregister(plugin);
         Bukkit.getScheduler().cancelTasks(plugin);
         listeners.unregisterListeners(plugin);
         services.shutdown(plugin);

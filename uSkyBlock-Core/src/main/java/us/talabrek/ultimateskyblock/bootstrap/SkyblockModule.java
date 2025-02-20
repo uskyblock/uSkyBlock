@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI;
+import us.talabrek.ultimateskyblock.handler.placeholder.MvdwPlacehoderProvider;
+import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderAPI;
+import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderReplacerImpl;
 import us.talabrek.ultimateskyblock.island.level.ChunkSnapshotLevelLogic;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -40,6 +44,8 @@ public class SkyblockModule extends AbstractModule {
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
         bind(UpdateChecker.class).to(SkyUpdateChecker.class);
         bind(Clock.class).toInstance(Clock.systemUTC());
+        bind(PlaceholderAPI.PlaceholderReplacer.class).to(PlaceholderReplacerImpl.class);
+        bind(MVdWPlaceholderAPI.class).toProvider(MvdwPlacehoderProvider.class);
     }
 
     @Provides

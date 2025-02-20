@@ -38,13 +38,20 @@ public class ChatLogic {
     );
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
+    private final PlaceholderHandler placeholderHandler;
     private final Map<Type, String> formats = new EnumMap<>(Type.class);
     private final Map<UUID, Type> toggled = new HashMap<>();
 
     @Inject
-    public ChatLogic(@NotNull uSkyBlock plugin, @NotNull PluginConfig config, @NotNull WorldManager worldManager) {
+    public ChatLogic(
+        @NotNull uSkyBlock plugin,
+        @NotNull PluginConfig config,
+        @NotNull WorldManager worldManager,
+        @NotNull PlaceholderHandler placeholderHandler
+    ) {
         this.plugin = plugin;
         this.worldManager = worldManager;
+        this.placeholderHandler = placeholderHandler;
         formats.put(Type.PARTY,
             config.getYamlConfig().getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&d {MESSAGE}"));
         formats.put(Type.ISLAND,
@@ -86,7 +93,7 @@ public class ChatLogic {
         format = FormatUtil.normalize(format);
         format = format.replaceAll("\\{DISPLAYNAME}", Matcher.quoteReplacement(sender.getDisplayName()));
         String msg = format.replaceAll("\\{MESSAGE}", Matcher.quoteReplacement(message));
-        msg = PlaceholderHandler.replacePlaceholders(sender, msg);
+        msg = placeholderHandler.replacePlaceholders(sender, msg);
         List<Player> onlineMembers = getRecipients(sender, type);
         if (onlineMembers.size() <= 1) {
             sender.sendMessage(I18nUtil.tr("\u00a7cSorry! {0}", "\u00a79" +

@@ -1,70 +1,31 @@
 package us.talabrek.ultimateskyblock.handler.placeholder;
 
-import dk.lockfuglsang.minecraft.file.FileUtil;
+import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
 
+@Singleton
 public class PlaceholderHandler {
-    private static final String[] ADAPTORS = {
-        ChatPlaceholder.class.getName(),
-        ServerCommandPlaceholder.class.getName(),
-        "us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI",
-    };
 
-    private static PlaceholderAPI.PlaceholderReplacer replacer;
-    private static final List<PlaceholderAPI> apis = new ArrayList<>();
+    private final Collection<PlaceholderAPI> apis = new ArrayList<>();
 
-    public static void register(uSkyBlock plugin) {
-        PlaceholderAPI.PlaceholderReplacer placeholderReplacer = getReplacer(plugin);
-        for (String className : ADAPTORS) {
-            String baseName = FileUtil.getExtension(className);
-            if (plugin.getConfig().getBoolean("placeholder." + baseName.toLowerCase(), false)) {
-                try {
-                    Class<?> clazz = Class.forName(className);
-                    Object o = clazz.getDeclaredConstructor().newInstance();
-                    if (o instanceof PlaceholderAPI api) {
-                        if (api.registerPlaceholder(plugin, placeholderReplacer)) {
-                            plugin.getLogger().info("uSkyBlock hooked into " + baseName);
-                            apis.add(api);
-                        } else {
-                            plugin.getLogger().info("uSkyBlock failed to hook into " + baseName);
-                        }
-                    }
-                } catch (Exception e) {
-                    plugin.getLogger().info("uSkyBlock failed to hook into " + baseName);
-                }
-            }
-        }
+    public void registerPlaceholders(PlaceholderAPI api) {
+        apis.add(api);
     }
 
-    public static void unregister(uSkyBlock plugin) {
-        PlaceholderAPI.PlaceholderReplacer placeholderReplacer = getReplacer(plugin);
-        for (Iterator<PlaceholderAPI> it = apis.iterator(); it.hasNext(); ) {
-            it.next().unregisterPlaceholder(plugin, placeholderReplacer);
-            it.remove();
-        }
-        replacer = null;
-    }
-
-    public static String replacePlaceholders(Player player, String message) {
+    @Contract("_, null -> null")
+    public String replacePlaceholders(Player player, @Nullable String message) {
         if (message == null) {
             return null;
         }
-        String msg = message;
+        String replacedMessage = message;
         for (PlaceholderAPI api : apis) {
-            msg = api.replacePlaceholders(player, msg);
+            replacedMessage = api.replacePlaceholders(player, replacedMessage);
         }
-        return msg;
-    }
-
-    private static PlaceholderAPI.PlaceholderReplacer getReplacer(uSkyBlock plugin) {
-        if (replacer == null) {
-            replacer = new PlaceholderReplacerImpl(plugin);
-        }
-        return replacer;
+        return replacedMessage;
     }
 }
