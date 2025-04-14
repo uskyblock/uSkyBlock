@@ -20,6 +20,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.BukkitPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.FilePlayerDB;
+import us.talabrek.ultimateskyblock.uuid.LegacyPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.MemoryPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
@@ -52,14 +53,7 @@ public class SkyblockModule extends AbstractModule {
     @Singleton
     public static
     @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
-        String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
-        if (playerDbStorage.equalsIgnoreCase("yml")) {
-            return new FilePlayerDB(plugin, scheduler, logger);
-        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-            return new MemoryPlayerDB(config);
-        } else {
-            return new BukkitPlayerDB();
-        }
+        return new LegacyPlayerDB(plugin);
     }
 
     @Provides

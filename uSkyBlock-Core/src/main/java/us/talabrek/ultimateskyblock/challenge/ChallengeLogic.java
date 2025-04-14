@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
+import us.talabrek.ultimateskyblock.api.model.ChallengeCompletionSet;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -450,17 +451,6 @@ public class ChallengeLogic implements Listener {
         return currentChallengeItem;
     }
 
-    public void populateChallenges(Map<String, ChallengeCompletion> challengeMap) {
-        for (Rank rank : ranks.values()) {
-            for (Challenge challenge : rank.getChallenges()) {
-                String key = challenge.getName().toLowerCase();
-                if (!challengeMap.containsKey(key)) {
-                    challengeMap.put(key, new ChallengeCompletion(key, null, 0, 0));
-                }
-            }
-        }
-    }
-
     public void populateChallengeRank(Inventory menu, PlayerInfo pi, int page, boolean isAdminAccess) {
         List<Rank> ranksOnPage = new ArrayList<>(ranks.values());
         // page 1 = 0-4, 2 = 5-8, ...
@@ -596,7 +586,10 @@ public class ChallengeLogic implements Listener {
     }
 
     public Collection<ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
-        return completionLogic.getChallenges(playerInfo).values();
+        Collection<ChallengeCompletion> legacyCompletions = new ArrayList<>();
+        completionLogic.getChallenges(playerInfo).getCompletionMap().values().forEach(
+            completion -> legacyCompletions.add(new ChallengeCompletion(completion)));
+        return legacyCompletions;
     }
 
     public void completeChallenge(PlayerInfo playerInfo, String challengeName) {
@@ -616,21 +609,9 @@ public class ChallengeLogic implements Listener {
     }
 
     public ChallengeCompletion getIslandCompletion(String islandName, String challengeName) {
-        Map<String, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
-        if (challenges.containsKey(challengeName)) {
-            return challenges.get(challengeName);
-        } else {
-            ChallengeCompletion chal = null;
-            for (String k : challenges.keySet()) {
-                if (k.startsWith(challengeName)) {
-                    if (chal != null) {
-                        return null;
-                    }
-                    chal = challenges.get(k);
-                }
-            }
-            return chal;
-        }
+        var completion = completionLogic.getIslandChallenges(islandName).getCompletion(challengeName);
+        if (completion == null) return null;
+        return new ChallengeCompletion(completion);
     }
 
     public void resetAllChallenges(PlayerInfo playerInfo) {
@@ -649,21 +630,27 @@ public class ChallengeLogic implements Listener {
         return completionLogic.isIslandSharing();
     }
 
+    public ChallengeCompletionSet.CompletionSharing getSharingType() {
+        if (isIslandSharing()) return ChallengeCompletionSet.CompletionSharing.ISLAND;
+        return ChallengeCompletionSet.CompletionSharing.PLAYER;
+    }
+
     @EventHandler
     public void onMemberJoinedEvent(MemberJoinedEvent e) {
         if (!completionLogic.isIslandSharing() || !(e.getPlayerInfo() instanceof PlayerInfo playerInfo)) {
             return;
         }
-        Map<String, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
+
+        ChallengeCompletionSet completionSet = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
         List<String> permissions = new ArrayList<>();
-        for (Map.Entry<String, ChallengeCompletion> entry : completions.entrySet()) {
-            if (entry.getValue().getTimesCompleted() > 0) {
-                Challenge challenge = getChallenge(entry.getKey());
+        completionSet.getCompletionMap().forEach((challengeKey, completion) -> {
+            if (completion.getTimesCompleted() > 0) {
+                Challenge challenge = getChallenge(challengeKey);
                 if (challenge.getReward().getPermissionReward() != null) {
                     permissions.addAll(Arrays.asList(challenge.getReward().getPermissionReward().split(" ")));
                 }
             }
-        }
+        });
         if (!permissions.isEmpty()) {
             playerInfo.addPermissions(permissions);
         }

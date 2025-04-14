@@ -5,29 +5,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.ChallengeCompletion {
-    private String name;
-    private Instant cooldownUntil;
-    private int timesCompleted;
-    private int timesCompletedInCooldown;
+    private final us.talabrek.ultimateskyblock.api.model.ChallengeCompletion completion;
 
-    public ChallengeCompletion(final String name, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
-        super();
-        this.name = name;
-        this.cooldownUntil = cooldownUntil;
-        this.timesCompleted = timesCompleted;
-        this.timesCompletedInCooldown = timesCompletedInCooldown;
+    public ChallengeCompletion(@NotNull us.talabrek.ultimateskyblock.api.model.ChallengeCompletion completion) {
+        Objects.requireNonNull(completion);
+        this.completion = completion;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return completion.getChallenge();
     }
 
     @Override
     public @Nullable Instant cooldownUntil() {
-        return this.cooldownUntil;
+        return completion.getCooldownUntil();
     }
 
     @Override
@@ -37,38 +32,44 @@ public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.Cha
 
     @Override
     public @NotNull Duration getCooldown() {
-        if (cooldownUntil == null) {
+        if (completion.getCooldownUntil() == null) {
             return Duration.ZERO;
         }
-        Duration remainingCooldown = Duration.between(Instant.now(), cooldownUntil);
+
+        Duration remainingCooldown = Duration.between(Instant.now(), completion.getCooldownUntil());
         return remainingCooldown.isNegative() ? Duration.ZERO : remainingCooldown;
     }
 
     @Override
+    public long getCooldownInMillis() {
+        if (completion.getCooldownUntil().toEpochMilli() < 0) {
+            return -1;
+        }
+        long now = System.currentTimeMillis();
+        return completion.getCooldownUntil().toEpochMilli() > now ? completion.getCooldownUntil().toEpochMilli() - now : 0;
+    }
+
+    @Override
     public int getTimesCompleted() {
-        return this.timesCompleted;
+        return completion.getTimesCompleted();
     }
 
     public int getTimesCompletedInCooldown() {
-        return isOnCooldown() ? this.timesCompletedInCooldown : timesCompleted > 0 ? 1 : 0;
+        return isOnCooldown() ? completion.getTimesCompletedInCooldown() : completion.getTimesCompleted() > 0 ? 1 : 0;
     }
 
     public void setCooldownUntil(@Nullable Instant newCooldown) {
-        this.cooldownUntil = newCooldown;
-        this.timesCompletedInCooldown = 0;
+        completion.setCooldownUntil(newCooldown);
+        completion.setTimesCompletedInCooldown(0);
     }
 
     public void setTimesCompleted(final int newCompleted) {
-        this.timesCompleted = newCompleted;
-        this.timesCompletedInCooldown = newCompleted;
+        completion.setTimesCompleted(newCompleted);
+        completion.setTimesCompletedInCooldown(newCompleted);
     }
 
     public void addTimesCompleted() {
-        ++this.timesCompleted;
-        ++this.timesCompletedInCooldown;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
+        completion.addTimesCompleted();
+        completion.addTimesCompletedInCooldown();
     }
 }

@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -35,7 +34,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 @Singleton
 public class PlayerLogic {
-    private final LoadingCache<UUID, PlayerInfo> playerCache;
+    private final LoadingCache<UUID, us.talabrek.ultimateskyblock.api.model.Player> databasePlayerCache;
     private final uSkyBlock plugin;
     private final BukkitTask saveTask;
     private final PlayerDB playerDB;
@@ -72,65 +71,37 @@ public class PlayerLogic {
         this.notificationManager = notificationManager;
         this.logger = logger;
         this.playerDataDirectory = pluginDataDir.resolve("players");
-        try {
-            Files.createDirectories(playerDataDirectory);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to create player data directory", e);
-        }
 
-        this.playerCache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-            .removalListener((RemovalListener<UUID, PlayerInfo>) removal -> {
-                logger.fine("Removing player-info for " + removal.getKey() + " from cache");
-                PlayerInfo playerInfo = removal.getValue();
-                if (playerInfo.isDirty()) {
-                    playerInfo.saveToFile();
-                }
+        databasePlayerCache = CacheBuilder
+            .from(plugin.getConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .removalListener((RemovalListener<UUID, us.talabrek.ultimateskyblock.api.model.Player>) removal -> {
+                plugin.getLog4JLogger().info("Unloading player {} from database cache.", removal.getKey());
+                plugin.getStorage().savePlayer(removal.getValue());
             })
             .build(new CacheLoader<>() {
-                       @Override
-                       public @NotNull PlayerInfo load(@NotNull UUID s) {
-                           logger.fine("Loading player-info from " + s + " into cache!");
-                           return loadPlayerData(s);
-                       }
-                   }
-            );
+                @Override
+                public @NotNull us.talabrek.ultimateskyblock.api.model.Player load(@NotNull UUID uuid) {
+                    plugin.getLog4JLogger().info("Loading player {} to database cache.", uuid);
+
+                    scheduler.sync(() -> loadPlayerData(uuid), Duration.ofSeconds(1));
+                    return plugin.getStorage().getPlayer(uuid).join();
+                }
+            });
+
         Duration every = Duration.ofSeconds(plugin.getConfig().getInt("options.advanced.player.saveEvery", 2 * 60));
         this.saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 
     private void saveDirtyToFiles() {
-        // asMap.values() should NOT touch the cache.
-        for (PlayerInfo pi : playerCache.asMap().values()) {
-            if (pi.isDirty()) {
-                pi.saveToFile();
-            }
-        }
+        databasePlayerCache.asMap().values().forEach(player -> {
+            if (player.isDirty()) plugin.getStorage().savePlayer(player);
+        });
     }
 
-    private PlayerInfo loadPlayerData(UUID uuid) {
-        if (PlayerDB.UNKNOWN_PLAYER_UUID.equals(uuid)) {
-            return loadUnknownPlayer();
-        }
-        return loadPlayerData(uuid, playerDB.getName(uuid));
-    }
+    private void loadPlayerData(UUID uuid) {
+        final Player onlinePlayer = plugin.getPlayerDB().getPlayer(uuid);
+        final PlayerInfo playerInfo = new PlayerInfo(databasePlayerCache.getUnchecked(uuid), plugin, playerDataDirectory);
 
-    private PlayerInfo loadUnknownPlayer() {
-        return new PlayerInfo(PlayerDB.UNKNOWN_PLAYER_NAME, PlayerDB.UNKNOWN_PLAYER_UUID, plugin, playerDataDirectory);
-    }
-
-    private PlayerInfo loadPlayerData(UUID playerUUID, String playerName) {
-        if (playerUUID == null) {
-            playerUUID = PlayerDB.UNKNOWN_PLAYER_UUID;
-        }
-        if (playerName == null) {
-            playerName = "__UNKNOWN__";
-        }
-        logger.log(Level.FINER, "Loading player data for " + playerUUID + "/" + playerName);
-
-        final PlayerInfo playerInfo = new PlayerInfo(playerName, playerUUID, plugin, playerDataDirectory);
-
-        final Player onlinePlayer = uSkyBlock.getInstance().getPlayerDB().getPlayer(playerUUID);
         if (onlinePlayer != null && onlinePlayer.isOnline()) {
             if (playerInfo.getHasIsland()) {
                 IslandInfo islandInfo = plugin.getIslandInfo(playerInfo);
@@ -138,31 +109,31 @@ public class PlayerLogic {
                     islandInfo.updatePermissionPerks(onlinePlayer, perkLogic.getPerk(onlinePlayer));
                 }
             }
+
             scheduler.sync(() -> {
-                    if (playerInfo.getHasIsland()) {
-                        WorldGuardHandler.protectIsland(onlinePlayer, playerInfo);
-                        islandLogic.clearFlatland(onlinePlayer, playerInfo.getIslandLocation(), Duration.ofSeconds(20));
-                    }
-                    if (worldManager.isSkyAssociatedWorld(onlinePlayer.getWorld()) && !plugin.playerIsOnIsland(onlinePlayer)) {
-                        // Check if banned
-                        String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
-                        IslandInfo islandInfo = plugin.getIslandInfo(islandName);
-                        if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
-                            onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
+                if (playerInfo.getHasIsland()) {
+                    WorldGuardHandler.protectIsland(onlinePlayer, playerInfo);
+                    plugin.getIslandLogic().clearFlatland(onlinePlayer, playerInfo.getIslandLocation(), Duration.ofSeconds(20));
+                }
+                if (plugin.getWorldManager().isSkyAssociatedWorld(onlinePlayer.getWorld()) && !plugin.playerIsOnIsland(onlinePlayer)) {
+                    // Check if banned
+                    String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
+                    IslandInfo islandInfo = plugin.getIslandInfo(islandName);
+                    if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
+                        onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
+                            tr("\u00a7eSending you to spawn."));
+                        plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
+                    } else if (islandInfo != null && islandInfo.isLocked()) {
+                        if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
+                            onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
                                 tr("\u00a7eSending you to spawn."));
-                            teleportLogic.spawnTeleport(onlinePlayer, true);
-                        } else if (islandInfo != null && islandInfo.isLocked()) {
-                            if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
-                                onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
-                                    tr("\u00a7eSending you to spawn."));
-                                teleportLogic.spawnTeleport(onlinePlayer, true);
-                            }
+                            plugin.getTeleportLogic().spawnTeleport(onlinePlayer, true);
                         }
                     }
                 }
+            }
             );
         }
-        return playerInfo;
     }
 
     public PlayerInfo getPlayerInfo(Player player) {
@@ -171,26 +142,19 @@ public class PlayerLogic {
 
     public PlayerInfo getPlayerInfo(String playerName) {
         UUID uuid = playerDB.getUUIDFromName(playerName);
-        return getPlayerInfo(uuid);
+        return new PlayerInfo(databasePlayerCache.getUnchecked(uuid), plugin, playerDataDirectory);
     }
 
     public PlayerInfo getPlayerInfo(UUID uuid) {
         if (plugin.isMaintenanceMode()) {
             return null;
         }
+
         try {
-            return playerCache.get(uuid);
-        } catch (ExecutionException e) {
-            throw new IllegalStateException(e); // Escalate - we need it in the server log
+            return new PlayerInfo(databasePlayerCache.get(uuid), plugin, playerDataDirectory);
+        } catch (ExecutionException ex) {
+            throw new IllegalStateException(ex);
         }
-    }
-
-    public void loadPlayerDataAsync(final Player player) {
-        scheduler.async(() -> playerCache.refresh(player.getUniqueId()));
-    }
-
-    public void removeActivePlayer(PlayerInfo pi) {
-        playerCache.invalidate(pi.getPlayerId());
     }
 
     public void shutdown() {
@@ -200,8 +164,8 @@ public class PlayerLogic {
     }
 
     public long flushCache() {
-        long size = playerCache.size();
-        playerCache.invalidateAll();
+        long size = databasePlayerCache.size();
+        databasePlayerCache.invalidateAll();
         return size;
     }
 
@@ -215,5 +179,13 @@ public class PlayerLogic {
 
     public @NotNull NotificationManager getNotificationManager() {
         return notificationManager;
+    }
+
+    public us.talabrek.ultimateskyblock.api.model.Player getPlayer(UUID uuid) {
+        try {
+            return databasePlayerCache.get(uuid);
+        } catch (ExecutionException ex) {
+            throw new IllegalStateException("Unable to load player", ex);
+        }
     }
 }
