@@ -10,6 +10,8 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.util.UUID;
+
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 /**
@@ -29,10 +31,11 @@ public class WorldGuardEvents implements Listener {
             return;
         }
         String islandNameAt = WorldGuardHandler.getIslandNameAt(e.getTo());
-        if (islandNameAt == null) {
+        UUID islandAt = plugin.getStorage().getIslandByName(islandNameAt).join();
+        if (islandNameAt == null || islandAt == null) {
             return;
         }
-        IslandInfo islandInfo = plugin.getIslandInfo(islandNameAt);
+        IslandInfo islandInfo = plugin.getIslandLogic().getIslandInfo(islandAt);
         if (islandInfo == null || islandInfo.getBans().isEmpty()) {
             return;
         }

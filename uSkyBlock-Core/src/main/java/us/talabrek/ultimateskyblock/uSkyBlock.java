@@ -330,11 +330,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (!directoryPlayers.exists()) {
             directoryPlayers.mkdirs();
         }
-        directoryIslands = new File(getDataFolder() + File.separator + "islands");
-        if (!directoryIslands.exists()) {
-            directoryIslands.mkdirs();
-        }
-        IslandInfo.setDirectory(directoryIslands);
     }
 
     public static uSkyBlock getInstance() {
@@ -520,7 +515,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         Runnable resetIsland = () -> {
             pi.setHomeLocation(null);
-            pi.setIslandLocation(newLoc);
             pi.setHomeLocation(getSafeHomeLocation(pi));
             IslandInfo island = islandLogic.createIslandInfo(pi.locationForParty(), player);
             WorldGuardHandler.updateRegion(island);
@@ -546,8 +540,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private boolean playerIsTrusted(Player player) {
         String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
-        if (islandName != null) {
-            us.talabrek.ultimateskyblock.api.IslandInfo islandInfo = islandLogic.getIslandInfo(islandName);
+        UUID islandAt = this.getStorage().getIslandByName(islandName).join();
+        if (islandAt != null) {
+            us.talabrek.ultimateskyblock.api.IslandInfo islandInfo = islandLogic.getIslandInfo(islandAt);
             return islandInfo != null && islandInfo.isTrusted(player);
         }
         return false;
@@ -765,7 +760,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         FileUtil.reload();
 
         playerDB = new LegacyPlayerDB(this);
-        if (Files.exists(getDataFolder().toPath().resolve("uuid2name.yml"))) {
+        if (Files.exists(getDataFolder().toPath().resolve("uuid2name.yml")) || Files.exists(getDataFolder().toPath().resolve("players"))) {
             getLogger().info("Importing old uuid2name.yml...");
             new PlayerImporter(this);
         }
@@ -1185,5 +1180,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private void deregisterApi(UltimateSkyblock api) {
         UltimateSkyblockProvider.deregisterPlugin();
         getServer().getServicesManager().unregister(api);
+    }
+
+    public org.slf4j.Logger getLog4JLogger() {
+        return org.slf4j.LoggerFactory.getLogger(getLogger().getName());
     }
 }

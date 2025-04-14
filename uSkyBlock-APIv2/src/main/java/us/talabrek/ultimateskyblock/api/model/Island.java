@@ -1,12 +1,14 @@
 package us.talabrek.ultimateskyblock.api.model;
 
+import org.bukkit.block.Biome;
+
+import java.util.Map;
 import java.util.UUID;
 
 public class Island extends Model {
     protected final UUID uuid;
     protected final String name;
     protected UUID owner;
-    protected CenterLocation location;
     protected boolean ignore = false;
     protected boolean locked = false;
     protected boolean warpActive = false;
@@ -17,14 +19,36 @@ public class Island extends Model {
     protected double scoreMultiplier = 1D;
     protected double scoreOffset = 0D;
 
-    protected String biome;
+    protected Biome biome;
     protected int leafBreaks = 0;
     protected int hopperCount = 0;
 
     protected IslandAccessList islandAccessList;
+    protected IslandLimits islandLimits;
     protected IslandLocations islandLocations;
     protected IslandLog islandLog;
     protected IslandParty islandParty;
+
+    /**
+     * Creates a very basic Island object. This method should only be called when creating a NEW island
+     * on a location where no island exists.
+     * @param name Island name (legacy center coordinates)
+     * @param owner UUID of the owner.
+     */
+    public Island(String name, UUID owner) {
+        this.uuid = UUID.randomUUID();
+        this.name = name;
+        this.owner = owner;
+
+        this.islandAccessList = new IslandAccessList(this);
+        this.islandLimits = new IslandLimits(this);
+        this.islandLocations = new IslandLocations(this);
+        this.islandLog = new IslandLog(this);
+        this.islandParty = new IslandParty(this);
+
+        this.islandLimits.setBlockLimits(Map.of());
+        this.islandLimits.setPluginLimits(Map.of());
+    }
 
     public Island(UUID uuid, String name) {
         this.uuid = uuid;
@@ -45,15 +69,6 @@ public class Island extends Model {
 
     public void setOwner(UUID owner) {
         this.owner = owner;
-        setDirty(true);
-    }
-
-    public CenterLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(CenterLocation location) {
-        this.location = location;
         setDirty(true);
     }
 
@@ -129,11 +144,11 @@ public class Island extends Model {
         setDirty(true);
     }
 
-    public String getBiome() {
+    public Biome getBiome() {
         return biome;
     }
 
-    public void setBiome(String biome) {
+    public void setBiome(Biome biome) {
         this.biome = biome;
         setDirty(true);
     }
@@ -171,6 +186,23 @@ public class Island extends Model {
         }
 
         throw new IllegalStateException("IslandAccessList can only be set once.");
+    }
+
+    public IslandLimits getIslandLimits() {
+        if (islandLimits == null) {
+            islandLimits = new IslandLimits(this);
+        }
+
+        return islandLimits;
+    }
+
+    public void setIslandLimits(IslandLimits islandLimits) {
+        if (this.islandLimits == null) {
+            this.islandLimits = islandLimits;
+            return;
+        }
+
+        throw new IllegalStateException("IslandLimits can only be set once.");
     }
 
     public IslandLocations getIslandLocations() {

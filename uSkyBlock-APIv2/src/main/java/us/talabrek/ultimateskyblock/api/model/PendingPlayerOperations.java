@@ -23,4 +23,23 @@ public class PendingPlayerOperations extends Model {
         pendingOperations.add(operation);
         setDirty(true);
     }
+
+    public void clearPendingCommands() {
+        pendingOperations.removeIf(operation ->
+            operation.getOperationType() == PendingPlayerOperation.OperationType.COMMAND);
+
+        setDirty(true);
+    }
+
+    public void clearPendingPermissions() {
+        pendingOperations.removeIf(operation ->
+            operation.getOperationType() == PendingPlayerOperation.OperationType.PERMISSION);
+
+        setDirty(true);
+    }
+
+    public void clearPendingOperations() {
+        pendingOperations.clear();
+        setDirty(true);
+    }
 }

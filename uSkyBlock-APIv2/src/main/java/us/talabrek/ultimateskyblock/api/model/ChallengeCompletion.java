@@ -5,50 +5,53 @@ import java.util.UUID;
 
 public class ChallengeCompletion extends Model {
     protected final UUID uuid;
-    protected final CompletionSharing sharingType;
     protected final String challenge;
-    protected Instant firstCompleted = Instant.MIN;
+    protected Instant cooldownUntil = Instant.EPOCH;
     protected int timesCompleted = 0;
-    protected int timesCompletedSinceTimer = 0;
+    protected int timesCompletedInCooldown = 0;
 
-    public ChallengeCompletion(UUID uuid, CompletionSharing sharingType, String challenge) {
+    public ChallengeCompletion(UUID uuid, String challenge) {
         this.uuid = uuid;
-        this.sharingType = sharingType;
         this.challenge = challenge;
     }
 
-    public ChallengeCompletion(UUID uuid, CompletionSharing sharingType, String challenge, Instant firstCompleted, int timesCompleted, int timesCompletedSinceTimer) {
+    public ChallengeCompletion(UUID uuid,  String challenge, Instant firstCompleted, int timesCompleted, int timesCompletedSinceTimer) {
         this.uuid = uuid;
-        this.sharingType = sharingType;
         this.challenge = challenge;
-        this.firstCompleted = firstCompleted;
+        this.cooldownUntil = firstCompleted;
         this.timesCompleted = timesCompleted;
-        this.timesCompletedSinceTimer = timesCompletedSinceTimer;
+        this.timesCompletedInCooldown = timesCompletedSinceTimer;
     }
 
     public UUID getUuid() {
         return uuid;
     }
 
-    public CompletionSharing getSharingType() {
-        return sharingType;
-    }
-
     public String getChallenge() {
         return challenge;
     }
 
-    public Instant getFirstCompleted() {
-        return firstCompleted;
+    public Instant getCooldownUntil() {
+        return cooldownUntil;
     }
 
-    public void setFirstCompleted(Instant firstCompleted) {
-        this.firstCompleted = firstCompleted;
+    public void setCooldownUntil(Instant cooldownUntil) {
+        this.cooldownUntil = cooldownUntil;
         setDirty(true);
+    }
+
+    public boolean isOnCooldown() {
+        Instant now = Instant.now();
+        return this.cooldownUntil.toEpochMilli() < 0 || this.cooldownUntil.isAfter(now);
     }
 
     public int getTimesCompleted() {
         return timesCompleted;
+    }
+
+    public void addTimesCompleted() {
+        this.timesCompleted++;
+        setDirty(true);
     }
 
     public void setTimesCompleted(int timesCompleted) {
@@ -56,17 +59,17 @@ public class ChallengeCompletion extends Model {
         setDirty(true);
     }
 
-    public int getTimesCompletedSinceTimer() {
-        return timesCompletedSinceTimer;
+    public int getTimesCompletedInCooldown() {
+        return timesCompletedInCooldown;
     }
 
-    public void setTimesCompletedSinceTimer(int timesCompletedSinceTimer) {
-        this.timesCompletedSinceTimer = timesCompletedSinceTimer;
+    public void addTimesCompletedInCooldown() {
+        this.timesCompletedInCooldown++;
         setDirty(true);
     }
 
-    public enum CompletionSharing {
-        ISLAND,
-        PLAYER
+    public void setTimesCompletedInCooldown(int timesCompletedInCooldown) {
+        this.timesCompletedInCooldown = timesCompletedInCooldown;
+        setDirty(true);
     }
 }

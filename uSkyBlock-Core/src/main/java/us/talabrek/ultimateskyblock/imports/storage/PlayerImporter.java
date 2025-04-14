@@ -2,10 +2,13 @@ package us.talabrek.ultimateskyblock.imports.storage;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.api.model.PendingPlayerOperation;
 import us.talabrek.ultimateskyblock.api.model.PendingPlayerOperation.OperationType;
 import us.talabrek.ultimateskyblock.api.model.PendingPlayerOperations;
 import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.api.model.PlayerLocation;
+import us.talabrek.ultimateskyblock.api.model.PlayerLocations;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -15,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class PlayerImporter {
@@ -32,7 +34,7 @@ public class PlayerImporter {
         try {
             Files.move(dataFile.toPath(), plugin.getDataFolder().toPath().resolve("uuid2name.old"));
         } catch (IOException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to move uuid2name.yml.", ex);
+            plugin.getLog4JLogger().error("Failed to move uuid2name.yml.", ex);
         }
     }
 
@@ -41,7 +43,7 @@ public class PlayerImporter {
             try {
                 return YamlConfiguration.loadConfiguration(dataFile);
             } catch (Exception ex) {
-                plugin.getLogger().log(Level.WARNING, "Failed to load uuid2name.yml.", ex);
+                plugin.getLog4JLogger().warn("Failed to load uuid2name.yml.", ex);
             }
         }
 
@@ -88,6 +90,7 @@ public class PlayerImporter {
 
                         player.setPendingOperations(pendingOperations);
                         player.setClearInventory(playerConfig.getBoolean("clearInventoryOnNextEntry", false));
+                        player.setPlayerLocations(parsePlayerLocations(player, playerConfig));
 
                         plugin.getStorage().savePlayer(player);
                         int count = importCount.incrementAndGet();
@@ -97,18 +100,36 @@ public class PlayerImporter {
                         }
 
                         if (count % 100 == 0) {
-                            plugin.getLogger().info("Loaded " + count + " players already...");
+                            plugin.getLog4JLogger().info("Loaded {} players already...", count);
                         }
                     } catch (Exception ex) {
-                        plugin.getLogger().log(Level.SEVERE, "Failed to import player " + playerFile.getFileName().toString(), ex);
+                        plugin.getLog4JLogger().error("Failed to import player {}", playerFile.getFileName().toString(), ex);
                     }
                 });
             Files.move(plugin.getDataFolder().toPath().resolve("players"), plugin.getDataFolder().toPath().resolve("players_imported"), StandardCopyOption.REPLACE_EXISTING);
-            plugin.getLogger().info("Imported " + importCount.get() + " players.");
-            plugin.getLogger().info("Moved uSkyBlock/players/ to uSkyBlock/players_imported/.");
+            plugin.getLog4JLogger().info("Imported {} players.", importCount.get());
+            plugin.getLog4JLogger().info("Moved uSkyBlock/players/ to uSkyBlock/players_imported/.");
         } catch (IOException ex) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to collect player files.", ex);
+            plugin.getLog4JLogger().error("Failed to collect player files.", ex);
         }
+    }
+
+    private PlayerLocations parsePlayerLocations(Player player, YamlConfiguration playerConfig) {
+        PlayerLocations playerLocations = new PlayerLocations(player);
+
+        if (playerConfig.contains("player.homeX")) {
+            PlayerLocation location = new PlayerLocation(PlayerLocation.LocationType.HOME);
+            location.setWorld(Settings.general_worldName);
+            location.setX(playerConfig.getDouble("player.homeX"));
+            location.setY(playerConfig.getDouble("player.homeY"));
+            location.setZ(playerConfig.getDouble("player.homeZ"));
+            location.setYaw(playerConfig.getDouble("player.homeYaw"));
+            location.setPitch(playerConfig.getDouble("player.homePitch"));
+
+            playerLocations.addLocation(PlayerLocation.LocationType.HOME, location);
+        }
+
+        return playerLocations;
     }
 
     private Player preloadPlayer(UUID uuid) {

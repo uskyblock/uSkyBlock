@@ -7,7 +7,10 @@ public class Player extends Model {
     protected String name;
     protected String displayName;
     protected boolean clearInventory = false;
+
+    protected PlayerLocations playerLocations;
     protected PendingPlayerOperations pendingOperations;
+    protected PlayerPermissions permissions;
 
     public Player(UUID uuid, String name, String displayName, boolean clearInventory, PendingPlayerOperations pendingOperations) {
         this.uuid = uuid;
@@ -54,7 +57,41 @@ public class Player extends Model {
         setDirty(true);
     }
 
-    public PendingPlayerOperations getPendingOperations() {
+    public PlayerLocations getPlayerLocations() {
+        if (this.playerLocations == null) {
+            playerLocations = new PlayerLocations(this);
+        }
+
+        return playerLocations;
+    }
+
+    public void setPlayerLocations(PlayerLocations playerLocations) {
+        if (this.playerLocations == null) {
+            this.playerLocations = playerLocations;
+            return;
+        }
+
+        throw new IllegalStateException("PlayerLocations can only be set once.");
+    }
+
+    public PlayerPermissions getPlayerPermissions() {
+        if (this.permissions == null) {
+            permissions = new PlayerPermissions(this);
+        }
+
+        return permissions;
+    }
+
+    public void setPlayerPermissions(PlayerPermissions permissions) {
+        if (this.permissions == null) {
+            this.permissions = permissions;
+            return;
+        }
+
+        throw new IllegalStateException("PlayerPermissions can only be set once.");
+    }
+
+    public PendingPlayerOperations getPlayerPendingOperations() {
         if (pendingOperations == null) {
             pendingOperations = new PendingPlayerOperations(this);
         }

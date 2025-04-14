@@ -37,6 +37,10 @@ public enum TimeUtil {
         return -1;
     }
 
+    public static String epochAsString(long epoch) {
+        return millisAsString(epoch * 1000);
+    }
+
     public static String millisAsString(long millis) {
         long d = millis / DAYS;
         long h = (millis % DAYS) / HOUR;

@@ -1,6 +1,6 @@
 package us.talabrek.ultimateskyblock.storage;
 
-import us.talabrek.ultimateskyblock.api.model.ChallengeCompletion;
+import us.talabrek.ultimateskyblock.api.model.ChallengeCompletionSet;
 import us.talabrek.ultimateskyblock.api.model.Island;
 import us.talabrek.ultimateskyblock.api.model.Player;
 import us.talabrek.ultimateskyblock.api.storage.Storage;
@@ -10,6 +10,8 @@ import us.talabrek.ultimateskyblock.storage.sql.SqlStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -47,8 +49,33 @@ public class SkyStorage implements Storage {
     }
 
     @Override
-    public CompletableFuture<Void> saveChallengeCompletion(ChallengeCompletion challengeCompletion) {
+    public CompletableFuture<ChallengeCompletionSet> getChallengeCompletion(UUID uuid) {
+        return future(() -> storage.getChallengeCompletion(uuid));
+    }
+
+    @Override
+    public CompletableFuture<Void> saveChallengeCompletion(ChallengeCompletionSet challengeCompletion) {
         return future(() -> storage.saveChallengeCompletion(challengeCompletion));
+    }
+
+    @Override
+    public CompletableFuture<Integer> deleteChallengeCompletion(UUID uuid) {
+        return future(() -> storage.deleteChallengeCompletion(uuid));
+    }
+
+    @Override
+    public CompletableFuture<Integer> getIslandCount() {
+        return future(() -> storage.getIslandCount());
+    }
+
+    @Override
+    public CompletableFuture<Island> getIsland(UUID uuid) {
+        return future(() -> storage.getIsland(uuid));
+    }
+
+    @Override
+    public CompletableFuture<Set<UUID>> getIslands() {
+        return future(() -> storage.getIslands());
     }
 
     @Override
@@ -62,6 +89,11 @@ public class SkyStorage implements Storage {
     }
 
     @Override
+    public CompletableFuture<Void> deleteIsland(Island island) {
+        return future(() -> storage.deleteIsland(island));
+    }
+
+    @Override
     public CompletableFuture<Player> getPlayer(UUID uuid) {
         return future(() -> storage.getPlayer(uuid));
     }
@@ -72,8 +104,28 @@ public class SkyStorage implements Storage {
     }
 
     @Override
+    public CompletableFuture<List<String>> getPlayerBannedOn(UUID playerUuid) {
+        return future(() -> storage.getPlayerBannedOn(playerUuid));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getPlayerTrustedOn(UUID playerUuid) {
+        return future(() -> storage.getPlayerTrustedOn(playerUuid));
+    }
+
+    @Override
+    public CompletableFuture<UUID> getPlayerIsland(UUID playerUuid) {
+        return future(() -> storage.getPlayerIsland(playerUuid));
+    }
+
+    @Override
     public CompletableFuture<Void> savePlayer(Player player) {
         return future(() -> storage.savePlayer(player));
+    }
+
+    @Override
+    public CompletableFuture<Void> clearPlayer(UUID uuid) {
+        return future(() -> storage.clearPlayer(uuid));
     }
 
     private <T> CompletableFuture<T> future(Callable<T> callable) {

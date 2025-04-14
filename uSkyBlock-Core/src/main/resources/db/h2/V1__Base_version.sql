@@ -2,9 +2,9 @@ CREATE TABLE usb_challenge_completion (
     `uuid`                          VARCHAR(36)                     NOT NULL,
     `sharing_type`                  ENUM('ISLAND', 'PLAYER')        NOT NULL,
     `challenge`                     VARCHAR(128)                    NOT NULL,
-    `first_completed`               TIMESTAMP,
+    `cooldown_until`                TIMESTAMP,
     `times_completed`               INTEGER,
-    `times_completed_since_timer`   INTEGER,
+    `times_completed_in_cooldown`   INTEGER,
     CONSTRAINT usb_challenge_completion_pk PRIMARY KEY (`uuid`, `sharing_type`, `challenge`)
 );
 
@@ -13,8 +13,6 @@ CREATE INDEX ON usb_challenge_completion (`uuid`, `sharing_type`);
 CREATE TABLE usb_islands (
     `uuid`              VARCHAR(36)     NOT NULL,
     `name`              VARCHAR(128)    NOT NULL,
-    `center_x`          INTEGER         NOT NULL,
-    `center_z`          INTEGER         NOT NULL,
     `owner`             VARCHAR(36),
     `ignore`            BOOLEAN         DEFAULT FALSE,
     `locked`            BOOLEAN         DEFAULT FALSE,
@@ -32,7 +30,6 @@ CREATE TABLE usb_islands (
 
 CREATE INDEX ON usb_islands (`name`);
 CREATE INDEX ON usb_islands (`owner`);
-CREATE INDEX ON usb_islands (`center_x`, `center_z`);
 
 CREATE TABLE usb_island_access (
     `player_uuid`       VARCHAR(36)                     NOT NULL,
@@ -44,17 +41,27 @@ CREATE TABLE usb_island_access (
 CREATE INDEX ON usb_island_access (`player_uuid`);
 CREATE INDEX ON usb_island_access (`island_uuid`);
 
+CREATE TABLE usb_island_limits (
+    `island_uuid`       VARCHAR(36)                             NOT NULL,
+    `entity_type`       ENUM('BLOCK', 'ENTITY', 'PLUGIN')       NOT NULL,
+    `entity`            VARCHAR(255)                            NOT NULL,
+    `limit`             INT,
+    CONSTRAINT usb_island_limits PRIMARY KEY (`island_uuid`, `entity_type`, `entity`)
+);
+
 CREATE TABLE usb_island_locations (
-    `island_uuid`       VARCHAR(36)             NOT NULL,
-    `location_type`     ENUM('WARP')            NOT NULL,
-    `location_world`    VARCHAR(64)             NOT NULL,
-    `location_x`        DOUBLE PRECISION        NOT NULL,
-    `location_y`        DOUBLE PRECISION        NOT NULL,
-    `location_z`        DOUBLE PRECISION        NOT NULL,
+    `island_uuid`       VARCHAR(36)                                             NOT NULL,
+    `location_type`     ENUM('WARP', 'CENTER_WORLD', 'CENTER_NETHER')           NOT NULL,
+    `location_world`    VARCHAR(128)                                            NOT NULL,
+    `location_x`        DOUBLE PRECISION                                        NOT NULL,
+    `location_y`        DOUBLE PRECISION                                        NOT NULL,
+    `location_z`        DOUBLE PRECISION                                        NOT NULL,
     `location_pitch`    DOUBLE PRECISION,
     `location_yaw`      DOUBLE PRECISION,
     CONSTRAINT usb_island_locations_pk PRIMARY KEY (`island_uuid`, `location_type`)
 );
+
+CREATE INDEX ON usb_island_locations (`location_x`, `location_z`);
 
 CREATE TABLE usb_island_log (
     `log_uuid`          VARCHAR(36)     NOT NULL,
@@ -78,14 +85,17 @@ CREATE TABLE usb_island_members (
     `can_invite_others` BOOLEAN,
     `can_kick_others`   BOOLEAN,
     `can_ban_others`    BOOLEAN,
-    `max_animals`       INTEGER,
-    `max_monsters`      INTEGER,
-    `max_villagers`     INTEGER,
-    `max_golems`        INTEGER,
     CONSTRAINT usb_island_members_pk PRIMARY KEY (`player_uuid`)
 );
 
 CREATE INDEX ON usb_island_members (`island_uuid`);
+
+CREATE TABLE usb_island_member_permissions (
+    `player_uuid`       VARCHAR(36)     NOT NULL,
+    `island_uuid`       VARCHAR(36)     NOT NULL,
+    `node`              VARCHAR(255)    NOT NULL,
+    CONSTRAINT usb_island_member_permissions PRIMARY KEY (`player_uuid`, `island_uuid`, `node`)
+);
 
 CREATE TABLE usb_players (
     `uuid`              VARCHAR(36)     NOT NULL,
@@ -97,9 +107,27 @@ CREATE TABLE usb_players (
 
 CREATE INDEX ON usb_players (`username`);
 
+CREATE TABLE usb_player_locations (
+    `uuid`              VARCHAR(36)         NOT NULL,
+    `location_type`     ENUM('HOME')        NOT NULL,
+    `location_world`    VARCHAR(64)             NOT NULL,
+    `location_x`        DOUBLE PRECISION        NOT NULL,
+    `location_y`        DOUBLE PRECISION        NOT NULL,
+    `location_z`        DOUBLE PRECISION        NOT NULL,
+    `location_pitch`    DOUBLE PRECISION,
+    `location_yaw`      DOUBLE PRECISION,
+    CONSTRAINT usb_player_locations_pk PRIMARY KEY (`uuid`, `location_type`)
+);
+
 CREATE TABLE usb_player_pending (
     `uuid`          VARCHAR(36)                     NOT NULL,
     `type`          ENUM('COMMAND', 'PERMISSION')   NOT NULL,
     `value`         VARCHAR(2048)                   NOT NULL,
     CONSTRAINT usb_player_pending_pk PRIMARY KEY (`uuid`)
+);
+
+CREATE TABLE usb_player_permissions (
+    `uuid`          VARCHAR(36)                     NOT NULL,
+    `value`         VARCHAR(255)                    NOT NULL,
+    CONSTRAINT usb_player_permissions_pk PRIMARY KEY (`uuid`, `value`)
 );
