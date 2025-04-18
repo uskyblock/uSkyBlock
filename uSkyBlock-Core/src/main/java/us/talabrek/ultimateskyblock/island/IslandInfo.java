@@ -309,20 +309,19 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public boolean hasPerm(UUID uuid, String perm) {
         if (uuid.equals(getLeaderUniqueId())) return true;
 
-        return false;
-//        return switch (perm) {
-//            case "canChangeBiome" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanChangeBiome();
-//            case "canToggleLock" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanToggleLock();
-//            case "canChangeWarp" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanChangeWarp();
-//            case "canToggleWarp" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanToggleWarp();
-//            case "canInviteOthers" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanInviteOthers();
-//            case "canKickOthers" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanKickOthers();
-//            case "canBanOthers" -> getIsland().getIslandParty().getPartyMembers().get(uuid).isCanBanOthers();
-//            default -> {
-//                plugin.getLog4JLogger().info("Unknown permission lookup: {}", perm);
-//                yield false;
-//            }
-//        };
+        return switch (perm) {
+            case "canChangeBiome" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canChangeBiome");
+            case "canToggleLock" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canToggleLock");
+            case "canChangeWarp" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canChangeWarp");
+            case "canToggleWarp" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canToggleWarp");
+            case "canInviteOthers" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canInviteOthers");
+            case "canKickOthers" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canKickOthers");
+            case "canBanOthers" -> getIsland().getIslandParty().getPartyMember(uuid).hasPermission("island.canBanOthers");
+            default -> {
+                plugin.getLog4JLogger().info("Unknown permission lookup: {}", perm);
+                yield false;
+            }
+        };
     }
 
     @Override

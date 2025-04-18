@@ -23,6 +23,10 @@ public class IslandParty extends Model {
         return Map.copyOf(partyMembers);
     }
 
+    public IslandPartyMember getPartyMember(UUID uuid) {
+        return partyMembers.get(uuid);
+    }
+
     public void addPartyMember(UUID uuid, IslandPartyMember partyMember) {
         partyMembers.put(uuid, partyMember);
         setDirty(true);
