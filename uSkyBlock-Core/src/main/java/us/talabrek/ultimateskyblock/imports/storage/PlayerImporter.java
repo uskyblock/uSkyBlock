@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.api.model.PendingPlayerOperations;
 import us.talabrek.ultimateskyblock.api.model.Player;
 import us.talabrek.ultimateskyblock.api.model.PlayerLocation;
 import us.talabrek.ultimateskyblock.api.model.PlayerLocations;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -22,10 +23,12 @@ import java.util.stream.Stream;
 
 public class PlayerImporter {
     private final uSkyBlock plugin;
+    private final SkyStorage storage;
     private final YamlConfiguration uuidCache;
 
-    public PlayerImporter(uSkyBlock plugin) {
+    public PlayerImporter(uSkyBlock plugin, SkyStorage storage) {
         this.plugin = plugin;
+        this.storage = storage;
         File dataFile = new File(plugin.getDataFolder(), "uuid2name.yml");
         uuidCache = loadUuidCache(dataFile);
 
@@ -92,7 +95,7 @@ public class PlayerImporter {
                         player.setClearInventory(playerConfig.getBoolean("clearInventoryOnNextEntry", false));
                         player.setPlayerLocations(parsePlayerLocations(player, playerConfig));
 
-                        plugin.getStorage().savePlayer(player);
+                        storage.savePlayer(player);
                         int count = importCount.incrementAndGet();
 
                         if (count % 20 == 0) {

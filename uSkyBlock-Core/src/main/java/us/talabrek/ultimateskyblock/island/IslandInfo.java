@@ -28,7 +28,6 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private final UUID islandUuid;
 
     @Deprecated
-    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin, @NotNull Path islandDirectory) {
+    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin) {
         Validate.notNull(islandName, "IslandName cannot be null");
         Validate.notEmpty(islandName, "IslandName cannot be empty");
 
@@ -65,7 +64,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         islandUuid = Objects.requireNonNullElseGet(fetchedUuid, UUID::randomUUID);
     }
 
-    public IslandInfo(@NotNull Island island, @NotNull uSkyBlock plugin, @NotNull Path islandDirectory) {
+    public IslandInfo(@NotNull Island island, @NotNull uSkyBlock plugin) {
         Validate.notNull(island, "Island cannot be null");
 
         this.plugin = plugin;
@@ -291,7 +290,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     @Override
     public String getLeader() {
-        return plugin.getPlayerDB().getPlayer(getLeaderUniqueId()).getName();
+        return plugin.getStorage().getPlayer(getLeaderUniqueId()).join().getName();
     }
 
     public UUID getLeaderUniqueId() {

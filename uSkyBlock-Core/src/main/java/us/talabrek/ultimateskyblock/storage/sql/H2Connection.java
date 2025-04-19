@@ -25,6 +25,7 @@ import us.talabrek.ultimateskyblock.api.model.PlayerLocation;
 import us.talabrek.ultimateskyblock.api.model.PlayerLocations;
 import us.talabrek.ultimateskyblock.api.model.PlayerPermission;
 import us.talabrek.ultimateskyblock.api.model.PlayerPermissions;
+import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -606,6 +608,32 @@ public class H2Connection extends SqlStorage {
             ps.setString(1, island.getUuid().toString());
             ps.executeUpdate();
         }
+    }
+
+    @Override
+    public Set<IslandLevel> getIslandTop(double levelCutOff) throws SQLException {
+        Set<IslandLevel> islandLevels = new ConcurrentSkipListSet<>();
+
+        Connection c = getConnection();
+        try (PreparedStatement ps = c.prepareStatement("SELECT i.uuid, i.name, i.level, GROUP_CONCAT(p.username SEPARATOR ',') AS members, (SELECT p.username FROM usb_island_members m_sub JOIN usb_players p ON m_sub.player_uuid = p.uuid WHERE m_sub.island_uuid = i.uuid AND m_sub.role = 'LEADER' LIMIT 1) AS leader FROM usb_islands i LEFT JOIN usb_island_members m ON i.uuid = m.island_uuid LEFT JOIN usb_players p ON m.player_uuid = p.uuid WHERE i.ignore = FALSE AND i.level >= ? GROUP BY i.uuid ORDER BY i.level DESC;")) {
+            ps.setDouble(1, levelCutOff);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String members = rs.getString("members");
+                    List<String> memberList = (members != null) ? Arrays.asList(members.split(",")) : new ArrayList<>();
+
+                    IslandLevel islandLevel = new IslandLevel(
+                        rs.getString("name"),
+                        rs.getString("leader"),
+                        memberList,
+                        rs.getDouble("level")
+                    );
+                    islandLevels.add(islandLevel);
+                }
+            }
+        }
+
+        return islandLevels;
     }
 
     @Override

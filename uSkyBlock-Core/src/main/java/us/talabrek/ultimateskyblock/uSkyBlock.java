@@ -49,9 +49,6 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
-import us.talabrek.ultimateskyblock.imports.storage.CompletionImporter;
-import us.talabrek.ultimateskyblock.imports.storage.IslandImporter;
-import us.talabrek.ultimateskyblock.imports.storage.PlayerImporter;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -81,7 +78,6 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.time.Duration;
 
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -163,7 +159,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private UltimateSkyblockApi api;
 
-    // TODO: Move towards injection too.
+    @Inject
     private SkyStorage storage;
 
     private volatile boolean maintenanceMode = false;
@@ -192,23 +188,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         converter.checkAndDoImport(getDataFolder());
     }
 
-    private void convertFileStorageToSQL() {
-        if (Files.exists(getDataFolder().toPath().resolve("uuid2name.yml")) || Files.exists(getDataFolder().toPath().resolve("players"))) {
-            getLogger().info("Importing old uuid2name.yml...");
-            new PlayerImporter(this);
-        }
-
-        if (Files.exists(getDataFolder().toPath().resolve("islands"))) {
-            getLogger().info("Importing old islands...");
-            new IslandImporter(this);
-        }
-
-        if (Files.exists(getDataFolder().toPath().resolve("completion"))) {
-            getLogger().info("Importing old completions...");
-            new CompletionImporter(this);
-        }
-    }
-
     @Override
     public void onEnable() {
         missingRequirements = null;
@@ -217,17 +196,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         // Converter has to run before the plugin loads its config files.
         convertConfigItemsTo1_20_6IfRequired();
         convertConfigToBlockRequirements();
-
-        // TODO: Move towards startup.
-        try {
-            storage = new SkyStorage(this);
-        } catch (RuntimeException ex) {
-            getLogger().severe("Failed to connect to provided database. Shutting down plugin...");
-            ex.printStackTrace();
-            return;
-        }
-
-        convertFileStorageToSQL();
 
         reloadLegacyStuff();
         startup();

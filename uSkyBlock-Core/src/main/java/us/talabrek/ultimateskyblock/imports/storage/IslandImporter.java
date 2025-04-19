@@ -18,6 +18,7 @@ import us.talabrek.ultimateskyblock.api.model.IslandLogLine;
 import us.talabrek.ultimateskyblock.api.model.IslandParty;
 import us.talabrek.ultimateskyblock.api.model.IslandPartyMember;
 import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.UUIDUtil;
 
@@ -44,9 +45,11 @@ import java.util.stream.Stream;
 public class IslandImporter {
     private static final Pattern OLD_LOG_PATTERN = Pattern.compile("\u00a7d\\[(?<date>[^\\]]+)\\]\u00a77 (?<msg>.*)");
     private final uSkyBlock plugin;
+    private final SkyStorage storage;
 
-    public IslandImporter(uSkyBlock plugin) {
+    public IslandImporter(uSkyBlock plugin, SkyStorage storage) {
         this.plugin = plugin;
+        this.storage = storage;
         importFiles();
     }
 
@@ -91,7 +94,12 @@ public class IslandImporter {
                         island.setIslandLog(parseLog(island, islandConfig));
 
                         importOfflinePlayers(island);
-                        plugin.getStorage().saveIsland(island);
+
+                        if (island.getIslandParty().getPartySize() == 0) {
+                            throw new IllegalStateException("Island " + island.getName() + " has no party members.");
+                        }
+
+                        storage.saveIsland(island);
                         int count = importCount.incrementAndGet();
 
                         if (count % 20 == 0) {
@@ -127,7 +135,7 @@ public class IslandImporter {
     private void importOfflinePlayer(UUID uuid) {
         OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(uuid);
         Player player = new Player(offlinePlayer.getUniqueId(), offlinePlayer.getName(), offlinePlayer.getName());
-        plugin.getStorage().savePlayer(player);
+        storage.savePlayer(player);
     }
 
     private IslandAccessList parseAccessList(Island island, YamlConfiguration islandConfig) {

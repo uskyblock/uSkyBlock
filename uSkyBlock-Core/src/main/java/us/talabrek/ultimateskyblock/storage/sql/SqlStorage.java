@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.model.ChallengeCompletionSet;
 import us.talabrek.ultimateskyblock.api.model.Island;
 import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.sql.SQLException;
@@ -40,6 +41,8 @@ public abstract class SqlStorage {
     public abstract void saveIsland(Island island) throws SQLException;
 
     public abstract void deleteIsland(Island island) throws SQLException;
+
+    public abstract Set<IslandLevel> getIslandTop(double levelCutOff) throws SQLException;
 
     public abstract Player getPlayer(UUID uuid) throws SQLException;
 

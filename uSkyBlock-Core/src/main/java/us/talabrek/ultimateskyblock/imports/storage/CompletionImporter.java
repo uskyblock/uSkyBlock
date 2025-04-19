@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.talabrek.ultimateskyblock.api.model.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.api.model.ChallengeCompletionSet;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -19,9 +20,11 @@ import java.util.stream.Stream;
 
 public class CompletionImporter {
     private final uSkyBlock plugin;
+    private final SkyStorage storage;
 
-    public CompletionImporter(uSkyBlock plugin) {
+    public CompletionImporter(uSkyBlock plugin, SkyStorage storage) {
         this.plugin = plugin;
+        this.storage = storage;
         importFiles();
     }
 
@@ -42,12 +45,12 @@ public class CompletionImporter {
 
                         if (challengeSharing.equalsIgnoreCase("island")) {
                             ChallengeCompletionSet completionSet = parseIslandCompletion(completionConfig, completionFile.getFileName().toString());
-                            plugin.getStorage().saveChallengeCompletion(completionSet);
+                            storage.saveChallengeCompletion(completionSet);
 
                             count = importCount.incrementAndGet();
                         } else if (challengeSharing.equalsIgnoreCase("player")) {
                             ChallengeCompletionSet completionSet = parsePlayerCompletion(completionConfig, completionFile.getFileName().toString());
-                            if (completionSet != null) plugin.getStorage().saveChallengeCompletion(completionSet);
+                            if (completionSet != null) storage.saveChallengeCompletion(completionSet);
 
                             count = importCount.incrementAndGet();
                         }
@@ -74,7 +77,7 @@ public class CompletionImporter {
 
     private ChallengeCompletionSet parseIslandCompletion(YamlConfiguration completion, String fileName) {
         String islandName = fileName.split("\\.")[0];
-        UUID islandUuid = plugin.getStorage().getIslandByName(islandName).join();
+        UUID islandUuid = storage.getIslandByName(islandName).join();
 
         if (islandUuid == null) {
             plugin.getLog4JLogger().warn("Could not find island with name {}", islandName);

@@ -1,14 +1,23 @@
 package us.talabrek.ultimateskyblock.storage;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import us.talabrek.ultimateskyblock.api.model.ChallengeCompletionSet;
 import us.talabrek.ultimateskyblock.api.model.Island;
 import us.talabrek.ultimateskyblock.api.model.Player;
+import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.storage.Storage;
 import us.talabrek.ultimateskyblock.api.storage.StorageRunnable;
+import us.talabrek.ultimateskyblock.imports.storage.CompletionImporter;
+import us.talabrek.ultimateskyblock.imports.storage.IslandImporter;
+import us.talabrek.ultimateskyblock.imports.storage.PlayerImporter;
 import us.talabrek.ultimateskyblock.storage.sql.H2Connection;
 import us.talabrek.ultimateskyblock.storage.sql.SqlStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -18,19 +27,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ForkJoinPool;
 
+@Singleton
 public class SkyStorage implements Storage {
     protected final uSkyBlock plugin;
-    protected SqlStorage storage;
+    protected final Logger logger;
 
+    protected SqlStorage storage;
     protected final ForkJoinPool pool;
 
-    public SkyStorage(uSkyBlock plugin) {
+    @Inject
+    public SkyStorage(@NotNull uSkyBlock plugin, @NotNull Logger logger) {
         this.plugin = plugin;
+        this.logger = logger;
         this.pool = new ForkJoinPool(8);
 
         try {
             storage = new H2Connection(plugin, plugin.getDataFolder().toPath().resolve("uskyblock"));
             storage.initialize();
+
+            convertFileStorageToSQL();
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to connect to database.", ex);
         }
@@ -45,6 +60,23 @@ public class SkyStorage implements Storage {
             storage.close();
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to close database.", ex);
+        }
+    }
+
+    private void convertFileStorageToSQL() {
+        if (Files.exists(plugin.getDataFolder().toPath().resolve("uuid2name.yml")) || Files.exists(plugin.getDataFolder().toPath().resolve("players"))) {
+            plugin.getLog4JLogger().info("Importing old uuid2name.yml...");
+            new PlayerImporter(plugin, this);
+        }
+
+        if (Files.exists(plugin.getDataFolder().toPath().resolve("islands"))) {
+            plugin.getLog4JLogger().info("Importing old islands...");
+            new IslandImporter(plugin, this);
+        }
+
+        if (Files.exists(plugin.getDataFolder().toPath().resolve("completion"))) {
+            plugin.getLog4JLogger().info("Importing old completions...");
+            new CompletionImporter(plugin, this);
         }
     }
 
@@ -91,6 +123,10 @@ public class SkyStorage implements Storage {
     @Override
     public CompletableFuture<Void> deleteIsland(Island island) {
         return future(() -> storage.deleteIsland(island));
+    }
+
+    public CompletableFuture<Set<IslandLevel>> getIslandTop(double levelCutOff) {
+        return future(() -> storage.getIslandTop(levelCutOff));
     }
 
     @Override
