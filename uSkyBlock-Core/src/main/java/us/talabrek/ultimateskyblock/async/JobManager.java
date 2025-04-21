@@ -39,8 +39,8 @@ public enum JobManager {
         private int jobs;
         private int jobsRunning;
         private long ticks;
-        private Duration timeActive;
-        private Duration timeElapsed;
+        private Duration timeActive = Duration.ZERO;
+        private Duration timeElapsed = Duration.ZERO;
 
         public Stats() {
         }

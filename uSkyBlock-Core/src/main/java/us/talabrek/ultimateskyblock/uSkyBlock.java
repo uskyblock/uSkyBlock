@@ -68,6 +68,7 @@ import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.player.PlayerNotifier;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -76,6 +77,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.time.Duration;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -134,6 +136,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private PlayerNotifier notifier;
     @Inject
     private USBImporterExecutor importer;
+
     @Inject
     private IslandLocatorLogic islandLocatorLogic;
     @Inject
@@ -155,6 +158,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private Scheduler scheduler;
 
     private UltimateSkyblockApi api;
+
+    @Inject
+    private SkyStorage storage;
 
     private volatile boolean maintenanceMode = false;
 
@@ -400,7 +406,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         Runnable resetIsland = () -> {
             pi.setHomeLocation(null);
-            pi.setIslandLocation(newLoc);
             pi.setHomeLocation(getSafeHomeLocation(pi));
             IslandInfo island = islandLogic.createIslandInfo(pi.locationForParty(), player);
             WorldGuardHandler.updateRegion(island);
@@ -426,8 +431,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private boolean playerIsTrusted(Player player) {
         String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
-        if (islandName != null) {
-            us.talabrek.ultimateskyblock.api.IslandInfo islandInfo = islandLogic.getIslandInfo(islandName);
+        UUID islandAt = this.getStorage().getIslandByName(islandName).join();
+        if (islandAt != null) {
+            us.talabrek.ultimateskyblock.api.IslandInfo islandInfo = islandLogic.getIslandInfo(islandAt);
             return islandInfo != null && islandInfo.isTrusted(player);
         }
         return false;
@@ -628,6 +634,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private void shutdown() {
         if (this.skyBlock != null) {
             this.skyBlock.shutdown(this);
+            // TODO: Move towards services.
+            storage.destruct();
             this.skyBlock = null;
         }
         WorldManager.skyBlockWorld = null; // Force a reload on config.
@@ -936,6 +944,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
+    public SkyStorage getStorage() {
+        return storage;
+    }
+
     /**
      * Register this uSkyBlock instance with our API provider and Bukkit's ServicesManager.
      */
@@ -958,5 +970,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public Scheduler getScheduler() {
         return new Scheduler(this);
+    }
+
+    public org.slf4j.Logger getLog4JLogger() {
+        return org.slf4j.LoggerFactory.getLogger(getLogger().getName());
     }
 }

@@ -18,9 +18,7 @@ import us.talabrek.ultimateskyblock.island.level.ChunkSnapshotLevelLogic;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
-import us.talabrek.ultimateskyblock.uuid.BukkitPlayerDB;
-import us.talabrek.ultimateskyblock.uuid.FilePlayerDB;
-import us.talabrek.ultimateskyblock.uuid.MemoryPlayerDB;
+import us.talabrek.ultimateskyblock.uuid.LegacyPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.nio.file.Path;
@@ -52,14 +50,7 @@ public class SkyblockModule extends AbstractModule {
     @Singleton
     public static
     @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
-        String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
-        if (playerDbStorage.equalsIgnoreCase("yml")) {
-            return new FilePlayerDB(plugin, scheduler, logger);
-        } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-            return new MemoryPlayerDB(config);
-        } else {
-            return new BukkitPlayerDB();
-        }
+        return new LegacyPlayerDB(plugin);
     }
 
     @Provides
@@ -71,5 +62,10 @@ public class SkyblockModule extends AbstractModule {
     @Provides
     public static @NotNull DocumentCommand provideDocumentCommand(uSkyBlock plugin) {
         return new DocumentCommand(plugin, "doc", "usb.admin.doc");
+    }
+
+    @Provides
+    public static @NotNull org.slf4j.Logger provideLog4JLogger(uSkyBlock plugin) {
+        return org.slf4j.LoggerFactory.getLogger(plugin.getLogger().getName());
     }
 }

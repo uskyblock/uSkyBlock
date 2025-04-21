@@ -10,7 +10,6 @@ import com.google.inject.Singleton;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,20 +24,20 @@ import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.api.model.Island;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.task.WorldEditClearFlatlandTask;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +49,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -72,8 +72,9 @@ public class IslandLogic {
     private final Path directoryIslands;
     private final OrphanLogic orphanLogic;
     private final PlayerDB playerDB;
+    private final SkyStorage storage;
 
-    private final LoadingCache<String, IslandInfo> cache;
+    private final LoadingCache<UUID, Island> islandCache;
     private final boolean showMembers;
     private final boolean flatlandFix;
     private final boolean useDisplayNames;
@@ -93,7 +94,8 @@ public class IslandLogic {
         @NotNull PluginConfig config,
         @NotNull @PluginDataDir Path dataPath,
         @NotNull OrphanLogic orphanLogic,
-        @NotNull PlayerDB playerDB
+        @NotNull PlayerDB playerDB,
+        @NotNull SkyStorage storage
     ) {
         this.logger = logger;
         this.plugin = plugin;
@@ -102,6 +104,7 @@ public class IslandLogic {
         this.scheduler = scheduler;
         this.config = config;
         this.playerDB = playerDB;
+        this.storage = storage;
         Path islandDirectory = dataPath.resolve("islands");
         try {
             Files.createDirectories(islandDirectory);
@@ -114,42 +117,58 @@ public class IslandLogic {
         this.flatlandFix = config.getYamlConfig().getBoolean("options.island.fixFlatland", false);
         this.useDisplayNames = config.getYamlConfig().getBoolean("options.advanced.useDisplayNames", false);
         topTenCutoff = config.getYamlConfig().getDouble("options.advanced.topTenCutoff", config.getYamlConfig().getDouble("options.advanced.purgeLevel", 10));
-        cache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.islandCache",
+
+        islandCache = CacheBuilder
+            .from(plugin.getConfig().getString("options.advanced.islandCache",
                 "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-            .removalListener((RemovalListener<String, IslandInfo>) removal -> {
-                logger.fine("Removing island-info " + removal.getKey() + " from cache");
-                removal.getValue().saveToFile();
+            .removalListener((RemovalListener<UUID, Island>) removal -> {
+                plugin.getLog4JLogger().info("Unloading island {} from database cache.", removal.getKey());
+                storage.saveIsland(removal.getValue());
             })
             .build(new CacheLoader<>() {
                 @Override
-                public @NotNull IslandInfo load(@NotNull String islandName) {
-                    logger.fine("Loading island-info " + islandName + " to cache!");
-                    return new IslandInfo(islandName, plugin, directoryIslands);
+                public @NotNull Island load(@NotNull UUID uuid) {
+                    plugin.getLog4JLogger().info("Loading island {} to database cache.", uuid);
+                    return storage.getIsland(uuid).join();
                 }
             });
+
         Duration every = Duration.ofSeconds(config.getYamlConfig().getInt("options.advanced.island.saveEvery", 30));
         saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 
     private void saveDirtyToFiles() {
-        // asMap.values() should NOT touch the cache.
-        for (IslandInfo islandInfo : cache.asMap().values()) {
-            if (islandInfo.isDirty()) {
-                islandInfo.saveToFile();
-            }
+        islandCache.asMap().values().forEach(island -> {
+            if (island.isDirty()) storage.saveIsland(island);
+        });
+    }
+
+    public IslandInfo getIslandInfo(UUID islandUuid) {
+        try {
+            Island island = islandCache.get(islandUuid);
+            return new IslandInfo(island, plugin);
+        } catch (ExecutionException ex) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to load island " + islandUuid + " from cache", ex);
         }
+
+        return null;
     }
 
     public synchronized IslandInfo getIslandInfo(String islandName) {
         if (islandName == null || plugin.isMaintenanceMode()) {
             return null;
         }
-        try {
-            return cache.get(islandName);
-        } catch (ExecutionException e) {
-            throw new IllegalStateException("Unable to load island", e);
+        UUID islandUuid = storage.getIslandByName(islandName).join();
+        if (islandUuid != null) {
+            try {
+                Island island = islandCache.get(islandUuid);
+                return new IslandInfo(island, plugin);
+            } catch (ExecutionException ex) {
+                plugin.getLog4JLogger().error("Failed to load island {} from cache.", islandName, ex);
+            }
         }
+
+        return null;
     }
 
     public IslandInfo getIslandInfo(PlayerInfo playerInfo) {
@@ -157,6 +176,18 @@ public class IslandLogic {
             return getIslandInfo(playerInfo.locationForParty());
         }
         return null;
+    }
+
+    public Island getIsland(UUID uuid) {
+        try {
+            return islandCache.get(uuid);
+        } catch (ExecutionException e) {
+            throw new IllegalStateException("Unable to load island", e);
+        } catch (CacheLoader.InvalidCacheLoadException cacheMiss) {
+            // This is expected if the island doesn't exist / the database returns NULL.
+            // TODO: Return NULL for now, should be replaced by some nicer handling like an Optional in the future.
+            return null;
+        }
     }
 
     public void clearIsland(final Location loc, final Runnable afterDeletion) {
@@ -329,26 +360,7 @@ public class IslandLogic {
     }
 
     public void generateTopTen(final CommandSender sender) {
-        List<IslandLevel> topTen = new ArrayList<>();
-        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter());
-        for (String file : listOfFiles) {
-            String islandName = FileUtil.getBasename(file);
-            try {
-                boolean wasLoaded = cache.getIfPresent(islandName) != null;
-                IslandInfo islandInfo = getIslandInfo(islandName);
-                double level = islandInfo != null ? islandInfo.getLevel() : 0;
-                if (islandInfo != null && level > topTenCutoff && !islandInfo.ignore()) {
-                    IslandLevel islandLevel = createIslandLevel(islandInfo, level);
-                    topTen.add(islandLevel);
-                }
-                if (!wasLoaded) {
-                    cache.invalidate(islandName);
-                }
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Error during rank generation", e);
-            }
-        }
-        Collections.sort(topTen);
+        Set<IslandLevel> topTen = storage.getIslandTop(topTenCutoff).join();
         synchronized (ranks) {
             lastUpdated = Instant.now();
             ranks.clear();
@@ -378,19 +390,36 @@ public class IslandLogic {
     }
 
     public synchronized IslandInfo createIslandInfo(String location, String player) {
-        IslandInfo info = getIslandInfo(location);
-        info.resetIslandConfig(player);
+        UUID leader = plugin.getPlayerDB().getUUIDFromName(player);
+        UUID islandAtLocation = storage.getIslandByName(location).join();
+
+        IslandInfo info;
+        if (islandAtLocation == null) {
+            Island island = new Island(location, leader);
+            islandCache.put(island.getUuid(), island);
+            info = new IslandInfo(island, plugin);
+            info.save();
+
+            plugin.getLog4JLogger().info("Created new island {} ({})", island.getUuid(), island.getName());
+        } else {
+            info = getIslandInfo(islandAtLocation);
+        }
+
+        info.resetIslandConfig(leader);
         return info;
     }
 
     public synchronized void deleteIslandConfig(final String location) {
         try {
-            IslandInfo islandInfo = cache.get(location);
+            UUID islandIdentifier = storage.getIslandByName(location).join();
+
+            Island island = islandCache.get(islandIdentifier);
+            IslandInfo islandInfo = new IslandInfo(island, plugin);
             updateRank(islandInfo, new IslandScore(0, Collections.emptyList()));
-            if (islandInfo.exists()) {
-                islandInfo.delete();
-            }
-            cache.invalidate(location);
+
+            islandCache.invalidate(islandIdentifier);
+            storage.deleteIsland(island);
+
             orphanLogic.addOrphan(location);
         } catch (ExecutionException e) {
             throw new IllegalStateException("Unable to delete island " + location, e);
@@ -398,7 +427,8 @@ public class IslandLogic {
     }
 
     public synchronized void removeIslandFromMemory(String islandName) {
-        cache.invalidate(islandName);
+        UUID islandIdentifier = storage.getIslandByName(islandName).join();
+        islandCache.invalidate(islandIdentifier);
     }
 
     public void updateRank(IslandInfo islandInfo, IslandScore score) {
@@ -411,7 +441,8 @@ public class IslandLogic {
     }
 
     public boolean hasIsland(Location loc) {
-        return loc == null || new File(directoryIslands.toFile(), LocationUtil.getIslandName(loc) + ".yml").exists();
+        UUID islandIdentifier = storage.getIslandByName(LocationUtil.getIslandName(loc)).join();
+        return loc == null || islandIdentifier != null;
     }
 
     public IslandRank getRank(String islandName) {
@@ -448,17 +479,13 @@ public class IslandLogic {
     }
 
     public long flushCache() {
-        long size = cache.size();
-        cache.invalidateAll(); // Flush to files
+        long size = islandCache.size();
+        islandCache.invalidateAll();
         return size;
     }
 
     public int getSize() {
-        try (var stream = Files.list(directoryIslands)) {
-            return (int) stream.count();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return storage.getIslandCount().join();
     }
 
     public Path getIslandDirectory() {

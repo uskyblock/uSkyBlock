@@ -15,12 +15,13 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
+import us.talabrek.ultimateskyblock.storage.SkyStorage;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 @Singleton
 public class Services {
-
+    private final SkyStorage storage;
     private final AnimationHandler animationHandler;
     private final ChallengeLogic challengeLogic;
     private final EventLogic eventLogic;
@@ -34,6 +35,7 @@ public class Services {
 
     @Inject
     public Services(
+        @NotNull SkyStorage storage,
         @NotNull AnimationHandler animationHandler,
         @NotNull ChallengeLogic challengeLogic,
         @NotNull EventLogic eventLogic,
@@ -45,6 +47,7 @@ public class Services {
         @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh,
         @NotNull PlaceholderModule placeholderModule
     ) {
+        this.storage = storage;
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
         this.eventLogic = eventLogic;
@@ -82,6 +85,7 @@ public class Services {
         playerLogic.shutdown();
         islandLogic.shutdown();
         playerDB.shutdown();
+        storage.destruct();
         AsyncWorldEditHandler.onDisable(plugin);
         DebugCommand.disableLogging(null);
     }
