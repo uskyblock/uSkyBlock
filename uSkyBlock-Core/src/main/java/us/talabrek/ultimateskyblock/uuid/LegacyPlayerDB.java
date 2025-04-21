@@ -11,6 +11,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Legacy {@link PlayerDB} implementation that queries the new SQL-based
@@ -18,6 +19,7 @@ import java.util.UUID;
  */
 public class LegacyPlayerDB implements PlayerDB {
     private final uSkyBlock plugin;
+    private final Set<UUID> fetching = new ConcurrentSkipListSet<>();
 
     public LegacyPlayerDB(uSkyBlock plugin) {
         this.plugin = plugin;
@@ -81,6 +83,16 @@ public class LegacyPlayerDB implements PlayerDB {
             if (offlinePlayer.hasPlayedBefore()) {
                 updatePlayer(offlinePlayer.getUniqueId(), offlinePlayer.getName(), offlinePlayer.getName());
                 return offlinePlayer.getName();
+            } else {
+                if (!fetching.contains(uuid)) {
+                    fetching.add(uuid);
+
+                    // Fetch in the background at Mojang API for future use.
+                    plugin.getScheduler().sync(new MojangUUIDFetcher(plugin, uuid, name -> {
+                        if (name == null) return;
+                        updatePlayer(uuid, name, name);
+                    }));
+                }
             }
         }
         return playerInfo != null ? playerInfo.getName() : null;

@@ -609,8 +609,6 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 String bannedName = plugin.getPlayerDB().getName(uuid);
                 if (bannedName != null) {
                     banned.add(bannedName);
-                } else {
-                    plugin.getLogger().warning("Island " + getIsland().getName() + " has invalid banned value " + uuid);
                 }
             }
         });
@@ -627,8 +625,6 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 String trustedName = plugin.getPlayerDB().getName(uuid);
                 if (trustedName != null) {
                     trusted.add(trustedName);
-                } else {
-                    plugin.getLogger().warning("Island " + getIsland().getName() + " has invalid trust value " + uuid);
                 }
             }
         });
