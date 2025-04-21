@@ -100,7 +100,9 @@ public class PlayerLogic {
 
     private void loadPlayerData(UUID uuid) {
         final Player onlinePlayer = plugin.getPlayerDB().getPlayer(uuid);
-        final PlayerInfo playerInfo = new PlayerInfo(databasePlayerCache.getUnchecked(uuid), plugin, playerDataDirectory);
+
+        if (databasePlayerCache.getIfPresent(uuid) == null) return;
+        final PlayerInfo playerInfo = new PlayerInfo(getPlayer(uuid), plugin, playerDataDirectory);
 
         if (onlinePlayer != null && onlinePlayer.isOnline()) {
             if (playerInfo.getHasIsland()) {
@@ -137,12 +139,12 @@ public class PlayerLogic {
     }
 
     public PlayerInfo getPlayerInfo(Player player) {
-        return getPlayerInfo(player.getName());
+        return getPlayerInfo(player.getUniqueId());
     }
 
     public PlayerInfo getPlayerInfo(String playerName) {
         UUID uuid = playerDB.getUUIDFromName(playerName);
-        return new PlayerInfo(databasePlayerCache.getUnchecked(uuid), plugin, playerDataDirectory);
+        return getPlayerInfo(uuid);
     }
 
     public PlayerInfo getPlayerInfo(UUID uuid) {
@@ -150,11 +152,8 @@ public class PlayerLogic {
             return null;
         }
 
-        try {
-            return new PlayerInfo(databasePlayerCache.get(uuid), plugin, playerDataDirectory);
-        } catch (ExecutionException ex) {
-            throw new IllegalStateException(ex);
-        }
+        var player = getPlayer(uuid);
+        return (player != null) ? new PlayerInfo(player, plugin, playerDataDirectory) : null;
     }
 
     public void shutdown() {
@@ -186,6 +185,10 @@ public class PlayerLogic {
             return databasePlayerCache.get(uuid);
         } catch (ExecutionException ex) {
             throw new IllegalStateException("Unable to load player", ex);
+        } catch (CacheLoader.InvalidCacheLoadException cacheMiss) {
+            // This is expected if the player doesn't exist / the database returns NULL.
+            // TODO: Return NULL for now, should be replaced by some nicer handling like an Optional in the future.
+            return null;
         }
     }
 }

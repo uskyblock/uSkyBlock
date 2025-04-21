@@ -369,7 +369,7 @@ public class H2Connection extends SqlStorage {
         IslandParty islandParty = new IslandParty(island);
 
         Connection c = getConnection();
-        try (PreparedStatement ps = c.prepareStatement("SELECT m.player_uuid, m.island_uuid, m.`role`, GROUP_CONCAT(p.node SEPARATOR ',') AS permissions FROM usb_island_members m LEFT JOIN usb_island_member_permissions p ON m.player_uuid = p.player_uuid WHERE m.island_uuid = ? GROUP BY m.player_uuid, m.island_uuid, m.role;")) {
+        try (PreparedStatement ps = c.prepareStatement("SELECT m.player_uuid, m.island_uuid, m.`role`, GROUP_CONCAT(p.node SEPARATOR ',') AS permissions FROM usb_island_members m LEFT JOIN usb_island_member_permissions p ON m.player_uuid = p.player_uuid AND m.island_uuid = p.island_uuid WHERE m.island_uuid = ? GROUP BY m.player_uuid, m.island_uuid, m.role;")) {
             ps.setString(1, island.getUuid().toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

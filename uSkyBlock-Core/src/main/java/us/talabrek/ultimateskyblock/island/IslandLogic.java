@@ -128,7 +128,7 @@ public class IslandLogic {
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull Island load(@NotNull UUID uuid) {
-                    plugin.getLog4JLogger().info("Loading island {} from database cache.", uuid);
+                    plugin.getLog4JLogger().info("Loading island {} to database cache.", uuid);
                     return storage.getIsland(uuid).join();
                 }
             });
