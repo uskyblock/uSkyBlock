@@ -42,7 +42,7 @@ allprojects {
 
 group = "ovh.uskyblock"
 version = "3.2.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
     publications.create<MavenPublication>("maven") {
