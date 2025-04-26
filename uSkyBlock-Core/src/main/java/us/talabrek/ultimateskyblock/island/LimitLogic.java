@@ -7,15 +7,7 @@ import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Golem;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -87,15 +79,16 @@ public class LimitLogic {
     public CreatureType getCreatureType(LivingEntity creature) {
         if (creature instanceof Monster
             || creature instanceof Slime
-            || creature instanceof Ghast) {
+            || creature instanceof Ghast
+            || creature instanceof Shulker) {
             return CreatureType.MONSTER;
         } else if (creature instanceof Animals
-            || creature instanceof WaterMob
-        ) {
+            || creature instanceof WaterMob) {
             return CreatureType.ANIMAL;
         } else if (creature instanceof Villager) {
             return CreatureType.VILLAGER;
-        } else if (creature instanceof Golem) {
+        } else if (creature instanceof IronGolem
+            || creature instanceof Snowman) {
             return CreatureType.GOLEM;
         }
         return CreatureType.UNKNOWN;
