@@ -10,6 +10,3 @@ dependencies {
 
 description = "uSkyBlock-APIv2"
 
-java {
-    withJavadocJar()
-}

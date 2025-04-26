@@ -11,12 +11,14 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.1")
     implementation("com.google.inject:guice:7.0.0")
     implementation("org.jetbrains:annotations:23.0.0")
-    testImplementation(project(":bukkit-utils"))
+    testImplementation(project(":bukkit-utils", "testsJar"))
     testImplementation("org.hamcrest:hamcrest:2.2")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.9.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
+    testImplementation("com.sk89q.worldedit:worldedit-bukkit:7.2.19")
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")
     compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.onarandombox.multiversecore:Multiverse-Core:4.3.1")
@@ -37,7 +39,3 @@ dependencies {
 }
 
 description = "uSkyBlock-Core"
-
-java {
-    withJavadocJar()
-}

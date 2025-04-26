@@ -4,6 +4,8 @@
 
 
 dependencies {
+    implementation(project(":bukkit-utils"))
+    implementation(project(":uSkyBlock-API"))
     implementation(project(":uSkyBlock-Core"))
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.13.0")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.13.0")

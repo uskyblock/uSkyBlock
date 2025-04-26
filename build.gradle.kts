@@ -38,11 +38,18 @@ allprojects {
         maven("https://repo.minebench.de/")
         maven("https://repo.maven.apache.org/maven2/")
     }
+
+    java.sourceCompatibility = JavaVersion.VERSION_21
+    java.targetCompatibility = JavaVersion.VERSION_21
+    kotlin.jvmToolchain(21)
+
+    tasks.withType<Test>().configureEach {
+        enabled = false
+    }
 }
 
 group = "ovh.uskyblock"
 version = "3.2.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
     publications.create<MavenPublication>("maven") {

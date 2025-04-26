@@ -19,3 +19,11 @@ val testsJar by tasks.registering(Jar::class) {
     archiveClassifier.set("tests")
     from(sourceSets["test"].output)
 }
+
+configurations {
+    create("testsJar") {
+        isCanBeConsumed = true
+        isCanBeResolved = false
+        outgoing.artifact(testsJar)
+    }
+}
