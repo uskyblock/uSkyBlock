@@ -7,16 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Wither;
-import org.bukkit.entity.WitherSkull;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -134,7 +125,8 @@ public class GriefEvents implements Listener {
     private void cancelMobDamage(EntityDamageByEntityEvent event) {
         if (killAnimalsEnabled && event.getEntity() instanceof Animals) {
             event.setCancelled(true);
-        } else if (killMonstersEnabled && event.getEntity() instanceof Monster) {
+        } else if (killMonstersEnabled && (event.getEntity() instanceof Monster
+            || event.getEntity() instanceof Shulker)) {
             event.setCancelled(true);
         }
     }
