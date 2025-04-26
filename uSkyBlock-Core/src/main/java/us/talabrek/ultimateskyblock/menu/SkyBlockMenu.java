@@ -530,7 +530,7 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        //menu.addItem(menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.IRON_BARS, 1);
@@ -553,7 +553,7 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.addItem(menuItem);
+        //menu.addItem(menuItem);
         lores.clear();
 
         if (plugin.getIslandInfo(player).hasWarp()) {
@@ -620,7 +620,7 @@ public class SkyBlockMenu {
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
-        menu.setItem(15, menuItem);
+        menu.setItem(13, menuItem);
         lores.clear();
         if (islandInfo.isLeader(player)) {
             if (config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
