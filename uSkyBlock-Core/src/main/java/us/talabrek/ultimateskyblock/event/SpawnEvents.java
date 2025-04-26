@@ -8,11 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.EntitySnapshot;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Phantom;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -29,9 +25,7 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
@@ -107,11 +101,35 @@ public class SpawnEvents implements Listener {
         checkLimits(event, event.getEntity().getType(), event.getLocation());
         if (event.getEntity() instanceof WaterMob) {
             Location loc = event.getLocation();
-            if (isDeepOceanBiome(loc) && isPrismarineRoof(loc)) {
+            if (isPrismarineRoof(loc)) {
                 loc.getWorld().spawnEntity(loc, EntityType.GUARDIAN);
                 event.setCancelled(true);
             }
         }
+        if (!event.isCancelled() && event.getEntity() instanceof Enderman) {
+            Location loc = event.getLocation();
+
+            if(isPurpurFloor(loc)) {
+                if (isEndBiome(loc)) {
+                    Random r = new Random();
+                    if (r.nextInt(10) == 0) {
+                        loc.getWorld().spawnEntity(loc, EntityType.SHULKER);
+                        event.setCancelled(true);
+                    }
+                } else {
+                    loc.getWorld().spawnEntity(loc, EntityType.SHULKER);
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    private boolean isPurpurFloor(Location loc){
+        List<Material> purpurBlocks = Arrays.asList(Material.PURPUR_BLOCK, Material.PURPUR_PILLAR, Material.PURPUR_SLAB);
+        loc.setY(loc.getY()-1);
+        boolean ret=purpurBlocks.contains(loc.getBlock().getType());
+        loc.setY(loc.getY()+1);
+        return ret;
     }
 
     private boolean isPrismarineRoof(Location loc) {
@@ -119,9 +137,8 @@ public class SpawnEvents implements Listener {
         return prismarineBlocks.contains(LocationUtil.findRoofBlock(loc).getType());
     }
 
-    private boolean isDeepOceanBiome(Location loc) {
-        Collection<Biome> deepOceans = Set.of(Biome.DEEP_OCEAN, Biome.DEEP_COLD_OCEAN, Biome.DEEP_FROZEN_OCEAN, Biome.DEEP_LUKEWARM_OCEAN);
-        return deepOceans.contains(loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+    private boolean isEndBiome(Location loc) {
+        return loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ())==Biome.THE_END;
     }
 
     private void checkLimits(Cancellable event, EntityType entityType, Location location) {
