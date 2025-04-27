@@ -4,13 +4,6 @@
 
 dependencies {
     implementation(project(":po-utils"))
-    implementation("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
-    implementation("net.milkbowl.vault:VaultAPI:1.7")
-    testImplementation("org.hamcrest:hamcrest-core:1.3")
-    testImplementation("org.hamcrest:hamcrest-library:1.3")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:5.14.2")
-    testImplementation("com.google.code.gson:gson:2.8.7")
 }
 
 description = "bukkit-utils"
