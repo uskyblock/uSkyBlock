@@ -150,16 +150,20 @@ public class LimitLogic {
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
         for (Map.Entry<Material, Integer> entry : blockLimits.entrySet()) {
             int blockCount = blockLimitLogic.getCount(entry.getKey(), islandInfo.getIslandLocation());
+            int val = entry.getValue();
+            if (entry.getKey() == Material.HOPPER){
+                val += islandInfo.getHopperLimit();
+            }
             if (blockCount >= 0) {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
                     ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
-                    blockCount >= entry.getValue() ? tr("\u00a7c{0}", blockCount) : blockCount,
-                    entry.getValue())).append("\n");
+                    blockCount >= val ? tr("\u00a7c{0}", blockCount) : blockCount,
+                    val)).append("\n");
             } else {
                 sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
                     ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
                     tr("\u00a7c{0}", "?"),
-                    entry.getValue())).append("\n");
+                    val)).append("\n");
             }
         }
         return sb.toString().trim();

@@ -67,7 +67,8 @@ public class IslandCommand extends BaseCommandExecutor {
         @NotNull TopCommand topCommand,
         @NotNull BiomeCommand biomeCommand,
         @NotNull GreetingCommand greetingCommand,
-        @NotNull FarewellCommand farewellCommand
+        @NotNull FarewellCommand farewellCommand,
+        @NotNull BuyHopperLimitCommand buyHopperLimitCommand
     ) {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
@@ -116,6 +117,7 @@ public class IslandCommand extends BaseCommandExecutor {
         add(permCommand);
         add(greetingCommand);
         add(farewellCommand);
+        add(buyHopperLimitCommand);
     }
 
     @Override
