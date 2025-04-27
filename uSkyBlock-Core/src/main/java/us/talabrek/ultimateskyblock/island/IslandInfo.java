@@ -1096,6 +1096,15 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         dirty = true;
     }
 
+    public int getHopperLimit() {
+        return config.getInt("blocks.hopperLimits", 0);
+    }
+
+    public void setHopperLimit(int limit) {
+        config.set("blocks.hopperLimits", limit);
+        dirty = true;
+    }
+
     @Override
     public String getSchematicName() {
         return config.getString("general.schematicName", Settings.island_schematicName);

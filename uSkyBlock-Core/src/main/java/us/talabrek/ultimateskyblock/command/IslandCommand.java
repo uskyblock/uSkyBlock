@@ -14,31 +14,7 @@ import us.talabrek.ultimateskyblock.command.completion.MemberTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.OnlinePlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.PermissionTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.SchematicTabCompleter;
-import us.talabrek.ultimateskyblock.command.island.AcceptRejectCommand;
-import us.talabrek.ultimateskyblock.command.island.AutoCommand;
-import us.talabrek.ultimateskyblock.command.island.BanCommand;
-import us.talabrek.ultimateskyblock.command.island.BiomeCommand;
-import us.talabrek.ultimateskyblock.command.island.CreateCommand;
-import us.talabrek.ultimateskyblock.command.island.HomeCommand;
-import us.talabrek.ultimateskyblock.command.island.InfoCommand;
-import us.talabrek.ultimateskyblock.command.island.InviteCommand;
-import us.talabrek.ultimateskyblock.command.island.KickCommand;
-import us.talabrek.ultimateskyblock.command.island.LeaveCommand;
-import us.talabrek.ultimateskyblock.command.island.LevelCommand;
-import us.talabrek.ultimateskyblock.command.island.LockUnlockCommand;
-import us.talabrek.ultimateskyblock.command.island.LogCommand;
-import us.talabrek.ultimateskyblock.command.island.MakeLeaderCommand;
-import us.talabrek.ultimateskyblock.command.island.MobLimitCommand;
-import us.talabrek.ultimateskyblock.command.island.PartyCommand;
-import us.talabrek.ultimateskyblock.command.island.PermCommand;
-import us.talabrek.ultimateskyblock.command.island.RestartCommand;
-import us.talabrek.ultimateskyblock.command.island.SetHomeCommand;
-import us.talabrek.ultimateskyblock.command.island.SetWarpCommand;
-import us.talabrek.ultimateskyblock.command.island.SpawnCommand;
-import us.talabrek.ultimateskyblock.command.island.ToggleWarp;
-import us.talabrek.ultimateskyblock.command.island.TopCommand;
-import us.talabrek.ultimateskyblock.command.island.TrustCommand;
-import us.talabrek.ultimateskyblock.command.island.WarpCommand;
+import us.talabrek.ultimateskyblock.command.island.*;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -89,7 +65,8 @@ public class IslandCommand extends BaseCommandExecutor {
         @NotNull BanCommand banCommand,
         @NotNull LockUnlockCommand lockUnlockCommand,
         @NotNull TopCommand topCommand,
-        @NotNull BiomeCommand biomeCommand
+        @NotNull BiomeCommand biomeCommand,
+        @NotNull BuyHopperLimitCommand buyHopperLimitCommand
     ) {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
@@ -136,6 +113,8 @@ public class IslandCommand extends BaseCommandExecutor {
         add(mobLimitCommand);
         add(autoCommand);
         add(permCommand);
+        add(buyHopperLimitCommand);
+        add(buyHopperLimitCommand);
     }
 
     @Override

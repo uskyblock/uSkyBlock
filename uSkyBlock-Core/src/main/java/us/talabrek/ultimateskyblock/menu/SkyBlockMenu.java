@@ -582,6 +582,15 @@ public class SkyBlockMenu {
         menu.addItem(menuItem);
         lores.clear();
 
+        menuItem = new ItemStack(Material.HOPPER, 1);
+        meta4 = menuItem.getItemMeta();
+        meta4.setDisplayName(tr("\u00a7b\u00a7lBuy Extra Hopper Limit"));
+        addLore(lores, tr("\u00a7eCurrent Limit: \u00a7a{0,number,##}\u00a77(Default) + \u00a7a{1,number,##}\u00a77(Extra)", plugin.getBlockLimitLogic().getLimits().getOrDefault(Material.HOPPER, 0),islandInfo.getHopperLimit()));
+        meta4.setLore(lores);
+        menuItem.setItemMeta(meta4);
+        menu.addItem(menuItem);
+        lores.clear();
+
         menuItem = new ItemStack(Material.SHORT_GRASS, 1);
         meta4 = requireNonNull(menuItem.getItemMeta());
         meta4.setDisplayName(tr("\u00a7a\u00a7lReturn to Spawn"));
@@ -609,7 +618,7 @@ public class SkyBlockMenu {
         menu.setItem(9, menuItem); // First item, 2nd line
         lores.clear();
 
-        menuItem = new ItemStack(Material.HOPPER, 1);
+        menuItem = new ItemStack(Material.BEACON, 1);
         meta4 = requireNonNull(menuItem.getItemMeta());
         meta4.setDisplayName(tr("\u00a7a\u00a7lChange Warp Location"));
         addLore(lores, "\u00a7f", tr("When your warp is activated,\nother players will be taken to\nthis point when they teleport\nto your island."));
@@ -748,9 +757,12 @@ public class SkyBlockMenu {
             player.performCommand("island");
         } else if (currentItem.getType() == Material.SHORT_GRASS) {
             player.performCommand("island spawn");
-        } else if (currentItem.getType() == Material.HOPPER) {
+        } else if (currentItem.getType() == Material.BEACON) {
             player.performCommand("island setwarp");
             player.performCommand("island");
+        } else if (currentItem.getType() == Material.HOPPER) {
+            player.closeInventory();
+            player.performCommand("island hopper");
         } else if (currentItem.getType() == Material.WRITABLE_BOOK) {
             player.performCommand("island log");
         } else if (currentItem.getType() == Material.OAK_DOOR) {

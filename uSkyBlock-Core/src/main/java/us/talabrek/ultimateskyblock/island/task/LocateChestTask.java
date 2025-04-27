@@ -42,7 +42,7 @@ public class LocateChestTask extends BukkitRunnable {
             // Just run again
             // TODO: this is hacky, waiting for async generation to complete. Should ideally be launched once the generation has finished.
         } else {
-            cancel();
+            if (!this.isCancelled()) cancel();
             if (chestLocation == null && player != null && player.isOnline()) {
                 player.sendMessage(I18nUtil.tr("\u00a7cWatchdog!\u00a79 Unable to locate a chest within {0}, bailing out.", TimeUtil.durationAsString(Duration.between(start, timeout))));
             }
