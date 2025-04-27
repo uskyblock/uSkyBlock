@@ -83,6 +83,7 @@ public class ChallengeFactory {
             radius, reward, repeatReward, repeatLimit);
     }
 
+    @SuppressWarnings("removal")
     private static List<EntityMatch> createEntities(List<String> requiredEntities) {
         List<EntityMatch> entities = new ArrayList<>();
         for (String entityString : requiredEntities) {
