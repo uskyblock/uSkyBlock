@@ -40,6 +40,7 @@ public class BiomeCommand extends RequireIslandCommand {
     }
 
     @Override
+    @SuppressWarnings("removal")
     protected boolean doExecute(String alias, final Player player, PlayerInfo pi, final IslandInfo island, Map<String, Object> data, final String... args) {
         if (args.length == 0) {
             if (!island.hasPerm(player, "canChangeBiome")) {

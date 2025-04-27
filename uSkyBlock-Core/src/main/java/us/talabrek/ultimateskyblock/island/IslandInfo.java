@@ -389,6 +389,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public Biome getIslandBiome() {
         String biomeKey = config.getString("general.biome", Settings.general_defaultBiome.getKey().getKey());
         Biome biome = Registry.BIOME.match(biomeKey);

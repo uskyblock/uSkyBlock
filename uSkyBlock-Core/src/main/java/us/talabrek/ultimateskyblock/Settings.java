@@ -159,6 +159,7 @@ public class Settings {
         return changed;
     }
 
+    @SuppressWarnings("removal")
     private static Biome loadBiome(FileConfiguration config, String path, Biome defaultBiome) {
         try {
             String biomeKey = config.getString(path, defaultBiome.getKey().getKey());
