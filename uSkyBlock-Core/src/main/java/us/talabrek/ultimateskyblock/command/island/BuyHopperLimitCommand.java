@@ -1,15 +1,10 @@
 package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-
-import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
-import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
 
 import java.util.Map;
 
@@ -43,10 +38,11 @@ public class BuyHopperLimitCommand extends RequireIslandCommand {
             uSkyBlock.getInstance().getHookManager().getEconomyHook().ifPresent((hook) -> {
                 if (hook.getBalance(player) >= price) {
                     boolean success;
+                    String result = hook.withdrawPlayer(player, price);
                     if (price == 0) {
                         success = true;
                     } else {
-                        success = hook.withdrawPlayer(player, price);
+                        success = result == null;
                     }
                     if (success) {
                         islandInfo.setHopperLimit(curlimit + 1);
@@ -54,6 +50,7 @@ public class BuyHopperLimitCommand extends RequireIslandCommand {
                         player.sendMessage(tr("\u00a77======================"));
                     } else {
                         player.sendMessage(tr("\u00a7c\u00a7lBuy Extra Hopper Failed!"));
+                        player.sendMessage(tr("\u00a7c {0}", result));
                     }
                 } else {
                     player.sendMessage(tr("\u00a7c\u00a7lBuy Extra Hopper Failed!"));

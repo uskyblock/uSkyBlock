@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.hook.economy;
 
-import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault2.economy.Economy;
+import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,8 +9,10 @@ import org.bukkit.event.server.ServiceRegisterEvent;
 import org.bukkit.event.server.ServiceUnregisterEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public class VaultEconomy extends EconomyHook implements Listener {
@@ -36,7 +39,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public @NotNull String getCurrenyName() {
         if (economy != null) {
-            return economy.currencyNamePlural();
+            return economy.defaultCurrencyNamePlural(plugin.getName());
         }
         return super.getCurrenyName();
     }
@@ -44,25 +47,27 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public double getBalance(@NotNull OfflinePlayer player) {
         if (economy != null) {
-            return economy.getBalance(player);
+            return economy.balance(plugin.getName(), player.getUniqueId()).doubleValue();
         }
         return 0;
     }
 
     @Override
-    public boolean depositPlayer(@NotNull OfflinePlayer player, double amount) {
+    public @Nullable String depositPlayer(@NotNull OfflinePlayer player, double amount) {
         if (economy != null) {
-            return economy.depositPlayer(player, amount).transactionSuccess();
+            EconomyResponse response = economy.deposit(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(amount));
+            if (response.transactionSuccess()) return null; else return response.errorMessage;
         }
-        return false;
+        return "Economy is null";
     }
 
     @Override
-    public boolean withdrawPlayer(@NotNull OfflinePlayer player, double amount) {
+    public @Nullable String withdrawPlayer(@NotNull OfflinePlayer player, double amount) {
         if (economy != null) {
-            return economy.depositPlayer(player, amount).transactionSuccess();
+            EconomyResponse response = economy.withdraw(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(amount));
+            if (response.transactionSuccess()) return null; else return response.errorMessage;
         }
-        return false;
+        return "Economy is null";
     }
 
     @EventHandler

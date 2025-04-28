@@ -1,6 +1,6 @@
 package us.talabrek.ultimateskyblock.hook.permissions;
 
-import net.milkbowl.vault.permission.Permission;
+import net.milkbowl.vault2.permission.Permission;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
