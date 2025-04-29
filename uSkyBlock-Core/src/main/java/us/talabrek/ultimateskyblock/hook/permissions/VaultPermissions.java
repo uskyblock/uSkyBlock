@@ -26,7 +26,7 @@ public class VaultPermissions extends PermissionsHook implements Listener {
             plugin.getServer().getServicesManager().getRegistration(Permission.class);
         if (rsp != null) {
             permission = rsp.getProvider();
-            plugin.getLogger().info("Using " + rsp.getProvider().getName() + " as permission provider.");
+            plugin.getLogger().info("Using " + permission.getName() + " as permission provider.");
             return Optional.of(permission);
         }
 

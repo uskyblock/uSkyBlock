@@ -36,26 +36,20 @@ public class BuyHopperLimitCommand extends RequireIslandCommand {
         if (args.length > 0 && args[0].equals("buy")) {
             int price = calcPrice(curlimit);
             uSkyBlock.getInstance().getHookManager().getEconomyHook().ifPresent((hook) -> {
-                if (hook.getBalance(player) >= price) {
-                    boolean success;
-                    String result = hook.withdrawPlayer(player, price);
-                    if (price == 0) {
-                        success = true;
-                    } else {
-                        success = result == null;
-                    }
-                    if (success) {
-                        islandInfo.setHopperLimit(curlimit + 1);
-                        player.sendMessage(tr("\u00a7a\u00a7lBuy Extra Hopper Success!"));
-                        player.sendMessage(tr("\u00a77======================"));
-                    } else {
-                        player.sendMessage(tr("\u00a7c\u00a7lBuy Extra Hopper Failed!"));
-                        player.sendMessage(tr("\u00a7c {0}", result));
-                    }
+                boolean success;
+                String result = hook.withdrawPlayer(player, price);
+                success = result == null;
+                if (success) {
+                    islandInfo.setHopperLimit(curlimit + 1);
+                    player.sendMessage(tr("\u00a7a\u00a7lBuy Extra Hopper Success!"));
+                    player.sendMessage(tr("\u00a77======================"));
                 } else {
                     player.sendMessage(tr("\u00a7c\u00a7lBuy Extra Hopper Failed!"));
-                    player.sendMessage(tr("\u00a7dYou do not have enough money!"));
-                    player.sendMessage(tr("\u00a7dYou have {0}", hook.getBalance(player)));
+                    if (hook.getBalance(player) < price) {
+                        player.sendMessage(tr("\u00a7dYou do not have enough money!"));
+                        player.sendMessage(tr("\u00a7dYou have {0}", hook.getBalance(player)));
+                    }
+                    player.sendMessage(tr("\u00a7c {0}", result));
                 }
             });
         } else {

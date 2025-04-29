@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.hook.economy;
 
-import net.milkbowl.vault2.economy.Economy;
-import net.milkbowl.vault2.economy.EconomyResponse;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 public class VaultEconomy extends EconomyHook implements Listener {
@@ -29,17 +28,16 @@ public class VaultEconomy extends EconomyHook implements Listener {
             plugin.getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp != null) {
             economy = rsp.getProvider();
-            plugin.getLogger().info("Using " + rsp.getProvider().getName() + " as economy provider.");
+            plugin.getLogger().info("Using " + economy.getName() + " as economy provider.");
             return Optional.of(economy);
         }
-
         return Optional.empty();
     }
 
     @Override
     public @NotNull String getCurrenyName() {
         if (economy != null) {
-            return economy.defaultCurrencyNamePlural(plugin.getName());
+            return economy.currencyNamePlural();
         }
         return super.getCurrenyName();
     }
@@ -47,7 +45,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public double getBalance(@NotNull OfflinePlayer player) {
         if (economy != null) {
-            return economy.balance(plugin.getName(), player.getUniqueId()).doubleValue();
+            return economy.getBalance(player);
         }
         return 0;
     }
@@ -55,7 +53,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public @Nullable String depositPlayer(@NotNull OfflinePlayer player, double amount) {
         if (economy != null) {
-            EconomyResponse response = economy.deposit(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(amount));
+            EconomyResponse response = economy.depositPlayer(player, amount);
             if (response.transactionSuccess()) return null; else return response.errorMessage;
         }
         return "Economy is null";
@@ -64,7 +62,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public @Nullable String withdrawPlayer(@NotNull OfflinePlayer player, double amount) {
         if (economy != null) {
-            EconomyResponse response = economy.withdraw(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(amount));
+            EconomyResponse response = economy.withdrawPlayer(player, amount);
             if (response.transactionSuccess()) return null; else return response.errorMessage;
         }
         return "Economy is null";
@@ -74,6 +72,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     public void onEconomyRegister(ServiceRegisterEvent event) {
         if (event.getProvider().getProvider() instanceof Economy) {
             setupEconomy().ifPresent(vaultPlugin -> this.economy = vaultPlugin);
+            plugin.getLogger().info("Economy registered");
         }
     }
 
@@ -82,6 +81,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
         if (event.getProvider().getProvider() instanceof Economy) {
             this.economy = null;
             setupEconomy().ifPresent(vaultPlugin -> this.economy = vaultPlugin);
+            plugin.getLogger().info("Economy unregistered");
         }
     }
 }
