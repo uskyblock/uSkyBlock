@@ -286,8 +286,8 @@ public class WorldGuardHandler {
                 global = new GlobalProtectedRegion("__global__");
             }
             global.setFlag(Flags.BUILD, StateFlag.State.DENY);
-            global.setFlag(Flags.OTHER_EXPLOSION, StateFlag.State.ALLOW);
-            global.setFlag(Flags.CREEPER_EXPLOSION, StateFlag.State.ALLOW);
+            global.setFlag(Flags.OTHER_EXPLOSION, StateFlag.State.DENY);
+            global.setFlag(Flags.CREEPER_EXPLOSION, StateFlag.State.DENY);
             if (Settings.island_allowPvP) {
                 global.setFlag(Flags.PVP, StateFlag.State.ALLOW);
             } else {

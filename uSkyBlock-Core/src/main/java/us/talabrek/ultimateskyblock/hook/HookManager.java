@@ -91,7 +91,7 @@ public class HookManager {
      */
     public boolean setupEconomyHook() {
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            if (plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
                 VaultEconomy vault = new VaultEconomy(plugin);
                 registerHook(vault);
                 logger.info("Hooked into Vault economy");
@@ -112,7 +112,7 @@ public class HookManager {
      */
     public boolean setupMultiverse() {
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core")) {
+            if (plugin.getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
                 MultiverseHook mvHook = new MultiverseHook(plugin);
                 registerHook(mvHook);
                 logger.info("Hooked into Multiverse-Core");
@@ -133,7 +133,7 @@ public class HookManager {
      */
     public boolean setupPermissionsHook() {
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            if (plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
                 VaultPermissions vault = new VaultPermissions(plugin);
                 registerHook(vault);
                 logger.info("Hooked into Vault permissions.");
