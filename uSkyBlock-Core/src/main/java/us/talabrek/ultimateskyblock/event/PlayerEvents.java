@@ -349,6 +349,14 @@ public class PlayerEvents implements Listener {
             return;
         }
         Material type = event.getBlock().getType();
+        if(type == Material.OBSIDIAN){
+            PlayerInfo playerInfo = plugin.getPlayerInfo(player);
+            boolean isFirstCompletion = playerInfo.checkChallenge("page1finished") == 0;
+            if(isFirstCompletion){
+                event.setCancelled(true);
+                player.sendMessage(tr("完成第一页任务前你没有权限在这里放置 {0}",tr("Obsidian")));
+            }
+        }
         BlockLimitLogic.CanPlace canPlace = plugin.getBlockLimitLogic().canPlace(type, islandInfo);
         if (canPlace == BlockLimitLogic.CanPlace.UNCERTAIN) {
             event.setCancelled(true);
