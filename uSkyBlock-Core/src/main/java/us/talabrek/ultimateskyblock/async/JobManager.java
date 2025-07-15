@@ -36,14 +36,11 @@ public enum JobManager {
     }
 
     public static class Stats {
-        private int jobs;
-        private int jobsRunning;
-        private long ticks;
-        private Duration timeActive;
-        private Duration timeElapsed;
-
-        public Stats() {
-        }
+        private int jobs = 0;
+        private int jobsRunning = 0;
+        private long ticks = 0L;
+        private Duration timeActive = Duration.ZERO;
+        private Duration timeElapsed = Duration.ZERO;
 
         public synchronized void add(IncrementalRunnable runnable) {
             jobsRunning++;
