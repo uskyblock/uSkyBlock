@@ -96,6 +96,9 @@ public class BlockLimitLogic {
         } else if (count == -2) {
             return CanPlace.UNCERTAIN;
         }
+        if (type == Material.HOPPER){
+            count -= islandInfo.getHopperLimit();
+        }
         return count < blockLimits.getOrDefault(type, Integer.MAX_VALUE) ? CanPlace.YES : CanPlace.NO;
     }
 
