@@ -67,6 +67,7 @@ public class BiomeConfig {
         return configuredBiomeKeys;
     }
 
+    @SuppressWarnings("removal")
     private @Nullable BiomeEntry readBiomeEntry(@NotNull String biomeKey, @NotNull ConfigurationSection section) {
         String itemSpecification = section.getString("displayItem");
         String name = section.getString("name");

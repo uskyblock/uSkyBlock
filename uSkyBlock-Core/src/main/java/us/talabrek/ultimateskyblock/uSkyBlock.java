@@ -499,6 +499,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     // TODO: move these to Biome/World related classes
+    @SuppressWarnings("removal")
     public @Nullable Biome getBiome(String biomeName) {
         if (biomeName == null) return null;
         return Registry.BIOME.match(biomeName);
