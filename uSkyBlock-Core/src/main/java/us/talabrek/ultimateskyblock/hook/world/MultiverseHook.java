@@ -1,16 +1,18 @@
 package us.talabrek.ultimateskyblock.hook.world;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.WorldGroup;
-import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
-import com.onarandombox.multiverseinventories.share.Sharables;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.WorldType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.MultiverseCore;
+import org.mvplugins.multiverse.core.MultiverseCoreApi;
+import org.mvplugins.multiverse.core.world.MultiverseWorld;
+import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.MultiverseInventoriesApi;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.share.Sharables;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.hook.PluginHook;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -64,15 +66,19 @@ public class MultiverseHook extends PluginHook {
             return;
         }
 
-        if (!mvCore.getMVWorldManager().isMVWorld(world)) {
-            mvCore.getMVWorldManager().addWorld(world.getName(), World.Environment.NORMAL,
-                "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+        WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
+
+        if (!mvWorldManager.isWorld(world.getName())) {
+            //mvWorldManager.addWorld(world.getName(), World.Environment.NORMAL,
+            //    "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+            // The new MV API doesn't seem to provide methods to import a World when it is already loaded by the server.
+            plugin.getLogger().severe("the Skyblock overworld is loaded by the server but not found throught the Multiverse-core API");
         }
 
-        MultiverseWorld mvWorld = mvCore.getMVWorldManager().getMVWorld(world);
-        mvWorld.setEnvironment(World.Environment.NORMAL);
-        mvWorld.setScaling(1.0);
-        mvWorld.setGenerator(GENERATOR_NAME);
+        MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        //mvWorld.setEnvironment(World.Environment.NORMAL);
+        mvWorld.setScale(1.0);
+        //mvWorld.setGenerator(GENERATOR_NAME);
 
         if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
@@ -83,7 +89,7 @@ public class MultiverseHook extends PluginHook {
         }
 
         if (!Settings.extras_sendToSpawn) {
-            mvWorld.setRespawnToWorld(mvWorld.getName());
+            mvWorld.setRespawnWorld(mvWorld);
         }
     }
 
@@ -96,15 +102,19 @@ public class MultiverseHook extends PluginHook {
             return;
         }
 
-        if (!mvCore.getMVWorldManager().isMVWorld(world)) {
-            mvCore.getMVWorldManager().addWorld(world.getName(), World.Environment.NETHER,
-                "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+        WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
+
+        if (!mvWorldManager.isWorld(world.getName())) {
+            //mvWorldManager.addWorld(world.getName(), World.Environment.NETHER,
+            //    "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+            // The new MV API doesn't seem to provide methods to import a World when it is already loaded by the server.
+            plugin.getLogger().severe("the Skyblock nether is loaded by the server but not found throught the Multiverse-core API");
         }
 
-        MultiverseWorld mvWorld = mvCore.getMVWorldManager().getMVWorld(world);
-        mvWorld.setEnvironment(World.Environment.NETHER);
-        mvWorld.setScaling(1.0);
-        mvWorld.setGenerator(GENERATOR_NAME);
+        MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        //mvWorld.setEnvironment(World.Environment.NETHER);
+        mvWorld.setScale(1.0);
+        //mvWorld.setGenerator(GENERATOR_NAME);
         if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
                 new Location(world, 0.5, Settings.island_height/2.0 + 0.1, 0.5));
@@ -114,7 +124,7 @@ public class MultiverseHook extends PluginHook {
         }
 
         if (!Settings.extras_sendToSpawn) {
-            mvWorld.setRespawnToWorld(plugin.getWorldManager().getWorld().getName());
+            mvWorld.setRespawnWorld(plugin.getWorldManager().getWorld().getName());
         }
 
         linkNetherInventory(plugin.getWorldManager().getWorld(), world);
@@ -125,7 +135,7 @@ public class MultiverseHook extends PluginHook {
             return;
         }
 
-        WorldGroupManager groupManager = mvInventories.getGroupManager();
+        WorldGroupManager groupManager = MultiverseInventoriesApi.get().getWorldGroupManager();
         WorldGroup worldGroup = groupManager.getGroup("skyblock");
         if (worldGroup == null) {
             worldGroup = groupManager.newEmptyGroup("skyblock");
