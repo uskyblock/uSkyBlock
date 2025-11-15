@@ -16,7 +16,7 @@ public class LevelConfigFileTest {
         YamlConfiguration levelConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(levelResource));
 
         for (String key : levelConfig.getConfigurationSection("blocks").getKeys(false)) {
-            assertNotNull(Material.getMaterial(key));
+            assertNotNull("Invalid material for key " + key, Material.getMaterial(key));
 
             if (levelConfig.getConfigurationSection("blocks").getConfigurationSection(key).contains("additionalBlocks")) {
                 for (String additionalKey : levelConfig.getConfigurationSection("blocks").getConfigurationSection(key).getStringList("additionalBlocks")) {

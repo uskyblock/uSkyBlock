@@ -87,7 +87,7 @@
 #          # [List[item-requirement]] A list of items given to the player for completing the challenge.
 #          items:
 #          - mossy_cobblestone:16
-#          - iron_pickaxe[enchantments={levels:{unbreaking:1}}]:1
+#          - iron_pickaxe[enchantments={unbreaking:1}]:1
 #          # [permission node] A permission granted for completion. Multiple permissions are space-separated.
 #          ## permission: 'test.permission'
 #          # [integer] How much currency to give for completion. (requires an economy plugin)
@@ -688,7 +688,7 @@ ranks:
           text: 1 ghast tear, 1 magic bow
           items:
             - ghast_tear:1
-            - 'bow[enchantments={levels:{infinity:1,unbreaking:3}}]:1'
+            - 'bow[enchantments={infinity:1,unbreaking:3}]:1'
           currency: 40
           xp: 40
         repeatReward:
@@ -1440,7 +1440,7 @@ ranks:
           items:
             - end_portal_frame:3
             - diamond:3
-            - 'bow[enchantments={levels:{infinity:1,power:5,unbreaking:3}}]:1'
+            - 'bow[enchantments={infinity:1,power:5,unbreaking:3}]:1'
           currency: 1000
           xp: 500
       poseidonshalls:
@@ -1501,7 +1501,7 @@ ranks:
         reward:
           items:
             - end_portal_frame:3
-            - 'diamond_sword[enchantments={levels:{fire_aspect:1,sharpness:5,unbreaking:3}}]:1'
+            - 'diamond_sword[enchantments={fire_aspect:1,sharpness:5,unbreaking:3}]:1'
           text: some end-portal-pieces and a magic diamond sword
           currency: 4000
           xp: 1000
@@ -1524,7 +1524,7 @@ ranks:
           text: 5 diamonds and some nice boots
           items:
             - diamond:5
-            - 'diamond_boots[enchantments={levels:{blast_protection:4,feather_falling:4,protection:4}}]:1'
+            - 'diamond_boots[enchantments={blast_protection:4,feather_falling:4,protection:4}]:1'
           currency: 4000
           xp: 1000
 
