@@ -505,7 +505,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     public void setBiome(Location loc, Biome biome) {
-        new SetBiomeTask(this, loc, biome, null).runTask(this);
+        scheduler.sync(new SetBiomeTask(this, loc, biome, null));
     }
 
     public void createIsland(final Player player, String cSchem) {

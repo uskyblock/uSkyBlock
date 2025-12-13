@@ -7,7 +7,6 @@ import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -58,13 +57,13 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         if (region == null) {
             return;
         }
-        new ChunkSnapShotTask(scheduler, pluginConfig, l, region, new Callback<>() {
+        scheduler.sync(new ChunkSnapShotTask(scheduler, pluginConfig, l, region, new Callback<>() {
             @Override
             public void run() {
                 final List<ChunkSnapshot> snapshotsOverworld = getState();
                 Location netherLoc = getNetherLocation(l);
                 final ProtectedRegion netherRegion = WorldGuardHandler.getNetherRegionAt(netherLoc);
-                new ChunkSnapShotTask(scheduler, pluginConfig, netherLoc, netherRegion, new Callback<>() {
+                scheduler.sync(new ChunkSnapShotTask(scheduler, pluginConfig, netherLoc, netherRegion, new Callback<>() {
                     @Override
                     public void run() {
                         final List<ChunkSnapshot> snapshotsNether = getState();
@@ -75,9 +74,9 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
                             }
                         }.runTaskAsynchronously(plugin);
                     }
-                }).runTask(plugin);
+                }));
             }
-        }).runTask(plugin);
+        }));
     }
 
     private void calculateScoreAndCallback(ProtectedRegion region, List<ChunkSnapshot> snapshotsOverworld, ProtectedRegion netherRegion, List<ChunkSnapshot> snapshotsNether, Callback<IslandScore> callback) {

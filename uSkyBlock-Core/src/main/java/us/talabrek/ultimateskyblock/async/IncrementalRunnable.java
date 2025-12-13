@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.async;
 
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.Timer;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.PluginConfig;
@@ -32,7 +31,7 @@ import static java.lang.Math.max;
  *     }
  * </pre>
  */
-public abstract class IncrementalRunnable extends BukkitRunnable {
+public abstract class IncrementalRunnable implements Runnable {
 
     private final Scheduler scheduler;
     private Runnable onCompletion;

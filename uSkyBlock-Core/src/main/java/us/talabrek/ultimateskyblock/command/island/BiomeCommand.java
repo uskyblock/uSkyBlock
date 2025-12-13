@@ -17,6 +17,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.time.Duration;
 import java.util.Map;
@@ -27,12 +28,14 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 public class BiomeCommand extends RequireIslandCommand {
     private final Biomes biomes;
     private final BiomeConfig biomeConfig;
+    private final Scheduler scheduler;
 
     @Inject
-    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig) {
+    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig, @NotNull Scheduler scheduler) {
         super(plugin, "biome|b", null, "biome ?radius", marktr("change the biome of the island"));
         this.biomes = biomes;
         this.biomeConfig = biomeConfig;
+        this.scheduler = scheduler;
         addFeaturePermission("usb.exempt.cooldown.biome", tr("exempt player from biome-cooldown"));
         for (String biome : biomeConfig.getConfiguredBiomeKeys()) {
             addFeaturePermission("usb.biome." + biome, tr("Let the player change their islands biome to {0}", biome.toUpperCase()));
@@ -106,7 +109,8 @@ public class BiomeCommand extends RequireIslandCommand {
                 player.sendMessage(tr("\u00a7cInvalid arguments. Use /is biome <biome> [radius|chunk|all]"));
                 return true;
             }
-            new SetBiomeTask(plugin, player.getWorld(), minP, maxP, biome, () -> {
+
+            scheduler.sync(new SetBiomeTask(plugin, player.getWorld(), minP, maxP, biome, () -> {
                 String biomeName = biome.getKey().getKey();
                 if (changeEntireIslandBiome) {
                     island.setBiome(biome);
@@ -117,7 +121,7 @@ public class BiomeCommand extends RequireIslandCommand {
                     player.sendMessage(tr("\u00a7aYou have changed {0} blocks around you to the {1} biome", args[1], biomeName));
                     island.sendMessageToIslandGroup(true, marktr("{0} created an area with {1} biome"), player.getName(), biomeName);
                 }
-            }).runTask(plugin);
+            }));
         }
         return true;
     }
