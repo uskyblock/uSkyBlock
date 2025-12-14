@@ -127,79 +127,6 @@ public class ChallengeLogic implements Listener {
         return config.getBoolean("allowChallenges", true);
     }
 
-    public @NotNull List<Rank> getRanks() {
-        return List.copyOf(ranks.values());
-    }
-
-    public @NotNull List<ChallengeKey> getAvailableChallenges(PlayerInfo playerInfo) {
-        List<ChallengeKey> list = new ArrayList<>();
-        if (playerInfo == null || !playerInfo.getHasIsland()) {
-            return list;
-        }
-        for (Rank rank : ranks.values()) {
-            if (rank.isAvailable(playerInfo)) {
-                for (Challenge challenge : rank.getChallenges()) {
-                    if (challenge.getMissingRequirements(playerInfo).isEmpty()) {
-                        list.add(challenge.getId());
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    public @NotNull List<ChallengeKey> getAllChallengeIds() {
-        return List.copyOf(byId.keySet());
-    }
-
-    public @NotNull List<Challenge> getChallengesForRank(String rank) {
-        return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
-    }
-
-    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
-        PlayerInfo pi = plugin.getPlayerInfo(player);
-        Optional<Challenge> opt = getChallengeById(id);
-        if (opt.isEmpty()) {
-            player.sendMessage(tr("\u00a74No challenge with id {0} found", id.id()));
-            return;
-        }
-        Challenge challenge = opt.get();
-        if (!plugin.playerIsOnOwnIsland(player)) {
-            player.sendMessage(tr("\u00a74You must be on your island to do that!"));
-            return;
-        }
-        if (!challenge.getRank().isAvailable(pi)) {
-            player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
-            return;
-        }
-        ChallengeCompletion completion = getChallengeCompletion(pi, id);
-        if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
-            player.sendMessage(tr("\u00a74The {0} challenge is not repeatable!", challenge.getDisplayName()));
-            return;
-        }
-        if (completion.isOnCooldown() && completion.getTimesCompletedInCooldown() >= challenge.getRepeatLimit() && challenge.getRepeatLimit() > 0) {
-            player.sendMessage(tr("\u00a74You cannot complete the {0} challenge again yet!", challenge.getDisplayName()));
-            return;
-        }
-        player.sendMessage(tr("\u00a7eTrying to complete challenge \u00a7a{0}", challenge.getDisplayName()));
-        if (challenge.getType() == Challenge.Type.PLAYER) {
-            tryCompleteOnPlayer(player, challenge);
-        } else if (challenge.getType() == Challenge.Type.ISLAND) {
-            if (!tryCompleteOnIsland(player, challenge)) {
-                player.sendMessage(tr("\u00a74{0}", challenge.getDescription()));
-                player.sendMessage(tr("\u00a74You must be standing within {0} blocks of all required items.", challenge.getRadius()));
-            }
-        } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
-            if (!tryCompleteIslandLevel(player, challenge)) {
-                player.sendMessage(tr("\u00a74Your island must be level {0} to complete this challenge!", challenge.getRequiredLevel()));
-            }
-        }
-    }
-
-    // ------------------------------------------------------------
-    // New string-matching helpers (additive API; no call sites changed)
-    // ------------------------------------------------------------
-
     /**
      * Result object for challenge lookup that distinguishes between FOUND, NOT_FOUND, and AMBIGUOUS.
      */
@@ -340,6 +267,75 @@ public class ChallengeLogic implements Listener {
             if (list.size() >= max) break;
         }
         return list;
+    }
+
+    public @NotNull List<Rank> getRanks() {
+        return List.copyOf(ranks.values());
+    }
+
+    public @NotNull List<ChallengeKey> getAvailableChallenges(PlayerInfo playerInfo) {
+        List<ChallengeKey> list = new ArrayList<>();
+        if (playerInfo == null || !playerInfo.getHasIsland()) {
+            return list;
+        }
+        for (Rank rank : ranks.values()) {
+            if (rank.isAvailable(playerInfo)) {
+                for (Challenge challenge : rank.getChallenges()) {
+                    if (challenge.getMissingRequirements(playerInfo).isEmpty()) {
+                        list.add(challenge.getId());
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public @NotNull List<ChallengeKey> getAllChallengeIds() {
+        return List.copyOf(byId.keySet());
+    }
+
+    public @NotNull List<Challenge> getChallengesForRank(String rank) {
+        return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
+    }
+
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
+        PlayerInfo pi = plugin.getPlayerInfo(player);
+        Optional<Challenge> opt = getChallengeById(id);
+        if (opt.isEmpty()) {
+            player.sendMessage(tr("\u00a74No challenge with id {0} found", id.id()));
+            return;
+        }
+        Challenge challenge = opt.get();
+        if (!plugin.playerIsOnOwnIsland(player)) {
+            player.sendMessage(tr("\u00a74You must be on your island to do that!"));
+            return;
+        }
+        if (!challenge.getRank().isAvailable(pi)) {
+            player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
+            return;
+        }
+        ChallengeCompletion completion = getChallengeCompletion(pi, id);
+        if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
+            player.sendMessage(tr("\u00a74The {0} challenge is not repeatable!", challenge.getDisplayName()));
+            return;
+        }
+        if (completion.isOnCooldown() && completion.getTimesCompletedInCooldown() >= challenge.getRepeatLimit() && challenge.getRepeatLimit() > 0) {
+            player.sendMessage(tr("\u00a74You cannot complete the {0} challenge again yet!", challenge.getDisplayName()));
+            return;
+        }
+        player.sendMessage(tr("\u00a7eTrying to complete challenge \u00a7a{0}", challenge.getDisplayName()));
+        if (challenge.getType() == Challenge.Type.PLAYER) {
+            tryCompleteOnPlayer(player, challenge);
+        } else if (challenge.getType() == Challenge.Type.ISLAND) {
+            if (!tryCompleteOnIsland(player, challenge)) {
+                player.sendMessage(tr("\u00a74{0}", challenge.getDescription()));
+                player.sendMessage(tr("\u00a74You must be standing within {0} blocks of all required items.", challenge.getRadius()));
+            }
+        } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
+            if (!tryCompleteIslandLevel(player, challenge)) {
+                player.sendMessage(tr("\u00a74Your island must be level {0} to complete this challenge!", challenge.getRequiredLevel()));
+            }
+        }
     }
 
     /**
