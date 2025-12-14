@@ -71,6 +71,8 @@ public class ChallengeLogic implements Listener {
     private final HookManager hookManager;
 
     private final Map<String, Rank> ranks;
+    // Fast O(1) lookup for challenges by canonical id
+    private final Map<ChallengeKey, Challenge> byId = new HashMap<>();
 
     public final ChallengeDefaults defaults;
     public final ChallengeCompletionLogic completionLogic;
@@ -91,6 +93,7 @@ public class ChallengeLogic implements Listener {
         this.plugin = plugin;
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
         ranks = ChallengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
+        rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(plugin, config);
         String displayItemForLocked = config.getString("lockedDisplayItem", null);
         if (displayItemForLocked != null) {
@@ -108,6 +111,15 @@ public class ChallengeLogic implements Listener {
         }
         if (completionLogic.isIslandSharing()) {
             Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+        }
+    }
+
+    private void rebuildIndex() {
+        byId.clear();
+        for (Rank rank : ranks.values()) {
+            for (Challenge challenge : rank.getChallenges()) {
+                byId.put(challenge.getId(), challenge);
+            }
         }
     }
 
@@ -138,14 +150,11 @@ public class ChallengeLogic implements Listener {
         return list;
     }
 
-    public List<ChallengeKey> getAllChallengeIds() {
-        return ranks.values().stream()
-            .flatMap(rank -> rank.getChallenges().stream()
-                .map(Challenge::getId))
-            .toList();
+    public @NotNull List<ChallengeKey> getAllChallengeIds() {
+        return List.copyOf(byId.keySet());
     }
 
-    public List<Challenge> getChallengesForRank(String rank) {
+    public @NotNull List<Challenge> getChallengesForRank(String rank) {
         return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
     }
 
@@ -197,14 +206,7 @@ public class ChallengeLogic implements Listener {
      * Fast-path exact lookup by {@link ChallengeKey} id.
      */
     public Optional<Challenge> getChallengeById(@NotNull ChallengeKey key) {
-        for (Rank rank : ranks.values()) {
-            for (Challenge challenge : rank.getChallenges()) {
-                if (challenge.getId().equals(key)) {
-                    return Optional.of(challenge);
-                }
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(byId.get(key));
     }
 
     /**
@@ -223,21 +225,16 @@ public class ChallengeLogic implements Listener {
         Optional<Challenge> exactId = getChallengeById(ChallengeKey.of(inputLower));
         if (exactId.isPresent()) return exactId;
 
-        // Build list once for subsequent steps
-        List<Challenge> all = new ArrayList<>();
-        for (Rank r : ranks.values()) {
-            all.addAll(r.getChallenges());
-        }
+        // Snapshot values once for subsequent steps to avoid concurrent modification risks
+        Collection<Challenge> all = List.copyOf(byId.values());
 
         List<Challenge> candidates = new ArrayList<>();
 
         // 2) exact display name (color-stripped)
-        for (Rank rank : ranks.values()) {
-            for (Challenge c : rank.getChallenges()) {
-                String display = stripFormatting(c.getDisplayName());
-                if (normalizeLower(display).equals(inputLower)) {
-                    return Optional.of(c);
-                }
+        for (Challenge c : all) {
+            String display = stripFormatting(c.getDisplayName());
+            if (normalizeLower(display).equals(inputLower)) {
+                return Optional.of(c);
             }
         }
 
