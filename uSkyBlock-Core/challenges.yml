@@ -1,0 +1,1623 @@
+allowChallenges: true
+challengeSharing: island
+broadcastCompletion: true
+broadcastText: '&6'
+requirePreviousRank: true
+rankLeeway: 12
+defaultResetInHours: 20
+radius: 10
+repeatLimit: 0
+challengeColor: '&e'
+finishedColor: '&2'
+repeatableColor: '&a'
+enableEconomyPlugin: true
+resetChallengesOnCreate: true
+lockedDisplayItem: red_stained_glass_pane
+ISLAND:
+  lockedDisplayItem: blue_stained_glass_pane
+ISLAND_LEVEL:
+  lockedDisplayItem: black_stained_glass_pane
+showLockedChallengeName: true
+ranks:
+  Tier1:
+    name: '&7Novice'
+    displayItem: cyan_terracotta
+    resetInHours: 20
+    challenges:
+      cobblestonegenerator:
+        name: '&7Cobble Stone Generator'
+        description: Mine from a cobblestone generator.
+        type: onPlayer
+        requiredItems:
+        - cobblestone:64;+2
+        displayItem: cobblestone
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 3 leather, 20% chance to get a book
+          items:
+          - leather:3
+          - '{p=0.2}book:1'
+          currency: 10
+          xp: 10
+          commands:
+          - op:effect give {player} regeneration
+        repeatReward:
+          text: 1 leather, 10% chance to get a book
+          items:
+          - leather:1
+          - '{p=0.1}book:1'
+          currency: 5
+          xp: 5
+      applecollector:
+        name: '&6Apple Collector'
+        description: Collect apples from trees.
+        type: onPlayer
+        requiredItems:
+        - apple:2;+1
+        displayItem: apple
+        lockedDisplayItem: brown_stained_glass_pane
+        resetInHours: 6
+        reward:
+          text: 1 of each sapling, (4 dark oak)
+          items:
+          - oak_sapling:1
+          - spruce_sapling:1
+          - birch_sapling:1
+          - jungle_sapling:1
+          - acacia_sapling:1
+          - dark_oak_sapling:4
+          - '{p=0.2}jungle_sapling:3'
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 1 of each sapling (4 dark oak)
+          items:
+          - oak_sapling:1
+          - spruce_sapling:1
+          - birch_sapling:1
+          - jungle_sapling:1
+          - acacia_sapling:1
+          - dark_oak_sapling:4
+          - '{p=0.1}jungle_sapling:3'
+          currency: 10
+          xp: 10
+      sugarplanter:
+        name: '&9Sugar Planter'
+        type: onIsland
+        displayItem: sugar_cane
+        lockedDisplayItem: brown_stained_glass_pane
+        requiredBlocks:
+        - sugar_cane:4
+        reward:
+          text: 4 dirt
+          items:
+          - dirt:4
+          currency: 20
+          xp: 20
+      sugarfarmer:
+        name: '&6Sugar Farmer'
+        description: Harvest sugarcane from a farm.
+        type: onPlayer
+        requiredItems:
+        - sugar_cane:64;+16
+        offset: -1
+        displayItem: sugar_cane
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 dirt
+          items:
+          - dirt:8
+          - '{p=0.1}bone:1'
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 4 dirt
+          items:
+          - dirt:4
+          - '{p=0.05}dirt:4'
+          currency: 10
+          xp: 10
+      melonfarmer:
+        name: '&6Melon Farmer'
+        description: Harvest slices of melon from a farm.
+        type: onPlayer
+        requiredItems:
+        - melon_slice:128;+8
+        displayItem: melon
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 dirt
+          items:
+          - dirt:8
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 4 dirt
+          items:
+          - dirt:4
+          currency: 10
+          xp: 10
+      cactusfarmer:
+        name: '&6Cactus Farmer'
+        description: Harvest cacti from a farm.
+        type: onPlayer
+        requiredItems:
+        - cactus:64;+16
+        displayItem: cactus
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 sand, 20% chance to get a bone
+          items:
+          - sand:8
+          - '{p=0.2}bone:1'
+          - '{p=0.1}wooden_hoe:1'
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 4 sand
+          items:
+          - sand:4
+          - '{p=0.1}bone:1'
+          currency: 10
+          xp: 10
+      pumpkinfarmer:
+        name: '&6Pumpkin Farmer'
+        description: Harvest pumpkins from a farm.
+        type: onPlayer
+        requiredItems:
+        - pumpkin:64;+4
+        displayItem: pumpkin
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 dirt
+          items:
+          - dirt:8
+          - '{p=0.3}jack_o_lantern:1'
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 4 dirt
+          items:
+          - dirt:4
+          - '{p=0.05}jack_o_lantern:1'
+          currency: 10
+          xp: 10
+      stonebrickmaker:
+        name: '&aStone Brick Maker'
+        description: Make 64 Stone Bricks.
+        type: onPlayer
+        requiredItems:
+        - stone_bricks:64;+8
+        - stone_brick_slab:30;+6
+        - chiseled_stone_bricks:30;+6
+        - stone_brick_stairs:16;+4
+        displayItem: stone_bricks
+        lockedDisplayItem: gray_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron ore, 1 chicken
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          - chicken_spawn_egg:1
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore
+          items:
+          - redstone_ore:1
+          - iron_ore:1
+          currency: 15
+          xp: 15
+      novicebuilder:
+        name: '&7Novice Builder'
+        description: Reach island level 20.
+        type: islandLevel
+        requiredLevel: 20
+        displayItem: coal_ore
+        reward:
+          text: 8 dirt, 8 sand, 5 emeralds
+          items:
+          - dirt:8
+          - sand:8
+          - emerald:5
+          - diamond:1
+          currency: 20
+          xp: 20
+          commands:
+          - op:effect give {party} regeneration
+      adeptbuilder:
+        name: '&aAdept Builder'
+        description: Reach island level 50.
+        type: islandLevel
+        requiredLevel: 50
+        displayItem: iron_ore
+        offset: -1
+        reward:
+          text: 10 obsidian, 2 diamonds, 5 emeralds
+          items:
+          - obsidian:10
+          - emerald:5
+          - diamond:2
+          currency: 100
+          xp: 100
+      expertbuilder:
+        name: '&eExpert Builder'
+        description: Reach island level 100.
+        type: islandLevel
+        requiredLevel: 100
+        displayItem: gold_ore
+        offset: -1
+        reward:
+          text: 16 dirt, 16 sand, 3 diamonds, 5 emeralds
+          items:
+          - dirt:16
+          - sand:16
+          - emerald:5
+          - diamond:3
+          currency: 250
+          xp: 250
+      masterbuilder:
+        name: '&cMaster Builder'
+        description: Reach island level 250.
+        type: islandLevel
+        requiredLevel: 250
+        displayItem: diamond_ore
+        offset: -1
+        reward:
+          text: 32 dirt, 32 sand, 4 diamonds, 5 emeralds
+          items:
+          - dirt:32
+          - sand:32
+          - emerald:5
+          - diamond:4
+          currency: 500
+          xp: 500
+      skylord:
+        name: '&4Sky Lord'
+        description: Reach island level 500.
+        type: islandLevel
+        requiredLevel: 500
+        displayItem: emerald_ore
+        offset: -1
+        reward:
+          text: 64 dirt, 64 sand, 5 diamond, 5 emeralds
+          items:
+          - dirt:64
+          - sand:64
+          - diamond:5
+          - emerald:5
+          currency: 1000
+          xp: 1000
+  Tier2:
+    name: '&aAdept'
+    displayItem: lime_terracotta
+    resetInHours: 20
+    requires:
+      
+      # means disabled in effect
+      rankLeeway: 99
+      challenges:
+      - cobblestonegenerator
+      - novicebuilder
+    challenges:
+      lumberjack:
+        name: '&3Lumberjack'
+        description: Collect all types of wood logs.
+        type: onPlayer
+        requiredItems:
+        - oak_log:16;+2
+        - spruce_log:16;+2
+        - birch_log:16;+2
+        - jungle_log:16;+2
+        - acacia_log:16;+2
+        - dark_oak_log:16;+2
+        displayItem: oak_log
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron ore, 1 wolf
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          - wolf_spawn_egg:1
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore
+          items:
+          - redstone_ore:1
+          - iron_ore:1
+          currency: 15
+          xp: 15
+      shroompicker:
+        name: '&6Shroom Picker'
+        description: Collect red and brown mushrooms.
+        type: onPlayer
+        requiredItems:
+        - brown_mushroom:64;+4
+        - red_mushroom:64;+4
+        displayItem: red_mushroom
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 mycelium, 4 podzol
+          items:
+          - mycelium:8
+          - podzol:4
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 4 mycelium
+          items:
+          - mycelium:4
+          - '{p=0.02}mycelium:4'
+          - '{p=0.02}podzol:2'
+          currency: 15
+          xp: 15
+      potatofarmer:
+        name: '&6Potato Farmer'
+        description: Harvest potato's from a farm.
+        type: onPlayer
+        requiredItems:
+        - potato:64;+16
+        displayItem: potato
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 1 carrot, 4 dirt
+          items:
+          - carrot:1
+          - dirt:4
+          - '{p=0.10}beetroot_seeds:1'
+          - '{p=0.05}red_sand:1'
+          - '{p=0.01}diamond:1'
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 4 dirt and a baked potato
+          items:
+          - dirt:4
+          - baked_potato:1
+          - '{p=0.10}beetroot_seeds:1'
+          - '{p=0.05}red_sand:1'
+          - '{p=0.01}diamond:1'
+          currency: 25
+          xp: 25
+      carrotfarmer:
+        name: '&6Carrot Farmer'
+        description: Harvest carrot's from a farm.
+        type: onPlayer
+        requiredItems:
+        - carrot:64;+16
+        displayItem: carrot
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: a pig with saddle and a potato
+          items:
+          - saddle:1
+          - potato:1
+          - pig_spawn_egg:1
+          - '{p=0.05}red_sand:1'
+          - '{p=0.01}diamond:1'
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 1 golden carrot
+          items:
+          - golden_carrot:1
+          - '{p=0.05}sand:1'
+          - '{p=0.01}diamond:1'
+          currency: 25
+          xp: 25
+      wheatfarmer:
+        name: '&6Wheat Farmer'
+        description: Harvest wheat from a farm.
+        type: onPlayer
+        requiredItems:
+        - wheat:64;+16
+        displayItem: wheat
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 8 dirt
+          items:
+          - dirt:8
+          currency: 20
+          xp: 20
+        repeatReward:
+          text: 4 dirt
+          items:
+          - dirt:4
+          - '{p=0.2}bone:1'
+          currency: 10
+          xp: 10
+      monsterfarm:
+        name: '&5Monster Farm'
+        description: Build a mob farm and collect mob loot.
+        type: onPlayer
+        requiredItems:
+        - rotten_flesh:64;+4
+        - string:32;+2
+        - arrow:32;+2
+        - bone:32;+2
+        - gunpowder:16;+1
+        - spider_eye:5
+        displayItem: rotten_flesh
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron ore and 1 flint
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          - flint:1
+          - '{p=0.10}potato:1'
+          - '{p=0.10}carrot:1'
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore, 1 flint
+          items:
+          - redstone_ore:1
+          - iron_ore:4
+          - flint:1
+          - '{p=0.05}potato:1'
+          - '{p=0.05}carrot:1'
+          currency: 15
+          xp: 15
+      homeowner:
+        name: '&9Home Owner'
+        description: Build a house with furnishings.
+        type: onIsland
+        requiredChallenges:
+        - stonebrickmaker
+        requiredBlocks:
+        - red_bed:1
+        - crafting_table:1
+        - glass:1
+        - oak_door:1
+        - furnace:1
+        - bookshelf:1
+        - torch:1
+        lockedDisplayItem: blue_stained_glass_pane
+        displayItem: oak_door
+        reward:
+          text: 4 redstone ore, 5 inksac, 4 iron ore and some seeds
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          - ink_sac:5
+          - beetroot_seeds:1
+          currency: 40
+          xp: 40
+      netherportal:
+        name: '&9Nether Portal'
+        description: Build a nether portal on your island.
+        type: onIsland
+        requiredChallenges:
+        - adeptbuilder
+        - homeowner
+        requiredBlocks:
+        - obsidian:10
+        - nether_portal:1
+        displayItem: obsidian
+        lockedDisplayItem: blue_stained_glass_pane
+        reward:
+          text: 1 iron pickaxe, 1 iron shovel
+          items:
+          - iron_shovel:1
+          - iron_pickaxe:1
+          currency: 40
+          xp: 40
+      nethermining:
+        name: '&7Nether Mining'
+        description: Mine from your Nether island.
+        type: onPlayer
+        displayItem: netherrack
+        lockedDisplayItem: gray_stained_glass_pane
+        offset: -1
+        requiredItems:
+        - netherrack:64;+2
+        - soul_sand:16;+2
+        - gravel:16;+2
+        - quartz:32;+2
+        - glowstone:16;+2
+        - coarse_dirt:4;+2
+        reward:
+          text: 1 ghast tear, 1 magic bow
+          items:
+          - ghast_tear:1
+          - bow[enchantments={infinity:1,unbreaking:3}]:1
+          currency: 40
+          xp: 40
+        repeatReward:
+          text: a blaze-rod and a chance of ghast tear
+          items:
+          - blaze_rod:1
+          - '{p=0.10}ghast_tear:1'
+          currency: 20
+          xp: 20
+  Tier3:
+    name: '&eExpert'
+    displayItem: yellow_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+      - adeptbuilder
+    challenges:
+      toolmaker:
+        name: '&3Tool Maker'
+        description: Make all stone tools
+        type: onPlayer
+        requiredChallenges:
+        - lumberjack
+        requiredItems:
+        - stone_shovel:1
+        - stone_pickaxe:1
+        - stone_axe:1
+        - stone_hoe:1
+        displayItem: stone_axe
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron, 1 pig
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          - pig_spawn_egg:1
+          currency: 30
+          xp: 30
+      sawmill:
+        name: '&3Saw Mill'
+        description: Deliver a collection of processed wood
+        type: onPlayer
+        offset: -1
+        requiredChallenges:
+        - toolmaker
+        requiredItems:
+        - stripped_oak_log:8;+2
+        - stripped_spruce_log:8;+2
+        - stripped_birch_log:8;+2
+        - stripped_jungle_log:8;+2
+        - stripped_acacia_log:8;+2
+        - stripped_dark_oak_log:8;+2
+        displayItem: iron_axe
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron, cocoa and a mule
+          items:
+          - cocoa_beans:1
+          - redstone_ore:4
+          - iron_ore:4
+          - mule_spawn_egg:1
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore
+          items:
+          - redstone_ore:1
+          - iron_ore:1
+          - '{p=0.05}gold_ore:1'
+          currency: 15
+          xp: 15
+      torchmaker:
+        name: '&3Torch Maker'
+        description: Make 128 torches.
+        type: onPlayer
+        requiredChallenges:
+        - lumberjack
+        requiredItems:
+        - torch:128;+32
+        displayItem: torch
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: 4 redstone ore, 4 iron ore
+          items:
+          - redstone_ore:4
+          - iron_ore:4
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore
+          items:
+          - redstone_ore:1
+          - iron_ore:1
+          currency: 15
+          xp: 15
+      expertfarmer:
+        name: '&6Expert Farmer'
+        description: Harvest many different farming resources.
+        type: onPlayer
+        displayItem: iron_hoe
+        lockedDisplayItem: brown_stained_glass_pane
+        requiredChallenges:
+        - applecollector
+        - melonfarmer
+        - pumpkinfarmer
+        - wheatfarmer
+        - carrotfarmer
+        - potatofarmer
+        - cactusfarmer
+        - sugarfarmer
+        - shroompicker
+        requiredItems:
+        - melon_slice:256;+2
+        - sugar_cane:128;+2
+        - wheat:128;+2
+        - potato:128;+2
+        - carrot:128;+2
+        - pumpkin:128;+2
+        - cactus:128;+2
+        - beetroot:128;+2
+        reward:
+          text: a bucket, cocoa and a cow
+          items:
+          - bucket:1
+          - cocoa_beans:1
+          - cow_spawn_egg:1
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: a cow
+          items:
+          - cow_spawn_egg:1
+          currency: 25
+          xp: 25
+      fisherman:
+        name: '&5Fisherman'
+        description: Catch different types of fish.
+        type: onPlayer
+        requiredItems:
+        - cod:5;+1
+        - salmon:5;+1
+        - pufferfish:3;+1
+        - tropical_fish:1;+0
+        - ink_sac:5;+2
+        displayItem: cod
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 10 lapis blocks, 20 prismarine, kelp, deep-ocean
+          items:
+          - lapis_block:10
+          - prismarine:20
+          - kelp:1
+          - '{p=0.20}prismarine_crystals:5'
+          permission: usb.biome.deep_ocean
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 2 lapis, 5 prismarine, kelp and a chance at prismarine crystals
+          items:
+          - lapis_lazuli:2
+          - prismarine:5
+          - kelp:1
+          - '{p=0.20}prismarine_crystals:5'
+          currency: 25
+          xp: 25
+      woolcollector:
+        name: '&5Wool Collector'
+        description: Collect every color of wool.
+        type: onPlayer
+        displayItem: white_wool
+        lockedDisplayItem: purple_stained_glass_pane
+        requiredChallenges:
+        - monsterfarmer
+        requiredItems:
+        - white_wool:2;+4
+        - orange_wool:2;+4
+        - magenta_wool:2;+4
+        - light_blue_wool:2;+4
+        - yellow_wool:2;+4
+        - lime_wool:2;+4
+        - pink_wool:2;+4
+        - gray_wool:2;+4
+        - light_gray_wool:2;+4
+        - cyan_wool:2;+4
+        - purple_wool:2;+4
+        - blue_wool:2;+4
+        - brown_wool:2;+4
+        - green_wool:2;+4
+        - red_wool:2;+4
+        - black_wool:2;+4
+        reward:
+          text: 2 diamonds, sheep, emerald, flowers
+          items:
+          - diamond:2
+          - emerald:1
+          - sheep_spawn_egg:1
+          - rose_bush:1
+          - peony:1
+          permission: usb.biome.flower_forest
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: emerald, sheep, flowers
+          items:
+          - emerald:1
+          - sheep_spawn_egg:1
+          - rose_bush:1
+          - peony:1
+          currency: 35
+          xp: 35
+      maestro:
+        name: '&5Maestro'
+        description: Make a jukebox and collect all music discs.
+        type: onPlayer
+        requiredItems:
+        - music_disc_13:1
+        - music_disc_cat:1
+        - music_disc_blocks:1
+        - music_disc_chirp:1
+        - music_disc_far:1
+        - music_disc_mall:1
+        - music_disc_mellohi:1
+        - music_disc_stal:1
+        - music_disc_strad:1
+        - music_disc_ward:1
+        - music_disc_11:1
+        - music_disc_wait:1
+        - jukebox:1
+        displayItem: jukebox
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 3 diamonds, 1 gold block, 10 emeralds
+          items:
+          - diamond:3
+          - emerald:10
+          - gold_block:1
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 2 gold ore, 1 diamond
+          items:
+          - gold_ore:2
+          - diamond:1
+          - '{p=0.2}diamond:1'
+          currency: 35
+          xp: 35
+      ironfarm:
+        name: '&9Iron Farm'
+        description: Build an iron-farm.
+        type: onIsland
+        displayItem: iron_block
+        lockedDisplayItem: blue_stained_glass_pane
+        radius: 50
+        requiredChallenges:
+        - monsterfarm
+        - applecollector
+        requiredBlocks:
+        - oak_door:30
+        requiredEntities:
+        - Villager:10
+        - IRON_GOLEM:1
+        reward:
+          text: 2 gold blocks, 1 diamond block
+          items:
+          - gold_block:2
+          - diamond_block:1
+          currency: 500
+          xp: 400
+      netherfortress:
+        name: '&9Nether Fortress'
+        description: Build a netherfortress.
+        type: onIsland
+        radius: 50
+        requiredBlocks:
+        - nether_bricks:512
+        - nether_brick_slab:64
+        - nether_brick_fence:64
+        - nether_brick_stairs:64
+        - soul_sand:32
+        displayItem: nether_brick_fence
+        lockedDisplayItem: blue_stained_glass_pane
+        reward:
+          text: a wither-skull and a blaze rod and a chance of diamonds
+          items:
+          - wither_skeleton_skull:1
+          - blaze_rod:1
+          - '{p=0.05}diamond:3'
+          - '{p=0.10}diamond:2'
+          - '{p=0.15}diamond:1'
+          currency: 40
+          xp: 40
+  # ===============================================
+  Tier4:
+    name: '&cMaster'
+    displayItem: orange_terracotta
+    resetInHours: 20
+    requires:
+      
+      # disabled
+      rankLeeway: 99
+      challenges:
+      - expertbuilder
+    challenges:
+      glassmaker:
+        name: '&3Glassmaker'
+        description: Collect every color of stained glass.
+        type: onPlayer
+        displayItem: white_stained_glass
+        lockedDisplayItem: cyan_stained_glass_pane
+        requiredItems:
+        - white_stained_glass:8;+2
+        - orange_stained_glass:8;+2
+        - magenta_stained_glass:8;+2
+        - light_blue_stained_glass:8;+2
+        - yellow_stained_glass:8;+2
+        - lime_stained_glass:8;+2
+        - pink_stained_glass:8;+2
+        - gray_stained_glass:8;+2
+        - light_gray_stained_glass:8;+2
+        - cyan_stained_glass:8;+2
+        - purple_stained_glass:8;+2
+        - blue_stained_glass:8;+2
+        - brown_stained_glass:8;+2
+        - green_stained_glass:8;+2
+        - red_stained_glass:8;+2
+        - black_stained_glass:8;+2
+        reward:
+          text: 2 diamonds, 2 disks, 1 emeralds
+          items:
+          - diamond:2
+          - music_disc_ward:1
+          - music_disc_11:1
+          - emerald:1
+          - sunflower:1
+          - lilac:1
+          permission: usb.biome.flower_forest
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 30% chance on 1 or 2 disks, 1 emeralds
+          items:
+          - '{p=0.3}music_disc_ward:1'
+          - '{p=0.3}music_disc_11:1'
+          - emerald:1
+          - sunflower:1
+          - lilac:1
+          currency: 35
+          xp: 35
+      carpenter:
+        name: '&3Carpenter'
+        description: Collect all types of wood items.
+        type: onPlayer
+        requiredItems:
+        - jungle_stairs:16;+8
+        - spruce_door:1;+1
+        - dark_oak_fence_gate:2;+2
+        - acacia_fence:30;+15
+        - ladder:30;+15
+        - oak_trapdoor:4;+2
+        - oak_pressure_plate:2;+1
+        requiredChallenges:
+        - toolmaker
+        - lumberjack:2
+        displayItem: crafting_table
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: a parrot and a jukebox with some redstone and iron
+          items:
+          - parrot_spawn_egg:1
+          - jukebox:1
+          - redstone_ore:4
+          - iron_ore:4
+          currency: 30
+          xp: 30
+        repeatReward:
+          text: redstone, iron and a slim chance at a parrot
+          items:
+          - redstone_ore:1
+          - iron_ore:1
+          - '{p=0.25}jukebox:1'
+          - '{p=0.05}parrot_spawn_egg:1'
+          currency: 15
+          xp: 15
+      cookielover:
+        name: '&eCookie Lover'
+        description: Make cookies and a bucket of milk.
+        type: onPlayer
+        requiredChallenges:
+        - expertfarmer
+        requiredItems:
+        - cookie:128;+4
+        - milk_bucket:1
+        displayItem: cookie
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 4 redstone ore, clay a bucket and a diamond
+          items:
+          - redstone_ore:4
+          - clay:5
+          - diamond:1
+          - bucket:1
+          currency: 80
+          xp: 80
+        repeatReward:
+          text: iron ore and some clay
+          items:
+          - iron_ore:1
+          - clay:5
+          - bucket:1
+          - '{p=0.4}clay:3'
+          - '{p=0.3}iron_ore:2'
+          currency: 40
+          xp: 40
+      deepseafisherman:
+        name: '&5Deep Sea Fishing'
+        description: Farm the deep sea
+        type: onPlayer
+        requiredItems:
+        - cod:10;+5
+        - salmon:10;+5
+        - pufferfish:5;+3
+        - tropical_fish:3;+2
+        - prismarine_crystals:16;+8
+        - prismarine_shard:16;+8
+        - dried_kelp_block:64;+32
+        - nautilus_shell:1
+        displayItem: heart_of_the_sea
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: heart-of-the-sea, nautilus shell and a turtle
+          items:
+          - nautilus_shell:1
+          - heart_of_the_sea:1
+          - turtle_spawn_egg:1
+          - '{p=0.1}nautilus_shell:1'
+          permission: usb.biome.deep_ocean
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: nautilus shell, turtle and a chance of a heart
+          items:
+          - nautilus_shell:1
+          - turtle_spawn_egg:1
+          - '{p=0.05}heart_of_the_sea:1'
+          - '{p=0.1}nautilus_shell:1'
+          currency: 25
+          xp: 25
+      horsingaround:
+        name: '&6Horsing Around'
+        description: Get hay bales for the horses.
+        type: onPlayer
+        requiredItems:
+        - hay_block:32;+4
+        - lead:8;+2
+        - carrot_on_a_stick:1
+        - shears:1
+        requirecChallenges:
+        - wheatfarmer
+        displayItem: hay_block
+        lockedDisplayItem: brown_stained_glass_pane
+        reward:
+          text: 1 horse, 1 iron horse armor, 5% chance on diamond horse armor
+          items:
+          - iron_horse_armor:1
+          - horse_spawn_egg:1
+          - '{p=0.05}diamond_horse_armor:1'
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 1 redstone ore, 1 emerald
+          items:
+          - redstone:1
+          - emerald:1
+          currency: 25
+          xp: 25
+      slimefarmer:
+        name: '&5Slime Farmer'
+        description: Collect slimeballs from slimes.
+        type: onPlayer
+        requiredItems:
+        - slime_ball:64;+4
+        displayItem: slime_ball
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 1 diamond, 1 emeralds, swampland
+          items:
+          - diamond:1
+          - emerald:1
+          permission: usb.biome.swamp
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 1 redstone ore, 1 emeralds
+          items:
+          - redstone_ore:1
+          - emerald:1
+          currency: 35
+          xp: 35
+      animalfarm:
+        name: '&9Animal Farm'
+        description: Create an animal farm.
+        type: onIsland
+        displayItem: oak_fence
+        radius: 40
+        requiredChallenges:
+        - woolcollector
+        - potatofarmer
+        - carrotfarmer
+        requiredEntities:
+        - Cow:8
+        - Pig:8
+        - Chicken:16
+        - Sheep:{"Color":"WHITE"}
+        - Sheep:{"Color":"ORANGE"}
+        - Sheep:{"Color":"MAGENTA"}
+        - Sheep:{"Color":"LIGHT_BLUE"}
+        - Sheep:{"Color":"YELLOW"}
+        - Sheep:{"Color":"LIME"}
+        - Sheep:{"Color":"PINK"}
+        - Sheep:{"Color":"GRAY"}
+        - Sheep:{"Color":"LIGHT_GRAY"}
+        - Sheep:{"Color":"CYAN"}
+        - Sheep:{"Color":"PURPLE"}
+        - Sheep:{"Color":"BLUE"}
+        - Sheep:{"Color":"BROWN"}
+        - Sheep:{"Color":"GREEN"}
+        - Sheep:{"Color":"RED"}
+        - Sheep:{"Color":"BLACK"}
+        reward:
+          text: 1 horse, 1 iron horse armor, 5% chance horse armor
+          items:
+          - iron_horse_armor:1
+          - horse_spawn_egg:1
+          - '{p=0.05}iron_horse_armor:1'
+          - '{p=0.05}golden_horse_armor:1'
+          - '{p=0.05}diamond_horse_armor:1'
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 1 redstone ore, 1 emerald, 5% chance horse armor
+          items:
+          - redstone:1
+          - emerald:1
+          - '{p=0.05}iron_horse_armor:1'
+          - '{p=0.05}golden_horse_armor:1'
+          - '{p=0.05}diamond_horse_armor:1'
+          currency: 25
+          xp: 25
+      witherhunter:
+        name: '&5Wither Hunter'
+        description: Collect some Wither Skeleton skulls.
+        type: onPlayer
+        requiredChallenges:
+        - netherfortress
+        requiredItems:
+        - wither_skeleton_skull:10;+1
+        displayItem: wither_skeleton_skull
+        lockedDisplayItem: purple_stained_glass_pane
+        offset: -1
+        reward:
+          text: 5 diamonds, 5% chance of nether star
+          items:
+          - diamond:5
+          - '{p=0.05}nether_star:1'
+          currency: 400
+          xp: 400
+        repeatReward:
+          text: 2 gold ore, 5% chance of nether star
+          items:
+          - gold_ore:2
+          - '{p=0.05}nether_star:1'
+          currency: 20
+          xp: 20
+      pearlcollector:
+        name: '&5Pearl Collector'
+        description: Collect enderpearls from endermen.
+        type: onPlayer
+        requiredItems:
+        - ender_pearl:10;+4
+        displayItem: ender_pearl
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 5 gold ore, 1 blaze rod, 1 emerald
+          items:
+          - gold_ore:5
+          - blaze_rod:1
+          - emerald:1
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 1 gold ore, 1 blaze rod
+          items:
+          - gold_ore:1
+          - blaze_rod:1
+          currency: 35
+          xp: 35
+  
+  # ===============================================
+  Tier5:
+    name: '&4Sky Lord'
+    displayItem: red_terracotta
+    resetInHours: 48
+    requires:
+      challenges:
+      - masterbuilder
+    challenges:
+      technician:
+        name: '&3Technician'
+        description: Collect some of every type of redstone equipment.
+        type: onPlayer
+        requiredItems:
+        - redstone:64;+16
+        - redstone_torch:32;+4
+        - repeater:5;+1
+        - comparator:3;+1
+        - piston:2;+1
+        - sticky_piston:2;+1
+        - lever:1;+1
+        - stone_button:1;+1
+        - stone_pressure_plate:1;+1
+        - hopper:1;+1
+        - dispenser:1;+1
+        - dropper:1;+1
+        - daylight_detector:1;+1
+        displayItem: redstone
+        lockedDisplayItem: cyan_stained_glass_pane
+        reward:
+          text: some snow, ice and packed ice
+          items:
+          - snow_block:4
+          - ice:8
+          - packed_ice:8
+          - redstone_block:64
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: a stack of redstone blocks and some ice
+          items:
+          - redstone_block:64
+          - ice:4
+          - packed_ice:1
+          currency: 35
+          xp: 35
+      emeraldcollector:
+        name: '&5Emerald Collector'
+        description: Collect emeralds.
+        type: onPlayer
+        requiredItems:
+        - emerald:60;+10
+        displayItem: emerald
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: a full set of diamond armor
+          items:
+          - diamond_helmet:1
+          - diamond_chestplate:1
+          - diamond_leggings:1
+          - diamond_boots:1
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: full diamond armor
+          items:
+          - diamond_helmet:1
+          - diamond_chestplate:1
+          - diamond_leggings:1
+          - diamond_boots:1
+          currency: 35
+          xp: 35
+      topchef:
+        name: '&eTop Chef'
+        description: Collect every kind of edible food.
+        type: onPlayer
+        requiredItems:
+        - baked_potato:1
+        - bread:1
+        - cake:1
+        - cooked_chicken:1
+        - cooked_cod:1
+        - cooked_salmon:1
+        - tropical_fish:1
+        - cooked_porkchop:1
+        - cookie:1
+        - golden_apple:1
+        - golden_carrot:1
+        - mushroom_stew:1
+        - pumpkin_pie:1
+        - cooked_beef:1
+        - melon:1
+        - carrot:1
+        requiredChallenges:
+        - expertfarmer
+        - fisherman
+        - cookielover
+        displayItem: carrot
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 2 diamond, 1 mooshroom
+          items:
+          - diamond:2
+          - mooshroom_spawn_egg:1
+          currency: 80
+          xp: 80
+        repeatReward:
+          text: 1 diamond, 1 mooshroom
+          items:
+          - diamond:1
+          - mooshroom_spawn_egg:1
+          currency: 40
+          xp: 40
+      tajmahal:
+        name: '&9Taj Mahal'
+        description: Build a temple of quartz
+        type: onIsland
+        radius: 30
+        displayItem: quartz_block
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredChallenges:
+        - nethermining
+        requiredBlocks:
+        - quartz_block:512
+        - chiseled_quartz_block:64
+        - quartz_pillar:128
+        - quartz_stairs:64
+        - quartz_slab:192
+        reward:
+          text: 3 end-portal frames, red sand
+          items:
+          - end_portal_frame:3
+          - red_sand:64
+          currency: 1000
+          xp: 500
+      greatpyramid:
+        name: '&9Great Pyramid'
+        description: Build a pyramid of sandstone
+        type: onIsland
+        radius: 30
+        displayItem: sandstone
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredBlocks:
+        - sandstone:512
+        - chiseled_sandstone:64
+        - smooth_sandstone:128
+        - sandstone_stairs:64
+        - sandstone_slab:192
+        - red_sandstone:16
+        reward:
+          text: 3 end-portal frames, 3 diamonds, bow
+          items:
+          - end_portal_frame:3
+          - diamond:3
+          - bow[enchantments={infinity:1,power:5,unbreaking:3}]:1
+          currency: 1000
+          xp: 500
+      poseidonshalls:
+        name: '&9Poseidon''s Halls'
+        description: Build the halls of Poseidon
+        type: onIsland
+        radius: 50
+        displayItem: prismarine
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredChallenges:
+        - deepseafisherman
+        requiredBlocks:
+        - prismarine:512
+        - prismarine_bricks:128
+        - dark_prismarine:64
+        - sea_lantern:32
+        - conduit:1
+        - flower_pot:16
+        - vine:128
+        - poppy:10
+        - blue_orchid:10
+        - allium:10
+        - azure_bluet:10
+        - red_tulip:10
+        - orange_tulip:10
+        - white_tulip:10
+        - pink_tulip:10
+        - oxeye_daisy:10
+        - sunflower:10
+        - lilac:10
+        - rose_bush:10
+        - peony:10
+        reward:
+          text: 3 end-portal frames, 5 diamonds
+          items:
+          - end_portal_frame:3
+          - diamond:5
+          currency: 1000
+          xp: 500
+      beaconator:
+        name: '&9Beaconator'
+        description: Build a very expensive beacon.
+        type: onIsland
+        radius: 15
+        displayItem: beacon
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredChallenges:
+        - netherfortress
+        - ironfarm
+        - maestro
+        - witherhunter
+        requiredBlocks:
+        - beacon:1
+        - diamond_block:1
+        - emerald_block:8
+        - gold_block:25
+        - iron_block:49
+        reward:
+          items:
+          - end_portal_frame:3
+          - diamond_sword[enchantments={fire_aspect:1,sharpness:5,unbreaking:3}]:1
+          text: some end-portal-pieces and a magic diamond sword
+          currency: 4000
+          xp: 1000
+      endportal:
+        name: '&9End Portal'
+        description: Build and activate an end-portal.
+        type: onIsland
+        radius: 15
+        displayItem: end_portal_frame
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredChallenges:
+        - beaconator
+        - tajmahal
+        - poseidonshalls
+        - greatpyramid
+        requiredBlocks:
+        - end_portal_frame:12
+        - end_portal:9
+        reward:
+          text: 5 diamonds and some nice boots
+          items:
+          - diamond:5
+          - diamond_boots[enchantments={blast_protection:4,feather_falling:4,protection:4}]:1
+          currency: 4000
+          xp: 1000
+  
+  # ===============================================
+  Tier6:
+    name: '&aWorld Foods'
+    displayItem: light_gray_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+      - masterbuilder
+      - topchef
+    challenges:
+      fishandchips:
+        name: '&eFish & Chips'
+        description: Create the famous English Fish & Chips.
+        type: onPlayer
+        requiredItems:
+        - cooked_cod:32;+8
+        - baked_potato:32;+8
+        displayItem: cooked_cod
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 16 baked potatos, 1 disk, 4 emerald
+          items:
+          - baked_potato:16
+          - music_disc_13:1
+          - emerald:4
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Fish_and_chips
+            &2Click the link for more info'
+        repeatReward:
+          text: 30% chance on 1 disk, 1 emerald
+          items:
+          - emerald:1
+          - '{p=0.3}music_disc_13:1'
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Fish_and_chips
+            &2Click the link for more info'
+      smorrebrod:
+        name: '&eSmørrebrød'
+        description: Create the famous Danish smørrebrød.
+        type: onPlayer
+        requiredItems:
+        - bread:16;+4
+        - cooked_salmon:8;+4
+        - tropical_fish:2;+1
+        - cooked_porkchop:8;+4
+        - cooked_beef:8;+4
+        displayItem: cooked_cod
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 1 rod, 2 name tags, 2 ocelots
+          items:
+          - fishing_rod:1
+          - name_tag:2
+          - ocelot_spawn_egg:2
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Danish_cuisine
+            &2Click the link for more info'
+        repeatReward:
+          text: 1 emerald
+          items:
+          - emerald:1
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Danish_cuisine
+            &2Click the link for more info'
+      hutspot:
+        name: '&eHutspot'
+        description: Create the famous Dutch hutspot.
+        type: onPlayer
+        requiredItems:
+        - potato:64;+8
+        - carrot:64;+8
+        lockedDisplayItem: yellow_stained_glass_pane
+        displayItem: golden_carrot
+        reward:
+          text: 1 golden carrot, 1 disk, 4 emerald
+          items:
+          - golden_carrot:1
+          - music_disc_cat:1
+          - emerald:4
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Hutspot &2Click
+            the link for more info'
+        repeatReward:
+          text: 30% chance on 1 disk, 1 emerald
+          items:
+          - emerald:1
+          - '{p=0.3}music_disc_cat:1'
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Hutspot &2Click
+            the link for more info'
+      apfelstrudel:
+        name: '&eApfelstrudele'
+        description: Create the famous German apfelstrudel.
+        type: onPlayer
+        requiredItems:
+        - apple:8;+5
+        - wheat:16;+5
+        - sugar:16;+5
+        - milk_bucket:1
+        displayItem: golden_apple
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 1 bucket, 1 disk, 4 emerald
+          items:
+          - bucket:1
+          - emerald:4
+          - music_disc_blocks:1
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Apple_strudel &2Click
+            the link for more info'
+        repeatReward:
+          text: 1 bucket, 30% chance on 1 disk, 1 emerald
+          items:
+          - bucket:1
+          - emerald:1
+          - '{p=0.3}music_disc_blocks:1'
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Apple_strudel &2Click
+            the link for more info'
+      brownies:
+        name: '&eBrownies'
+        description: Create the famous American brownies.
+        type: onPlayer
+        requiredItems:
+        - wheat:16;+5
+        - sugar:16;+5
+        - egg:16;+5
+        - ink_sac:16;+5
+        - milk_bucket:1
+        displayItem: dark_oak_slab
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 1 bucket, 1 disk, 4 emerald
+          items:
+          - bucket:1
+          - emerald:4
+          - music_disc_far:1
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Chocolate_brownie
+            &2Click the link for more info'
+        repeatReward:
+          text: 1 bucket, 30% chance on 1 disk, 1 emerald
+          items:
+          - bucket:1
+          - emerald:1
+          - '{p=0.3}music_disc_far:1'
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Chocolate_brownie
+            &2Click the link for more info'
+      pastafunghi:
+        name: '&ePasta Funghi'
+        description: Create the famous Italian Pasta Funghi.
+        type: onPlayer
+        requiredItems:
+        - wheat:32;+8
+        - egg:32;+8
+        - brown_mushroom:16;+4
+        - red_mushroom:16;+4
+        - milk_bucket:1
+        displayItem: red_mushroom_block
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 2 rabbits, 1 bucket
+          items:
+          - bucket:1
+          - rabbit_spawn_egg:2
+          currency: 60
+          xp: 60
+          commands:
+          - console:msg {player} &9https://en.wikipedia.org/wiki/Pasta &2Click the
+            link for more info
+        repeatReward:
+          text: 30% chance on 1 disk, 1 emerald
+          items:
+          - emerald:1
+          - '{p=0.3}music_disc_13:1'
+          currency: 30
+          xp: 30
+          commands:
+          - console:msg {player} &9https://en.wikipedia.org/wiki/Pasta &2Click the
+            link for more info
+      chocolate:
+        name: '&eBelgian chocolate'
+        description: Create the famous belgian chocolate.
+        type: onPlayer
+        requiredItems:
+        - sugar:16;+5
+        - ink_sac:16;+5
+        - milk_bucket:1
+        displayItem: pig_spawn_egg
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 1 bucket, 1 disk, 4 emeralds
+          items:
+          - bucket:1
+          - emerald:4
+          - music_disc_mall:1
+          currency: 60
+          xp: 60
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Belgian_chocolate
+            &2Click the link for more info'
+        repeatReward:
+          text: 1 bucket, 30% chance on 1 disk, 1 emerald
+          items:
+          - bucket:1
+          - emerald:1
+          - '{p=0.3}music_disc_mall:1'
+          currency: 30
+          xp: 30
+          commands:
+          - 'console: msg {player} &9https://en.wikipedia.org/wiki/Belgian_chocolate
+            &2Click the link for more info'
+      baker:
+        name: '&ePâtisserie'
+        description: Bake cakes, pumpkin pies, and cookies.
+        type: onPlayer
+        requiredItems:
+        - cake:5;+1
+        - pumpkin_pie:5;+1
+        - cookie:128;+4
+        displayItem: cake
+        lockedDisplayItem: yellow_stained_glass_pane
+        reward:
+          text: 5 gold ore, 1 diamond
+          items:
+          - gold_ore:5
+          - diamond:1
+          currency: 80
+          xp: 80
+        repeatReward:
+          text: 2 iron ore, 1 gold ore
+          items:
+          - iron_ore:2
+          - gold_ore:1
+          currency: 40
+          xp: 40
+version: 107
