@@ -50,11 +50,11 @@ public class ChallengeFactory {
     }
 
     public static Challenge createChallenge(Rank rank, ConfigurationSection section, ChallengeDefaults defaults) {
-        String name = section.getName().toLowerCase();
+        ChallengeKey id = ChallengeKey.of(section.getName());
         if (section.getBoolean("disabled", false)) {
             return null; // Skip this challenge
         }
-        String displayName = section.getString("name", name);
+        String displayName = section.getString("name", id.id());
         Challenge.Type type = Challenge.Type.from(section.getString("type", "onPlayer"));
         List<ItemRequirement> requiredItems = section.getStringList("requiredItems").stream()
             .map(ItemStackUtil::createItemRequirement).toList();
@@ -77,7 +77,7 @@ public class ChallengeFactory {
         List<String> requiredChallenges = section.getStringList("requiredChallenges");
         int offset = section.getInt("offset", 0);
         int repeatLimit = section.getInt("repeatLimit", 0);
-        return new Challenge(name, displayName, description, type,
+        return new Challenge(id, displayName, description, type,
             requiredItems, requiredBlocks, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d),
             rank, resetDuration, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
             radius, reward, repeatReward, repeatLimit);

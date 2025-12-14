@@ -14,9 +14,11 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 
 /**
  * Shows information about a challenge
@@ -42,15 +44,16 @@ public class ChallengeInfoCommand extends AbstractCommand {
             sender.sendMessage(tr("\u00a7cCommand only available for players."));
             return false;
         }
-        String challengeName = String.join(" ", args);
-        Challenge challenge = challengeLogic.getChallenge(challengeName);
+        String challengeQuery = String.join(" ", args);
+        Optional<Challenge> optional = challengeLogic.findChallenge(challengeQuery);
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
-        if (challenge != null && challenge.getRank().isAvailable(playerInfo)) {
-            player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challengeName.toLowerCase());
+        if (optional.isPresent() && optional.get().getRank().isAvailable(playerInfo)) {
+            Challenge challenge = optional.get();
+            player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challenge.getDisplayName());
             if (challengeLogic.getRanks().size() > 1) {
                 player.sendMessage(tr("\u00a7eRank: ") + ChatColor.WHITE + challenge.getRank());
             }
-            ChallengeCompletion completion = playerInfo.getChallenge(challengeName);
+            ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
             if (completion.getTimesCompleted() > 0 && !challenge.isRepeatable()) {
                 player.sendMessage(tr("\u00a74This Challenge is not repeatable!"));
             }
@@ -67,7 +70,7 @@ public class ChallengeInfoCommand extends AbstractCommand {
             } else if (challenge.getType() == Challenge.Type.ISLAND) {
                 player.sendMessage(tr("\u00a74All required items must be placed on your island, within {0} blocks of you.", challenge.getRadius()));
             }
-            player.sendMessage(tr("\u00a7eTo complete this challenge, use \u00a7f/c c {0}", challengeName.toLowerCase()));
+            player.sendMessage(tr("\u00a7eTo complete this challenge, use \u00a7f/c c {0}", stripFormatting(challenge.getDisplayName())));
         } else {
             player.sendMessage(tr("\u00a74Invalid challenge name! Use /c help for more information"));
         }

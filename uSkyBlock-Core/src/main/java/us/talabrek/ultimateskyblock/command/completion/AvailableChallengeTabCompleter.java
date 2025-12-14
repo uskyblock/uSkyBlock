@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
@@ -36,6 +37,6 @@ public class AvailableChallengeTabCompleter extends AbstractTabCompleter {
                 return challengeLogic.getAvailableChallengeNames(pi);
             }
         }
-        return challengeLogic.getAllChallengeNames();
+        return challengeLogic.getAllChallengeIds().stream().map(ChallengeKey::id).toList();
     }
 }

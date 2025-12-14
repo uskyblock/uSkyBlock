@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
+import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -177,7 +178,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     }
 
     public void completeChallenge(Challenge challenge, boolean silent) {
-        uSkyBlock.getInstance().getChallengeLogic().completeChallenge(this, challenge.getName());
+        uSkyBlock.getInstance().getChallengeLogic().completeChallenge(this, challenge.getId());
         if (silent) {
             return;
         }
@@ -188,16 +189,27 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         }
     }
 
+    /**
+     * @deprecated use {@link us.talabrek.ultimateskyblock.challenge.ChallengeLogic#resetChallenge(PlayerInfo, us.talabrek.ultimateskyblock.challenge.ChallengeKey)}
+     */
     public void resetChallenge(final String challenge) {
-        uSkyBlock.getInstance().getChallengeLogic().resetChallenge(this, challenge);
+        uSkyBlock.getInstance().getChallengeLogic().resetChallenge(this, ChallengeKey.of(challenge));
     }
 
+    /**
+     * @deprecated use {@link us.talabrek.ultimateskyblock.challenge.ChallengeLogic#checkChallenge(PlayerInfo, us.talabrek.ultimateskyblock.challenge.ChallengeKey)}
+     */
+    @Deprecated
     public int checkChallenge(final String challenge) {
-        return uSkyBlock.getInstance().getChallengeLogic().checkChallenge(this, challenge);
+        return uSkyBlock.getInstance().getChallengeLogic().checkChallenge(this, ChallengeKey.of(challenge));
     }
 
+    /**
+     * @deprecated use {@link us.talabrek.ultimateskyblock.challenge.ChallengeLogic#getChallengeCompletion(PlayerInfo, us.talabrek.ultimateskyblock.challenge.ChallengeKey)}
+     */
+    @Deprecated
     public ChallengeCompletion getChallenge(final String challenge) {
-        return uSkyBlock.getInstance().getChallengeLogic().getChallenge(this, challenge);
+        return uSkyBlock.getInstance().getChallengeLogic().getChallengeCompletion(this, ChallengeKey.of(challenge));
     }
 
     public void resetAllChallenges() {

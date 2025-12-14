@@ -41,7 +41,7 @@ public class Challenge {
         }
     }
 
-    private final String name;
+    private final ChallengeKey id;
     private final String description;
     private final String displayName;
     private final Type type;
@@ -62,12 +62,12 @@ public class Challenge {
     private final Reward repeatReward;
     private final int repeatLimit;
 
-    public Challenge(String name, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
+    public Challenge(ChallengeKey id, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
                      @NotNull List<BlockRequirement> requiredBlocks, List<EntityMatch> requiredEntities,
                      List<String> requiredChallenges, double requiredLevel, Rank rank,
                      Duration resetDuration, ItemStack displayItem, String tool, ItemStack lockedItem, int offset,
                      boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
-        this.name = name;
+        this.id = id;
         this.displayName = displayName;
         this.type = type;
         this.requiredItems = requiredItems;
@@ -93,8 +93,16 @@ public class Challenge {
         return repeatReward != null;
     }
 
+    public ChallengeKey getId() {
+        return id;
+    }
+
+    /**
+     * @deprecated Use {@link #getId()} instead.
+     */
+    @Deprecated
     public String getName() {
-        return name;
+        return getId().id();
     }
 
     public String getDisplayName() {
@@ -290,7 +298,7 @@ public class Challenge {
     @Override
     public String toString() {
         return "Challenge{" +
-            "name='" + name + '\'' +
+            "id='" + id + '\'' +
             ", type=" + type +
             ", requiredItems='" + requiredItems + '\'' +
             ", rank='" + rank + '\'' +

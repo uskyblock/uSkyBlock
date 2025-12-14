@@ -17,8 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
@@ -30,17 +30,17 @@ public class ChallengeCompletionLogic {
     private final uSkyBlock plugin;
     private final File storageFolder;
     private final boolean storeOnIsland;
-    private final LoadingCache<String, Map<String, ChallengeCompletion>> completionCache;
+    private final LoadingCache<String, Map<ChallengeKey, ChallengeCompletion>> completionCache;
 
     public ChallengeCompletionLogic(uSkyBlock plugin, FileConfiguration config) {
         this.plugin = plugin;
         storeOnIsland = config.getString("challengeSharing", "island").equalsIgnoreCase("island");
         completionCache = CacheBuilder
             .from(plugin.getConfig().getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
-            .removalListener((RemovalListener<String, Map<String, ChallengeCompletion>>) removal -> saveToFile(removal.getKey(), removal.getValue()))
+            .removalListener((RemovalListener<String, Map<ChallengeKey, ChallengeCompletion>>) removal -> saveToFile(removal.getKey(), removal.getValue()))
             .build(new CacheLoader<>() {
                        @Override
-                       public @NotNull Map<String, ChallengeCompletion> load(@NotNull String id) {
+                       public @NotNull Map<ChallengeKey, ChallengeCompletion> load(@NotNull String id) {
                            return loadFromFile(id);
                        }
                    }
@@ -51,7 +51,7 @@ public class ChallengeCompletionLogic {
         }
     }
 
-    private void saveToFile(String id, Map<String, ChallengeCompletion> map) {
+    private void saveToFile(String id, Map<ChallengeKey, ChallengeCompletion> map) {
         File configFile = new File(storageFolder, id + ".yml");
         FileConfiguration fileConfiguration = new YamlConfiguration();
         saveToConfiguration(fileConfiguration, map);
@@ -62,9 +62,9 @@ public class ChallengeCompletionLogic {
         }
     }
 
-    private void saveToConfiguration(FileConfiguration configuration, Map<String, ChallengeCompletion> map) {
-        for (Map.Entry<String, ChallengeCompletion> entry : map.entrySet()) {
-            String challengeName = entry.getKey();
+    private void saveToConfiguration(FileConfiguration configuration, Map<ChallengeKey, ChallengeCompletion> map) {
+        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : map.entrySet()) {
+            String challengeName = entry.getKey().id();
             ChallengeCompletion completion = entry.getValue();
             ConfigurationSection section = configuration.createSection(challengeName);
             Instant cooldownUntil = completion.cooldownUntil();
@@ -75,7 +75,7 @@ public class ChallengeCompletionLogic {
         }
     }
 
-    private Map<String, ChallengeCompletion> loadFromFile(String id) {
+    private Map<ChallengeKey, ChallengeCompletion> loadFromFile(String id) {
         File configFile = new File(storageFolder, id + ".yml");
         if (!configFile.exists() && storeOnIsland) {
             IslandInfo islandInfo = plugin.getIslandInfo(id);
@@ -93,18 +93,19 @@ public class ChallengeCompletionLogic {
                 return loadFromConfiguration(fileConfiguration.getRoot());
             }
         }
-        return new ConcurrentHashMap<>();
+        return new HashMap<>();
     }
 
-    private Map<String, ChallengeCompletion> loadFromConfiguration(ConfigurationSection root) {
-        Map<String, ChallengeCompletion> challengeMap = new ConcurrentHashMap<>();
+    private Map<ChallengeKey, ChallengeCompletion> loadFromConfiguration(ConfigurationSection root) {
+        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
         plugin.getChallengeLogic().populateChallenges(challengeMap);
         if (root != null) {
-            for (String challengeName : challengeMap.keySet()) {
+            for (ChallengeKey challengeId : challengeMap.keySet()) {
+                String challengeName = challengeId.id();
                 long firstCompleted = root.getLong(challengeName + ".firstCompleted", 0);
                 Instant firstCompletedDuration = firstCompleted > 0 ? Instant.ofEpochMilli(firstCompleted) : null;
-                challengeMap.put(challengeName, new ChallengeCompletion(
-                    challengeName,
+                challengeMap.put(challengeId, new ChallengeCompletion(
+                    challengeId,
                     firstCompletedDuration,
                     root.getInt(challengeName + ".timesCompleted", 0),
                     root.getInt(challengeName + ".timesCompletedSinceTimer", 0)
@@ -114,7 +115,7 @@ public class ChallengeCompletionLogic {
         return challengeMap;
     }
 
-    public Map<String, ChallengeCompletion> getIslandChallenges(String islandName) {
+    public Map<ChallengeKey, ChallengeCompletion> getIslandChallenges(String islandName) {
         if (storeOnIsland && islandName != null) {
             try {
                 return completionCache.get(islandName);
@@ -122,15 +123,15 @@ public class ChallengeCompletionLogic {
                 plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + islandName);
             }
         }
-        return new ConcurrentHashMap<>();
+        return new HashMap<>();
     }
 
-    public Map<String, ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
+    public Map<ChallengeKey, ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
-            return new ConcurrentHashMap<>();
+            return new HashMap<>();
         }
         String id = getCacheId(playerInfo);
-        Map<String, ChallengeCompletion> challengeMap = new ConcurrentHashMap<>();
+        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
         try {
             challengeMap = completionCache.get(id);
         } catch (ExecutionException e) {
@@ -153,12 +154,12 @@ public class ChallengeCompletionLogic {
         return storeOnIsland ? playerInfo.locationForParty() : playerInfo.getUniqueId().toString();
     }
 
-    public void completeChallenge(PlayerInfo playerInfo, String challengeName) {
-        Map<String, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(challengeName)) {
-            ChallengeCompletion completion = challenges.get(challengeName);
+    public void completeChallenge(PlayerInfo playerInfo, ChallengeKey id) {
+        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        if (challenges.containsKey(id)) {
+            ChallengeCompletion completion = challenges.get(id);
             if (!completion.isOnCooldown()) {
-                Duration resetDuration = plugin.getChallengeLogic().getResetDuration(challengeName);
+                Duration resetDuration = plugin.getChallengeLogic().getResetDuration(id);
                 if (resetDuration.isPositive()) {
                     Instant now = Instant.now();
                     completion.setCooldownUntil(now.plus(resetDuration));
@@ -170,29 +171,29 @@ public class ChallengeCompletionLogic {
         }
     }
 
-    public void resetChallenge(PlayerInfo playerInfo, String challenge) {
-        Map<String, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(challenge)) {
-            challenges.get(challenge).setTimesCompleted(0);
-            challenges.get(challenge).setCooldownUntil(null);
+    public void resetChallenge(PlayerInfo playerInfo, ChallengeKey id) {
+        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        if (challenges.containsKey(id)) {
+            challenges.get(id).setTimesCompleted(0);
+            challenges.get(id).setCooldownUntil(null);
         }
     }
 
-    public int checkChallenge(PlayerInfo playerInfo, String challengeName) {
-        Map<String, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(challengeName)) {
-            return challenges.get(challengeName).getTimesCompleted();
+    public int checkChallenge(PlayerInfo playerInfo, ChallengeKey id) {
+        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        if (challenges.containsKey(id)) {
+            return challenges.get(id).getTimesCompleted();
         }
         return 0;
     }
 
-    public ChallengeCompletion getChallenge(PlayerInfo playerInfo, String challenge) {
-        Map<String, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        return challenges.get(challenge);
+    public ChallengeCompletion getChallenge(PlayerInfo playerInfo, ChallengeKey id) {
+        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        return challenges.get(id);
     }
 
     public void resetAllChallenges(PlayerInfo playerInfo) {
-        Map<String, ChallengeCompletion> challengeMap = new ConcurrentHashMap<>();
+        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
         plugin.getChallengeLogic().populateChallenges(challengeMap);
         completionCache.put(getCacheId(playerInfo), challengeMap);
     }
@@ -210,5 +211,4 @@ public class ChallengeCompletionLogic {
     public boolean isIslandSharing() {
         return storeOnIsland;
     }
-
 }

@@ -10,6 +10,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -32,19 +33,21 @@ public class ChallengeFormatTest {
     }
 
     private static void setupChallengeMock(PlayerInfo playerInfo, String challengeName, String displayName) {
+        ChallengeKey key = ChallengeKey.of(challengeName);
+
         ChallengeCompletion challengeCompletion = Mockito.mock(ChallengeCompletion.class);
         when(challengeCompletion.getTimesCompleted()).thenReturn(0);
-        when(challengeCompletion.getName()).thenReturn(challengeName);
-        when(playerInfo.getChallenge(MockitoHamcrest.argThat(is(challengeName)))).thenReturn(challengeCompletion);
+        when(challengeCompletion.getId()).thenReturn(key);
+        when(challengeLogic.getChallengeCompletion(MockitoHamcrest.argThat(is(playerInfo)), MockitoHamcrest.argThat(is(key)))).thenReturn(challengeCompletion);
 
         Challenge challenge = Mockito.mock(Challenge.class);
         when(challenge.getDisplayName()).thenReturn(displayName);
-        when(challengeLogic.getChallenge(MockitoHamcrest.argThat(is(challengeName)))).thenReturn(challenge);
+        when(challengeLogic.getChallengeById(MockitoHamcrest.argThat(is(key)))).thenReturn(Optional.of(challenge));
     }
 
     @Test
     public void getMissingRequirement_ZeroCompleted() {
-        ChallengeCompletion pumpkinfarmer = playerInfo.getChallenge("pumpkinfarmer");
+        ChallengeCompletion pumpkinfarmer = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("pumpkinfarmer"));
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(0);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
@@ -53,9 +56,9 @@ public class ChallengeFormatTest {
 
     @Test
     public void getMissingRequirement_PartiallyCompleted() {
-        ChallengeCompletion pumpkinfarmer = playerInfo.getChallenge("pumpkinfarmer");
+        ChallengeCompletion pumpkinfarmer = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("pumpkinfarmer"));
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(1);
-        ChallengeCompletion cobblestonegenerator = playerInfo.getChallenge("cobblestonegenerator");
+        ChallengeCompletion cobblestonegenerator = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("cobblestonegenerator"));
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(0);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
@@ -64,9 +67,9 @@ public class ChallengeFormatTest {
 
     @Test
     public void getMissingRequirement_OneFullyCompleted() {
-        ChallengeCompletion pumpkinfarmer = playerInfo.getChallenge("pumpkinfarmer");
+        ChallengeCompletion pumpkinfarmer = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("pumpkinfarmer"));
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(0);
-        ChallengeCompletion cobblestonegenerator = playerInfo.getChallenge("cobblestonegenerator");
+        ChallengeCompletion cobblestonegenerator = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("cobblestonegenerator"));
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(1);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
@@ -75,9 +78,9 @@ public class ChallengeFormatTest {
 
     @Test
     public void getMissingRequirement_AllFullyCompleted() {
-        ChallengeCompletion pumpkinfarmer = playerInfo.getChallenge("pumpkinfarmer");
+        ChallengeCompletion pumpkinfarmer = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("pumpkinfarmer"));
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(2);
-        ChallengeCompletion cobblestonegenerator = playerInfo.getChallenge("cobblestonegenerator");
+        ChallengeCompletion cobblestonegenerator = challengeLogic.getChallengeCompletion(playerInfo, ChallengeKey.of("cobblestonegenerator"));
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(1);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);

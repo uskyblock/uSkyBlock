@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.hook.HookManager;
@@ -42,8 +43,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -113,7 +116,7 @@ public class ChallengeLogic implements Listener {
         return config.getBoolean("allowChallenges", true);
     }
 
-    public List<Rank> getRanks() {
+    public @NotNull List<Rank> getRanks() {
         return List.copyOf(ranks.values());
     }
 
@@ -136,27 +139,38 @@ public class ChallengeLogic implements Listener {
         return list;
     }
 
-    public List<String> getAllChallengeNames() {
-        List<String> list = new ArrayList<>();
-        for (Rank rank : ranks.values()) {
-            for (Challenge challenge : rank.getChallenges()) {
-                list.add(challenge.getName());
-            }
-        }
-        return list;
+    public List<ChallengeKey> getAllChallengeIds() {
+        return ranks.values().stream()
+            .flatMap(rank -> rank.getChallenges().stream()
+                .map(Challenge::getId))
+            .toList();
     }
 
     public List<Challenge> getChallengesForRank(String rank) {
         return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
     }
 
-    public void completeChallenge(final Player player, String challengeName) {
-        final PlayerInfo pi = plugin.getPlayerInfo(player);
-        Challenge challenge = getChallenge(challengeName);
-        if (challenge == null) {
-            player.sendMessage(tr("\u00a74No challenge named {0} found", challengeName));
+    public void completeChallenge(final Player player, String userInput) {
+        Optional<Challenge> found = findChallenge(userInput);
+        if (found.isEmpty()) {
+            player.sendMessage(tr("\u00a74Invalid or ambiguous challenge name: {0}", userInput));
             return;
         }
+        completeChallenge(player, found.get().getId());
+    }
+
+    /**
+     * Preferred exact-id based completion API. Resolves the current Challenge instance
+     * by id and performs the completion checks/flow.
+     */
+    public void completeChallenge(final Player player, @NotNull ChallengeKey id) {
+        final PlayerInfo pi = plugin.getPlayerInfo(player);
+        Optional<Challenge> opt = getChallengeById(id);
+        if (opt.isEmpty()) {
+            player.sendMessage(tr("\u00a74No challenge with id {0} found", id.id()));
+            return;
+        }
+        Challenge challenge = opt.get();
         if (!plugin.playerIsOnOwnIsland(player)) {
             player.sendMessage(tr("\u00a74You must be on your island to do that!"));
             return;
@@ -165,8 +179,7 @@ public class ChallengeLogic implements Listener {
             player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
             return;
         }
-        challengeName = challenge.getName();
-        ChallengeCompletion completion = pi.getChallenge(challengeName);
+        ChallengeCompletion completion = getChallengeCompletion(pi, id);
         if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
             player.sendMessage(tr("\u00a74The {0} challenge is not repeatable!", challenge.getDisplayName()));
             return;
@@ -177,9 +190,9 @@ public class ChallengeLogic implements Listener {
         }
         player.sendMessage(tr("\u00a7eTrying to complete challenge \u00a7a{0}", challenge.getDisplayName()));
         if (challenge.getType() == Challenge.Type.PLAYER) {
-            tryComplete(player, challengeName, "onPlayer");
+            tryComplete(player, challenge, "onPlayer");
         } else if (challenge.getType() == Challenge.Type.ISLAND) {
-            if (!tryComplete(player, challengeName, "onIsland")) {
+            if (!tryComplete(player, challenge, "onIsland")) {
                 player.sendMessage(tr("\u00a74{0}", challenge.getDescription()));
                 player.sendMessage(tr("\u00a74You must be standing within {0} blocks of all required items.", challenge.getRadius()));
             }
@@ -190,26 +203,93 @@ public class ChallengeLogic implements Listener {
         }
     }
 
-    public Challenge getChallenge(String challengeName) {
-        List<Challenge> partialMatch = new ArrayList<>();
+    // ------------------------------------------------------------
+    // New string-matching helpers (additive API; no call sites changed)
+    // ------------------------------------------------------------
+
+    /**
+     * Fast-path exact lookup by {@link ChallengeKey} id.
+     */
+    public Optional<Challenge> getChallengeById(@NotNull ChallengeKey key) {
         for (Rank rank : ranks.values()) {
             for (Challenge challenge : rank.getChallenges()) {
-                if (challenge.getName().equalsIgnoreCase(challengeName)) {
-                    return challenge;
-                } else if (stripFormatting(challenge.getDisplayName()).equalsIgnoreCase(challengeName)) {
-                    return challenge;
-                } else if (challenge.getName().startsWith(challengeName)) {
-                    partialMatch.add(challenge);
+                if (challenge.getId().equals(key)) {
+                    return Optional.of(challenge);
                 }
             }
         }
-        if (partialMatch.size() == 1) {
-            return partialMatch.getFirst();
-        }
-        return null;
+        return Optional.empty();
     }
 
-    public boolean tryComplete(final Player player, final String challenge, final String type) {
+    /**
+     * Fuzzy find using standardized matching rules:
+     * 1) exact internal id (case-insensitive)
+     * 2) exact display name (color-stripped, case-insensitive)
+     * 3) exact slug (lowercase, no whitespace) against id and display
+     * 4) unique prefix on slug (min length 2)
+     * Returns empty if not found or ambiguous.
+     */
+    public Optional<Challenge> findChallenge(@NotNull String userInput) {
+        String inputLower = normalizeLower(userInput);
+        String inputSlug = toSlug(userInput);
+
+        // 1) exact internal id
+        Optional<Challenge> exactId = getChallengeById(ChallengeKey.of(inputLower));
+        if (exactId.isPresent()) return exactId;
+
+        // Build list once for subsequent steps
+        List<Challenge> all = new ArrayList<>();
+        for (Rank r : ranks.values()) {
+            all.addAll(r.getChallenges());
+        }
+
+        List<Challenge> candidates = new ArrayList<>();
+
+        // 2) exact display name (color-stripped)
+        for (Rank rank : ranks.values()) {
+            for (Challenge c : rank.getChallenges()) {
+                String display = stripFormatting(c.getDisplayName());
+                if (normalizeLower(display).equals(inputLower)) {
+                    return Optional.of(c);
+                }
+            }
+        }
+
+        // 3) exact slug match
+        for (Challenge c : all) {
+            if (toSlug(c.getId().id()).equals(inputSlug) || toSlug(stripFormatting(c.getDisplayName())).equals(inputSlug)) {
+                candidates.add(c);
+            }
+        }
+        if (candidates.size() == 1) return Optional.of(candidates.getFirst());
+        candidates.clear();
+
+        // 4) unique prefix on slug (min length 2)
+        if (inputSlug.length() >= 2) {
+            for (Challenge c : all) {
+                String idSlug = toSlug(c.getId().id());
+                String dnSlug = toSlug(stripFormatting(c.getDisplayName()));
+                if (idSlug.startsWith(inputSlug) || dnSlug.startsWith(inputSlug)) {
+                    candidates.add(c);
+                }
+            }
+            if (candidates.size() == 1) return Optional.of(candidates.getFirst());
+        }
+
+        return Optional.empty();
+    }
+
+    private static String normalizeLower(String s) {
+        return s == null ? "" : s.toLowerCase(Locale.ROOT).trim();
+    }
+
+    private static String toSlug(String s) {
+        if (s == null) return "";
+        // lower + remove all whitespace characters
+        return normalizeLower(s).replaceAll("\\s+", "");
+    }
+
+    private boolean tryComplete(final Player player, final Challenge challenge, final String type) {
         if (type.equalsIgnoreCase("onPlayer")) {
             return tryCompleteOnPlayer(player, challenge);
         } else if (type.equalsIgnoreCase("onIsland")) {
@@ -262,12 +342,11 @@ public class ChallengeLogic implements Listener {
      * Try to complete a {@link Challenge} on the island of the given {@link Player} where items or entities are
      * required to be present on the island.
      *
-     * @param player        Player to complete the challenge for.
-     * @param challengeName Challenge to complete.
-     * @return True if the challenge was completed succesfully, false otherwise.
+     * @param player    Player to complete the challenge for.
+     * @param challenge Challenge to complete.
+     * @return True if the challenge was completed successfully, false otherwise.
      */
-    private boolean tryCompleteOnIsland(Player player, String challengeName) {
-        Challenge challenge = getChallenge(challengeName);
+    private boolean tryCompleteOnIsland(Player player, Challenge challenge) {
         List<BlockRequirement> requiredBlocks = challenge.getRequiredBlocks();
         int radius = challenge.getRadius();
         if (islandContains(player, requiredBlocks, radius) && hasEntitiesNear(player, challenge.getRequiredEntities(), radius)) {
@@ -319,11 +398,10 @@ public class ChallengeLogic implements Listener {
     }
 
     // TODO: This logic is duplicated in SignLogic.tryComplete. Refactor to a common method.
-    private boolean tryCompleteOnPlayer(Player player, String challengeName) {
-        Challenge challenge = getChallenge(challengeName);
+    private boolean tryCompleteOnPlayer(@NotNull Player player, @NotNull Challenge challenge) {
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
-        ChallengeCompletion completion = playerInfo.getChallenge(challengeName);
-        if (challenge != null && completion != null) {
+        ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
+        if (completion != null) {
             StringBuilder sb = new StringBuilder();
             boolean hasAll = true;
             Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
@@ -341,7 +419,7 @@ public class ChallengeLogic implements Listener {
                     ItemStack[] itemsToRemove = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
                     var leftovers = player.getInventory().removeItem(itemsToRemove);
                     if (!leftovers.isEmpty()) {
-                        throw new IllegalStateException("Player " + player.getName() + " had items left over after completing challenge " + challengeName + ": " + leftovers);
+                        throw new IllegalStateException("Player " + player.getName() + " had items left over after completing challenge " + challenge.getId().id() + ": " + leftovers);
                     }
                 }
                 giveReward(player, challenge);
@@ -381,7 +459,7 @@ public class ChallengeLogic implements Listener {
         if (defaults.enableEconomyPlugin) {
             double rewBonus = 1;
             Perk perk = perkLogic.getPerk(player);
-            rewBonus +=perk.getRewBonus();
+            rewBonus += perk.getRewBonus();
             double currencyReward = reward.getCurrencyReward() * rewBonus;
             double percentage = (rewBonus - 1.0) * 100.0;
 
@@ -427,13 +505,12 @@ public class ChallengeLogic implements Listener {
         return true;
     }
 
-    public Duration getResetDuration(String challenge) {
-        return getChallenge(challenge).getResetDuration();
+    public Duration getResetDuration(ChallengeKey id) {
+        return getChallengeById(id).orElseThrow().getResetDuration();
     }
 
-    public ItemStack getItemStack(PlayerInfo playerInfo, String challengeName) {
-        Challenge challenge = getChallenge(challengeName);
-        ChallengeCompletion completion = playerInfo.getChallenge(challengeName);
+    private ItemStack getItemStack(PlayerInfo playerInfo, Challenge challenge) {
+        ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
         ItemStack currentChallengeItem = challenge.getDisplayItem(completion, defaults.enableEconomyPlugin);
         ItemMeta meta = currentChallengeItem.getItemMeta();
         List<String> lores = meta.getLore();
@@ -451,12 +528,12 @@ public class ChallengeLogic implements Listener {
         return currentChallengeItem;
     }
 
-    public void populateChallenges(Map<String, ChallengeCompletion> challengeMap) {
+    public void populateChallenges(Map<ChallengeKey, ChallengeCompletion> challengeMap) {
         for (Rank rank : ranks.values()) {
             for (Challenge challenge : rank.getChallenges()) {
-                String key = challenge.getName().toLowerCase();
-                if (!challengeMap.containsKey(key)) {
-                    challengeMap.put(key, new ChallengeCompletion(key, null, 0, 0));
+                ChallengeKey id = challenge.getId();
+                if (!challengeMap.containsKey(id)) {
+                    challengeMap.put(id, new ChallengeCompletion(id, null, 0, 0));
                 }
             }
         }
@@ -551,9 +628,8 @@ public class ChallengeLogic implements Listener {
                 break;
             }
             lores.clear();
-            String challengeName = challenge.getName();
             try {
-                currentChallengeItem = getItemStack(playerInfo, challengeName);
+                currentChallengeItem = getItemStack(playerInfo, challenge);
                 List<String> missingReqs = challenge.getMissingRequirements(playerInfo);
                 if (!missingRankRequirements.isEmpty() || !missingReqs.isEmpty()) {
                     if (!isAdminAccess) {
@@ -600,38 +676,25 @@ public class ChallengeLogic implements Listener {
         return completionLogic.getChallenges(playerInfo).values();
     }
 
-    public void completeChallenge(PlayerInfo playerInfo, String challengeName) {
-        completionLogic.completeChallenge(playerInfo, challengeName);
+    public void completeChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
+        completionLogic.completeChallenge(playerInfo, challengeId);
     }
 
-    public void resetChallenge(PlayerInfo playerInfo, String challenge) {
-        completionLogic.resetChallenge(playerInfo, challenge);
+    public void resetChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
+        completionLogic.resetChallenge(playerInfo, challengeId);
     }
 
-    public int checkChallenge(PlayerInfo playerInfo, String challenge) {
-        return completionLogic.checkChallenge(playerInfo, challenge);
+    public int checkChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
+        return completionLogic.checkChallenge(playerInfo, challengeId);
     }
 
-    public ChallengeCompletion getChallenge(PlayerInfo playerInfo, String challenge) {
-        return completionLogic.getChallenge(playerInfo, challenge);
+    public @Nullable ChallengeCompletion getChallengeCompletion(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey challengeId) {
+        return completionLogic.getChallenge(playerInfo, challengeId);
     }
 
-    public ChallengeCompletion getIslandCompletion(String islandName, String challengeName) {
-        Map<String, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
-        if (challenges.containsKey(challengeName)) {
-            return challenges.get(challengeName);
-        } else {
-            ChallengeCompletion chal = null;
-            for (String k : challenges.keySet()) {
-                if (k.startsWith(challengeName)) {
-                    if (chal != null) {
-                        return null;
-                    }
-                    chal = challenges.get(k);
-                }
-            }
-            return chal;
-        }
+    public @Nullable ChallengeCompletion getIslandCompletion(@NotNull String islandName, @NotNull ChallengeKey challengeId) {
+        Map<ChallengeKey, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
+        return challenges.get(challengeId);
     }
 
     public void resetAllChallenges(PlayerInfo playerInfo) {
@@ -655,11 +718,11 @@ public class ChallengeLogic implements Listener {
         if (!completionLogic.isIslandSharing() || !(e.getPlayerInfo() instanceof PlayerInfo playerInfo)) {
             return;
         }
-        Map<String, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
+        Map<ChallengeKey, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
         List<String> permissions = new ArrayList<>();
-        for (Map.Entry<String, ChallengeCompletion> entry : completions.entrySet()) {
+        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : completions.entrySet()) {
             if (entry.getValue().getTimesCompleted() > 0) {
-                Challenge challenge = getChallenge(entry.getKey());
+                Challenge challenge = getChallengeById(entry.getKey()).orElseThrow();
                 if (challenge.getReward().getPermissionReward() != null) {
                     permissions.addAll(Arrays.asList(challenge.getReward().getPermissionReward().split(" ")));
                 }

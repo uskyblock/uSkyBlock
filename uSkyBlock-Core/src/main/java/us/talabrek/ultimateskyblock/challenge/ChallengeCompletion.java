@@ -7,22 +7,29 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.ChallengeCompletion {
-    private String name;
+    private final ChallengeKey id;
     private Instant cooldownUntil;
     private int timesCompleted;
     private int timesCompletedInCooldown;
 
-    public ChallengeCompletion(final String name, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
-        super();
-        this.name = name;
+    public ChallengeCompletion(@NotNull ChallengeKey id, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
+        this.id = id;
         this.cooldownUntil = cooldownUntil;
         this.timesCompleted = timesCompleted;
         this.timesCompletedInCooldown = timesCompletedInCooldown;
     }
 
+    public ChallengeKey getId() {
+        return id;
+    }
+
+    /**
+     * @deprecated Use {@link #getId()} instead.
+     */
+    @Deprecated
     @Override
     public String getName() {
-        return this.name;
+        return this.getId().id();
     }
 
     @Override
@@ -66,9 +73,5 @@ public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.Cha
     public void addTimesCompleted() {
         ++this.timesCompleted;
         ++this.timesCompletedInCooldown;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 }

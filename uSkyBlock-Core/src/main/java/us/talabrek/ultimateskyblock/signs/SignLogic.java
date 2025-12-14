@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
+import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -196,14 +197,16 @@ public class SignLogic {
         if (challengeName == null) {
             return;
         }
-        final Challenge challenge = challengeLogic.getChallenge(challengeName);
-        if (challenge == null || challenge.getType() != Challenge.Type.PLAYER) {
-            return;
+        var optional = challengeLogic.findChallenge(challengeName);
+        if (optional.isEmpty() || optional.get().getType() != Challenge.Type.PLAYER) {
+            return;  // TODO: proper player feedback
         }
+        Challenge challenge = optional.get();
+        ChallengeKey challengeId = challenge.getId();
         Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
         boolean isChallengeAvailable = false;
         if (challengeLogic.isIslandSharing()) {
-            final ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeName);
+            final ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
             if (completion != null) {
                 requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
             }
@@ -304,10 +307,11 @@ public class SignLogic {
             String chestLocString = config.getString("signs." + signLoc + ".chest", null);
             final Location chestLoc = LocationUtil.fromString(chestLocString);
             if (islandName != null && chestLoc != null) {
-                final Challenge challenge = challengeLogic.getChallenge(challengeName);
-                if (challenge == null || challenge.getType() != Challenge.Type.PLAYER) {
-                    return;
+                var optional = challengeLogic.findChallenge(challengeName);
+                if (optional.isEmpty() || optional.get().getType() != Challenge.Type.PLAYER) {
+                    return; // TODO: proper player feedback
                 }
+                Challenge challenge = optional.get();
                 PlayerInfo playerInfo = plugin.getPlayerInfo(player);
                 if (playerInfo == null) {
                     return;
@@ -334,7 +338,7 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        ChallengeCompletion completion = challengeLogic.getChallenge(playerInfo, challenge.getName());
+        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
         Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
         int missing = 0;
         for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
