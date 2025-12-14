@@ -253,7 +253,7 @@ public class ChallengeLogic implements Listener {
     }
 
     // Fixed matching parameters (kept simple as per design decision)
-    private static final int MIN_PREFIX_LENGTH = 2;
+    private static final int MIN_PREFIX_LENGTH = 6;
     private static final int MAX_SUGGESTIONS = 5;
 
     /**
