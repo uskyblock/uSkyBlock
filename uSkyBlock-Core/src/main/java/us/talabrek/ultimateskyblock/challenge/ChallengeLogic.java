@@ -201,6 +201,62 @@ public class ChallengeLogic implements Listener {
     // ------------------------------------------------------------
 
     /**
+     * Result object for challenge lookup that distinguishes between FOUND, NOT_FOUND, and AMBIGUOUS.
+     */
+    public static final class ChallengeLookupResult {
+        public enum Status {FOUND, NOT_FOUND, AMBIGUOUS}
+
+        private final Status status;
+        private final @Nullable Challenge challenge;
+        private final @NotNull List<String> suggestions;
+        private final @NotNull String normalizedInput;
+
+        private ChallengeLookupResult(
+            Status status,
+            @Nullable Challenge challenge,
+            @NotNull List<String> suggestions,
+            @NotNull String normalizedInput
+        ) {
+            this.status = status;
+            this.challenge = challenge;
+            this.suggestions = List.copyOf(suggestions);
+            this.normalizedInput = normalizedInput;
+        }
+
+        public static ChallengeLookupResult found(@NotNull Challenge c, @NotNull String normalizedInput) {
+            return new ChallengeLookupResult(Status.FOUND, c, Collections.emptyList(), normalizedInput);
+        }
+
+        public static ChallengeLookupResult notFound(@NotNull String normalizedInput) {
+            return new ChallengeLookupResult(Status.NOT_FOUND, null, Collections.emptyList(), normalizedInput);
+        }
+
+        public static ChallengeLookupResult ambiguous(@NotNull List<String> suggestions, @NotNull String normalizedInput) {
+            return new ChallengeLookupResult(Status.AMBIGUOUS, null, suggestions, normalizedInput);
+        }
+
+        public Status getStatus() {
+            return status;
+        }
+
+        public @Nullable Challenge getChallenge() {
+            return challenge;
+        }
+
+        public @NotNull List<String> getSuggestions() {
+            return suggestions;
+        }
+
+        public @NotNull String getNormalizedInput() {
+            return normalizedInput;
+        }
+    }
+
+    // Fixed matching parameters (kept simple as per design decision)
+    private static final int MIN_PREFIX_LENGTH = 2;
+    private static final int MAX_SUGGESTIONS = 5;
+
+    /**
      * Fast-path exact lookup by {@link ChallengeKey} id.
      */
     public Optional<Challenge> getChallengeById(@NotNull ChallengeKey key) {
@@ -208,45 +264,49 @@ public class ChallengeLogic implements Listener {
     }
 
     /**
-     * Fuzzy find using standardized matching rules:
+     * Resolve a user-provided input into a challenge, returning detailed status.
+     * Fuzzy find using the following matching rules, in that order:
      * 1) exact internal id (case-insensitive)
      * 2) exact display name (color-stripped, case-insensitive)
      * 3) exact slug (lowercase, no whitespace) against id and display
-     * 4) unique prefix on slug (min length 2)
-     * Returns empty if not found or ambiguous.
+     * 4) prefix on slug (case-insensitive), requires unique match; otherwise AMBIGUOUS
      */
-    public Optional<Challenge> findChallenge(@NotNull String userInput) {
+    public @NotNull ChallengeLookupResult resolveChallenge(@NotNull String userInput) {
+
         String inputLower = normalizeLower(userInput);
         String inputSlug = toSlug(userInput);
 
         // 1) exact internal id
         Optional<Challenge> exactId = getChallengeById(ChallengeKey.of(inputLower));
-        if (exactId.isPresent()) return exactId;
+        if (exactId.isPresent()) {
+            return ChallengeLookupResult.found(exactId.get(), inputLower);
+        }
 
-        // Snapshot values once for subsequent steps to avoid concurrent modification risks
         Collection<Challenge> all = List.copyOf(byId.values());
-
-        List<Challenge> candidates = new ArrayList<>();
 
         // 2) exact display name (color-stripped)
         for (Challenge c : all) {
             String display = stripFormatting(c.getDisplayName());
             if (normalizeLower(display).equals(inputLower)) {
-                return Optional.of(c);
+                return ChallengeLookupResult.found(c, inputLower);
             }
         }
 
-        // 3) exact slug match
+        // 3) exact slug match – collect candidates
+        List<Challenge> candidates = new ArrayList<>();
         for (Challenge c : all) {
             if (toSlug(c.getId().id()).equals(inputSlug) || toSlug(stripFormatting(c.getDisplayName())).equals(inputSlug)) {
                 candidates.add(c);
             }
         }
-        if (candidates.size() == 1) return Optional.of(candidates.getFirst());
-        candidates.clear();
+        if (candidates.size() == 1) {
+            return ChallengeLookupResult.found(candidates.getFirst(), inputLower);
+        } else if (candidates.size() > 1) {
+            return ChallengeLookupResult.ambiguous(toSuggestionList(candidates, MAX_SUGGESTIONS), inputLower);
+        }
 
-        // 4) unique prefix on slug (min length 2)
-        if (inputSlug.length() >= 2) {
+        // 4) unique prefix on slug
+        if (inputSlug.length() >= MIN_PREFIX_LENGTH) {
             for (Challenge c : all) {
                 String idSlug = toSlug(c.getId().id());
                 String dnSlug = toSlug(stripFormatting(c.getDisplayName()));
@@ -254,10 +314,14 @@ public class ChallengeLogic implements Listener {
                     candidates.add(c);
                 }
             }
-            if (candidates.size() == 1) return Optional.of(candidates.getFirst());
+            if (candidates.size() == 1) {
+                return ChallengeLookupResult.found(candidates.getFirst(), inputLower);
+            } else if (candidates.size() > 1) {
+                return ChallengeLookupResult.ambiguous(toSuggestionList(candidates, MAX_SUGGESTIONS), inputLower);
+            }
         }
 
-        return Optional.empty();
+        return ChallengeLookupResult.notFound(inputLower);
     }
 
     private static String normalizeLower(String s) {
@@ -266,8 +330,16 @@ public class ChallengeLogic implements Listener {
 
     private static String toSlug(String s) {
         if (s == null) return "";
-        // lower + remove all whitespace characters
         return normalizeLower(s).replaceAll("\\s+", "");
+    }
+
+    private static List<String> toSuggestionList(List<Challenge> candidates, int max) {
+        List<String> list = new ArrayList<>();
+        for (Challenge c : candidates) {
+            list.add(stripFormatting(c.getDisplayName()));
+            if (list.size() >= max) break;
+        }
+        return list;
     }
 
     private boolean tryComplete(final Player player, final Challenge challenge, final String type) {

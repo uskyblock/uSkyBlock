@@ -14,7 +14,6 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -45,10 +44,10 @@ public class ChallengeInfoCommand extends AbstractCommand {
             return false;
         }
         String challengeQuery = String.join(" ", args);
-        Optional<Challenge> optional = challengeLogic.findChallenge(challengeQuery);
+        var result = challengeLogic.resolveChallenge(challengeQuery);
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
-        if (optional.isPresent() && optional.get().getRank().isAvailable(playerInfo)) {
-            Challenge challenge = optional.get();
+        if (result.getStatus() == ChallengeLogic.ChallengeLookupResult.Status.FOUND && result.getChallenge().getRank().isAvailable(playerInfo)) {
+            Challenge challenge = result.getChallenge();
             player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challenge.getDisplayName());
             if (challengeLogic.getRanks().size() > 1) {
                 player.sendMessage(tr("\u00a7eRank: ") + ChatColor.WHITE + challenge.getRank());
@@ -72,7 +71,17 @@ public class ChallengeInfoCommand extends AbstractCommand {
             }
             player.sendMessage(tr("\u00a7eTo complete this challenge, use \u00a7f/c c {0}", stripFormatting(challenge.getDisplayName())));
         } else {
-            player.sendMessage(tr("\u00a74Invalid challenge name! Use /c help for more information"));
+            switch (result.getStatus()) {
+                case AMBIGUOUS -> {
+                    String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
+                    player.sendMessage(tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+                }
+                case NOT_FOUND -> player.sendMessage(tr("\u00a74Invalid challenge name! Use /c help for more information"));
+                case FOUND -> {
+                    // FOUND but rank not available
+                    player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", result.getChallenge().getDisplayName()));
+                }
+            }
         }
         return true;
     }

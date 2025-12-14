@@ -197,11 +197,11 @@ public class SignLogic {
         if (challengeName == null) {
             return;
         }
-        var optional = challengeLogic.findChallenge(challengeName);
-        if (optional.isEmpty() || optional.get().getType() != Challenge.Type.PLAYER) {
+        var result = challengeLogic.resolveChallenge(challengeName);
+        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND || result.getChallenge().getType() != Challenge.Type.PLAYER) {
             return;  // TODO: proper player feedback
         }
-        Challenge challenge = optional.get();
+        Challenge challenge = result.getChallenge();
         ChallengeKey challengeId = challenge.getId();
         Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
         boolean isChallengeAvailable = false;
@@ -307,11 +307,12 @@ public class SignLogic {
             String chestLocString = config.getString("signs." + signLoc + ".chest", null);
             final Location chestLoc = LocationUtil.fromString(chestLocString);
             if (islandName != null && chestLoc != null) {
-                var optional = challengeLogic.findChallenge(challengeName);
-                if (optional.isEmpty() || optional.get().getType() != Challenge.Type.PLAYER) {
+                var lookupResult = challengeLogic.resolveChallenge(challengeName);
+                if (lookupResult.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND
+                    || lookupResult.getChallenge().getType() != Challenge.Type.PLAYER) {
                     return; // TODO: proper player feedback
                 }
-                Challenge challenge = optional.get();
+                Challenge challenge = lookupResult.getChallenge();
                 PlayerInfo playerInfo = plugin.getPlayerInfo(player);
                 if (playerInfo == null) {
                     return;

@@ -133,16 +133,27 @@ public class AdminChallengeCommand extends CompositeCommand {
             if (playerInfo != null && args.length > 0) {
                 // Join all remaining args to support multi-word names and display names
                 String userInput = String.join(" ", args);
-                // Resolve using the unified fuzzy finder, then operate by canonical id
-                Challenge challenge = challengeLogic.findChallenge(userInput).orElse(null);
-                if (challenge != null) {
-                    ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
-                    if (completion != null) {
-                        doExecute(sender, playerInfo, completion);
-                        return true;
+                // Resolve using the unified fuzzy resolver, then operate by canonical id
+                var result = challengeLogic.resolveChallenge(userInput);
+                switch (result.getStatus()) {
+                    case FOUND -> {
+                        Challenge challenge = result.getChallenge();
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
+                        if (completion != null) {
+                            doExecute(sender, playerInfo, completion);
+                            return true;
+                        }
+                    }
+                    case AMBIGUOUS -> {
+                        String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
+                        sender.sendMessage(I18nUtil.tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+                        return false;
+                    }
+                    case NOT_FOUND -> {
+                        sender.sendMessage(I18nUtil.tr("\u00a74No challenge named {0} was found!", result.getNormalizedInput()));
+                        return false;
                     }
                 }
-                sender.sendMessage(I18nUtil.tr("\u00a74No challenge named {0} was found!", userInput));
             } else {
                 sender.sendMessage(I18nUtil.tr("\u00a74No player named {0} was found!", data.get("player")));
             }

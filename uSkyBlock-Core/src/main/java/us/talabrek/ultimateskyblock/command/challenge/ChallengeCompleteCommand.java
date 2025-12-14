@@ -36,11 +36,14 @@ public class ChallengeCompleteCommand extends AbstractCommand {
             return false;
         }
         String challengeName = String.join(" ", args);
-        Optional<Challenge> found = challengeLogic.findChallenge(challengeName);
-        if (found.isEmpty()) {
-            player.sendMessage(tr("\u00a74Invalid or ambiguous challenge name: {0}", challengeName));
-        } else {
-            challengeLogic.completeChallenge(player, found.get().getId());
+        var result = challengeLogic.resolveChallenge(challengeName);
+        switch (result.getStatus()) {
+            case FOUND -> challengeLogic.completeChallenge(player, result.getChallenge().getId());
+            case AMBIGUOUS -> {
+                String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
+                player.sendMessage(tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+            }
+            case NOT_FOUND -> player.sendMessage(tr("\u00a74No challenge matched: {0}", result.getNormalizedInput()));
         }
         return true;
     }
