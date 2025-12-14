@@ -86,7 +86,8 @@ public class ToolMenuEvents implements Listener {
         String command = commandMap.get(itemId);
         if (command.startsWith(COMPLETE_CHALLENGE_CMD)) {
             String challengeName = command.substring(COMPLETE_CHALLENGE_CMD.length());
-            if (plugin.getChallengeLogic().getAvailableChallengeNames(plugin.getPlayerInfo(player)).contains(challengeName)) {
+            var challengeId = ChallengeKey.of(challengeName);
+            if (plugin.getChallengeLogic().getAvailableChallenges(plugin.getPlayerInfo(player)).contains(challengeId)) {
                 e.setCancelled(true);
                 plugin.execCommand(player, command, true);
             }

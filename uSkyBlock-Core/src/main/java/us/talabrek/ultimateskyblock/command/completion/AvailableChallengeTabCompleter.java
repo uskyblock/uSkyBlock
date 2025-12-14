@@ -31,12 +31,16 @@ public class AvailableChallengeTabCompleter extends AbstractTabCompleter {
 
     @Override
     protected List<String> getTabList(CommandSender commandSender, String term) {
-        if (commandSender instanceof Player) {
-            PlayerInfo pi = playerLogic.getPlayerInfo((Player) commandSender);
+        List<ChallengeKey> validChallenges = null;
+        if (commandSender instanceof Player player) {
+            PlayerInfo pi = playerLogic.getPlayerInfo(player);
             if (pi != null) {
-                return challengeLogic.getAvailableChallengeNames(pi);
+                validChallenges = challengeLogic.getAvailableChallenges(pi);
             }
         }
-        return challengeLogic.getAllChallengeIds().stream().map(ChallengeKey::id).toList();
+        if (validChallenges == null) {
+            validChallenges = challengeLogic.getAllChallengeIds();
+        }
+        return validChallenges.stream().map(ChallengeKey::id).toList();
     }
 }

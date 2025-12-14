@@ -131,8 +131,8 @@ public class ChallengeLogic implements Listener {
         return List.copyOf(ranks.values());
     }
 
-    public List<String> getAvailableChallengeNames(PlayerInfo playerInfo) {
-        List<String> list = new ArrayList<>();
+    public @NotNull List<ChallengeKey> getAvailableChallenges(PlayerInfo playerInfo) {
+        List<ChallengeKey> list = new ArrayList<>();
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return list;
         }
@@ -140,11 +140,9 @@ public class ChallengeLogic implements Listener {
             if (rank.isAvailable(playerInfo)) {
                 for (Challenge challenge : rank.getChallenges()) {
                     if (challenge.getMissingRequirements(playerInfo).isEmpty()) {
-                        list.add(challenge.getName());
+                        list.add(challenge.getId());
                     }
                 }
-            } else {
-                break;
             }
         }
         return list;
