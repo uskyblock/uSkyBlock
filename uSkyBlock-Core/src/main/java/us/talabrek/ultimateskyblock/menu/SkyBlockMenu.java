@@ -46,7 +46,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.pre;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static java.util.Objects.requireNonNull;
-import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGESIZE;
+import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGE_SIZE;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
@@ -346,7 +346,7 @@ public class SkyBlockMenu {
     public Inventory displayChallengeGUI(final Player player, int page, String playerName) {
         int total = challengeLogic.getTotalPages();
         String title = "\u00a79" + pre("{0} ({1}/{2})", tr("Challenge Menu"), page, total);
-        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), CHALLENGE_PAGESIZE + COLS_PER_ROW, title);
+        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), CHALLENGE_PAGE_SIZE + COLS_PER_ROW, title);
         final PlayerInfo pi = playerName == null ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(playerName);
         challengeLogic.populateChallengeRank(menu, pi, page, playerName != null && player.hasPermission("usb.mod.bypassrestriction"));
         int[] pages = new int[9];
@@ -380,7 +380,7 @@ public class SkyBlockMenu {
                     pageItem = ItemStackUtil.builder(pageItem).displayName(tr("\u00a77Last Page")).build();
                 }
                 pageItem.setAmount(p);
-                menu.setItem(i + CHALLENGE_PAGESIZE, pageItem);
+                menu.setItem(i + CHALLENGE_PAGE_SIZE, pageItem);
             }
         }
         return menu;
@@ -899,14 +899,14 @@ public class SkyBlockMenu {
             playerName = null;
         }
         // Last row is pagination
-        if (slotIndex >= CHALLENGE_PAGESIZE && slotIndex < CHALLENGE_PAGESIZE + COLS_PER_ROW
+        if (slotIndex >= CHALLENGE_PAGE_SIZE && slotIndex < CHALLENGE_PAGE_SIZE + COLS_PER_ROW
             && currentItem != null && currentItem.getType() != Material.AIR) {
             // Pagination
             p.openInventory(displayChallengeGUI(p, currentItem.getAmount(), playerName));
             return;
         }
         // If in action bar or anywhere else, just bail out
-        if (slotIndex < 0 || slotIndex > CHALLENGE_PAGESIZE || isAirOrLocked(currentItem)) {
+        if (slotIndex < 0 || slotIndex > CHALLENGE_PAGE_SIZE || isAirOrLocked(currentItem)) {
             return;
         }
         if ((slotIndex % 9) > 0) { // 0,9... are the rank-headers...
@@ -917,7 +917,7 @@ public class SkyBlockMenu {
             }
             p.openInventory(displayChallengeGUI(p, page, playerName));
         } else {
-            if (slotIndex < (CHALLENGE_PAGESIZE / 2)) { // Upper half
+            if (slotIndex < (CHALLENGE_PAGE_SIZE / 2)) { // Upper half
                 if (page > 1) {
                     p.openInventory(displayChallengeGUI(p, page - 1, playerName));
                 } else {

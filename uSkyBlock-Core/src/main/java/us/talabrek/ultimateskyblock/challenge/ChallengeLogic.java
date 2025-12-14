@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -59,7 +60,7 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 public class ChallengeLogic implements Listener {
     public static final int COLS_PER_ROW = 9;
     public static final int ROWS_OF_RANKS = 5;
-    public static final int CHALLENGE_PAGESIZE = ROWS_OF_RANKS * COLS_PER_ROW;
+    public static final int CHALLENGE_PAGE_SIZE = ROWS_OF_RANKS * COLS_PER_ROW;
 
     private final Logger logger;
     private final FileConfiguration config;
@@ -113,7 +114,7 @@ public class ChallengeLogic implements Listener {
     }
 
     public List<Rank> getRanks() {
-        return Collections.unmodifiableList(new ArrayList<>(ranks.values()));
+        return List.copyOf(ranks.values());
     }
 
     public List<String> getAvailableChallengeNames(PlayerInfo playerInfo) {
@@ -203,7 +204,7 @@ public class ChallengeLogic implements Listener {
             }
         }
         if (partialMatch.size() == 1) {
-            return partialMatch.get(0);
+            return partialMatch.getFirst();
         }
         return null;
     }
@@ -239,7 +240,7 @@ public class ChallengeLogic implements Listener {
         final int px = l.getBlockX();
         final int py = l.getBlockY();
         final int pz = l.getBlockZ();
-        World world = l.getWorld();
+        World world = Objects.requireNonNull(l.getWorld());
         BlockCollection blockCollection = new BlockCollection();
         for (int x = px - radius; x <= px + radius; x++) {
             for (int y = py - radius; y <= py + radius; y++) {
@@ -473,7 +474,7 @@ public class ChallengeLogic implements Listener {
             if ((location % 9) != 0) {
                 location += (9 - (location % 9)); // Skip the rest of that line
             }
-            if (location >= CHALLENGE_PAGESIZE) {
+            if (location >= CHALLENGE_PAGE_SIZE) {
                 break;
             }
         }
@@ -529,7 +530,7 @@ public class ChallengeLogic implements Listener {
         meta4.setDisplayName("\u00a7e\u00a7l" + tr("Rank: {0}", rank.getName()));
         lores.add(tr("\u00a7fComplete most challenges in"));
         lores.add(tr("\u00a7fthis rank to unlock the next rank."));
-        if (location < (CHALLENGE_PAGESIZE / 2)) {
+        if (location < (CHALLENGE_PAGE_SIZE / 2)) {
             lores.add(tr("\u00a7eClick here to show previous page"));
         } else {
             lores.add(tr("\u00a7eClick here to show next page"));
@@ -546,7 +547,7 @@ public class ChallengeLogic implements Listener {
             if ((location % 9) == 0) {
                 location++; // Skip rank-row
             }
-            if (location >= CHALLENGE_PAGESIZE) {
+            if (location >= CHALLENGE_PAGE_SIZE) {
                 break;
             }
             lores.clear();
