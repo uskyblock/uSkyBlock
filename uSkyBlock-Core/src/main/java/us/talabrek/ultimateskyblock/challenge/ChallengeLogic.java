@@ -183,9 +183,9 @@ public class ChallengeLogic implements Listener {
         }
         player.sendMessage(tr("\u00a7eTrying to complete challenge \u00a7a{0}", challenge.getDisplayName()));
         if (challenge.getType() == Challenge.Type.PLAYER) {
-            tryComplete(player, challenge, "onPlayer");
+            tryCompleteOnPlayer(player, challenge);
         } else if (challenge.getType() == Challenge.Type.ISLAND) {
-            if (!tryComplete(player, challenge, "onIsland")) {
+            if (!tryCompleteOnIsland(player, challenge)) {
                 player.sendMessage(tr("\u00a74{0}", challenge.getDescription()));
                 player.sendMessage(tr("\u00a74You must be standing within {0} blocks of all required items.", challenge.getRadius()));
             }
@@ -340,17 +340,6 @@ public class ChallengeLogic implements Listener {
             if (list.size() >= max) break;
         }
         return list;
-    }
-
-    private boolean tryComplete(final Player player, final Challenge challenge, final String type) {
-        if (type.equalsIgnoreCase("onPlayer")) {
-            return tryCompleteOnPlayer(player, challenge);
-        } else if (type.equalsIgnoreCase("onIsland")) {
-            return tryCompleteOnIsland(player, challenge);
-        } else {
-            player.sendMessage(tr("\u00a74Unknown type of challenge: {0}", type));
-        }
-        return false;
     }
 
     /**
