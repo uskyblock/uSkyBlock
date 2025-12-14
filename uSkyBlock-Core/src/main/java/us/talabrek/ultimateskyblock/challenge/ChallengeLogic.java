@@ -32,7 +32,6 @@ import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -150,21 +149,8 @@ public class ChallengeLogic implements Listener {
         return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
     }
 
-    public void completeChallenge(final Player player, String userInput) {
-        Optional<Challenge> found = findChallenge(userInput);
-        if (found.isEmpty()) {
-            player.sendMessage(tr("\u00a74Invalid or ambiguous challenge name: {0}", userInput));
-            return;
-        }
-        completeChallenge(player, found.get().getId());
-    }
-
-    /**
-     * Preferred exact-id based completion API. Resolves the current Challenge instance
-     * by id and performs the completion checks/flow.
-     */
-    public void completeChallenge(final Player player, @NotNull ChallengeKey id) {
-        final PlayerInfo pi = plugin.getPlayerInfo(player);
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
+        PlayerInfo pi = plugin.getPlayerInfo(player);
         Optional<Challenge> opt = getChallengeById(id);
         if (opt.isEmpty()) {
             player.sendMessage(tr("\u00a74No challenge with id {0} found", id.id()));
@@ -438,11 +424,10 @@ public class ChallengeLogic implements Listener {
     }
 
     private boolean giveReward(Player player, Challenge challenge) {
-        String challengeName = challenge.getName();
         player.sendMessage(tr("\u00a7aYou have completed the {0} challenge!", challenge.getDisplayName()));
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         Reward reward;
-        boolean isFirstCompletion = playerInfo.checkChallenge(challengeName) == 0;
+        boolean isFirstCompletion = checkChallenge(playerInfo, challenge.getId()) == 0;
         if (isFirstCompletion) {
             reward = challenge.getReward();
         } else {
@@ -503,10 +488,6 @@ public class ChallengeLogic implements Listener {
         }
         playerInfo.completeChallenge(challenge, wasBroadcast);
         return true;
-    }
-
-    public Duration getResetDuration(ChallengeKey id) {
-        return getChallengeById(id).orElseThrow().getResetDuration();
     }
 
     private ItemStack getItemStack(PlayerInfo playerInfo, Challenge challenge) {

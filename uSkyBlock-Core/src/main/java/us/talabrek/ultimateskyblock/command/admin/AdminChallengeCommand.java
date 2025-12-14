@@ -60,8 +60,8 @@ public class AdminChallengeCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
                 if (playerInfo != null) {
-                    playerInfo.resetAllChallenges();
-                    playerInfo.save();
+                    challengeLogic.resetAllChallenges(playerInfo);
+                    playerInfo.save(); // TODO: is it really PlayerInfo that should be saved?
                     sender.sendMessage(I18nUtil.tr("\u00a7e{0} has had all challenges reset.", playerInfo.getPlayerName()));
                     return true;
                 }
@@ -84,10 +84,9 @@ public class AdminChallengeCommand extends CompositeCommand {
                     commandSender.sendMessage(I18nUtil.tr("\u00a74No player named {0} was found!", data.get("player")));
                     return false;
                 }
-                if (commandSender instanceof Player) {
+                if (commandSender instanceof Player player) {
                     int page = args.length > 0 && args[0].matches("[0-9]+") ? Integer.parseInt(args[0], 10) : 1;
                     String playerName = (String) data.get("playerName");
-                    Player player = (Player) commandSender;
                     player.openInventory(plugin.getMenu().displayChallengeGUI(player, page, playerName));
                     return true;
                 }
@@ -121,23 +120,29 @@ public class AdminChallengeCommand extends CompositeCommand {
         return super.execute(sender, alias, data, args);
     }
 
-    private abstract static class ChallengeCommand extends AbstractCommand {
+    private abstract class ChallengeCommand extends AbstractCommand {
         public ChallengeCommand(String name, String permission, String description) {
             super(name, permission, "challenge", description);
         }
+
         protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, ChallengeCompletion challenge);
 
         @Override
         public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
             if (playerInfo != null && args.length > 0) {
-                ChallengeCompletion completion = playerInfo.getChallenge(args[0]);
-                if (completion != null) {
-                    doExecute(sender, playerInfo, completion);
-                    return true;
-                } else {
-                    sender.sendMessage(I18nUtil.tr("\u00a74No challenge named {0} was found!", args[0]));
+                // Join all remaining args to support multi-word names and display names
+                String userInput = String.join(" ", args);
+                // Resolve using the unified fuzzy finder, then operate by canonical id
+                Challenge challenge = challengeLogic.findChallenge(userInput).orElse(null);
+                if (challenge != null) {
+                    ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
+                    if (completion != null) {
+                        doExecute(sender, playerInfo, completion);
+                        return true;
+                    }
                 }
+                sender.sendMessage(I18nUtil.tr("\u00a74No challenge named {0} was found!", userInput));
             } else {
                 sender.sendMessage(I18nUtil.tr("\u00a74No player named {0} was found!", data.get("player")));
             }
@@ -149,6 +154,7 @@ public class AdminChallengeCommand extends CompositeCommand {
         public RankCommand(String name, String permission, String description) {
             super(name, permission, "rank", description);
         }
+
         protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<Challenge> challenge);
 
         @Override

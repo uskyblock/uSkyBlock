@@ -5,9 +5,11 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -34,7 +36,12 @@ public class ChallengeCompleteCommand extends AbstractCommand {
             return false;
         }
         String challengeName = String.join(" ", args);
-        challengeLogic.completeChallenge(player, challengeName);
+        Optional<Challenge> found = challengeLogic.findChallenge(challengeName);
+        if (found.isEmpty()) {
+            player.sendMessage(tr("\u00a74Invalid or ambiguous challenge name: {0}", challengeName));
+        } else {
+            challengeLogic.completeChallenge(player, found.get().getId());
+        }
         return true;
     }
 }

@@ -564,7 +564,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             info.updatePermissionPerks(onlinePlayer, perkLogic.getPerk(onlinePlayer));
         }
         if (challengeLogic.isResetOnCreate()) {
-            playerInfo.resetAllChallenges();
+            challengeLogic.resetAllChallenges(playerInfo);
         }
         playerInfo.save();
         return info;

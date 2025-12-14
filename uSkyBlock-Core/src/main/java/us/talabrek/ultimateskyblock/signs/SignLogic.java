@@ -358,7 +358,7 @@ public class SignLogic {
         if (missing == 0) {
             boolean successfulItemTransfer = attemptToMoveItemsToPlayerInventory(player.getInventory(), chest.getInventory(), requiredItems);
             if (successfulItemTransfer) {
-                challengeLogic.completeChallenge(player, challenge.getName());
+                challengeLogic.completeChallenge(player, challenge.getId());
             } else {
                 player.sendMessage(tr("\u00a7cWARNING:\u00a7e Could not transfer all the required items to your inventory!"));
             }

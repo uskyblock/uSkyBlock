@@ -159,7 +159,8 @@ public class ChallengeCompletionLogic {
         if (challenges.containsKey(id)) {
             ChallengeCompletion completion = challenges.get(id);
             if (!completion.isOnCooldown()) {
-                Duration resetDuration = plugin.getChallengeLogic().getResetDuration(id);
+                ChallengeLogic challengeLogic = plugin.getChallengeLogic();
+                Duration resetDuration = challengeLogic.getChallengeById(id).orElseThrow().getResetDuration();
                 if (resetDuration.isPositive()) {
                     Instant now = Instant.now();
                     completion.setCooldownUntil(now.plus(resetDuration));
