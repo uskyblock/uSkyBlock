@@ -90,7 +90,7 @@ public class ChallengeLogicResolveTest {
 
     @Test
     public void uniquePrefixOnSlug_findsSingleCandidate() {
-        var res = logic.resolveChallenge("sand c"); // slug: sandc → matches only sandcastle
+        var res = logic.resolveChallenge("sand ca"); // slug: sandca → matches only sandcastle
         assertThat(res.getStatus(), is(ChallengeLogic.ChallengeLookupResult.Status.FOUND));
         assertThat(res.getChallenge(), is(chSandCastle));
     }
