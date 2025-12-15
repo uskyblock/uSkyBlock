@@ -3,6 +3,7 @@ package dk.lockfuglsang.minecraft.command.completion;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,9 +26,10 @@ public abstract class AbstractTabCompleter implements TabCompleter {
         return filter(getTabList(commandSender, term), term);
     }
 
-    public static @NotNull List<String> filter(@NotNull Collection<String> list, @NotNull String prefix) {
+    @Contract(pure = true)
+    public static @NotNull List<String> filter(@NotNull Collection<String> candidates, @NotNull String prefix) {
         String lowerPrefix = prefix.toLowerCase(Locale.ROOT);
-        return list.stream()
+        return candidates.stream()
             .filter(s -> s.toLowerCase(Locale.ROOT).startsWith(lowerPrefix))
             .distinct()
             .sorted(String.CASE_INSENSITIVE_ORDER)
