@@ -23,6 +23,6 @@ public class BiomeTabCompleter extends AbstractTabCompleter {
 
     @Override
     protected List<String> getTabList(CommandSender commandSender, String term) {
-        return filter(new ArrayList<>(biomeConfig.getConfiguredBiomeKeys()), term);
+        return biomeConfig.getConfiguredBiomeKeys();
     }
 }
