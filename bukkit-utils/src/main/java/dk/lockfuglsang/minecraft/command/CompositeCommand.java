@@ -4,6 +4,7 @@ import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,7 +279,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String alias, String[] args) {
         if (args.length <= params.length && args.length > 0) {
             TabCompleter tab = getTabCompleter(this, args.length - 1);
             if (tab != null && tab != this) {

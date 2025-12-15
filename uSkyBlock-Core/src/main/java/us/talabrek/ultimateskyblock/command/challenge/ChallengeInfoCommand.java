@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 
 /**
  * Shows information about a challenge
@@ -42,15 +43,16 @@ public class ChallengeInfoCommand extends AbstractCommand {
             sender.sendMessage(tr("\u00a7cCommand only available for players."));
             return false;
         }
-        String challengeName = String.join(" ", args);
-        Challenge challenge = challengeLogic.getChallenge(challengeName);
+        String challengeQuery = String.join(" ", args);
+        var result = challengeLogic.resolveChallenge(challengeQuery);
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
-        if (challenge != null && challenge.getRank().isAvailable(playerInfo)) {
-            player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challengeName.toLowerCase());
+        if (result.getStatus() == ChallengeLogic.ChallengeLookupResult.Status.FOUND && result.getChallenge().getRank().isAvailable(playerInfo)) {
+            Challenge challenge = result.getChallenge();
+            player.sendMessage("\u00a7eChallenge Name: " + ChatColor.WHITE + challenge.getDisplayName());
             if (challengeLogic.getRanks().size() > 1) {
                 player.sendMessage(tr("\u00a7eRank: ") + ChatColor.WHITE + challenge.getRank());
             }
-            ChallengeCompletion completion = playerInfo.getChallenge(challengeName);
+            ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
             if (completion.getTimesCompleted() > 0 && !challenge.isRepeatable()) {
                 player.sendMessage(tr("\u00a74This Challenge is not repeatable!"));
             }
@@ -67,9 +69,19 @@ public class ChallengeInfoCommand extends AbstractCommand {
             } else if (challenge.getType() == Challenge.Type.ISLAND) {
                 player.sendMessage(tr("\u00a74All required items must be placed on your island, within {0} blocks of you.", challenge.getRadius()));
             }
-            player.sendMessage(tr("\u00a7eTo complete this challenge, use \u00a7f/c c {0}", challengeName.toLowerCase()));
+            player.sendMessage(tr("\u00a7eTo complete this challenge, use \u00a7f/c c {0}", stripFormatting(challenge.getDisplayName())));
         } else {
-            player.sendMessage(tr("\u00a74Invalid challenge name! Use /c help for more information"));
+            switch (result.getStatus()) {
+                case AMBIGUOUS -> {
+                    String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
+                    player.sendMessage(tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+                }
+                case NOT_FOUND -> player.sendMessage(tr("\u00a74Invalid challenge name! Use /c help for more information"));
+                case FOUND -> {
+                    // FOUND but rank not available
+                    player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", result.getChallenge().getDisplayName()));
+                }
+            }
         }
         return true;
     }

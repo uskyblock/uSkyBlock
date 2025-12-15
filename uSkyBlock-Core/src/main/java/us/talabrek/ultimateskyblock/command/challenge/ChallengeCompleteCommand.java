@@ -5,9 +5,11 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -26,7 +28,7 @@ public class ChallengeCompleteCommand extends AbstractCommand {
 
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(tr("\u00a7cCommand only available for players."));
             return false;
         }
@@ -34,7 +36,15 @@ public class ChallengeCompleteCommand extends AbstractCommand {
             return false;
         }
         String challengeName = String.join(" ", args);
-        challengeLogic.completeChallenge((Player) sender, challengeName);
+        var result = challengeLogic.resolveChallenge(challengeName);
+        switch (result.getStatus()) {
+            case FOUND -> challengeLogic.completeChallenge(player, result.getChallenge().getId());
+            case AMBIGUOUS -> {
+                String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
+                player.sendMessage(tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+            }
+            case NOT_FOUND -> player.sendMessage(tr("\u00a74No challenge matched: {0}", result.getNormalizedInput()));
+        }
         return true;
     }
 }

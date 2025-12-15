@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
+import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.HashMap;
@@ -51,14 +52,14 @@ public class ToolMenuEvents implements Listener {
     }
 
     private void registerChallenges() {
-        for (String challengeName : plugin.getChallengeLogic().getAllChallengeNames()) {
-            Challenge challenge = plugin.getChallengeLogic().getChallenge(challengeName);
-            ItemStack displayItem = challenge != null ? challenge.getDisplayItem() : null;
-            ItemStack toolItem = challenge != null && challenge.getTool() != null ? ItemStackUtil.createItemStack(challenge.getTool()) : null;
+        for (ChallengeKey challengeId : plugin.getChallengeLogic().getAllChallengeIds()) {
+            Challenge challenge = plugin.getChallengeLogic().getChallengeById(challengeId).orElseThrow();
+            ItemStack displayItem = challenge.getDisplayItem();
+            ItemStack toolItem = challenge.getTool() != null ? ItemStackUtil.createItemStack(challenge.getTool()) : null;
             if (toolItem != null) {
-                commandMap.put(ItemStackUtil.asString(toolItem), COMPLETE_CHALLENGE_CMD + challengeName);
+                commandMap.put(ItemStackUtil.asString(toolItem), COMPLETE_CHALLENGE_CMD + challengeId.id());
             } else if (displayItem != null && displayItem.getType().isBlock()) {
-                commandMap.put(ItemStackUtil.asString(displayItem), COMPLETE_CHALLENGE_CMD + challengeName);
+                commandMap.put(ItemStackUtil.asString(displayItem), COMPLETE_CHALLENGE_CMD + challengeId.id());
             }
         }
     }
@@ -85,7 +86,8 @@ public class ToolMenuEvents implements Listener {
         String command = commandMap.get(itemId);
         if (command.startsWith(COMPLETE_CHALLENGE_CMD)) {
             String challengeName = command.substring(COMPLETE_CHALLENGE_CMD.length());
-            if (plugin.getChallengeLogic().getAvailableChallengeNames(plugin.getPlayerInfo(player)).contains(challengeName)) {
+            var challengeId = ChallengeKey.of(challengeName);
+            if (plugin.getChallengeLogic().getAvailableChallenges(plugin.getPlayerInfo(player)).contains(challengeId)) {
                 e.setCancelled(true);
                 plugin.execCommand(player, command, true);
             }

@@ -13,14 +13,11 @@ import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
-/**
- * Data object of a rank.
- */
 public class Rank {
     private final Rank previousRank;
     private final ChallengeDefaults defaults;
     private final List<Challenge> challenges;
-    private ConfigurationSection config;
+    private final ConfigurationSection config;
 
     public Rank(ConfigurationSection section, Rank previousRank, ChallengeDefaults defaults) {
         this.challenges = new ArrayList<>();
@@ -36,12 +33,6 @@ public class Rank {
         }
     }
 
-    /**
-     * Whether the rank is available for the player.
-     *
-     * @param playerInfo PlayerInfo of the player
-     * @return
-     */
     public boolean isAvailable(PlayerInfo playerInfo) {
         return getMissingRequirements(playerInfo).isEmpty();
     }
@@ -104,7 +95,8 @@ public class Rank {
     private int getLeeway(PlayerInfo playerInfo) {
         int leeway = challenges.size();
         for (Challenge challenge : challenges) {
-            if (playerInfo.getChallenge(challenge.getName()).getTimesCompleted() > 0) {
+            ChallengeCompletion challengeCompletion = uSkyBlock.getInstance().getChallengeLogic().getChallengeCompletion(playerInfo, challenge.getId());
+            if (challengeCompletion.getTimesCompleted() > 0) {
                 leeway--;
             }
         }

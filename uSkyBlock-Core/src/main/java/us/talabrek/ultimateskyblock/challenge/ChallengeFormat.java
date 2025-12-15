@@ -12,15 +12,14 @@ public final class ChallengeFormat {
         List<String> missing = new ArrayList<>();
         for (String requiredChallenge : requiredChallenges) {
             String[] split = requiredChallenge.split(":");
-            String challengeName = split[0].trim();
+            ChallengeKey challengeId = ChallengeKey.of(split[0].trim());
             int count = split.length > 1 && split[1].matches("[0-9]+") ? Integer.parseInt(split[1]) : 1;
             if (count < 1) {
                 count = 1;
             }
-            ChallengeCompletion completion = playerInfo.getChallenge(challengeName);
+            ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challengeId);
             if (completion != null && completion.getTimesCompleted() < count) {
-                String name = completion.getName();
-                missing.add(asDisplayName(name, count - completion.getTimesCompleted(), challengeLogic));
+                missing.add(asDisplayName(completion.getId(), count - completion.getTimesCompleted(), challengeLogic));
             }
         }
         if (missing.isEmpty()) {
@@ -31,9 +30,9 @@ public final class ChallengeFormat {
         return missingList;
     }
 
-    private static String asDisplayName(String challengeName, int count, ChallengeLogic challengeLogic) {
-        Challenge challenge = challengeLogic.getChallenge(challengeName);
-        String displayName = challengeName;
+    private static String asDisplayName(ChallengeKey challengeId, int count, ChallengeLogic challengeLogic) {
+        Challenge challenge = challengeLogic.getChallengeById(challengeId).orElse(null);
+        String displayName = challengeId.id();
         if (challenge != null) {
             displayName = challenge.getDisplayName();
         }

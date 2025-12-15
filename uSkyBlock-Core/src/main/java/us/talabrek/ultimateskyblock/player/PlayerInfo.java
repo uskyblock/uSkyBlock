@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
-import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -177,7 +176,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     }
 
     public void completeChallenge(Challenge challenge, boolean silent) {
-        uSkyBlock.getInstance().getChallengeLogic().completeChallenge(this, challenge.getName());
+        uSkyBlock.getInstance().getChallengeLogic().completeChallenge(this, challenge.getId());
         if (silent) {
             return;
         }
@@ -186,22 +185,6 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
             island.sendMessageToOnlineMembers(tr("\u00a79{0}\u00a7f has completed the \u00a79{1}\u00a7f challenge!",
                 getPlayerName(), challenge.getDisplayName()));
         }
-    }
-
-    public void resetChallenge(final String challenge) {
-        uSkyBlock.getInstance().getChallengeLogic().resetChallenge(this, challenge);
-    }
-
-    public int checkChallenge(final String challenge) {
-        return uSkyBlock.getInstance().getChallengeLogic().checkChallenge(this, challenge);
-    }
-
-    public ChallengeCompletion getChallenge(final String challenge) {
-        return uSkyBlock.getInstance().getChallengeLogic().getChallenge(this, challenge);
-    }
-
-    public void resetAllChallenges() {
-        uSkyBlock.getInstance().getChallengeLogic().resetAllChallenges(this);
     }
 
     private void setupPlayer() {
@@ -265,7 +248,6 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     public void saveToFile() {
         log.fine("Saving player-info for " + playerName + " to file");
-        // TODO: 11/05/2015 - R4zorax: Instead of saving directly, schedule it for later...
         log.entering(CN, "save", playerName);
         if (playerData == null) {
             LogUtil.log(Level.INFO, "Can't save player data! (" + playerName + ", " + uuid + ", " + playerConfigFile + ")");
