@@ -64,7 +64,7 @@ public class ConfirmHandler {
                 player.sendMessage(I18nUtil.tr("\u00a79{0}\u00a77 timed out", command));
             }
         }, timeout);
-        player.sendMessage(I18nUtil.tr("\u00a7eDoing \u00a79{0}\u00a7e is \u00a7cRISKY\u00a7e. Repeat the command within \u00a7a{1}\u00a7e seconds to accept!", command, timeout));
+        player.sendMessage(I18nUtil.tr("\u00a7eDoing \u00a79{0}\u00a7e is \u00a7cRISKY\u00a7e. Repeat the command within \u00a7a{1}\u00a7e seconds to accept!", command, timeout.toSeconds()));
         return false;
     }
 
