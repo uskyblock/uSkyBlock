@@ -8,7 +8,10 @@ import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
 import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.hook.permissions.VaultPermissions;
-import us.talabrek.ultimateskyblock.hook.world.MultiverseHook;
+import us.talabrek.ultimateskyblock.hook.world.InventorySyncHook;
+import us.talabrek.ultimateskyblock.hook.world.MultiverseCoreHook;
+import us.talabrek.ultimateskyblock.hook.world.MultiverseInventoriesHook;
+import us.talabrek.ultimateskyblock.hook.world.WorldHook;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -49,12 +52,21 @@ public class HookManager {
     }
 
     /**
-     * Short method for {@link #getHook(String)} to get the optional {@link MultiverseHook}.
+     * Short method for {@link #getHook(String)} to get the optional {@link WorldHook}.
      *
-     * @return optional of MultiverseHook.
+     * @return optional of WorldHook.
      */
-    public Optional<MultiverseHook> getMultiverse() {
-        return Optional.ofNullable((MultiverseHook) getHook("Multiverse").orElse(null));
+    public Optional<WorldHook> getWorldHook() {
+        return Optional.ofNullable((WorldHook) getHook("World").orElse(null));
+    }
+
+    /**
+     * Short method for {@link #getHook(String)} to get the optional {@link InventorySyncHook}.
+     *
+     * @return optional of InventorySyncHook.
+     */
+    public Optional<InventorySyncHook> getInventorySyncHook() {
+        return Optional.ofNullable((InventorySyncHook) getHook("InventorySync").orElse(null));
     }
 
     /**
@@ -106,24 +118,35 @@ public class HookManager {
     }
 
     /**
-     * Checks and hooks into Multiverse-Core.
-     *
-     * @return True if hooking succeeded, false otherwise.
+     * Checks and hooks into Multiverse-Core and Multiverse-Inventories.
      */
-    public boolean setupMultiverse() {
+    public void setupMultiverse() {
+        boolean success = false;
         try {
             if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core")) {
-                MultiverseHook mvHook = new MultiverseHook(plugin);
+                WorldHook mvHook = new MultiverseCoreHook(plugin);
                 registerHook(mvHook);
                 logger.info("Hooked into Multiverse-Core");
-                return true;
+                success = true;
             }
         } catch (HookFailedException ex) {
             logger.log(Level.SEVERE, "Failed to hook into Multiverse-Core", ex);
         }
 
-        logger.warning("Failed to find Multiverse-Core. Multiworld support will be limited.");
-        return false;
+        try {
+            if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Inventories")) {
+                InventorySyncHook mvInvHook = new MultiverseInventoriesHook(plugin);
+                registerHook(mvInvHook);
+                logger.info("Hooked into Multiverse-Inventories");
+                success = true;
+            }
+        } catch (HookFailedException ex) {
+            logger.log(Level.SEVERE, "Failed to hook into Multiverse-Inventories", ex);
+        }
+
+        if (!success) {
+            logger.info("Did not find a compatible multi world plugin. Advanced multi world features such as inventory isolation will not be configured automatically.");
+        }
     }
 
     /**
