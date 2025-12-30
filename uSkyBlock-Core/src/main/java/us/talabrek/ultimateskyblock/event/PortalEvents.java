@@ -19,9 +19,6 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 @Singleton
 public class PortalEvents implements Listener {
 
-    private static final int PORTAL_CREATE_RADIUS = 16;
-    private static final int PORTAL_SEARCH_RADIUS = PORTAL_CREATE_RADIUS + 4;
-
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
 
@@ -43,9 +40,9 @@ public class PortalEvents implements Listener {
         if (toWorld != null) {
             Location to = getTargetLocation(event.getFrom(), toWorld);
             event.setTo(to);
-            event.setSearchRadius(PORTAL_SEARCH_RADIUS);
+            event.setSearchRadius(Settings.island_radius);
             event.setCanCreatePortal(true);
-            event.setCreationRadius(PORTAL_CREATE_RADIUS);
+            event.setCreationRadius(Math.max(1, Settings.island_radius - 4));
         }
     }
 
@@ -57,9 +54,9 @@ public class PortalEvents implements Listener {
         if (toWorld != null) {
             Location to = getTargetLocation(event.getFrom(), toWorld);
             event.setTo(to);
-            event.setSearchRadius(PORTAL_SEARCH_RADIUS);
+            event.setSearchRadius(Settings.island_radius);
             event.setCanCreatePortal(false); // Only players should be able to create portals
-            event.setCreationRadius(PORTAL_CREATE_RADIUS);
+            event.setCreationRadius(Math.max(1, Settings.island_radius - 4));
         }
     }
 
@@ -72,30 +69,17 @@ public class PortalEvents implements Listener {
         return null;
     }
 
-    // This logic assumes all overworld and nether islands have the same size, which is currently true.
     private Location getTargetLocation(Location fromLocation, World toWorld) {
-        // Apply 1:1 scaling
+        IslandInfo islandInfo = plugin.getIslandInfo(fromLocation);
+        if (islandInfo != null && islandInfo.getIslandLocation() != null) {
+            Location to = islandInfo.getIslandLocation().clone();
+            to.setWorld(toWorld);
+            return to;
+        }
+
+        // Fallback to 1:1 if no island info found (e.g., in spawn)
         Location to = fromLocation.clone();
         to.setWorld(toWorld);
-
-        // Nudge the target location into a safe zone (buffer blocks from edge)
-        IslandInfo islandInfo = plugin.getIslandInfo(fromLocation);
-        if (islandInfo != null) {
-            Location center = islandInfo.getIslandLocation();
-            if (center != null) {
-                int radius = Settings.island_radius;
-                int buffer = PORTAL_SEARCH_RADIUS;
-                int minX = center.getBlockX() - radius + buffer;
-                int maxX = center.getBlockX() + radius - 1 - buffer;
-                int minZ = center.getBlockZ() - radius + buffer;
-                int maxZ = center.getBlockZ() + radius - 1 - buffer;
-
-                double targetX = Math.max(minX, Math.min(maxX, fromLocation.getX()));
-                double targetZ = Math.max(minZ, Math.min(maxZ, fromLocation.getZ()));
-                to.setX(targetX);
-                to.setZ(targetZ);
-            }
-        }
         return to;
     }
 }
