@@ -24,6 +24,7 @@ public class ProgressTracker {
         this.progressEvery = progressEvery;
         this.format = format;
         this.sender = sender;
+        this.lastProgressTime = Instant.MIN;
     }
 
     public void progressUpdate(long progress, long total, Object... args) {
