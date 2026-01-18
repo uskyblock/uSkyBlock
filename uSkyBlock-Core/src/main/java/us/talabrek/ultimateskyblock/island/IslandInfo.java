@@ -235,6 +235,11 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 section.set("maxGolems", perk.getGolems());
                 dirty = true;
             }
+            int maxCopperGolems = section.getInt("maxCopperGolems", 0);
+            if (perk.getCopperGolems() != maxCopperGolems) {
+                section.set("maxCopperGolems", perk.getCopperGolems());
+                dirty = true;
+            }
             if (section.isConfigurationSection("maxBlocks")) {
                 dirty = true;
                 Map<Material, Integer> blockLimits = perk.getBlockLimits();
@@ -309,6 +314,12 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public int getMaxGolems() {
         return getMaxPartyIntValue("maxGolems",
             plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getGolems());
+    }
+
+    @Override
+    public int getMaxCopperGolems() {
+        return getMaxPartyIntValue("maxCopperGolems",
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getCopperGolems());
     }
 
     @Override
@@ -1008,6 +1019,8 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         str += ChatColor.GRAY + "  - animals: " + ChatColor.DARK_AQUA + getMaxAnimals() + "\n";
         str += ChatColor.GRAY + "  - monsters: " + ChatColor.DARK_AQUA + getMaxMonsters() + "\n";
         str += ChatColor.GRAY + "  - villagers: " + ChatColor.DARK_AQUA + getMaxVillagers() + "\n";
+        str += ChatColor.GRAY + "  - golems: " + ChatColor.DARK_AQUA + getMaxGolems() + "\n";
+        str += ChatColor.GRAY + "  - copper-golems: " + ChatColor.DARK_AQUA + getMaxCopperGolems() + "\n";
         str += ChatColor.DARK_AQUA + "Bans:\n";
         for (String ban : getBans()) {
             str += ChatColor.GRAY + "  - " + ban + "\n";
