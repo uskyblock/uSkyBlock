@@ -38,11 +38,13 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
         "usb_island_rank",
         "usb_island_leader",
         "usb_island_golems_max",
+        "usb_island_copper_golems_max",
         "usb_island_monsters_max",
         "usb_island_animals_max",
         "usb_island_villagers_max",
         "usb_island_partysize_max",
         "usb_island_golems",
+        "usb_island_copper_golems",
         "usb_island_monsters",
         "usb_island_animals",
         "usb_island_villagers",
@@ -119,11 +121,14 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
             case "usb_island_rank" -> getRank(islandInfo);
             case "usb_island_leader" -> islandInfo.getLeader();
             case "usb_island_golems_max" -> "" + islandInfo.getMaxGolems();
+            case "usb_island_copper_golems_max" -> "" + islandInfo.getMaxCopperGolems();
             case "usb_island_monsters_max" -> "" + islandInfo.getMaxMonsters();
             case "usb_island_animals_max" -> "" + islandInfo.getMaxAnimals();
             case "usb_island_villagers_max" -> "" + islandInfo.getMaxVillagers();
             case "usb_island_partysize_max" -> "" + islandInfo.getMaxPartySize();
             case "usb_island_golems" -> "" + limitLogic.getCreatureCount(islandInfo).get(LimitLogic.CreatureType.GOLEM);
+            case "usb_island_copper_golems" ->
+                "" + limitLogic.getCreatureCount(islandInfo).get(LimitLogic.CreatureType.COPPER_GOLEM);
             case "usb_island_monsters" ->
                 "" + limitLogic.getCreatureCount(islandInfo).get(LimitLogic.CreatureType.MONSTER);
             case "usb_island_animals" ->

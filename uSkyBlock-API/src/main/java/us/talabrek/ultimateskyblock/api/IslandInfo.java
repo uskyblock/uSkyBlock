@@ -49,12 +49,20 @@ public interface IslandInfo {
     int getMaxVillagers();
 
     /**
-     * Returns the maximum number of golems (snowmen and iron-golems) that can spawn on this island.
+     * Returns the maximum number of golems (except copper golems) that can spawn on this island.
      *
      * Note: Only enforced if <pre>spawn-limits</pre> are enabled in <pre>config.yml</pre>
      * @return the maximum number of golems that can spawn on this island.
      */
     int getMaxGolems();
+
+    /**
+     * Returns the maximum number of copper-golems that can spawn on this island.
+     *
+     * Note: Only enforced if <pre>spawn-limits</pre> are enabled in <pre>config.yml</pre>
+     * @return the maximum number of copper-golems that can spawn on this island.
+     */
+    int getMaxCopperGolems();
 
     /**
      * Returns the maximum number of blocks of limited types that can be placed on the island.

@@ -31,7 +31,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 
 @Singleton
 public class LimitLogic {
-    public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM}
+    public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM, COPPER_GOLEM}
 
     static {
         marktr("UNKNOWN");
@@ -39,6 +39,7 @@ public class LimitLogic {
         marktr("MONSTER");
         marktr("VILLAGER");
         marktr("GOLEM");
+        marktr("COPPER_GOLEM");
     }
 
     private final WorldManager worldManager;
@@ -95,6 +96,9 @@ public class LimitLogic {
         } else if (creature instanceof Villager) {
             return CreatureType.VILLAGER;
         } else if (creature instanceof Golem) {
+            if (creature.getType().name().equals("COPPER_GOLEM")) {
+                return CreatureType.COPPER_GOLEM;
+            }
             return CreatureType.GOLEM;
         }
         return CreatureType.UNKNOWN;
@@ -112,6 +116,9 @@ public class LimitLogic {
         } else if (Villager.class.isAssignableFrom(entityType.getEntityClass())) {
             return CreatureType.VILLAGER;
         } else if (Golem.class.isAssignableFrom(entityType.getEntityClass())) {
+            if (entityType.name().equals("COPPER_GOLEM")) {
+                return CreatureType.COPPER_GOLEM;
+            }
             return CreatureType.GOLEM;
         }
         return CreatureType.UNKNOWN;
@@ -135,6 +142,8 @@ public class LimitLogic {
                 return islandInfo.getMaxMonsters();
             case VILLAGER:
                 return islandInfo.getMaxVillagers();
+            case COPPER_GOLEM:
+                return islandInfo.getMaxCopperGolems();
             case GOLEM:
                 return islandInfo.getMaxGolems();
         }
