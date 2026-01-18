@@ -60,7 +60,7 @@ public class VaultEconomy extends EconomyHook implements Listener {
     @Override
     public boolean withdrawPlayer(@NotNull OfflinePlayer player, double amount) {
         if (economy != null) {
-            return economy.depositPlayer(player, amount).transactionSuccess();
+            return economy.withdrawPlayer(player, amount).transactionSuccess();
         }
         return false;
     }
