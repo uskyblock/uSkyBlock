@@ -1,12 +1,14 @@
 package us.talabrek.ultimateskyblock.hook.world;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.WorldType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.MultiverseCore;
+import org.mvplugins.multiverse.core.MultiverseCoreApi;
+import org.mvplugins.multiverse.core.world.MultiverseWorld;
+import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.core.world.options.ImportWorldOptions;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.hook.HookFailedException;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -16,33 +18,38 @@ public class MultiverseCoreHook extends WorldHook {
 
     private static final String GENERATOR_NAME = "uSkyBlock";
 
-    private final MultiverseCore mvCore;
-
     public MultiverseCoreHook(@NotNull uSkyBlock plugin) {
         super(plugin, "Multiverse-Core");
-        this.mvCore = setupCore();
+        setupCore();
     }
 
-    private MultiverseCore setupCore() {
+    private void setupCore() {
         Plugin mvPlugin = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        if (mvPlugin instanceof MultiverseCore) {
-            return (MultiverseCore) mvPlugin;
+        if (!(mvPlugin instanceof MultiverseCore)) {
+            throw new HookFailedException("Failed to hook into Multiverse-Core");
         }
-
-        throw new HookFailedException("Failed to hook into Multiverse-Core");
     }
 
     @Override
     public void registerOverworld(@NotNull World world) {
-        if (!mvCore.getMVWorldManager().isMVWorld(world)) {
-            mvCore.getMVWorldManager().addWorld(world.getName(), World.Environment.NORMAL,
-                "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+        WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
+
+        if (!mvWorldManager.isWorld(world.getName())) {
+            ImportWorldOptions options = ImportWorldOptions
+                .worldName(world.getName())
+                .environment(World.Environment.NORMAL)
+                .useSpawnAdjust(false)
+                .generator(GENERATOR_NAME);
+            var importResult = mvWorldManager.importWorld(options);
+            if (importResult.isFailure()) {
+                plugin.getLogger().severe("Failed to import Skyblock overworld into Multiverse-Core.");
+                plugin.getLogger().severe(importResult.getFailureReason().toString());
+                return;
+            }
         }
 
-        MultiverseWorld mvWorld = mvCore.getMVWorldManager().getMVWorld(world);
-        mvWorld.setEnvironment(World.Environment.NORMAL);
-        mvWorld.setScaling(1.0);
-        mvWorld.setGenerator(GENERATOR_NAME);
+        MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        mvWorld.setScale(1.0);
 
         if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
@@ -53,21 +60,31 @@ public class MultiverseCoreHook extends WorldHook {
         }
 
         if (!Settings.extras_sendToSpawn) {
-            mvWorld.setRespawnToWorld(mvWorld.getName());
+            mvWorld.setRespawnWorld(mvWorld);
         }
     }
 
     @Override
     public void registerNetherworld(@NotNull World world) {
-        if (!mvCore.getMVWorldManager().isMVWorld(world)) {
-            mvCore.getMVWorldManager().addWorld(world.getName(), World.Environment.NETHER,
-                "0", WorldType.NORMAL, false, GENERATOR_NAME, false);
+        WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
+
+        if (!mvWorldManager.isWorld(world.getName())) {
+            ImportWorldOptions options = ImportWorldOptions
+                .worldName(world.getName())
+                .environment(World.Environment.NETHER)
+                .useSpawnAdjust(false)
+                .generator(GENERATOR_NAME);
+            var importResult = mvWorldManager.importWorld(options);
+            if (importResult.isFailure()) {
+                plugin.getLogger().severe("Failed to import Skyblock nether world into Multiverse-Core.");
+                plugin.getLogger().severe(importResult.getFailureReason().toString());
+                return;
+            }
         }
 
-        MultiverseWorld mvWorld = mvCore.getMVWorldManager().getMVWorld(world);
-        mvWorld.setEnvironment(World.Environment.NETHER);
-        mvWorld.setScaling(1.0);
-        mvWorld.setGenerator(GENERATOR_NAME);
+        MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        mvWorld.setScale(1.0);
+
         if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
                 new Location(world, 0.5, Settings.island_height / 2.0 + 0.1, 0.5));
@@ -77,7 +94,7 @@ public class MultiverseCoreHook extends WorldHook {
         }
 
         if (!Settings.extras_sendToSpawn) {
-            mvWorld.setRespawnToWorld(plugin.getWorldManager().getWorld().getName());
+            mvWorld.setRespawnWorld(plugin.getWorldManager().getWorld().getName());
         }
     }
 }

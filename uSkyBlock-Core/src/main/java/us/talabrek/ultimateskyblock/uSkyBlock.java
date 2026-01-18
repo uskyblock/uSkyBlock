@@ -96,7 +96,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
         new String[]{"WorldGuard", "7.0.8"},
         new String[]{"FastAsyncWorldEdit", "2.4.3", "optional"},
-        new String[]{"Multiverse-Core", "4.3.1", "optional"},
     };
     private static String missingRequirements = null;
     private static final Random RND = new Random();

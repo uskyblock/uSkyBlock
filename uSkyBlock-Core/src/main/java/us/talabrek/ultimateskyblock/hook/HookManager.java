@@ -2,8 +2,10 @@ package us.talabrek.ultimateskyblock.hook;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
 import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
@@ -117,35 +119,47 @@ public class HookManager {
         return false;
     }
 
+    private static @Nullable String getPluginVersion(String pluginName) {
+        var plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+        return plugin == null ? null : plugin.getDescription().getVersion();
+    }
+
     /**
      * Checks and hooks into Multiverse-Core and Multiverse-Inventories.
      */
     public void setupMultiverse() {
-        boolean success = false;
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core")) {
-                WorldHook mvHook = new MultiverseCoreHook(plugin);
-                registerHook(mvHook);
-                logger.info("Hooked into Multiverse-Core");
-                success = true;
+            var mvVersion = getPluginVersion("Multiverse-Core");
+            if (mvVersion == null) {
+                logger.info("Did not find Multiverse-Core. Skipping multi world setup.");
+                return;
             }
+            if (VersionUtil.getVersion(mvVersion).isLT("5.0.0")) {
+                logger.info("Requires Multiverse-Core version 5 - found version " + mvVersion + ". Skipping multi world setup.");
+                return;
+            }
+            WorldHook mvHook = new MultiverseCoreHook(plugin);
+            registerHook(mvHook);
+            logger.info("Hooked into Multiverse-Core");
         } catch (HookFailedException ex) {
             logger.log(Level.SEVERE, "Failed to hook into Multiverse-Core", ex);
         }
 
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Inventories")) {
-                InventorySyncHook mvInvHook = new MultiverseInventoriesHook(plugin);
-                registerHook(mvInvHook);
-                logger.info("Hooked into Multiverse-Inventories");
-                success = true;
+            var mvInvVersion = getPluginVersion("Multiverse-Inventories");
+            if (mvInvVersion == null) {
+                logger.info("Did not find Multiverse-Inventories. Inventory isolation will not be configured automatically.");
+                return;
             }
+            if (VersionUtil.getVersion(mvInvVersion).isLT("5.0.0")) {
+                logger.info("Requires Multiverse-Inventories version 5 - found version " + mvInvVersion + ". Inventory isolation will not be configured automatically.");
+                return;
+            }
+            InventorySyncHook mvInvHook = new MultiverseInventoriesHook(plugin);
+            registerHook(mvInvHook);
+            logger.info("Hooked into Multiverse-Inventories");
         } catch (HookFailedException ex) {
             logger.log(Level.SEVERE, "Failed to hook into Multiverse-Inventories", ex);
-        }
-
-        if (!success) {
-            logger.info("Did not find a compatible multi world plugin. Advanced multi world features such as inventory isolation will not be configured automatically.");
         }
     }
 
