@@ -14,12 +14,17 @@ import us.talabrek.ultimateskyblock.hook.HookFailedException;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
+import java.util.logging.Logger;
+
 public class MultiverseCoreHook extends WorldHook {
 
     private static final String GENERATOR_NAME = "uSkyBlock";
 
+    private final Logger logger;
+
     public MultiverseCoreHook(@NotNull uSkyBlock plugin) {
         super(plugin, "Multiverse-Core");
+        this.logger = plugin.getLogger();
         setupCore();
     }
 
@@ -35,6 +40,7 @@ public class MultiverseCoreHook extends WorldHook {
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
+            logger.info("Importing world: " + world.getName() + " into Multiverse-Core");
             ImportWorldOptions options = ImportWorldOptions
                 .worldName(world.getName())
                 .environment(World.Environment.NORMAL)
@@ -42,9 +48,10 @@ public class MultiverseCoreHook extends WorldHook {
                 .generator(GENERATOR_NAME);
             var importResult = mvWorldManager.importWorld(options);
             if (importResult.isFailure()) {
-                plugin.getLogger().severe("Failed to import Skyblock overworld into Multiverse-Core.");
-                plugin.getLogger().severe(importResult.getFailureReason().toString());
+                logger.severe("Failed to import Skyblock overworld into Multiverse-Core: " + importResult.getFailureReason().toString());
                 return;
+            } else if (importResult.isSuccess()) {
+                logger.info("Successfully import world: " + world.getName() + " into Multiverse-Core");
             }
         }
 
@@ -69,6 +76,7 @@ public class MultiverseCoreHook extends WorldHook {
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
+            logger.info("Importing world: " + world.getName() + " into Multiverse-Core");
             ImportWorldOptions options = ImportWorldOptions
                 .worldName(world.getName())
                 .environment(World.Environment.NETHER)
@@ -76,9 +84,11 @@ public class MultiverseCoreHook extends WorldHook {
                 .generator(GENERATOR_NAME);
             var importResult = mvWorldManager.importWorld(options);
             if (importResult.isFailure()) {
-                plugin.getLogger().severe("Failed to import Skyblock nether world into Multiverse-Core.");
-                plugin.getLogger().severe(importResult.getFailureReason().toString());
+                logger.severe("Failed to import Skyblock nether world into Multiverse-Core.");
+                logger.severe(importResult.getFailureReason().toString());
                 return;
+            } else if (importResult.isSuccess()) {
+                logger.info("Successfully import world: " + world.getName() + " into Multiverse-Core");
             }
         }
 
