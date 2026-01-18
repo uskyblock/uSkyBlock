@@ -96,7 +96,7 @@ public class LimitLogic {
         } else if (creature instanceof Villager) {
             return CreatureType.VILLAGER;
         } else if (creature instanceof Golem) {
-            if (creature.getType().name().equals("COPPER_GOLEM")) {
+            if (creature.getType().equals(EntityType.COPPER_GOLEM)) {
                 return CreatureType.COPPER_GOLEM;
             }
             return CreatureType.GOLEM;
@@ -116,7 +116,7 @@ public class LimitLogic {
         } else if (Villager.class.isAssignableFrom(entityType.getEntityClass())) {
             return CreatureType.VILLAGER;
         } else if (Golem.class.isAssignableFrom(entityType.getEntityClass())) {
-            if (entityType.name().equals("COPPER_GOLEM")) {
+            if (entityType.equals(EntityType.COPPER_GOLEM)) {
                 return CreatureType.COPPER_GOLEM;
             }
             return CreatureType.GOLEM;
