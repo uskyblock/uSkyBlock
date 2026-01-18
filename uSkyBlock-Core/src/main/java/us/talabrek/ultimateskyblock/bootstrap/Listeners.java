@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
+import us.talabrek.ultimateskyblock.command.InviteHandler;
 import us.talabrek.ultimateskyblock.event.ExploitEvents;
 import us.talabrek.ultimateskyblock.event.GriefEvents;
 import us.talabrek.ultimateskyblock.event.InternalEvents;
@@ -16,13 +17,13 @@ import us.talabrek.ultimateskyblock.event.ItemDropEvents;
 import us.talabrek.ultimateskyblock.event.MenuEvents;
 import us.talabrek.ultimateskyblock.event.NetherTerraFormEvents;
 import us.talabrek.ultimateskyblock.event.PlayerEvents;
+import us.talabrek.ultimateskyblock.event.PortalEvents;
 import us.talabrek.ultimateskyblock.event.SpawnEvents;
 import us.talabrek.ultimateskyblock.event.ToolMenuEvents;
 import us.talabrek.ultimateskyblock.event.WitherTagEvents;
 import us.talabrek.ultimateskyblock.event.WorldGuardEvents;
 import us.talabrek.ultimateskyblock.gui.GuiListener;
 import us.talabrek.ultimateskyblock.signs.SignEvents;
-import us.talabrek.ultimateskyblock.command.InviteHandler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 @Singleton
@@ -35,6 +36,7 @@ public class Listeners {
     private final PlayerEvents playerEvents;
     private final MenuEvents menuEvents;
     private final ExploitEvents exploitEvents;
+    private final PortalEvents portalEvents;
     private final WitherTagEvents witherTagEvents;
     private final GriefEvents griefEvents;
     private final ItemDropEvents itemDropEvents;
@@ -55,6 +57,7 @@ public class Listeners {
         @NotNull PlayerEvents playerEvents,
         @NotNull MenuEvents menuEvents,
         @NotNull ExploitEvents exploitEvents,
+        @NotNull PortalEvents portalEvents,
         @NotNull WitherTagEvents witherTagEvents,
         @NotNull GriefEvents griefEvents,
         @NotNull ItemDropEvents itemDropEvents,
@@ -73,6 +76,7 @@ public class Listeners {
         this.playerEvents = playerEvents;
         this.menuEvents = menuEvents;
         this.exploitEvents = exploitEvents;
+        this.portalEvents = portalEvents;
         this.witherTagEvents = witherTagEvents;
         this.griefEvents = griefEvents;
         this.itemDropEvents = itemDropEvents;
@@ -94,6 +98,7 @@ public class Listeners {
         manager.registerEvents(menuEvents, plugin);
         manager.registerEvents(guiListener, plugin);
         manager.registerEvents(exploitEvents, plugin);
+        manager.registerEvents(portalEvents, plugin);
         manager.registerEvents(witherTagEvents, plugin);
         manager.registerEvents(chatEvents, plugin);
         manager.registerEvents(inviteHandler, plugin);

@@ -2,13 +2,18 @@ package us.talabrek.ultimateskyblock.hook;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
 import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.hook.permissions.VaultPermissions;
-import us.talabrek.ultimateskyblock.hook.world.MultiverseHook;
+import us.talabrek.ultimateskyblock.hook.world.InventorySyncHook;
+import us.talabrek.ultimateskyblock.hook.world.MultiverseCoreHook;
+import us.talabrek.ultimateskyblock.hook.world.MultiverseInventoriesHook;
+import us.talabrek.ultimateskyblock.hook.world.WorldHook;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
@@ -49,12 +54,21 @@ public class HookManager {
     }
 
     /**
-     * Short method for {@link #getHook(String)} to get the optional {@link MultiverseHook}.
+     * Short method for {@link #getHook(String)} to get the optional {@link WorldHook}.
      *
-     * @return optional of MultiverseHook.
+     * @return optional of WorldHook.
      */
-    public Optional<MultiverseHook> getMultiverse() {
-        return Optional.ofNullable((MultiverseHook) getHook("Multiverse").orElse(null));
+    public Optional<WorldHook> getWorldHook() {
+        return Optional.ofNullable((WorldHook) getHook("World").orElse(null));
+    }
+
+    /**
+     * Short method for {@link #getHook(String)} to get the optional {@link InventorySyncHook}.
+     *
+     * @return optional of InventorySyncHook.
+     */
+    public Optional<InventorySyncHook> getInventorySyncHook() {
+        return Optional.ofNullable((InventorySyncHook) getHook("InventorySync").orElse(null));
     }
 
     /**
@@ -105,25 +119,48 @@ public class HookManager {
         return false;
     }
 
+    private static @Nullable String getPluginVersion(String pluginName) {
+        var plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+        return plugin == null ? null : plugin.getDescription().getVersion();
+    }
+
     /**
-     * Checks and hooks into Multiverse-Core.
-     *
-     * @return True if hooking succeeded, false otherwise.
+     * Checks and hooks into Multiverse-Core and Multiverse-Inventories.
      */
-    public boolean setupMultiverse() {
+    public void setupMultiverse() {
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core")) {
-                MultiverseHook mvHook = new MultiverseHook(plugin);
-                registerHook(mvHook);
-                logger.info("Hooked into Multiverse-Core");
-                return true;
+            var mvVersion = getPluginVersion("Multiverse-Core");
+            if (mvVersion == null) {
+                logger.info("Did not find Multiverse-Core. Skipping multi world setup.");
+                return;
             }
+            if (VersionUtil.getVersion(mvVersion).isLT("5.0.0")) {
+                logger.info("Requires Multiverse-Core version 5 - found version " + mvVersion + ". Skipping multi world setup.");
+                return;
+            }
+            WorldHook mvHook = new MultiverseCoreHook(plugin);
+            registerHook(mvHook);
+            logger.info("Hooked into Multiverse-Core");
         } catch (HookFailedException ex) {
             logger.log(Level.SEVERE, "Failed to hook into Multiverse-Core", ex);
         }
 
-        logger.warning("Failed to find Multiverse-Core. Multiworld support will be limited.");
-        return false;
+        try {
+            var mvInvVersion = getPluginVersion("Multiverse-Inventories");
+            if (mvInvVersion == null) {
+                logger.info("Did not find Multiverse-Inventories. Inventory isolation will not be configured automatically.");
+                return;
+            }
+            if (VersionUtil.getVersion(mvInvVersion).isLT("5.0.0")) {
+                logger.info("Requires Multiverse-Inventories version 5 - found version " + mvInvVersion + ". Inventory isolation will not be configured automatically.");
+                return;
+            }
+            InventorySyncHook mvInvHook = new MultiverseInventoriesHook(plugin);
+            registerHook(mvInvHook);
+            logger.info("Hooked into Multiverse-Inventories");
+        } catch (HookFailedException ex) {
+            logger.log(Level.SEVERE, "Failed to hook into Multiverse-Inventories", ex);
+        }
     }
 
     /**

@@ -241,7 +241,7 @@ public class WorldManager {
             }
 
             scheduler.sync(() ->
-                hookManager.getMultiverse().ifPresent(hook -> {
+                hookManager.getWorldHook().ifPresent(hook -> {
                     hook.registerOverworld(skyBlockWorld);
                     setupWorld(skyBlockWorld, Settings.island_height);
                 }), TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("init.initDelay", 50L) + 40L));
@@ -280,11 +280,11 @@ public class WorldManager {
                 skyBlockNetherWorld.save();
             }
 
-            scheduler.sync(() ->
-                hookManager.getMultiverse().ifPresent(hook -> {
-                    hook.registerNetherworld(skyBlockNetherWorld);
-                    setupWorld(skyBlockNetherWorld, island_height / 2);
-                }), TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("init.initDelay", 50L) + 100L));
+            scheduler.sync(() -> {
+                hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(skyBlockNetherWorld));
+                hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), skyBlockNetherWorld));
+                setupWorld(skyBlockNetherWorld, island_height / 2);
+            }, TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("init.initDelay", 50L) + 100L));
         }
 
         return skyBlockNetherWorld;
