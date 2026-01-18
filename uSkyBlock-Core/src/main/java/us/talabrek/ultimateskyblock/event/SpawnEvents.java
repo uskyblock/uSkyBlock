@@ -57,7 +57,7 @@ public class SpawnEvents implements Listener {
     @EventHandler
     public void onSpawnEggEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (event.useItemInHand() == Event.Result.DENY || !plugin.getWorldManager().isSkyWorld(player.getWorld())) {
+        if (event.useItemInHand() == Event.Result.DENY || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
             return; // Bail out, we don't care
         }
         if (player.hasPermission("usb.mod.bypassprotection") || player.isOp()) {

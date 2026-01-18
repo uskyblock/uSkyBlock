@@ -174,7 +174,7 @@ public class PlayerEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onLavaReplace(BlockPlaceEvent event) {
-        if (!protectLava || !plugin.getWorldManager().isSkyWorld(event.getPlayer().getWorld())) {
+        if (!protectLava || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
             return;
         }
         if (isLavaSource(event.getBlockReplacedState().getBlockData())) {
@@ -193,7 +193,7 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onLavaAbsorption(EntityChangeBlockEvent event) {
         Block block = event.getBlock();
-        if (!protectLava || !plugin.getWorldManager().isSkyWorld(block.getWorld())) {
+        if (!protectLava || !plugin.getWorldManager().isSkyAssociatedWorld(block.getWorld())) {
             return;
         }
         if (isLavaSource(block.getBlockData())) {

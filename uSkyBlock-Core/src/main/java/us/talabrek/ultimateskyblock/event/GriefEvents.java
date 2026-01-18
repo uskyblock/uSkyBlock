@@ -7,13 +7,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Animals;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Shulker;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkull;
@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.island.LimitLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 /**
@@ -67,7 +68,7 @@ public class GriefEvents implements Listener {
 
     @EventHandler
     public void onCreeperExplode(ExplosionPrimeEvent event) {
-        if (!creeperEnabled || !plugin.getWorldManager().isSkyWorld(event.getEntity().getWorld())) {
+        if (!creeperEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(event.getEntity().getWorld())) {
             return;
         }
         if (event.getEntity() instanceof Creeper
@@ -132,9 +133,16 @@ public class GriefEvents implements Listener {
     }
 
     private void cancelMobDamage(EntityDamageByEntityEvent event) {
-        if (killAnimalsEnabled && event.getEntity() instanceof Animals) {
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
+        LimitLogic.CreatureType type = plugin.getLimitLogic().getCreatureType(livingEntity);
+        if (killAnimalsEnabled && type == LimitLogic.CreatureType.ANIMAL) {
             event.setCancelled(true);
-        } else if (killMonstersEnabled && event.getEntity() instanceof Monster) {
+        } else if (killMonstersEnabled && type == LimitLogic.CreatureType.MONSTER) {
+            event.setCancelled(true);
+        } else if (killMonstersEnabled && event.getEntity() instanceof Shulker) {
+            // Shulker is a Golem, but should probably be protected if killMonsters is enabled
             event.setCancelled(true);
         }
     }
