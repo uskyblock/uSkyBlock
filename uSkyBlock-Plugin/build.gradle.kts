@@ -44,6 +44,7 @@ tasks.jar {
 }
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
+    archiveBaseName.set("uSkyBlock")
     archiveClassifier.set("")
     includeEmptyDirs = false
 
