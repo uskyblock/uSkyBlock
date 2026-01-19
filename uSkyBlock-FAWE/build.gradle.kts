@@ -19,3 +19,7 @@ dependencies {
 }
 
 description = "uSkyBlock-FAWE"
+
+java {
+    withJavadocJar()
+}

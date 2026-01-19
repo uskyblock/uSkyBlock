@@ -20,6 +20,10 @@ dependencies {
 
 description = "bukkit-utils"
 
+java {
+    withJavadocJar()
+}
+
 val testsJar by tasks.registering(Jar::class) {
     archiveClassifier = "tests"
     from(sourceSets["test"].output)

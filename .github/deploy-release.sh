@@ -9,7 +9,7 @@ $HOME/work/uSkyBlock/uSkyBlock/po-utils/build/mvn-repo/ \
 u36810p330294@uskyblock.ovh:domains/uskyblock.ovh/public_html/maven/uskyblock/
 
 rsync -r --quiet -e "ssh -p 7685 -o StrictHostKeyChecking=no" \
-$HOME/work/uSkyBlock/uSkyBlock/build/mvn-repo/ \
+$HOME/work/uSkyBlock/uSkyBlock/bukkit-utils/build/mvn-repo/ \
 u36810p330294@uskyblock.ovh:domains/uskyblock.ovh/public_html/maven/uskyblock/
 
 rsync -r --quiet -e "ssh -p 7685 -o StrictHostKeyChecking=no" \
@@ -37,6 +37,10 @@ echo -e "Publishing javadocs...\n"
 rsync -r --delete --quiet -e "ssh -p 7685 -o StrictHostKeyChecking=no" \
 $HOME/work/uSkyBlock/uSkyBlock/po-utils/build/docs/javadoc/ \
 u36810p330294@uskyblock.ovh:domains/uskyblock.ovh/public_html/javadocs/release/po-utils/
+
+rsync -r --delete --quiet -e "ssh -p 7685 -o StrictHostKeyChecking=no" \
+$HOME/work/uSkyBlock/uSkyBlock/bukkit-utils/build/docs/javadoc/ \
+u36810p330294@uskyblock.ovh:domains/uskyblock.ovh/public_html/javadocs/release/bukkit-utils/
 
 rsync -r --delete --quiet -e "ssh -p 7685 -o StrictHostKeyChecking=no" \
 $HOME/work/uSkyBlock/uSkyBlock/uSkyBlock-API/build/docs/javadoc/ \
