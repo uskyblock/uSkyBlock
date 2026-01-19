@@ -28,7 +28,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build with Gradle
-        run: ./gradlew translation publishAllPublicationsToStagingRepository --no-configuration-cache
+        run: ./gradlew build translation publishAllPublicationsToStagingRepository --no-configuration-cache
 
       # Install our SSH key:
       - name: Install SSH key

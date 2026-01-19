@@ -1,6 +1,5 @@
 plugins {
     id("buildlogic.java-conventions")
-    id("buildlogic.shadow-conventions")
 }
 
 dependencies {
@@ -153,9 +152,4 @@ tasks.register("updateTranslation") {
     description = "Updates all translation files"
     dependsOn(mergeTranslation, generateExtraTranslations)
     finalizedBy("cleanTranslationFiles")
-}
-
-tasks.jar {
-    enabled = false
-    dependsOn(tasks.named("shadowJar"))
 }

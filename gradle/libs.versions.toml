@@ -2,6 +2,9 @@
 # https://docs.gradle.org/current/userguide/version_catalogs.html#sec::toml-dependencies-format
 
 [versions]
+# Plugin versions
+shadow = "9.3.1"
+# Library versions
 be-maximvdw-mvdwplaceholderapi = "3.0.1-SNAPSHOT"
 com-fastasyncworldedit-fastasyncworldedit-bukkit = "2.4.3"
 com-fastasyncworldedit-fastasyncworldedit-core = "2.4.3"
@@ -60,3 +63,6 @@ org-mockito-mockito-core = { module = "org.mockito:mockito-core", version.ref = 
 org-mvplugins-multiverse-core-multiverse-core = { module = "org.mvplugins.multiverse.core:multiverse-core", version.ref = "org-mvplugins-multiverse-core-multiverse-core" }
 org-mvplugins-multiverse-inventories-multiverse-inventories = { module = "org.mvplugins.multiverse.inventories:multiverse-inventories", version.ref = "org-mvplugins-multiverse-inventories-multiverse-inventories" }
 org-spigotmc-spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "org-spigotmc-spigot-api" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
