@@ -11,7 +11,7 @@ my %dict = (
     'your' => 'yer',
     'you' => 'ye',
     'am' => 'be',
-    '\sis' => ' be',
+    ' is' => ' be',
     'are' => 'be',
     'my' => 'me',
     'them' => "'em",
@@ -29,7 +29,7 @@ my %dict = (
     'reward' => 'bounty',
     #'level' => 'treasure',
     #'levels' => 'treasure',
-    '\sisland' => ' hideout',
+    ' island' => ' hideout',
 );
 my %part_dict = (
     'ing' => "in'",

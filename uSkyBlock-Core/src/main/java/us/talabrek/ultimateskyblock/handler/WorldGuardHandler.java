@@ -189,6 +189,7 @@ public class WorldGuardHandler {
             if (regionManager.hasRegion(islandName + "island")) {
                 ProtectedRegion region = regionManager.getRegion(islandName + "island");
                 updateLockStatus(region, true);
+                // I18N: Message sent when a player locks their island
                 sender.sendMessage(tr("\u00a7eYour island is now locked. Only your party members may enter."));
             } else {
                 sender.sendMessage(tr("\u00a74You must be the party leader to lock your island!"));
