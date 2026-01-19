@@ -41,10 +41,9 @@ tasks.processResources {
 
 tasks.jar {
     enabled = false
-    dependsOn(tasks.named("shadowJar"))
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     includeEmptyDirs = false
 
@@ -56,4 +55,14 @@ tasks.named<ShadowJar>("shadowJar") {
     relocate("org.bstats", "us.talabrek.ultimateskyblock.metrics")
 
     mergeServiceFiles()
+}
+
+// Fix for publishing: use the shadow jar instead of the disabled jar
+configurations.apiElements {
+    outgoing.artifacts.clear()
+    outgoing.artifact(shadowJar)
+}
+configurations.runtimeElements {
+    outgoing.artifacts.clear()
+    outgoing.artifact(shadowJar)
 }
