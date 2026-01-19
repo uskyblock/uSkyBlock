@@ -75,7 +75,7 @@ tasks.register<Exec>("extractTranslation") {
     workingDir = rootProject.projectDir // Execute from root to get relative paths in POT
     executable = "xgettext"
     args(
-        "--language=Java",
+        "--language=C#", // C# parser handles Java lambdas and + concatenation better than Java parser in xgettext
         "--keyword=tr",
         "--keyword=marktr",
         "--from-code=UTF-8",
@@ -95,6 +95,9 @@ tasks.register<Exec>("extractTranslation") {
 
     doLast {
         if (potFile.exists()) {
+            // Correct the format flag from csharp-format to java-format
+            val content = potFile.readText().replace("csharp-format", "java-format")
+            potFile.writeText(content)
             // Sort the POT file alphabetically by msgid
             ProcessBuilder("msgcat", "-s", "-o", potFile.absolutePath, potFile.absolutePath)
                 .inheritIO().start().waitFor()
