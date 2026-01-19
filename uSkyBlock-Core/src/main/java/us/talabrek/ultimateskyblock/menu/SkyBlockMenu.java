@@ -89,18 +89,10 @@ public class SkyBlockMenu {
             tr("toggle the island''s warp,\nallowing them to turn it\non or off at anytime, but\nnot set the location.")),
         new PartyPermissionMenuItem(invite, "canInviteOthers", tr("Invite Players"),
             tr("invite others to the island."),
-            tr("""
-                invite
-                other players to the island if
-                there is enough room for more
-                members""")),
+            tr("invite\nother players to the island if\nthere is enough room for more\nmembers")),
         new PartyPermissionMenuItem(kick, "canKickOthers", tr("Kick Players"),
             tr("kick others from the island."),
-            tr("""
-                kick
-                other players from the island,
-                but they are unable to kick
-                the island leader."""))
+            tr("kick\nother players from the island,\nbut they are unable to kick\nthe island leader."))
     );
 
     @Inject

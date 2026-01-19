@@ -79,11 +79,10 @@ tasks.register<Exec>("extractTranslation") {
     workingDir = rootProject.projectDir // Execute from root to get relative paths in POT
     executable = "xgettext"
     args(
-        "--language=Java",
+        "--language=C#", // C# parser handles Java lambdas and + concatenation better than Java parser in xgettext
         "--keyword=tr",
         "--keyword=marktr",
         "--from-code=UTF-8",
-        "--sort-output",
         "--add-comments=I18N:" // Extracts dev hints for AI context
     )
     args("--output=${potFile.absolutePath}")
@@ -97,6 +96,17 @@ tasks.register<Exec>("extractTranslation") {
             throw GradleException("xgettext not found. Please install gettext tools.")
         }
     }
+
+    doLast {
+        if (potFile.exists()) {
+            // Correct the format flag from csharp-format to java-format
+            val content = potFile.readText().replace("csharp-format", "java-format")
+            potFile.writeText(content)
+            // Sort the POT file alphabetically by msgid
+            ProcessBuilder("msgcat", "-s", "-o", potFile.absolutePath, potFile.absolutePath)
+                .inheritIO().start().waitFor()
+        }
+    }
 }
 
 val mergeTranslation = tasks.register("mergeTranslation") {
@@ -108,9 +118,12 @@ val mergeTranslation = tasks.register("mergeTranslation") {
         val potFile = file("$poDir/keys.pot")
         fileTree(poDir) { include("*.po") }.forEach { poFile ->
             if (poFile.name != "xx_PIRATE.po" && poFile.name != "xx_lol_US.po") {
-                ProcessBuilder("msgmerge", "--update", "--no-fuzzy-matching", "--backup=none", "--no-location", "--sort-output", poFile.absolutePath, potFile.absolutePath)
+                ProcessBuilder("msgmerge", "--update", "--no-fuzzy-matching", "--backup=none", "--no-location", poFile.absolutePath, potFile.absolutePath)
                     .inheritIO().start().waitFor()
-                ProcessBuilder("msgattrib", "--clear-fuzzy", "--empty", "--no-obsolete", "--no-location", "--sort-output", "-o", poFile.absolutePath, poFile.absolutePath)
+                ProcessBuilder("msgattrib", "--clear-fuzzy", "--empty", "--no-obsolete", "--no-location", "-o", poFile.absolutePath, poFile.absolutePath)
+                    .inheritIO().start().waitFor()
+                // Sort the PO file alphabetically by msgid
+                ProcessBuilder("msgcat", "-s", "-o", poFile.absolutePath, poFile.absolutePath)
                     .inheritIO().start().waitFor()
             }
         }
