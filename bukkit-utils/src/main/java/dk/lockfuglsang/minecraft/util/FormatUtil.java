@@ -145,13 +145,26 @@ public enum FormatUtil {;
     }
 
     public static String camelcase(String name) {
+        return capitalize(name, "");
+    }
+
+    public static String capitalize(String name) {
+        return capitalize(name, " ");
+    }
+
+    public static String capitalize(String name, String separator) {
         if (name == null || name.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
         for (String part : name.split("[ _]")) {
-            sb.append(Character.toUpperCase(part.charAt(0)));
-            sb.append(part.substring(1).toLowerCase());
+            if (!part.isEmpty()) {
+                if (sb.length() > 0) {
+                    sb.append(separator);
+                }
+                sb.append(Character.toUpperCase(part.charAt(0)));
+                sb.append(part.substring(1).toLowerCase());
+            }
         }
         return sb.toString();
     }

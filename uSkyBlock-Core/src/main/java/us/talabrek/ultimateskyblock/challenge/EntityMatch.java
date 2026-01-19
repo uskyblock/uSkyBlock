@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import com.google.gson.Gson;
-import org.apache.commons.text.WordUtils;
+import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -119,7 +119,7 @@ public class EntityMatch {
         Map<String, Object> extra = new HashMap<>(meta);
         for (String key : COLOR_KEYS) {
             if (meta.containsKey(key)) {
-                String color = WordUtils.capitalizeFully(getColor(meta.get(key)).toString().replace("_", " "));
+                String color = FormatUtil.capitalize(getColor(meta.get(key)).toString());
                 sb.append(color).append(" ");
                 extra.remove(key);
             }

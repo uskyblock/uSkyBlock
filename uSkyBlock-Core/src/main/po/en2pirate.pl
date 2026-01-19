@@ -30,6 +30,7 @@ my %dict = (
     #'level' => 'treasure',
     #'levels' => 'treasure',
     '\sisland' => ' hideout',
+    '\sislands' => ' hideouts',
 );
 my %part_dict = (
     'ing' => "in'",
@@ -42,10 +43,13 @@ sub get_pirate {
     utf8::encode($pirate);
     print "txt: $txt\n";
     foreach my $key (keys %dict) {
-        $pirate =~ s/\b((§[0-9a-fklmor])?)$key\b/$1$dict{$key}/g;
-        my $ukey = ucfirst($key);
-        my $uvalue = ucfirst($dict{$key});
-        $pirate =~ s/\b((§[0-9a-fklmor])?)$ukey\b/$1$uvalue/g;
+        my $value  = $dict{$key};
+        my $ukey   = ucfirst($key);
+        my $uvalue = ucfirst($value);
+
+        # Do not translate if the word is immediately preceded by '/'
+        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
+        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
     }
     foreach my $key (keys %part_dict) {
         $pirate =~ s/$key/$part_dict{$key}/g;

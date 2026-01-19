@@ -14,20 +14,32 @@ This module is copyrighted by the authors, and licensed for re-use as Apache Lic
 
 # Usage
 
+### Gradle
+```kotlin
+repositories {
+    maven { url = uri("https://www.uskyblock.ovh/maven/dependencies/") }
+}
+
+dependencies {
+    implementation("ovh.uskyblock:bukkit-utils:3.2.0")
+}
+```
+
+### Maven
 Put this in your `pom.xml`:
 
-```
+```xml
   <repositories>
     <repository>
         <id>uSkyBlock-mvn-repo</id>
-        <url>https://raw.github.com/rlf/mvn-repo/master</url>
+        <url>https://www.uskyblock.ovh/maven/dependencies/</url>
     </repository>
   </repositories>
   <dependencies>
     <dependency>
-        <groupId>dk.lockfuglsang.minecraft</groupId>
+        <groupId>ovh.uskyblock</groupId>
         <artifactId>bukkit-utils</artifactId>
-        <version>1.22</version>
+        <version>3.2.0</version>
     </dependency>
   </dependencies>
 ```

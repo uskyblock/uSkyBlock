@@ -1,7 +1,7 @@
 name: uSkyBlock
 main: us.talabrek.ultimateskyblock.uSkyBlock
-version: ${project.version}
-description: Ultimate SkyBlock v${project.version}-${buildNumber}
+version: ${projectVersion}
+description: Ultimate SkyBlock v${projectVersion}-${buildNumber}
 author: R4zorax (and more)
 load: STARTUP
 depend:
@@ -18,15 +18,14 @@ softdepend:
  - MVdWPlaceholderAPI
 api-version: 1.20.6
 libraries:
-  - com.google.code.gson:gson:${gson.version}
-  - com.google.inject:guice:${guice.version}
-  - com.google.guava:guava:${guava.version}
-  - net.kyori:adventure-api:${adventure-api.version}
-  - net.kyori:adventure-platform-bukkit:${adventure-bukkit.version}
-  - org.apache.commons:commons-lang3:${apache-commons.version}
-  - org.apache.commons:commons-text:${apache-commons-text.version}
-  - org.apache.httpcomponents:httpclient:${apache-http.version}
-  - org.apache.maven:maven-artifact:${maven-artifact.version}
+  - com.google.code.gson:gson:${gsonVersion}
+  - com.google.inject:guice:${guiceVersion}
+  - com.google.guava:guava:${guavaVersion}
+  - net.kyori:adventure-api:${adventureApiVersion}
+  - net.kyori:adventure-platform-bukkit:${adventureBukkitVersion}
+  - org.apache.commons:commons-lang3:${apacheCommonsVersion}
+  - org.apache.httpcomponents:httpclient:${apacheHttpVersion}
+  - org.apache.maven:maven-artifact:${mavenArtifactVersion}
 
 commands:
   challenges:

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 public class LevelConfigFileTest {
     @Test
     public void testForInvalidMaterials() {
-        InputStream levelResource = getClass().getClassLoader().getResourceAsStream("imported/levelConfig.yml");
+        InputStream levelResource = getClass().getClassLoader().getResourceAsStream("levelConfig.yml");
         YamlConfiguration levelConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(levelResource));
 
         for (String key : levelConfig.getConfigurationSection("blocks").getKeys(false)) {

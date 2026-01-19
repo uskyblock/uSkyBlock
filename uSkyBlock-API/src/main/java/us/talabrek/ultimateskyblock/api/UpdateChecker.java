@@ -29,7 +29,7 @@ public interface UpdateChecker {
     @NotNull String getCurrentVersion();
 
     /**
-     * Fetches the latest version info from the uSkyBlock website. Returns a {@link CompletableFuture <String>},
+     * Fetches the latest version info from the uSkyBlock website. Returns a {@link CompletableFuture<String>},
      * completes the HTTP request async. The CompletableFuture will contain NULL when version info cannot be obtained.
      * @param uri URI to use for the HTTP request, official links are
      * {@link UpdateChecker#URL_RELEASE} and {@link UpdateChecker#URL_STAGING}.
@@ -40,7 +40,7 @@ public interface UpdateChecker {
     /**
      * Compares two version numbers. Returns a negative integer, zero, or a positive integer as this
      * object is less than, equal to, or greater than the specified object.
-     * @see Comparable#compareTo(Object).
+     * @see Comparable#compareTo(Object)
      * @param currentVersion Current version number (may contain -SNAPSHOT).
      * @param newVersion New version number (may contain -SNAPSHOT).
      * @return Negative integer, zero, or a positive integer as this object is less than,

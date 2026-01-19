@@ -57,6 +57,9 @@ public class FormatUtilTest {
         assertThat(camelcase("SAND_CASTLE"), is("SandCastle"));
         assertThat(camelcase("SHEEP"), is("Sheep"));
         assertThat(camelcase("ender chest"), is("EnderChest"));
+        assertThat(capitalize("SAND_CASTLE"), is("Sand Castle"));
+        assertThat(capitalize("LIGHT_BLUE"), is("Light Blue"));
+        assertThat(capitalize("RED"), is("Red"));
     }
 
     @Test
