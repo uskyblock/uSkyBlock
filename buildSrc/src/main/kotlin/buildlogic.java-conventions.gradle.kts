@@ -63,6 +63,12 @@ publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
     }
+    repositories {
+        maven {
+            name = "Staging"
+            url = uri(layout.buildDirectory.dir("mvn-repo"))
+        }
+    }
 }
 
 tasks.withType<JavaCompile> {
