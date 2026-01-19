@@ -8,28 +8,33 @@ We are on [Spigot](https://www.spigotmc.org/resources/uskyblock-revived.66795/).
 
 This version depends on the following plugins:
 
-* Spigot/Paper 1.19-R0.1-SNAPSHOT
+* Spigot/Paper 1.21.1
 * Vault 1.7.x
-* WorldEdit 7.2.13
-* WorldGuard 7.0.8-SNAPSHOT
+* WorldEdit 7.2.19
+* WorldGuard 7.0.9
 
 ## Releases
 https://www.spigotmc.org/resources/uskyblock-revived.66795/history
 
-Pre-releases will end in -SNAPSHOT, and is considered **unsafe** for production servers.
+Pre-releases will end in `-SNAPSHOT`, and are considered **unsafe** for production servers.
 
-Releases have a clean version number, has been tested, and should be safe for production servers.
+Releases have a clean version number, have been tested, and should be safe for production servers.
 
-# New Maven group/artifactId
+# Artifact Dependencies (Maven/Gradle)
 Starting with version 3.0.0-SNAPSHOT, we've changed our Maven groupId's for all submodules except uSkyBlock-API.
-If you're using uSkyBlock-Core or po-utils as dependency in your project, update your
-dependencies to:
 
+### Gradle
+```kotlin
+implementation("ovh.uskyblock:uSkyBlock-Core:3.2.0")
+implementation("ovh.uskyblock:uSkyBlock-APIv2:3.2.0")
+```
+
+### Maven
 ```xml
 <dependency>
     <groupId>ovh.uskyblock</groupId>
     <artifactId>uSkyBlock-Core</artifactId>
-    <version>3.0.0</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 
@@ -39,7 +44,7 @@ We're moving new API features towards APIv2, which is available as:
 <dependency>
     <groupId>ovh.uskyblock</groupId>
     <artifactId>uSkyBlock-APIv2</artifactId>
-    <version>3.0.0</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 
@@ -60,7 +65,19 @@ Please make sure, that the config files are as you expect them to be, before usi
 
 ## Building/Compiling
 
-See (https://github.com/rlf/uSkyBlock/wiki/Building)
+To build the plugin, you need Java 21 and the project uses Gradle.
+
+```bash
+# To build the plugin
+./gradlew build
+
+# To update translations
+./gradlew translation
+```
+
+The resulting JAR can be found in `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`.
+
+See also the [Wiki](https://github.com/rlf/uSkyBlock/wiki/Building) for more details.
 
 # API
 uSkyBlock has an API (since v2.0.1-RC1.65).
