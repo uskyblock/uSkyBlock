@@ -56,6 +56,23 @@ val i18nZip = tasks.register<Zip>("i18nZip") {
 
 tasks.processResources {
     from(i18nZip)
+
+    val props = mapOf(
+        "projectVersion" to project.version,
+        "buildNumber" to (System.getenv("GITHUB_RUN_NUMBER") ?: "DEV"),
+        "gsonVersion" to libs.versions.com.google.code.gson.gson.x1.get(),
+        "guiceVersion" to libs.versions.com.google.inject.guice.get(),
+        "guavaVersion" to libs.versions.com.google.guava.guava.get(),
+        "adventureApiVersion" to libs.versions.net.kyori.adventure.api.get(),
+        "adventureBukkitVersion" to libs.versions.net.kyori.adventure.platform.bukkit.get(),
+        "apacheCommonsVersion" to libs.versions.org.apache.commons.commons.lang3.get(),
+        "apacheHttpVersion" to libs.versions.org.apache.httpcomponents.httpclient.get(),
+        "mavenArtifactVersion" to libs.versions.org.apache.maven.maven.artifact.get()
+    )
+    inputs.properties(props)
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
 }
 
 tasks.register<Exec>("extractTranslation") {
