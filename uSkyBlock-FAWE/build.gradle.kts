@@ -8,8 +8,12 @@ plugins {
 
 dependencies {
     api(project(":uSkyBlock-Core"))
-    compileOnly(libs.com.fastasyncworldedit.fastasyncworldedit.core)
-    compileOnly(libs.com.fastasyncworldedit.fastasyncworldedit.bukkit)
+    compileOnly(libs.com.fastasyncworldedit.fastasyncworldedit.core) {
+        exclude(group = "*")
+    }
+    compileOnly(libs.com.fastasyncworldedit.fastasyncworldedit.bukkit) {
+        exclude(group = "*")
+    }
     compileOnly(libs.org.spigotmc.spigot.api)
     compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
 }
