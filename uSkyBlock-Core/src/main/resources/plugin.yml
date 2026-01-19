@@ -118,7 +118,6 @@ permissions:
       usb.admin.ignore: true
       usb.admin.info: true
       usb.admin.island: true
-      usb.admin.lang: true
       usb.admin.maintenance: true
       usb.admin.makeleader: true
       usb.admin.orphan: true
@@ -157,7 +156,6 @@ permissions:
       usb.admin.island: true
       usb.admin.jobs: true
       usb.admin.jobs.stats: true
-      usb.admin.lang: true
       usb.admin.maintenance: true
       usb.admin.makeleader: true
       usb.admin.nbt: true
@@ -306,9 +304,6 @@ permissions:
 
   usb.admin.jobs.stats:
     description: 'Grants access to /usb jobs stats - show statistics'
-
-  usb.admin.lang:
-    description: 'Grants access to /usb lang - changes the language of the plugin, and reloads'
 
   usb.admin.maintenance:
     description: 'Grants access to /usb maintenance - toggles maintenance mode'
