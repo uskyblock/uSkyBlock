@@ -8,9 +8,9 @@ open my $out, '>:encoding(utf8)', 'xx_lol_US.po' or die "Unable to write to lol_
 
 my %dict = (
     "you've" => "kitteh haz",
-    'your' => "kitteh's",
+    'your' => "yoor",
     'am' => 'iz',
-    'is' => ' iz',
+    'is' => 'iz',
     'are' => 'be',
     'my' => 'mah',
     'them' => "'dem",
@@ -27,8 +27,8 @@ my %dict = (
     'leader' => 'top cat',
     'saving' => "storin'",
     'reward' => 'kitteh treet',
-    'your' => 'yoor',
-    ' island' => ' cathouz',
+    'island' => 'cathouz',
+    'islands' => 'cathouzez',
     'requirements' => 'stuffs needed',
     'currency' => 'moniez',
     'Item' => 'stuffs',
@@ -59,10 +59,13 @@ sub get_lolcat {
     utf8::encode($lolcat);
     print "txt: $txt\n";
     foreach my $key (keys %dict) {
-        $lolcat =~ s/\b((§[0-9a-fklmor])?)$key\b/$1$dict{$key}/g;
-        my $ukey = ucfirst($key);
-        my $uvalue = ucfirst($dict{$key});
-        $lolcat =~ s/\b((§[0-9a-fklmor])?)$ukey\b/$1$uvalue/g;
+        my $value  = $dict{$key};
+        my $ukey   = ucfirst($key);
+        my $uvalue = ucfirst($value);
+
+        # Do not translate if the word is immediately preceded by '/'
+        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
+        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
     }
     foreach my $key (keys %part_dict) {
         $lolcat =~ s/$key/$part_dict{$key}/g;
