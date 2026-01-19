@@ -14,10 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Checkout submodules
-        run: |
-          sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-          git submodule update --init --recursive
       - name: JDK 21
         uses: actions/setup-java@v4
         with:
