@@ -22,7 +22,7 @@ dependencies {
 
     // External dependencies to be shaded
     shade("io.papermc:paperlib:${libs.versions.io.papermc.paperlib.get()}") { isTransitive = false }
-    shade("org.bstats:bstats-bukkit:${libs.versions.org.bstats.bstats.bukkit.get()}") { isTransitive = false }
+    shade("org.bstats:bstats-bukkit:${libs.versions.org.bstats.bstats.bukkit.get()}") { isTransitive = true }
 }
 
 description = "uSkyBlock-Plugin"
