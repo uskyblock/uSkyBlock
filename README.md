@@ -2,16 +2,16 @@
 
 This is a continually updated and custom version of Talabrek's Ultimate SkyBlock plugin.
 
-We are on [Spigot](https://www.spigotmc.org/resources/uskyblock-revived.66795/). Currently [Open Issues](https://github.com/rlf/uSkyBlock/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20-label%3A%22T%20ready%20for%20test%22%20-label%3A%22T%20tested%20awaiting%20reporter%22)
+We are on [Spigot](https://www.spigotmc.org/resources/uskyblock-revived.66795/). Currently [Open Issues](https://github.com/uskyblock/uSkyBlock/issues)
 
 # Installation
 
-This version depends on the following plugins:
+uSkyBlock depends on the following plugins:
 
-* Spigot/Paper 1.21.1
-* Vault 1.7.x
-* WorldEdit 7.2.19
-* WorldGuard 7.0.9
+* Spigot/Paper
+* Vault
+* WorldEdit
+* WorldGuard
 
 ## Releases
 https://www.spigotmc.org/resources/uskyblock-revived.66795/history
@@ -51,12 +51,6 @@ We're moving new API features towards APIv2, which is available as:
 Feel free to use any of the new APIv2 functions on servers running uSkyBlock 3.0.0+. The old API-methods will
 be deprecated and removed in the upcoming plugin releases.
 
-### Bukkit/Spigot 1.7.9/10 Releases
-
-We provide pre-compiled versions (no support) [here](http://rlf.github.io/uSkyBlock):
-
-* [2.4.9 for Bukkit 1.7.10](http://rlf.github.io/uSkyBlock/releases/bukkit-1.7.10/uSkyBlock-2.4.9.jar)
-
 ## Config-files
 
 *Note*: Config files might change quite a bit, and upon activation, the plugin will try to merge the existing ones with the new ones. A backup is kept under the `uSkyBlock/backup` folder.
@@ -77,7 +71,7 @@ To build the plugin, you need Java 21 and the project uses Gradle.
 
 The resulting JAR can be found in `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`.
 
-See also the [Wiki](https://github.com/rlf/uSkyBlock/wiki/Building) for more details.
+See also the [Wiki](https://github.com/uskyblock/uSkyBlock/wiki/Building) for more details.
 
 # API
 uSkyBlock has an API (since v2.0.1-RC1.65).
@@ -93,19 +87,19 @@ if (plugin instanceof uSkyBlockAPI && plugin.isEnabled()) {
   ));
 }
 ```
-For further details regarding the API, visit the Wiki page: https://github.com/rlf/uSkyBlock/wiki/uSkyBlock-API
+For further details regarding the API, visit the Wiki page: https://github.com/uskyblock/uSkyBlock/wiki/uSkyBlock-API
 
 ## Contributing
 
 Fork-away, and create pull-requests - we review and accept almost any changes.
 
-But *please* conform with the (https://github.com/rlf/uSkyBlock/wiki/Coding-Guidelines)
+But *please* conform with the (https://github.com/uskyblock/uSkyBlock/wiki/Coding-Guidelines)
 
 ## License
 
 TL;DR - This is licensed under GPLv3
 
-### Explanation / History
+### History
 Originally the uSkyBlock was a continuation of the skySMP plugin, which was licensed under GPLv3
 (see http://dev.bukkit.org/bukkit-plugins/skysmp/).
 
@@ -130,4 +124,3 @@ So, with Talabreks blessing, this repository will try to consolidate the many di
 ## References
 
 * [GPLv3](http://www.gnu.org/copyleft/gpl.html) - [tl;dr Legal](https://www.tldrlegal.com/l/gpl-3.0)
-
