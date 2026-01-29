@@ -11,7 +11,6 @@ import us.talabrek.ultimateskyblock.command.admin.AdminIslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.ChunkCommand;
 import us.talabrek.ultimateskyblock.command.admin.CooldownCommand;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
-import us.talabrek.ultimateskyblock.command.admin.FlatlandFixCommand;
 import us.talabrek.ultimateskyblock.command.admin.FlushCommand;
 import us.talabrek.ultimateskyblock.command.admin.GenTopTenCommand;
 import us.talabrek.ultimateskyblock.command.admin.GotoIslandCommand;
@@ -65,7 +64,6 @@ public class AdminCommand extends BaseCommandExecutor {
         @NotNull PurgeCommand purgeCommand,
         @NotNull GotoIslandCommand gotoIslandCommand,
         @NotNull PlayerInfoCommand playerInfoCommand,
-        @NotNull FlatlandFixCommand flatlandFixCommand,
         @NotNull DebugCommand debugCommand,
         @NotNull WGCommand wgCommand,
         @NotNull VersionCommand versionCommand,
@@ -100,7 +98,6 @@ public class AdminCommand extends BaseCommandExecutor {
         add(purgeCommand);
         add(gotoIslandCommand);
         add(playerInfoCommand);
-        add(flatlandFixCommand);
         add(debugCommand);
         add(wgCommand);
         add(versionCommand);

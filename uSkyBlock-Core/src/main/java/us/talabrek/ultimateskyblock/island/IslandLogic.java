@@ -7,11 +7,8 @@ import com.google.common.cache.RemovalListener;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -27,7 +24,6 @@ import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.handler.task.WorldEditClearFlatlandTask;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
@@ -56,7 +52,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static org.bukkit.Material.BEDROCK;
 
 /**
  * Responsible for island creation, locating locations, purging, clearing etc.
@@ -75,7 +70,6 @@ public class IslandLogic {
 
     private final LoadingCache<String, IslandInfo> cache;
     private final boolean showMembers;
-    private final boolean flatlandFix;
     private final boolean useDisplayNames;
     private final BukkitTask saveTask;
     private final double topTenCutoff;
@@ -111,7 +105,6 @@ public class IslandLogic {
         this.directoryIslands = islandDirectory;
         this.orphanLogic = orphanLogic;
         this.showMembers = config.getYamlConfig().getBoolean("options.island.topTenShowMembers", true);
-        this.flatlandFix = config.getYamlConfig().getBoolean("options.island.fixFlatland", false);
         this.useDisplayNames = config.getYamlConfig().getBoolean("options.advanced.useDisplayNames", false);
         topTenCutoff = config.getYamlConfig().getDouble("options.advanced.topTenCutoff", config.getYamlConfig().getDouble("options.advanced.purgeLevel", 10));
         cache = CacheBuilder
@@ -197,41 +190,6 @@ public class IslandLogic {
         netherIsland.setWorld(worldManager.getNetherWorld());
         netherIsland.setY(loc.getY() / 2);
         return netherIsland;
-    }
-
-    public boolean clearFlatland(final CommandSender sender, final Location loc, Duration delay) {
-        if (loc == null) {
-            return false;
-        }
-        if (delay.isPositive() && !flatlandFix) {
-            return false; // Skip
-        }
-        Runnable runnable = () -> {
-            final World w = loc.getWorld();
-            final int px = loc.getBlockX();
-            final int pz = loc.getBlockZ();
-            final int py = 0;
-            final int range = Math.max(Settings.island_protectionRange, Settings.island_distance) + 1;
-            final int radius = range / 2;
-            // 5 sampling points...
-            if (w.getBlockAt(px, py, pz).getType() == BEDROCK
-                || w.getBlockAt(px + radius, py, pz + radius).getType() == BEDROCK
-                || w.getBlockAt(px + radius, py, pz - radius).getType() == BEDROCK
-                || w.getBlockAt(px - radius, py, pz + radius).getType() == BEDROCK
-                || w.getBlockAt(px - radius, py, pz - radius).getType() == BEDROCK) {
-                sender.sendMessage(String.format("\u00a7c-----------------------------------\n\u00a7cFlatland detected under your island!\n\u00a7e Clearing it in %s, stay clear.\n\u00a7c-----------------------------------\n", TimeUtil.durationAsString(delay)));
-                scheduler.sync(new WorldEditClearFlatlandTask(scheduler, config, worldManager, logger, sender,
-                    new CuboidRegion(BlockVector3.at(px - radius, 0, pz - radius),
-                        BlockVector3.at(px + radius, 4, pz + radius)),
-                    "\u00a7eFlatland was cleared under your island (%s). Take care."), delay);
-            }
-        };
-        if (Bukkit.isPrimaryThread()) {
-            runnable.run();
-        } else {
-            scheduler.sync(runnable);
-        }
-        return false;
     }
 
     public void displayTopTen(final CommandSender sender, int page) {

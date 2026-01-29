@@ -141,7 +141,6 @@ public class PlayerLogic {
             scheduler.sync(() -> {
                     if (playerInfo.getHasIsland()) {
                         WorldGuardHandler.protectIsland(onlinePlayer, playerInfo);
-                        islandLogic.clearFlatland(onlinePlayer, playerInfo.getIslandLocation(), Duration.ofSeconds(20));
                     }
                     if (worldManager.isSkyAssociatedWorld(onlinePlayer.getWorld()) && !plugin.playerIsOnIsland(onlinePlayer)) {
                         // Check if banned
