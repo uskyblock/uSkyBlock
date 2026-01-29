@@ -8,7 +8,7 @@ import us.talabrek.ultimateskyblock.MetricsManager;
 import us.talabrek.ultimateskyblock.api.event.EventLogic;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
-import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
+import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderModule;
 import us.talabrek.ultimateskyblock.hook.HookManager;
@@ -31,6 +31,7 @@ public class Services {
     private final HookManager hookManager;
     private final AutoIslandLevelRefresh autoIslandLevelRefresh;
     private final PlaceholderModule placeholderModule;
+    private final SchematicHandler schematicHandler;
 
     @Inject
     public Services(
@@ -43,8 +44,9 @@ public class Services {
         @NotNull MetricsManager metricsManager,
         @NotNull HookManager hookManager,
         @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh,
-        @NotNull PlaceholderModule placeholderModule
-    ) {
+        @NotNull PlaceholderModule placeholderModule,
+        @NotNull SchematicHandler schematicHandler
+        ) {
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
         this.eventLogic = eventLogic;
@@ -55,9 +57,11 @@ public class Services {
         this.hookManager = hookManager;
         this.autoIslandLevelRefresh = autoIslandLevelRefresh;
         this.placeholderModule = placeholderModule;
+        this.schematicHandler = schematicHandler;
     }
 
     public void startup(uSkyBlock plugin) {
+        schematicHandler.initialize(plugin);
         metricsManager.setup();
         autoIslandLevelRefresh.startup();
         placeholderModule.startup(plugin);
@@ -67,7 +71,6 @@ public class Services {
         hookManager.setupHooks();
 
         // TODO: make these non-static objects
-        AsyncWorldEditHandler.onEnable(plugin);
         WorldGuardHandler.setupGlobal(plugin.getWorldManager().getWorld());
         if (plugin.getWorldManager().getNetherWorld() != null) {
             WorldGuardHandler.setupGlobal(plugin.getWorldManager().getNetherWorld());
@@ -82,7 +85,6 @@ public class Services {
         playerLogic.shutdown();
         islandLogic.shutdown();
         playerDB.shutdown();
-        AsyncWorldEditHandler.onDisable(plugin);
         DebugCommand.disableLogging(null);
     }
 }

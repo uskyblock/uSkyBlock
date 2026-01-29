@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
-import us.talabrek.ultimateskyblock.island.IslandGenerator;
+import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.LimitLogic;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
@@ -64,7 +64,7 @@ public class SkyBlockMenu {
     private final ChallengeLogic challengeLogic;
     private final PluginConfig config;
     private final PerkLogic perkLogic;
-    private final IslandGenerator islandGenerator;
+    private final SchematicHandler schematicHandler;
     private final LimitLogic limitLogic;
     private final ConfirmHandler confirmHandler;
     private final Scheduler scheduler;
@@ -101,7 +101,7 @@ public class SkyBlockMenu {
         @NotNull ChallengeLogic challengeLogic,
         @NotNull PluginConfig config,
         @NotNull PerkLogic perkLogic,
-        @NotNull IslandGenerator islandGenerator,
+        @NotNull SchematicHandler schematicHandler,
         @NotNull LimitLogic limitLogic,
         @NotNull ConfirmHandler confirmHandler,
         @NotNull Scheduler scheduler
@@ -110,7 +110,7 @@ public class SkyBlockMenu {
         this.challengeLogic = challengeLogic;
         this.config = config;
         this.perkLogic = perkLogic;
-        this.islandGenerator = islandGenerator;
+        this.schematicHandler = schematicHandler;
         this.limitLogic = limitLogic;
         this.confirmHandler = confirmHandler;
         this.scheduler = scheduler;
@@ -387,7 +387,7 @@ public class SkyBlockMenu {
     }
 
     private Inventory createInitMenu(Player player) {
-        List<String> schemeNames = islandGenerator.getSchemeNames();
+        List<String> schemeNames = schematicHandler.getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d) * 9;
         String title = "\u00a79" + tr("Island Create Menu");
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);
@@ -696,7 +696,7 @@ public class SkyBlockMenu {
         final BukkitTask[] hackySharing = new BukkitTask[1];
         hackySharing[0] = scheduler.sync(() -> {
             if (inventory.getViewers().contains(p)) {
-                updateRestartMenu(inventory, p, islandGenerator.getSchemeNames());
+                updateRestartMenu(inventory, p, schematicHandler.getSchemeNames());
             }
             if (!confirmHandler.durationLeft(p, "/is restart").isPositive() || !inventory.getViewers().contains(p)) {
                 if (hackySharing.length > 0 && hackySharing[0] != null) {
@@ -810,7 +810,7 @@ public class SkyBlockMenu {
     }
 
     public Inventory createRestartGUI(Player player) {
-        List<String> schemeNames = islandGenerator.getSchemeNames();
+        List<String> schemeNames = schematicHandler.getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d) * 9;
         String title = "\u00a79" + tr("Island Restart Menu");
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);

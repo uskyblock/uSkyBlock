@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.Settings;
-import us.talabrek.ultimateskyblock.island.IslandGenerator;
+import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +31,7 @@ public class PerkLogic {
 
     @Inject
     public PerkLogic(
-        @NotNull IslandGenerator islandGenerator,
+        @NotNull SchematicHandler schematicHandler,
         @NotNull PluginConfig config
     ) {
         defaultPerk = new Perk(Collections.emptyList(), Settings.general_maxPartySize,
@@ -49,7 +49,7 @@ public class PerkLogic {
         addPartyPermissionPerks(null, config.getYamlConfig().getConfigurationSection("options.party.maxPartyPermissions"));
         addHungerPerms();
         addDonorRewardPerks();
-        List<String> schemeNames = islandGenerator.getSchemeNames();
+        List<String> schemeNames = schematicHandler.getSchemeNames();
         addSchemePerks(schemeNames);
 
         islandPerks = new ConcurrentHashMap<>();
