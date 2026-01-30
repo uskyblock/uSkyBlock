@@ -142,7 +142,7 @@ public class WorldManager {
         World world = spawnLocation.getWorld();
 
         if (config.getYamlConfig().getInt("options.general.spawnSize", 0) > 32 && Files.exists(schematicPath)) {
-            AsyncWorldEditHandler.loadIslandSchematic(schematicPath.toFile(), spawnLocation, null);
+            AsyncWorldEditHandler.loadIslandSchematic(schematicPath.toFile(), spawnLocation);
         } else {
             Block spawnBlock = world.getBlockAt(spawnLocation).getRelative(BlockFace.DOWN);
             spawnBlock.setType(Material.GOLD_BLOCK);

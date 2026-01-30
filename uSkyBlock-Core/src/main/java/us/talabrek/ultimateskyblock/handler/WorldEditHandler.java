@@ -25,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.handler.task.WorldEditClear;
-import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 
@@ -44,7 +43,7 @@ import java.util.logging.Logger;
 public class WorldEditHandler {
     private static final Logger log = Logger.getLogger(WorldEditHandler.class.getName());
 
-    public static void loadIslandSchematic(final File file, final Location origin, PlayerPerk playerPerk) {
+    public static void loadIslandSchematic(final File file, final Location origin) {
         log.finer("Trying to load schematic " + file);
         if (file == null || !file.exists() || !file.canRead()) {
             LogUtil.log(Level.WARNING, "Unable to load schematic " + file);

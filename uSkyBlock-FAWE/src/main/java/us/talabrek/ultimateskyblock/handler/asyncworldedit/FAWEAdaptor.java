@@ -9,8 +9,6 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -37,11 +35,7 @@ public class FAWEAdaptor implements AWEAdaptor {
     }
 
     @Override
-    public synchronized void registerCompletion(Player player) {
-    }
-
-    @Override
-    public void loadIslandSchematic(final File file, final Location origin, final PlayerPerk playerPerk) {
+    public void loadIslandSchematic(final File file, final Location origin) {
         scheduler.async(() -> {
             if (file == null || !file.exists() || !file.canRead()) {
                 log.log(Level.WARNING, "Unable to load schematic {}", file);
@@ -55,7 +49,7 @@ public class FAWEAdaptor implements AWEAdaptor {
             }
 
             BlockVector3 to = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
-            EditSession editSession = getEditSession(playerPerk, origin);
+            EditSession editSession = getEditSession(origin);
             try(var schematic = format.load(file)) {
                 schematic.paste(editSession, to, false);
                 editSession.flushQueue();
@@ -65,7 +59,7 @@ public class FAWEAdaptor implements AWEAdaptor {
         });
     }
 
-    private synchronized EditSession getEditSession(PlayerPerk playerPerk, Location origin) {
+    private synchronized EditSession getEditSession(Location origin) {
         return createEditSession(new BukkitWorld(origin.getWorld()), -1);
     }
 

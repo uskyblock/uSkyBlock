@@ -5,13 +5,10 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.World;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import us.talabrek.ultimateskyblock.handler.asyncworldedit.AWEAdaptor;
 import us.talabrek.ultimateskyblock.handler.task.WEPasteSchematic;
-import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -37,12 +34,8 @@ public enum AsyncWorldEditHandler {;
         adaptor = null;
     }
 
-    public static EditSession createEditSession(World world, int maxblocks) {
-        return getAWEAdaptor().createEditSession(world, maxblocks);
-    }
-
-    public static void loadIslandSchematic(File file, Location origin, PlayerPerk playerPerk) {
-        new WEPasteSchematic(file, origin, playerPerk).runTask(uSkyBlock.getInstance());
+    public static void loadIslandSchematic(File file, Location origin) {
+        new WEPasteSchematic(file, origin).runTask(uSkyBlock.getInstance());
     }
 
     public static void regenerate(Region region, Runnable onCompletion) {
@@ -78,10 +71,6 @@ public enum AsyncWorldEditHandler {;
         return getAWEAdaptor() != NULL_ADAPTOR;
     }
 
-    public static Plugin getFAWE() {
-        return Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-    }
-
     public static final AWEAdaptor NULL_ADAPTOR = new AWEAdaptor() {
         @Override
         public void onEnable(uSkyBlock plugin) {
@@ -89,13 +78,8 @@ public enum AsyncWorldEditHandler {;
         }
 
         @Override
-        public void registerCompletion(Player player) {
-
-        }
-
-        @Override
-        public void loadIslandSchematic(File file, Location origin, PlayerPerk playerPerk) {
-            WorldEditHandler.loadIslandSchematic(file, origin, playerPerk);
+        public void loadIslandSchematic(File file, Location origin) {
+            WorldEditHandler.loadIslandSchematic(file, origin);
         }
 
         @Override

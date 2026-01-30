@@ -33,7 +33,7 @@ public class CreateIslandTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (!plugin.getIslandGenerator().createIsland(playerPerk, next, cSchem)) {
+        if (!plugin.getIslandGenerator().createIsland(next, cSchem)) {
             player.sendMessage(tr("Unable to locate schematic {0}, contact a server-admin", cSchem));
         }
         GenerateTask generateTask = new GenerateTask(plugin, player, playerPerk.getPlayerInfo(), next, playerPerk, cSchem);
