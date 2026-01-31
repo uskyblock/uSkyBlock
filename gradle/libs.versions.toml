@@ -4,6 +4,7 @@
 [versions]
 # Plugin versions
 shadow = "9.3.1"
+xyz-jpenilla-run-paper = "3.0.2"
 # Library versions
 be-maximvdw-mvdwplaceholderapi = "3.0.1-SNAPSHOT"
 com-fastasyncworldedit-fastasyncworldedit-bukkit = "2.4.3"
@@ -66,3 +67,4 @@ org-spigotmc-spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "o
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "xyz-jpenilla-run-paper" }
