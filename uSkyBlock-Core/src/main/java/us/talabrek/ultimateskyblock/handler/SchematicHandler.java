@@ -51,7 +51,7 @@ public class SchematicHandler {
     ) {
         this.logger = logger;
         this.config = config;
-        this.directorySchematics = dataFolder.resolve("schematics");
+        this.directorySchematics = dataFolder.toAbsolutePath().resolve("schematics").normalize();
         this.defaultNetherName = config.getYamlConfig().getString("nether.schematicName", "uSkyBlockNether");
     }
 
@@ -170,11 +170,12 @@ public class SchematicHandler {
                 if (!entry.getName().startsWith(prefix)) {
                     continue;
                 }
-                Path target = directorySchematics.resolve(entry.getName().substring(prefix.length())).normalize();
-                if (!target.startsWith(directorySchematics.toAbsolutePath().normalize())) {
+                Optional<Path> targetPath = resolveTarget(directorySchematics, entry.getName().substring(prefix.length()));
+                if (targetPath.isEmpty()) {
                     logger.warning("Skipping suspicious path while copying schematics: " + entry.getName());
                     continue;
                 }
+                Path target = targetPath.get();
                 File targetFile = target.toFile();
                 if (targetFile.exists()) {
                     continue;
@@ -192,6 +193,18 @@ public class SchematicHandler {
         } catch (IOException e) {
             logger.log(Level.WARNING, "Unable to find schematics in plugin JAR", e);
         }
+    }
+
+    /**
+     * Resolve a schematic target path relative to the schematics root, ensuring no path traversal.
+     */
+    static Optional<Path> resolveTarget(@NotNull Path schematicsRoot, @NotNull String entryRelativePath) {
+        Path root = schematicsRoot.toAbsolutePath().normalize();
+        Path target = root.resolve(entryRelativePath).normalize();
+        if (!target.startsWith(root)) {
+            return Optional.empty();
+        }
+        return Optional.of(target);
     }
 
     public record SchematicPair(@NotNull Path overworld, @NotNull Optional<Path> nether) {
