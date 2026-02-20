@@ -1,274 +1,326 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: el\n"
+"PO-Revision-Date: 2026-02-20 13:52\n"
+"Last-Translator: \n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /master/uSkyBlock-Core/src/main/po/keys.pot\n"
+"X-Crowdin-File-ID: 12\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid " §4{0} §b{1}"
 msgstr " §4{0} §b{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 #, java-format
 msgid " §f{0}x §7{1}"
 msgstr " §f{0}x §7{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "#"
 msgstr "#"
 
-msgid ""
-"- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"
-msgstr ""
-"- ΕΚΚΑΘΑΡΙΣΗ: {0,number,##}% ({1}/{2}), πέρασε {3}, εκτιμώμενη ολοκλήρωση "
-"~{4}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
+msgid "- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"
+msgstr "- ΕΚΚΑΘΑΡΙΣΗ: {0,number,##}% ({1}/{2}), πέρασε {3}, εκτιμώμενη ολοκλήρωση ~{4}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "ANIMAL"
 msgstr "ΖΩΟ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "Biome: {0}"
 msgstr "Βιότοπος: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are ALLLLLLL ALOOOOONE!"
 msgstr "Αλλά είσαι ΟΛΟΟΟΟΟΜΟΝΑΧΟΣ!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are Talking to your self!"
 msgstr "Αλλά μιλάς στον εαυτό σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are Yelling in the wind!"
 msgstr "Αλλά φωνάζεις στον άνεμο!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But your fantasy friends are gone!"
 msgstr "Αλλά οι φανταστικοί σου φίλοι έφυγαν!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "COPPER_GOLEM"
 msgstr "COPPER_GOLEM"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Can {0}"
 msgstr "Μπορεί {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Cannot {0}"
 msgstr "Δεν μπορεί {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Challenge Menu"
 msgstr "Μενού Προκλήσεων"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Biome"
 msgstr "Αλλαγή Βιότοπου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Island Biome"
 msgstr "Αλλαγή Βιότοπου Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "Cleared cooldown on {0} for {1}"
 msgstr "Έγινε εκκαθάριση του cooldown στο {0} για {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to grant this permission."
 msgstr "Κάνε κλικ εδώ για να δοθεί αυτή η άδεια."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to remove this permission."
 msgstr "Κάνε κλικ εδώ για να αφαιρεθεί αυτή η άδεια."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Click to warp to the island!"
 msgstr "Κλικ για warp στο νησί!"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Command"
 msgstr "Εντολή"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Controls player-cooldowns"
 msgstr "Διαχειρίζεται τα cooldowns των παικτών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Could not create your Island. Please contact a server moderator."
-msgstr ""
-"Δεν ήταν δυνατή η δημιουργία του νησιού σου. Παρακαλώ επικοινώνησε με έναν "
-"συντονιστή του server."
+msgstr "Δεν ήταν δυνατή η δημιουργία του νησιού σου. Παρακαλώ επικοινώνησε με έναν συντονιστή του server."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "Current radius: {0}"
 msgstr "Τρέχουσα ακτίνα: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Decrease radius of biome change"
 msgstr "Μείωση ακτίνας αλλαγής βιότοπου"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Description"
 msgstr "Περιγραφή"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "East"
 msgstr "Ανατολή"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Either send a message directly to your group, or toggle it on/off."
-msgstr ""
-"Είτε στείλε μήνυμα απευθείας στην ομάδα σου, είτε ενεργοποίησε/"
-"απενεργοποίησέ το."
+msgstr "Είτε στείλε μήνυμα απευθείας στην ομάδα σου, είτε ενεργοποίησε/απενεργοποίησέ το."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error: That player does not have an island!"
 msgstr "Σφάλμα: Αυτός ο παίκτης δεν έχει νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "GOLEM"
 msgstr "GOLEM"
 
-msgid ""
-"Gain island levels by expanding\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Gain island levels by expanding\n"
 "your skyblock and completing\n"
 "certain challenges. Rarer blocks\n"
 "will add more to your level.\n"
 "§e§lClick here to refresh.\n"
 "§e§l(must be on island)"
-msgstr ""
-"Κέρδισε επίπεδα νησιού επεκτείνοντας\n"
+msgstr "Κέρδισε επίπεδα νησιού επεκτείνοντας\n"
 "to skyblock σου και ολοκληρώνοντας\n"
 "ορισμένες προκλήσεις. Πιο σπάνια blocks\n"
 "θα προσθέσουν περισσότερα στο επίπεδό σου.\n"
 "§e§lΚάνε κλικ εδώ για ανανέωση.\n"
 "§e§l(πρέπει να είσαι στο νησί)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Group Members: §2{0}§7/§e{1}"
 msgstr "Μέλη Ομάδας: §2{0}§7/§e{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Increase radius of biome change"
 msgstr "Αύξηση ακτίνας αλλαγής βιότοπου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
 msgstr "Δόθηκε μη έγκυρη εντολή, υποστηρίζονται μόνο restart και biome!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Invite Players"
 msgstr "Πρόσκληση Παικτών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Island Biome"
 msgstr "Βιότοπος Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Create Menu"
 msgstr "Μενού Δημιουργίας Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group"
 msgstr "Ομάδα Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group Members"
 msgstr "Μέλη Ομάδας Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Log"
 msgstr "Καταγραφή Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Menu"
 msgstr "Μενού Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Restart Menu"
 msgstr "Μενού Επανεκκίνησης Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Kick Players"
 msgstr "Αποβολή Παικτών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Leader"
 msgstr "Αρχηγός"
 
-msgid ""
-"Leaves your island.\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Leaves your island.\n"
 "§4WARNING! §cwill remove all your items!"
-msgstr ""
-"Φεύγεις από το νησί σου.\n"
+msgstr "Φεύγεις από το νησί σου.\n"
 "§4ΠΡΟΕΙΔΟΠΟΙΗΣΗ! §cθα αφαιρεθούν όλα τα αντικείμενά σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "Let the player change their islands biome to {0}"
 msgstr "Επιτρέπει στον παίκτη να αλλάξει τον βιότοπο του νησιού του σε {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "MONSTER"
 msgstr "ΤΕΡΑΣ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Manage challenges for a player"
 msgstr "Διαχείριση προκλήσεων για έναν παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Member"
 msgstr "Μέλος"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/placeholder/PlaceholderReplacerImpl.java
 msgid "N/A"
 msgstr "N/A"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "No active cooldown on {0} for {1} detected!"
 msgstr "Δεν εντοπίστηκε ενεργό cooldown στο {0} για {1}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North"
 msgstr "Βορράς"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-East"
 msgstr "Βορειοανατολικά"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-West"
 msgstr "Βορειοδυτικά"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 #, java-format
 msgid "Owner: {0}"
 msgstr "Ιδιοκτήτης: {0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"
 msgstr "Άδεια"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Permissions"
 msgstr "Άδειες"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "READY"
 msgstr "ΕΤΟΙΜΟ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "Rank: {0}"
 msgstr "Κατάταξη: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "Removing {0} from island"
 msgstr "Αφαίρεση του {0} από το νησί"
 
-msgid ""
-"Restarts your island.\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Restarts your island.\n"
 "§4WARNING! §cwill remove your items and island!"
-msgstr ""
-"Επανεκκινεί το νησί σου.\n"
+msgstr "Επανεκκινεί το νησί σου.\n"
 "§4ΠΡΟΕΙΔΟΠΟΙΗΣΗ! §cθα αφαιρεθούν τα αντικείμενα και το νησί σου!"
 
-msgid ""
-"Return to your island''s home\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Return to your island''s home\n"
 "point. You can change your home\n"
 "point to any location on your\n"
 "island using §b/island sethome\n"
 "§e§lClick here to return home."
-msgstr ""
-"Επιστροφή στο home point\n"
+msgstr "Επιστροφή στο home point\n"
 "του νησιού σου. Μπορείς να αλλάξεις το home\n"
 "point σε οποιαδήποτε τοποθεσία στο\n"
 "νησί σου με §b/island sethome\n"
 "§e§lΚάνε κλικ εδώ για επιστροφή στο σπίτι."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Score Count Block"
 msgstr "Block Μέτρησης Σκορ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Set Island Warp"
 msgstr "Ορισμός Warp Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South"
 msgstr "Νότος"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-East"
 msgstr "Νοτιοανατολικά"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-West"
 msgstr "Νοτιοδυτικά"
 
-msgid ""
-"Start your skyblock journey\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Start your skyblock journey\n"
 "by starting your own island.\n"
 "Complete challenges to earn\n"
 "items and skybucks to help\n"
@@ -276,8 +328,7 @@ msgid ""
 "invite others to join in\n"
 "building your island empire!\n"
 "§e§lClick here to start!"
-msgstr ""
-"Ξεκίνα το ταξίδι σου στο skyblock\n"
+msgstr "Ξεκίνα το ταξίδι σου στο skyblock\n"
 "δημιουργώντας το δικό σου νησί.\n"
 "Ολοκλήρωσε προκλήσεις για να κερδίσεις\n"
 "αντικείμενα και skybucks που θα βοηθήσουν\n"
@@ -286,81 +337,85 @@ msgstr ""
 "στο χτίσιμο της αυτοκρατορίας του νησιού σου!\n"
 "§e§lΚάνε κλικ εδώ για να ξεκινήσεις!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Teleport to the spawn area."
 msgstr "Τηλεμεταφορά στην περιοχή spawn."
 
-msgid ""
-"The island biome affects things\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "The island biome affects things\n"
 "like grass color and spawning\n"
 "of both animals and monsters."
-msgstr ""
-"Ο βιότοπος του νησιού επηρεάζει πράγματα\n"
+msgstr "Ο βιότοπος του νησιού επηρεάζει πράγματα\n"
 "όπως το χρώμα του γρασιδιού και το spawning\n"
 "τόσο ζώων όσο και τεράτων."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "The island has been created."
 msgstr "Το νησί δημιουργήθηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Lock"
 msgstr "Εναλλαγή Κλειδώματος Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Warp"
 msgstr "Εναλλαγή Warp Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "UNKNOWN"
 msgstr "ΑΓΝΩΣΤΟ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/AdminCommand.java
 msgid "Ultimate SkyBlock Admin"
 msgstr "Ultimate SkyBlock Διαχειριστής"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/CreateIslandTask.java
 #, java-format
 msgid "Unable to locate schematic {0}, contact a server-admin"
-msgstr ""
-"Αδυναμία εντοπισμού schematic {0}, επικοινώνησε με έναν διαχειριστή server"
+msgstr "Αδυναμία εντοπισμού schematic {0}, επικοινώνησε με έναν διαχειριστή server"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "Use §9/is h§r or the §9/is§r menu to go there."
 msgstr "Χρησιμοποίησε §9/is h§r ή το μενού §9/is§r για να πας εκεί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "VILLAGER"
 msgstr "ΧΩΡΙΚΟΣ"
 
-msgid ""
-"View a list of §9challenges that\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View a list of §9challenges that\n"
 "you can complete on your island\n"
 "to earn skybucks, items, perks,\n"
 "and titles."
-msgstr ""
-"Δες μια λίστα από §9προκλήσεις που\n"
+msgstr "Δες μια λίστα από §9προκλήσεις που\n"
 "μπορείς να ολοκληρώσεις στο νησί σου\n"
 "για να κερδίσεις skybucks, αντικείμενα, προνόμια,\n"
 "και τίτλους."
 
-msgid ""
-"View a log of events from\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View a log of events from\n"
 "your island such as member,\n"
 "biome, and warp changes.\n"
 "§e§lClick to view the log."
-msgstr ""
-"Δες ένα αρχείο καταγραφής γεγονότων από\n"
+msgstr "Δες ένα αρχείο καταγραφής γεγονότων από\n"
 "to νησί σου όπως αλλαγές μελών,\n"
 "βιότοπου και warp.\n"
 "§e§lΚλικ για να δεις το αρχείο."
 
-msgid ""
-"View the members of your island\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View the members of your island\n"
 "group and their permissions. If\n"
 "you are the island leader, you\n"
 "can change the member permissions.\n"
 "§e§lClick here to view or change."
-msgstr ""
-"Δες τα μέλη της ομάδας του νησιού σου\n"
+msgstr "Δες τα μέλη της ομάδας του νησιού σου\n"
 "και τις άδειές τους. Αν\n"
 "είσαι ο αρχηγός του νησιού, μπορείς\n"
 "να αλλάξεις τις άδειες των μελών.\n"
 "§e§lΚάνε κλικ εδώ για προβολή ή αλλαγή."
 
-msgid ""
-"Want to join another player''s\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Want to join another player''s\n"
 "island instead of starting\n"
 "your own? If another player\n"
 "invites you to their island\n"
@@ -368,8 +423,7 @@ msgid ""
 "§e/island accept§f to join them.\n"
 "§e§lClick here to accept an invite!\n"
 "§e§l(You must be invited first)"
-msgstr ""
-"Θες να μπεις στο νησί κάποιου άλλου\n"
+msgstr "Θες να μπεις στο νησί κάποιου άλλου\n"
 "αντί να ξεκινήσεις\n"
 "to δικό σου; Αν ένας άλλος παίκτης\n"
 "σε προσκαλέσει στο νησί του\n"
@@ -378,2260 +432,2670 @@ msgstr ""
 "§e§lΚάνε κλικ εδώ για να αποδεχτείς μια πρόσκληση!\n"
 "§e§l(Πρέπει πρώτα να έχεις προσκληθεί)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "West"
 msgstr "Δύση"
 
-msgid ""
-"When you teleport to your\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "When you teleport to your\n"
 "island you will be taken to\n"
 "this location.\n"
 "§e§lClick here to change."
-msgstr ""
-"Όταν τηλεμεταφέρεσαι στο\n"
+msgstr "Όταν τηλεμεταφέρεσαι στο\n"
 "νησί σου, θα μεταφερθείς σε\n"
 "αυτή την τοποθεσία.\n"
 "§e§lΚάνε κλικ εδώ για αλλαγή."
 
-msgid ""
-"When your warp is activated,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "When your warp is activated,\n"
 "other players will be taken to\n"
 "this point when they teleport\n"
 "to your island."
-msgstr ""
-"Όταν το warp σου είναι ενεργό,\n"
+msgstr "Όταν το warp σου είναι ενεργό,\n"
 "άλλοι παίκτες θα μεταφέρονται σε\n"
 "αυτό το σημείο όταν τηλεμεταφέρονται\n"
 "στο νησί σου."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 #, java-format
 msgid "Wrote documentation to {0}"
 msgstr "Γράφτηκε τεκμηρίωση στο {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "You cannot pick up other players' loot when you are a visitor!"
 msgstr "Δεν μπορείς να μαζέψεις λάφυρα άλλων παικτών όταν είσαι επισκέπτης!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AcceptRejectCommand.java
 msgid "accept/reject an invitation."
 msgstr "αποδοχή/απόρριψη μιας πρόσκλησης."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "act"
 msgstr "ενέργεια"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 #, java-format
 msgid "additional perks {0}"
 msgstr "επιπλέον προνόμια {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "adds the player to the island"
 msgstr "προσθέτει τον παίκτη στο νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 msgid "advanced command for getting island-data"
 msgstr "προχωρημένη εντολή για λήψη δεδομένων νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "advanced command for setting island-data"
 msgstr "προχωρημένη εντολή για ορισμό δεδομένων νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "advanced info about items"
 msgstr "προχωρημένες πληροφορίες για αντικείμενα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass cooldowns"
 msgstr "επιτρέπει στον χρήστη να παρακάμπτει τα cooldowns"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass teleport-delay"
 msgstr "επιτρέπει στον χρήστη να παρακάμπτει την καθυστέρηση τηλεμεταφοράς"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass visitor-protections"
 msgstr "επιτρέπει στον χρήστη να παρακάμπτει τις προστασίες επισκεπτών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to place [usb] signs"
 msgstr "επιτρέπει στον χρήστη να τοποθετεί πινακίδες [usb]"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "allows user to query for others levels"
 msgstr "επιτρέπει στον χρήστη να βλέπει τα επίπεδα άλλων"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "allows user to see others island info"
 msgstr "επιτρέπει στον χρήστη να βλέπει πληροφορίες νησιού άλλων"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to use [usb] signs"
 msgstr "επιτρέπει στον χρήστη να χρησιμοποιεί πινακίδες [usb]"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "ban/unban a player from your island."
 msgstr "αποκλεισμός/άρση αποκλεισμού ενός παίκτη από το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "change the biome of the island"
 msgstr "άλλαξε το biome του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "change the island''s biome."
 msgstr "αλλάζει το biome του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "changes a members island-permissions"
 msgstr "αλλάζει τα δικαιώματα νησιού ενός μέλους"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "check your or another''s island info"
 msgstr "έλεγξε τις πληροφορίες του νησιού σου ή κάποιου άλλου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "check your or anothers island level"
 msgstr "έλεγξε το επίπεδο του νησιού σου ή κάποιου άλλου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "clear orphans"
 msgstr "εκκαθάριση ορφανών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "clears the cooldown on a command (* = all)"
 msgstr "καθαρίζει τον χρόνο επαναφόρτισης μιας εντολής (* = όλα)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "complete all challenges in the rank"
 msgstr "ολοκλήρωσε όλες τις προκλήσεις στην βαθμίδα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "complete and list challenges"
 msgstr "ολοκλήρωση και λίστα προκλήσεων"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "control debugging"
 msgstr "έλεγχος αποσφαλμάτωσης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "controls async jobs"
 msgstr "ελέγχει ασύγχρονες εργασίες"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "count orphans"
 msgstr "μέτρηση ορφανών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "create an island"
 msgstr "δημιούργησε ένα νησί"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "d"
 msgstr "d"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "delete the island (removes the blocks)"
 msgstr "διέγραψε το νησί (αφαιρεί τα μπλοκ)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "delete your island and start a new one."
 msgstr "διέγραψε το νησί σου και ξεκίνα ένα νέο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LogCommand.java
 msgid "display log"
 msgstr "εμφάνιση καταγραφής"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "display the top10 of islands"
 msgstr "εμφάνιση των top10 νησιών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/VersionCommand.java
 msgid "displays version information"
 msgstr "εμφανίζει πληροφορίες έκδοσης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "enable/disable warping to your island."
 msgstr "ενεργοποίηση/απενεργοποίηση του warp προς το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "enables user to all-ways generate top-ten (no caching)"
 msgstr "επιτρέπει στον χρήστη να δημιουργεί πάντα top-ten (χωρίς cache)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "exempt player from biome-cooldown"
 msgstr "εξαίρεση παίκτη από cooldown αλλαγής biome"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "exempt player from create-cooldown"
 msgstr "εξαίρεση παίκτη από cooldown δημιουργίας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "exempt player from restart-cooldown"
 msgstr "εξαίρεση παίκτη από cooldown επανεκκίνησης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "exempts user from being banned"
 msgstr "εξαιρεί τον χρήστη από το να αποκλειστεί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "flush current content of the logger to file."
 msgstr "γράφει το τρέχον περιεχόμενο του logger σε αρχείο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "flushes all caches to files"
 msgstr "γράφει όλες τις cache σε αρχεία"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "general island command"
 msgstr "γενική εντολή νησιού"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "h"
 msgstr "h"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "hides the regions again"
 msgstr "κρύβει ξανά τις περιοχές"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ImportCommand.java
 msgid "imports players and islands from other formats"
 msgstr "εισαγωγή παικτών και νησιών από άλλες μορφές"
 
-msgid ""
-"invite\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "invite\n"
 "other players to the island if\n"
 "there is enough room for more\n"
 "members"
-msgstr ""
-"προσκάλεσε\n"
+msgstr "προσκάλεσε\n"
 "άλλους παίκτες στο νησί αν\n"
 "υπάρχει αρκετός χώρος για\n"
 "περισσότερα μέλη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "invite a player to your island"
 msgstr "πρόσκληση παίκτη στο νησί σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "invite others to the island."
 msgstr "πρόσκληση άλλων στο νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "island"
 msgstr "νησί"
 
-msgid ""
-"kick\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "kick\n"
 "other players from the island,\n"
 "but they are unable to kick\n"
 "the island leader."
-msgstr ""
-"διώξε\n"
+msgstr "διώξε\n"
 "άλλους παίκτες από το νησί,\n"
 "αλλά δεν μπορούν να διώξουν\n"
 "τον αρχηγό του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "kick others from the island."
 msgstr "διώξε άλλους από το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "leave your party"
 msgstr "αποχώρηση από την παρέα σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "list orphans"
 msgstr "λίστα ορφανών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "lists all the active cooldowns"
 msgstr "παραθέτει όλους τους ενεργούς χρόνους επαναφόρτισης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "load current chunk"
 msgstr "φόρτωσε το τρέχον chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "load the region chunks"
 msgstr "φόρτωσε τα chunks της περιοχής"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "loaded chunk at {0},{1}"
 msgstr "φορτώθηκε chunk στο {0},{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "lock your island to non-party members."
 msgstr "κλείδωσε το νησί σου για μη-μέλη της παρέας."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "m"
 msgstr "m"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "manage islands"
 msgstr "διαχείριση νησιών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "manage orphans"
 msgstr "διαχείριση ορφανών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "manually update the top 10 list"
 msgstr "χειροκίνητη ενημέρωση της λίστας top 10"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ms/job"
 msgstr "ms/εργασία"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ms/tick"
 msgstr "ms/tick"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "name"
 msgstr "όνομα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "only available for players"
 msgstr "διαθέσιμο μόνο για παίκτες"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "party"
 msgstr "παρέα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "print out info about the island"
 msgstr "εμφανίζει πληροφορίες για το νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "protects all islands (time consuming)"
 msgstr "προστατεύει όλα τα νησιά (χρονοβόρο)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "protects the island"
 msgstr "προστατεύει το νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "purges all abandoned islands"
 msgstr "εκκαθάριση όλων των εγκαταλελειμμένων νησιών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "purges the island"
 msgstr "εκκαθάριση του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunk around the player"
 msgstr "ανανέωση του chunk γύρω από τον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunks around the player"
 msgstr "ανανέωση των chunks γύρω από τον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "refreshes the existing animations"
 msgstr "ανανέωση των υπαρχόντων animations"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "regenerate current chunk"
 msgstr "αναδημιούργησε το τρέχον chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "region manipulations"
 msgstr "χειρισμοί περιοχής"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "reload configuration from file."
 msgstr "επανφόρτωση ρυθμίσεων από αρχείο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "remove a member from your island."
 msgstr "αφαίρεσε ένα μέλος από το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "removes the player from the island"
 msgstr "αφαιρεί τον παίκτη από το νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets all challenges for the player"
 msgstr "επαναφέρει όλες τις προκλήσεις για τον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets the challenge for the player"
 msgstr "επαναφέρει την πρόκληση για τον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "restarts the cooldown on the command"
 msgstr "επανεκκινεί τον χρόνο επαναφόρτισης της εντολής"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "s"
 msgstr "s"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "saves documentation of the commands to a file"
 msgstr "αποθηκεύει την τεκμηρίωση των εντολών σε αρχείο"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "set a player''s island to your location"
 msgstr "όρισε το νησί ενός παίκτη στη θέση σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "set debug-level"
 msgstr "όρισε επίπεδο αποσφαλμάτωσης"
 
-msgid ""
-"set the island''s warp,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "set the island''s warp,\n"
 "which allows non-group\n"
 "members to teleport to\n"
 "the island."
-msgstr ""
-"όρισε το warp του νησιού,\n"
+msgstr "όρισε το warp του νησιού,\n"
 "ώστε μη-μέλη της ομάδας\n"
 "να μπορούν να τηλεμεταφερθούν\n"
 "στο νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "set the island''s warp."
 msgstr "όρισε το warp του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "set the island-home"
 msgstr "όρισε το home του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "set the ticks between animations"
 msgstr "όρισε τα ticks ανάμεσα στα animations"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "set your island''s warp location"
 msgstr "όρισε την τοποθεσία warp του νησιού σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "sets the biome of the island"
 msgstr "ορίζει το biome του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "show information about the challenge"
 msgstr "εμφάνισε πληροφορίες για την πρόκληση"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show party information"
 msgstr "εμφάνισε πληροφορίες παρέας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show pending invites"
 msgstr "εμφάνισε εκκρεμείς προσκλήσεις"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PlayerInfoCommand.java
 msgid "show player-information"
 msgstr "εμφάνισε πληροφορίες παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MobLimitCommand.java
 msgid "show the islands limits"
 msgstr "εμφανίζει τα όρια του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows a specific players perks"
 msgstr "εμφανίζει τα προνόμια ενός συγκεκριμένου παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "shows information about your party"
 msgstr "εμφανίζει πληροφορίες για την παρέα σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows perk-information"
 msgstr "εμφανίζει πληροφορίες προνομίων"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current chunk"
 msgstr "εμφανίζει τα όρια του τρέχοντος chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current island"
 msgstr "εμφανίζει τα όρια του τρέχοντος νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the inner-chunks"
 msgstr "εμφανίζει τα όρια των εσωτερικών chunks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the outer-chunks"
 msgstr "εμφανίζει τα όρια των εξωτερικών chunks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "shows the component format for the currently held item"
-msgstr ""
-"εμφανίζει τη μορφή component για το αντικείμενο που κρατάς αυτή τη στιγμή"
+msgstr "εμφανίζει τη μορφή component για το αντικείμενο που κρατάς αυτή τη στιγμή"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the non-chunk-aligned borders"
 msgstr "εμφανίζει τα όρια που δεν ευθυγραμμίζονται με chunks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "successfully regenerated chunk at {0},{1}"
 msgstr "επιτυχής αναδημιουργία chunk στο {0},{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "successfully unloaded chunk at {0},{1}"
 msgstr "επιτυχής αποφόρτωση chunk στο {0},{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandTalkCommand.java
 msgid "talk to players on your island"
 msgstr "μίλα με παίκτες στο νησί σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/PartyTalkCommand.java
 msgid "talk to your island party"
 msgstr "μίλα με την παρέα του νησιού σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another players island"
 msgstr "τηλεμεταφορά στο νησί άλλου παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
 msgid "teleport to the island home"
 msgstr "τηλεμεταφορά στο σπίτι του νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SpawnCommand.java
 msgid "teleports you to the skyblock spawn"
 msgstr "σε τηλεμεταφέρει στο spawn του skyblock"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AutoCommand.java
 msgid "teleports you to your island (or create one)"
 msgstr "σε τηλεμεταφέρει στο νησί σου (ή δημιουργεί ένα)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ticks"
 msgstr "ticks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "time"
 msgstr "χρόνος"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "to unlock this rank"
 msgstr "για να ξεκλειδώσεις αυτόν τον βαθμό"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "toggle debug-logging"
 msgstr "εναλλαγή καταγραφής αποσφαλμάτωσης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island''s lock."
 msgstr "εναλλαγή κλειδώματος του νησιού."
 
-msgid ""
-"toggle the island''s warp,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "toggle the island''s warp,\n"
 "allowing them to turn it\n"
 "on or off at anytime, but\n"
 "not set the location."
-msgstr ""
-"εναλλαγή του warp του νησιού,\n"
+msgstr "εναλλαγή του warp του νησιού,\n"
 "επιτρέποντάς τους να το\n"
 "ενεργοποιούν ή να το απενεργοποιούν\n"
 "οποτεδήποτε, αλλά\n"
 "όχι να ορίζουν την τοποθεσία."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island''s warp."
 msgstr "εναλλαγή του warp του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "toggles maintenance mode"
 msgstr "εναλλαγή λειτουργίας συντήρησης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "toggles the islands ignore status"
 msgstr "εναλλαγή κατάστασης αγνόησης νησιών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "transfer leadership to another member"
 msgstr "μεταφορά ηγεσίας σε άλλο μέλος"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
 msgstr "μεταφορά ηγεσίας σε άλλον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "trust/untrust a player to help on your island."
 msgstr "εμπιστοσύνη/άρση εμπιστοσύνης σε παίκτη για να βοηθά στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "try to complete a challenge"
 msgstr "προσπάθησε να ολοκληρώσεις μια πρόκληση"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"
 msgstr "εκφόρτωση του τρέχοντος chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "update the WG regions"
 msgstr "ενημέρωση των περιοχών WG"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "various WorldGuard utilities"
 msgstr "διάφορα εργαλεία WorldGuard"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "διάφορες εντολές chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "warp to another player''s island"
 msgstr "warp στο νησί άλλου παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "withdraw an invite"
 msgstr "απόσυρση μιας πρόσκλησης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "{0,number,00.00}  {1,number,#} {2}"
 msgstr "{0,number,00.00}  {1,number,#} {2}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "{0,number,0}:{1,number,00}.{2,number,000}"
 msgstr "{0,number,0}:{1,number,00}.{2,number,000}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "{0} <{1}>"
 msgstr "{0} <{1}>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "{0} changed the island biome to {1}"
 msgstr "Ο/Η {0} άλλαξε το biome του νησιού σε {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "{0} created an area with {1} biome"
 msgstr "Ο/Η {0} δημιούργησε μια περιοχή με biome {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "{0} tried to take over the island!"
 msgstr "Ο/Η {0} προσπάθησε να καταλάβει το νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WitherTagEvents.java
 #, java-format
 msgid "{0}''s Wither"
 msgstr "Wither του/της {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§d invited {1}"
 msgstr "{0}§d προσκάλεσε τον/την {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§e has invited you to join their island!"
 msgstr "{0}§e σε προσκάλεσε να μπεις στο νησί του/της!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§e has rejected the invitation."
 msgstr "{0}§e απέρριψε την πρόσκληση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "{0}§e is already leader of your island!"
 msgstr "{0}§e είναι ήδη αρχηγός του νησιού σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2+"
 msgstr "§2+"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2chunk"
 msgstr "§2chunk"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2§lThis is your current biome."
 msgstr "§2§lΑυτό είναι το τρέχον biome σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4** You are entering a protected - but abandoned - island area."
-msgstr ""
-"§4** Μπαίνεις σε προστατευμένη — αλλά εγκαταλελειμμένη — περιοχή νησιού."
+msgstr "§4** Μπαίνεις σε προστατευμένη — αλλά εγκαταλελειμμένη — περιοχή νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4** You are leaving an abandoned island."
 msgstr "§4** Φεύγεις από ένα εγκαταλελειμμένο νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4A purge is already running.§e Either §9confirm§e or §9stop§e it."
-msgstr ""
-"§4Μια εκκαθάριση εκτελείται ήδη.§e Είτε §9επιβεβαίωσε§e είτε §9σταμάτησέ§e "
-"την."
+msgstr "§4Μια εκκαθάριση εκτελείται ήδη.§e Είτε §9επιβεβαίωσε§e είτε §9σταμάτησέ§e την."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #, java-format
-msgid ""
-"§4All required items must be placed on your island, within {0} blocks of you."
-msgstr ""
-"§4Όλα τα απαιτούμενα αντικείμενα πρέπει να είναι τοποθετημένα στο νησί σου, "
-"σε ακτίνα {0} blocks από εσένα."
+msgid "§4All required items must be placed on your island, within {0} blocks of you."
+msgstr "§4Όλα τα απαιτούμενα αντικείμενα πρέπει να είναι τοποθετημένα στο νησί σου, σε ακτίνα {0} blocks από εσένα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #, java-format
 msgid "§4Ambiguous challenge name: {0}. Did you mean:{1}"
 msgstr "§4Αμφίσημο όνομα πρόκλησης: {0}. Μήπως εννοούσες:{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "§4Challenge has never been completed"
 msgstr "§4Η πρόκληση δεν έχει ολοκληρωθεί ποτέ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4Challenge {0} has already been completed"
 msgstr "§4Η πρόκληση {0} έχει ήδη ολοκληρωθεί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§4Could not locate rank of {0}"
 msgstr "§4Δεν ήταν δυνατός ο εντοπισμός του βαθμού του {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "§4ERROR:§e {0}"
 msgstr "§4ΣΦΑΛΜΑ:§e {0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 #, java-format
 msgid "§4Error writing documentation: {0}"
 msgstr "§4Σφάλμα κατά την εγγραφή τεκμηρίωσης: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4Error! §9No valid island found for purging."
 msgstr "§4Σφάλμα! §9Δεν βρέθηκε έγκυρο νησί για εκκαθάριση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "§4FAILED!§e could not unload chunk at {0},{1}"
 msgstr "§4ΑΠΟΤΥΧΙΑ!§e δεν ήταν δυνατή η εκφόρτωση του chunk στο {0},{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "§4Hold your horses! §eYou have to be patient..."
 msgstr "§4Κράτα τα άλογα! §eΠρέπει να κάνεις υπομονή..."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Invalid argument, try INFO, FINE, FINER, FINEST"
 msgstr "§4Μη έγκυρο όρισμα, δοκίμασε INFO, FINE, FINER, FINEST"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4Invalid challenge name! Use /c help for more information"
-msgstr ""
-"§4Μη έγκυρο όνομα πρόκλησης! Χρησιμοποίησε /c help για περισσότερες "
-"πληροφορίες"
+msgstr "§4Μη έγκυρο όνομα πρόκλησης! Χρησιμοποίησε /c help για περισσότερες πληροφορίες"
 
-msgid ""
-"§4Island at this location has members!\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "§4Island at this location has members!\n"
 "§eUse §9/usb island delete <name>§e to delete it."
-msgstr ""
-"§4Το νησί σε αυτήν την τοποθεσία έχει μέλη!\n"
+msgstr "§4Το νησί σε αυτήν την τοποθεσία έχει μέλη!\n"
 "§eΧρησιμοποίησε §9/usb island delete <name>§e για να το διαγράψεις."
 
-msgid ""
-"§4Island found!§e You already have an island. If you want a fresh island, "
-"type§b /is restart§e to get one"
-msgstr ""
-"§4Βρέθηκε νησί!§e Έχεις ήδη νησί. Αν θέλεις νέο νησί, γράψε§b /is restart§e "
-"για να πάρεις ένα"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
+msgid "§4Island found!§e You already have an island. If you want a fresh island, type§b /is restart§e to get one"
+msgstr "§4Βρέθηκε νησί!§e Έχεις ήδη νησί. Αν θέλεις νέο νησί, γράψε§b /is restart§e για να πάρεις ένα"
 
-msgid ""
-"§4Island found!§e You are already a member of an island. To start your own, "
-"first§b /is leave"
-msgstr ""
-"§4Βρέθηκε νησί!§e Είσαι ήδη μέλος σε ένα νησί. Για να ξεκινήσεις δικό σου, "
-"πρώτα§b /is leave"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
+msgid "§4Island found!§e You are already a member of an island. To start your own, first§b /is leave"
+msgstr "§4Βρέθηκε νησί!§e Είσαι ήδη μέλος σε ένα νησί. Για να ξεκινήσεις δικό σου, πρώτα§b /is leave"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§4Island level has been disabled, contact an administrator."
-msgstr ""
-"§4Το επίπεδο νησιού έχει απενεργοποιηθεί, επικοινώνησε με έναν διαχειριστή."
+msgstr "§4Το επίπεδο νησιού έχει απενεργοποιηθεί, επικοινώνησε με έναν διαχειριστή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "§4Island not found: unable to set the island!"
 msgstr "§4Το νησί δεν βρέθηκε: αδυναμία ορισμού του νησιού!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4It''s a bad idea to replace your lava!"
 msgstr "§4Είναι κακή ιδέα να αντικαταστήσεις τη λάβα σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Logging is not enabled, use §d/usb debug enable"
-msgstr ""
-"§4Η καταγραφή δεν είναι ενεργοποιημένη, χρησιμοποίησε §d/usb debug enable"
+msgstr "§4Η καταγραφή δεν είναι ενεργοποιημένη, χρησιμοποίησε §d/usb debug enable"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Logging wasn't active, so you can't disable it!"
-msgstr ""
-"§4Η καταγραφή δεν ήταν ενεργή, οπότε δεν μπορείς να την απενεργοποιήσεις!"
+msgstr "§4Η καταγραφή δεν ήταν ενεργή, οπότε δεν μπορείς να την απενεργοποιήσεις!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§4Members are already trusted!"
 msgstr "§4Τα μέλη είναι ήδη έμπιστα!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequireIslandCommand.java
 msgid "§4No Island. §eUse §b/is create§e to get one"
 msgstr "§4Δεν υπάρχει νησί. §eΧρησιμοποίησε §b/is create§e για να πάρεις ένα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #, java-format
 msgid "§4No challenge matched: {0}"
 msgstr "§4Καμία πρόκληση δεν ταίριαξε: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No challenge named {0} was found!"
 msgstr "§4Δεν βρέθηκε πρόκληση με όνομα {0}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4No challenge with id {0} found"
 msgstr "§4Δεν βρέθηκε πρόκληση με id {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 #, java-format
 msgid "§4No importer named §e{0}§4 found"
 msgstr "§4Δεν βρέθηκε εισαγωγέας με όνομα §e{0}§4"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§4No player named {0} found!"
 msgstr "§4Δεν βρέθηκε παίκτης με όνομα {0}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No player named {0} was found!"
 msgstr "§4Δεν βρέθηκε παίκτης με όνομα {0}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No rank named {0} was found!"
 msgstr "§4Δεν βρέθηκε βαθμός με όνομα {0}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4No valid island at your location"
 msgstr "§4Δεν υπάρχει έγκυρο νησί στην τοποθεσία σου"
 
-msgid ""
-"§4No valid island provided, either stand within one, or provide an island "
-"name"
-msgstr ""
-"§4Δεν δόθηκε έγκυρο νησί: είτε στάσου μέσα σε ένα, είτε δώσε όνομα νησιού"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "§4No valid island provided, either stand within one, or provide an island name"
+msgstr "§4Δεν δόθηκε έγκυρο νησί: είτε στάσου μέσα σε ένα, είτε δώσε όνομα νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4No valid player-name supplied."
 msgstr "§4Δεν δόθηκε έγκυρο όνομα παίκτη."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "§4Only leader can transfer leadership!"
 msgstr "§4Μόνο ο αρχηγός μπορεί να μεταφέρει την ηγεσία!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "§4Only supported for players"
 msgstr "§4Υποστηρίζεται μόνο για παίκτες"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4Only the island''s owner can invite!"
 msgstr "§4Μόνο ο ιδιοκτήτης του νησιού μπορεί να προσκαλέσει!"
 
-msgid ""
-"§4Only the owner may restart this island. Leave this island in order to "
-"start your own (/island leave)."
-msgstr ""
-"§4Μόνο ο ιδιοκτήτης μπορεί να επανεκκινήσει αυτό το νησί. Φύγε από αυτό το "
-"νησί για να ξεκινήσεις το δικό σου (/island leave)."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "§4Only the owner may restart this island. Leave this island in order to start your own (/island leave)."
+msgstr "§4Μόνο ο ιδιοκτήτης μπορεί να επανεκκινήσει αυτό το νησί. Φύγε από αυτό το νησί για να ξεκινήσεις το δικό σου (/island leave)."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "§4PURGE:§9 Aborted purging abandoned islands."
 msgstr "§4ΕΚΚΑΘΑΡΙΣΗ:§9 Διακόπηκε η εκκαθάριση εγκαταλελειμμένων νησιών."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "§4PURGE:§9 Finished purging abandoned islands."
 msgstr "§4ΕΚΚΑΘΑΡΙΣΗ:§9 Ολοκληρώθηκε η εκκαθάριση εγκαταλελειμμένων νησιών."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "§4PURGE:§9 Scanning aborted."
 msgstr "§4ΕΚΚΑΘΑΡΙΣΗ:§9 Η σάρωση ακυρώθηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 #, java-format
-msgid ""
-"§4PURGE:§9 Scanning done, found {0} candidates, below level {1}, ready for "
-"purgatory."
-msgstr ""
-"§4ΕΚΚΑΘΑΡΙΣΗ:§9 Η σάρωση ολοκληρώθηκε, βρέθηκαν {0} υποψήφια, κάτω από "
-"επίπεδο {1}, έτοιμα για εκκαθάριση."
+msgid "§4PURGE:§9 Scanning done, found {0} candidates, below level {1}, ready for purgatory."
+msgstr "§4ΕΚΚΑΘΑΡΙΣΗ:§9 Η σάρωση ολοκληρώθηκε, βρέθηκαν {0} υποψήφια, κάτω από επίπεδο {1}, έτοιμα για εκκαθάριση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 #, java-format
 msgid "§4PURGE:§e Do §9usb purge confirm§e within {0} to accept."
 msgstr "§4ΕΚΚΑΘΑΡΙΣΗ:§e Κάνε §9usb purge confirm§e μέσα σε {0} για αποδοχή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§4Player is already assigned to this island!"
 msgstr "§4Ο παίκτης έχει ήδη αντιστοιχιστεί σε αυτό το νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 #, java-format
 msgid "§4Player {0} has no island to transfer!"
 msgstr "§4Ο παίκτης {0} δεν έχει νησί για μεταφορά!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Purge aborted!"
 msgstr "§4Η εκκαθάριση ακυρώθηκε!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} days."
 msgstr "§4Οι απαιτήσεις θα επαναφερθούν σε {0} ημέρες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} hours."
 msgstr "§4Οι απαιτήσεις θα επαναφερθούν σε {0} ώρες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} minutes."
 msgstr "§4Οι απαιτήσεις θα επαναφερθούν σε {0} λεπτά."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "§4Since your island is locked, your incoming warp has been deactivated."
-msgstr ""
-"§4Επειδή το νησί σου είναι κλειδωμένο, το εισερχόμενο warp σου "
-"απενεργοποιήθηκε."
+msgstr "§4Επειδή το νησί σου είναι κλειδωμένο, το εισερχόμενο warp σου απενεργοποιήθηκε."
 
-msgid ""
-"§4Sorry!§e A protect-all is already running. Let it complete first, or use "
-"§9usb protectall §cstop"
-msgstr ""
-"§4Συγγνώμη!§e Ένα protect-all εκτελείται ήδη. Άφησέ το να ολοκληρωθεί πρώτα, "
-"ή χρησιμοποίησε §9usb protectall §cstop"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "§4Sorry!§e A protect-all is already running. Let it complete first, or use §9usb protectall §cstop"
+msgstr "§4Συγγνώμη!§e Ένα protect-all εκτελείται ήδη. Άφησέ το να ολοκληρωθεί πρώτα, ή χρησιμοποίησε §9usb protectall §cstop"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Starting purge..."
 msgstr "§4Έναρξη εκκαθάρισης..."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4Stop kickin' yourself!"
 msgstr "§4Σταμάτα να διώχνεις τον εαυτό σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4That island is §clocked.§e No teleporting to the island."
-msgstr ""
-"§4Αυτό το νησί είναι §cκλειδωμένο.§e Δεν επιτρέπεται τηλεμεταφορά στο νησί."
+msgstr "§4Αυτό το νησί είναι §cκλειδωμένο.§e Δεν επιτρέπεται τηλεμεταφορά στο νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4That player does not exist!"
 msgstr "§4Αυτός ο παίκτης δεν υπάρχει!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4That player does not have an active warp."
 msgstr "§4Αυτός ο παίκτης δεν έχει ενεργό warp."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "§4That player does not have an island!"
 msgstr "§4Αυτός ο παίκτης δεν έχει νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4That player has forbidden you from teleporting to their island."
-msgstr ""
-"§4Αυτός ο παίκτης σου έχει απαγορεύσει την τηλεμεταφορά στο νησί του/της."
+msgstr "§4Αυτός ο παίκτης σου έχει απαγορεύσει την τηλεμεταφορά στο νησί του/της."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4That player has forbidden you from warping to their island."
 msgstr "§4Αυτός ο παίκτης σου έχει απαγορεύσει το warp στο νησί του/της."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4That player has no island."
 msgstr "§4Αυτός ο παίκτης δεν έχει νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4That player is already member on another island. "
 msgstr "§4Αυτός ο παίκτης είναι ήδη μέλος σε άλλο νησί. "
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4That player is invalid or does not have an island!"
 msgstr "§4Αυτός ο παίκτης δεν είναι έγκυρος ή δεν έχει νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4That player is not part of your island group, and not on your island!"
-msgstr ""
-"§4Αυτός ο παίκτης δεν είναι μέρος της ομάδας του νησιού σου και δεν "
-"βρίσκεται στο νησί σου!"
+msgstr "§4Αυτός ο παίκτης δεν είναι μέρος της ομάδας του νησιού σου και δεν βρίσκεται στο νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4That player is offline or doesn't exist."
 msgstr "§4Αυτός ο παίκτης είναι εκτός σύνδεσης ή δεν υπάρχει."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4That player is the leader of your island!"
 msgstr "§4Αυτός ο παίκτης είναι ο αρχηγός του νησιού σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4The level must be a valid number"
 msgstr "§4Το επίπεδο πρέπει να είναι έγκυρος αριθμός"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4The {0} challenge is not available yet!"
 msgstr "§4Η πρόκληση {0} δεν είναι διαθέσιμη ακόμα!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4The {0} challenge is not repeatable!"
 msgstr "§4Η πρόκληση {0} δεν επαναλαμβάνεται!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4This Challenge is not repeatable!"
 msgstr "§4Αυτή η πρόκληση δεν επαναλαμβάνεται!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§4This challenge is currently unavailable."
 msgstr "§4Αυτή η πρόκληση δεν είναι διαθέσιμη αυτή τη στιγμή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequirePlayerCommand.java
 msgid "§4This command can only be executed by a player"
 msgstr "§4Αυτή η εντολή μπορεί να εκτελεστεί μόνο από παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§4Top ten list is empty! Only islands above level {0} is considered."
-msgstr ""
-"§4Η λίστα με τους 10 καλύτερους είναι άδεια! Λαμβάνονται υπόψη μόνο νησιά "
-"πάνω από επίπεδο {0}."
+msgstr "§4Η λίστα με τους 10 καλύτερους είναι άδεια! Λαμβάνονται υπόψη μόνο νησιά πάνω από επίπεδο {0}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Trying to abort purge"
 msgstr "§4Προσπάθεια ακύρωσης εκκαθάρισης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4Unable to find a safe home-location on your island!"
 msgstr "§4Δεν ήταν δυνατή η εύρεση ασφαλούς τοποθεσίας σπιτιού στο νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4Unable to warp you to that player''s island!"
 msgstr "§4Δεν ήταν δυνατή η μεταφορά σου (warp) στο νησί αυτού του παίκτη!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§4Unknown player {0}"
 msgstr "§4Άγνωστος παίκτης {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4WARNING: You will lose your current island if you accept!"
 msgstr "§4ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Θα χάσεις το τρέχον νησί σου αν το αποδεχτείς!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} days."
 msgstr "§4Μπορείς να το ολοκληρώσεις ξανά σε {0} ημέρες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} hours."
 msgstr "§4Μπορείς να το ολοκληρώσεις ξανά σε {0} ώρες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} minutes."
 msgstr "§4Μπορείς να το ολοκληρώσεις ξανά σε {0} λεπτά."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this {0} more time(s)."
 msgstr "§4Μπορείς να το ολοκληρώσεις άλλες {0} φορά(ές)."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4You can only convert obsidian once every 10 seconds"
 msgstr "§4Μπορείς να μετατρέψεις οψιδιανό μόνο μία φορά κάθε 10 δευτερόλεπτα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§4You can only submit challenges in the skyblock world!"
 msgstr "§4Μπορείς να υποβάλεις προκλήσεις μόνο στον κόσμο skyblock!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§4You can only submit challenges when you have an island!"
 msgstr "§4Μπορείς να υποβάλεις προκλήσεις μόνο όταν έχεις νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "§4You can only transfer ownership to party-members!"
 msgstr "§4Μπορείς να μεταβιβάσεις την ιδιοκτησία μόνο σε μέλη της ομάδας!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§4You can't ban members. Remove them first!"
 msgstr "§4Δεν μπορείς να κάνεις ban μέλη. Αφαίρεσέ τα πρώτα!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You can't invite any more players."
 msgstr "§4Δεν μπορείς να προσκαλέσεις άλλους παίκτες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You can't invite yourself!"
 msgstr "§4Δεν μπορείς να προσκαλέσεις τον εαυτό σου!"
 
-msgid ""
-"§4You can't leave your island if you are the only person. Try using /island "
-"restart if you want a new one!"
-msgstr ""
-"§4Δεν μπορείς να φύγεις από το νησί σου αν είσαι το μόνο άτομο. Δοκίμασε να "
-"χρησιμοποιήσεις /island restart αν θέλεις καινούριο!"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
+msgid "§4You can't leave your island if you are the only person. Try using /island restart if you want a new one!"
+msgstr "§4Δεν μπορείς να φύγεις από το νησί σου αν είσαι το μόνο άτομο. Δοκίμασε να χρησιμοποιήσεις /island restart αν θέλεις καινούριο!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4You can't remove the leader from the Island!"
 msgstr "§4Δεν μπορείς να αφαιρέσεις τον αρχηγό από το νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4You can't use that command right now. Leave your current party first."
-msgstr ""
-"§4Δεν μπορείς να χρησιμοποιήσεις αυτή την εντολή τώρα. Φύγε πρώτα από την "
-"τρέχουσα ομάδα σου."
+msgstr "§4Δεν μπορείς να χρησιμοποιήσεις αυτή την εντολή τώρα. Φύγε πρώτα από την τρέχουσα ομάδα σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4You cannot complete the {0} challenge again yet!"
 msgstr "§4Δεν μπορείς να ολοκληρώσεις ακόμα ξανά την πρόκληση {0}!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4You do not have access to that command!"
 msgstr "§4Δεν έχεις πρόσβαση σε αυτή την εντολή!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4You do not have an island!"
 msgstr "§4Δεν έχεις νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§4You do not have permission to change the biome of this island!"
 msgstr "§4Δεν έχεις άδεια να αλλάξεις το biome αυτού του νησιού!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4You do not have permission to create a warp on your island!"
 msgstr "§4Δεν έχεις άδεια να δημιουργήσεις warp στο νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You do not have permission to invite others to this island!"
 msgstr "§4Δεν έχεις άδεια να προσκαλέσεις άλλους σε αυτό το νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4You do not have permission to kick others from this island!"
 msgstr "§4Δεν έχεις άδεια να διώξεις άλλους από αυτό το νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§4You do not have permission to kick/ban players."
 msgstr "§4Δεν έχεις άδεια να διώχνεις/κάνεις ban παίκτες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You do not have permission to lock your island!"
 msgstr "§4Δεν έχεις άδεια να κλειδώσεις το νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You do not have permission to unlock your island!"
 msgstr "§4Δεν έχεις άδεια να ξεκλειδώσεις το νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4You do not have permission to warp to other islands!"
 msgstr "§4Δεν έχεις άδεια να κάνεις warp σε άλλα νησιά!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You don't have access to this command!"
 msgstr "§4Δεν έχεις πρόσβαση σε αυτή την εντολή!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "§4You don't have permissions to uninvite players."
 msgstr "§4Δεν έχεις άδεια να ακυρώνεις προσκλήσεις παικτών."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4You haven't been invited."
 msgstr "§4Δεν έχεις προσκληθεί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§4You must be closer to your island to set your skyblock home!"
-msgstr ""
-"§4Πρέπει να είσαι πιο κοντά στο νησί σου για να ορίσεις το skyblock home σου!"
+msgstr "§4Πρέπει να είσαι πιο κοντά στο νησί σου για να ορίσεις το skyblock home σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§4You must be in the skyblock world to leave your party!"
 msgstr "§4Πρέπει να είσαι στον κόσμο skyblock για να φύγεις από την ομάδα σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4You must be on your island to do that!"
 msgstr "§4Πρέπει να βρίσκεσαι στο νησί σου για να το κάνεις αυτό!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4You must be standing within {0} blocks of all required items."
-msgstr ""
-"§4Πρέπει να στέκεσαι μέσα σε {0} blocks από όλα τα απαιτούμενα αντικείμενα."
+msgstr "§4Πρέπει να στέκεσαι μέσα σε {0} blocks από όλα τα απαιτούμενα αντικείμενα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4You must be the party leader to lock your island!"
 msgstr "§4Πρέπει να είσαι ο αρχηγός της ομάδας για να κλειδώσεις το νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4You must be the party leader to unlock your island!"
-msgstr ""
-"§4Πρέπει να είσαι ο αρχηγός της ομάδας για να ξεκλειδώσεις το νησί σου!"
+msgstr "§4Πρέπει να είσαι ο αρχηγός της ομάδας για να ξεκλειδώσεις το νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4You must provide the age in days to purge!"
 msgstr "§4Πρέπει να δώσεις την ηλικία σε ημέρες για εκκαθάριση!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4You will lose all required items when you complete this challenge!"
-msgstr ""
-"§4Θα χάσεις όλα τα απαιτούμενα αντικείμενα όταν ολοκληρώσεις αυτή την "
-"πρόκληση!"
+msgstr "§4Θα χάσεις όλα τα απαιτούμενα αντικείμενα όταν ολοκληρώσεις αυτή την πρόκληση!"
 
-msgid ""
-"§4You''ve hit the {0} limit!§e You can''t have more of that type on your "
-"island!§9 Max: {1,number}"
-msgstr ""
-"§4Έφτασες το όριο {0}!§e Δεν μπορείς να έχεις περισσότερα αυτού του τύπου "
-"στο νησί σου!§9 Μέγιστο: {1,number}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
+msgid "§4You''ve hit the {0} limit!§e You can''t have more of that type on your island!§9 Max: {1,number}"
+msgstr "§4Έφτασες το όριο {0}!§e Δεν μπορείς να έχεις περισσότερα αυτού του τύπου στο νησί σου!§9 Μέγιστο: {1,number}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§4Your current location is not a safe home-location."
 msgstr "§4Η τρέχουσα τοποθεσία σου δεν είναι ασφαλής ως τοποθεσία σπιτιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4Your incoming warp is inactive, players may not warp to your island."
-msgstr ""
-"§4Το εισερχόμενο warp σου είναι ανενεργό, οι παίκτες δεν μπορούν να κάνουν "
-"warp στο νησί σου."
+msgstr "§4Το εισερχόμενο warp σου είναι ανενεργό, οι παίκτες δεν μπορούν να κάνουν warp στο νησί σου."
 
-msgid ""
-"§4Your island is full, or you have too many pending invites. You can't "
-"invite anyone else."
-msgstr ""
-"§4Το νησί σου είναι γεμάτο ή έχεις πάρα πολλές εκκρεμείς προσκλήσεις. Δεν "
-"μπορείς να προσκαλέσεις κανέναν άλλο."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "§4Your island is full, or you have too many pending invites. You can't invite anyone else."
+msgstr "§4Το νησί σου είναι γεμάτο ή έχεις πάρα πολλές εκκρεμείς προσκλήσεις. Δεν μπορείς να προσκαλέσεις κανέναν άλλο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "§4Your island is locked. You must unlock it before enabling your warp."
-msgstr ""
-"§4Το νησί σου είναι κλειδωμένο. Πρέπει να το ξεκλειδώσεις πριν "
-"ενεργοποιήσεις το warp σου."
+msgstr "§4Το νησί σου είναι κλειδωμένο. Πρέπει να το ξεκλειδώσεις πριν ενεργοποιήσεις το warp σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4Your island must be level {0} to complete this challenge!"
-msgstr ""
-"§4Το νησί σου πρέπει να είναι επιπέδου {0} για να ολοκληρώσεις αυτή την "
-"πρόκληση!"
+msgstr "§4Το νησί σου πρέπει να είναι επιπέδου {0} για να ολοκληρώσεις αυτή την πρόκληση!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4{0}"
 msgstr "§4{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has been kicked from the island."
 msgstr "§4Ο/Η {0} εκδιώχθηκε από το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has been removed from the island."
 msgstr "§4Ο/Η {0} αφαιρέθηκε από το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has kicked you from their island!"
 msgstr "§4Ο/Η {0} σε έδιωξε από το νησί του/της!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 #, java-format
 msgid "§4{0} has left your island!"
 msgstr "§4Ο/Η {0} έφυγε από το νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has removed you from their island!"
 msgstr "§4Ο/Η {0} σε αφαίρεσε από το νησί του/της!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§4{0} is exempt from being banned."
 msgstr "§4Ο/Η {0} εξαιρείται από ban."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} is exempt from being kicked."
 msgstr "§4Ο/Η {0} εξαιρείται από kick."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 #, java-format
-msgid ""
-"§4{0} is limited. §eScanning your island to see if you are allowed to place "
-"more, please be patient"
-msgstr ""
-"§4Το {0} έχει όριο. §eΓίνεται σάρωση του νησιού σου για να δούμε αν "
-"επιτρέπεται να τοποθετήσεις κι άλλα, παρακαλώ περίμενε"
+msgid "§4{0} is limited. §eScanning your island to see if you are allowed to place more, please be patient"
+msgstr "§4Το {0} έχει όριο. §eΓίνεται σάρωση του νησιού σου για να δούμε αν επιτρέπεται να τοποθετήσεις κι άλλα, παρακαλώ περίμενε"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§4{0} tried to ban you from their island!"
 msgstr "§4Ο/Η {0} προσπάθησε να σου κάνει ban από το νησί του/της!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} tried to kick you from their island!"
 msgstr "§4Ο/Η {0} προσπάθησε να σε διώξει από το νησί του/της!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§4{0}s island at {1} was already protected"
 msgstr "§4Το νησί του/της {0} στο {1} ήταν ήδη προστατευμένο"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§4§lChallenges disabled."
 msgstr "§4§lΟι προκλήσεις είναι απενεργοποιημένες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4§lLocked Challenge"
 msgstr "§4§lΚλειδωμένη πρόκληση"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4§lYou can't repeat this challenge."
 msgstr "§4§lΔεν μπορείς να επαναλάβεις αυτή την πρόκληση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§6Currency Reward: §a{0}"
 msgstr "§6Ανταμοιβή νομίσματος: §a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§6Exp Reward: §a{0}"
 msgstr "§6Ανταμοιβή EXP: §a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§6Item Reward: §a"
 msgstr "§6Ανταμοιβή αντικειμένων: §a"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 #, java-format
 msgid "§7 - name: §9{0}"
 msgstr "§7 - όνομα: §9{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§7 - §6{0}§7 : {1}"
 msgstr "§7 - §6{0}§7 : {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "§7- SCANNING: {0,number,##}% ({1}/{2} failed: {3}) ~ {4}"
 msgstr "§7- ΣΑΡΩΣΗ: {0,number,##}% ({1}/{2} αποτυχίες: {3}) ~ {4}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "§7----------------"
 msgstr "§7----------------"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 #, java-format
 msgid "§7Complete {0}"
 msgstr "§7Ολοκλήρωσε {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 #, java-format
 msgid "§7Complete {0} more {1} §7challenges"
 msgstr "§7Ολοκλήρωσε άλλες {0} §7προκλήσεις {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7Current page"
 msgstr "§7Τρέχουσα σελίδα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7First Page"
 msgstr "§7Πρώτη σελίδα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7Last Page"
 msgstr "§7Τελευταία σελίδα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§7Page {0}"
 msgstr "§7Σελίδα {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§7Requires {0}"
 msgstr "§7Απαιτεί {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§7Teleport cancelled"
 msgstr "§7Η τηλεμεταφορά ακυρώθηκε"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome in your current chunk to §9{0}§7, "
-"be patient."
-msgstr ""
-"§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome στο τρέχον chunk σου σε "
-"§9{0}§7, κάνε υπομονή."
+msgid "§7The pixies are busy changing the biome in your current chunk to §9{0}§7, be patient."
+msgstr "§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome στο τρέχον chunk σου σε §9{0}§7, κάνε υπομονή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome near you to §9{0}§7, be patient."
-msgstr ""
-"§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome κοντά σου σε §9{0}§7, "
-"κάνε υπομονή."
+msgid "§7The pixies are busy changing the biome near you to §9{0}§7, be patient."
+msgstr "§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome κοντά σου σε §9{0}§7, κάνε υπομονή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome of your island to §9{0}§7, be "
-"patient."
-msgstr ""
-"§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome του νησιού σου σε §9{0}"
-"§7, κάνε υπομονή."
+msgid "§7The pixies are busy changing the biome of your island to §9{0}§7, be patient."
+msgstr "§7Τα ξωτικά είναι απασχολημένα αλλάζοντας το biome του νησιού σου σε §9{0}§7, κάνε υπομονή."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Usage: {0}"
 msgstr "§7Χρήση: {0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Use §3/{0} ? {1} §7 to display previous page\n"
-msgstr ""
-"§7Χρησιμοποίησε §3/{0} ? {1} §7 για να εμφανίσεις την προηγούμενη σελίδα\n"
+msgstr "§7Χρησιμοποίησε §3/{0} ? {1} §7 για να εμφανίσεις την προηγούμενη σελίδα\n"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Use §3/{0} ? {1}§7 to display next page\n"
 msgstr "§7Χρησιμοποίησε §3/{0} ? {1}§7 για να εμφανίσεις την επόμενη σελίδα\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§7and more..."
 msgstr "§7και άλλα..."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/ItemStackUtil.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeFormat.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§7{0}"
 msgstr "§7{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 #, java-format
 msgid "§7{0}: §a{1}§7 (max. {2})"
 msgstr "§7{0}: §a{1}§7 (μέγ. {2})"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Be patient, young padawan"
 msgstr "§9Κάνε υπομονή, νεαρέ padawan"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 msgid "§9Creating an island at your location"
 msgstr "§9Δημιουργία νησιού στην τοποθεσία σου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 #, java-format
 msgid "§9Creating an island §7{0}§9 of you"
 msgstr "§9Δημιουργία νησιού §7{0}§9 από εσένα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/asyncworldedit/PlayerJob.java
 msgid "§9Creating island...§e{0,number,###}%"
 msgstr "§9Δημιουργία νησιού...§e{0,number,###}%"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§9Deleted abandoned island at your current location."
 msgstr "§9Διαγράφηκε το εγκαταλελειμμένο νησί στην τρέχουσα τοποθεσία σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Hold your horses! You have to be patient..."
 msgstr "§9Κράτα τα άλογά σου! Πρέπει να κάνεις υπομονή..."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "§9Job Statistics"
 msgstr "§9Στατιστικά Εργασίας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Not really patient, are you?"
 msgstr "§9Δεν είσαι και πολύ υπομονετικός, έτσι;"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Patience you MUST have, young padawan"
 msgstr "§9Υπομονή ΠΡΕΠΕΙ να έχεις, νεαρέ padawan"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§9Player Permissions"
 msgstr "§9Δικαιώματα Παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§9Rank is {0}"
 msgstr "§9Η κατάταξη είναι {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9The two most powerful warriors are patience and time."
 msgstr "§9Οι δύο πιο ισχυροί πολεμιστές είναι η υπομονή και ο χρόνος."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 #, java-format
 msgid "§9{0}§7 timed out"
 msgstr "§9Ο/Η {0}§7 έληξε λόγω χρονικού ορίου"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 #, java-format
 msgid "§9{0}§f has completed the §9{1}§f challenge!"
 msgstr "§9Ο/Η {0}§f ολοκλήρωσε την πρόκληση §9{1}§f!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§9{1} §7- {0}"
 msgstr "§9{1} §7- {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§a#%2d §7(%5.2f): §e%s §7%s"
 msgstr "§a#%2d §7(%5.2f): §e%s §7%s"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aClick to create!"
 msgstr "§aΚλικ για δημιουργία!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aClick to restart!"
 msgstr "§aΚλικ για επανεκκίνηση!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "§aCongratulations! §eYour island has appeared."
 msgstr "§aΣυγχαρητήρια! §eΤο νησί σου εμφανίστηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§aInvite sent to {0}"
 msgstr "§aΗ πρόσκληση στάλθηκε στον/στην {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§aIsland level is {0,number,###.##}"
 msgstr "§aΤο επίπεδο του νησιού είναι {0,number,###.##}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aMore players can be invited to this island."
 msgstr "§aΜπορούν να προσκληθούν περισσότεροι παίκτες σε αυτό το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "§aON"
 msgstr "§aΕΝΕΡΓΟ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 #, java-format
 msgid "§aSet {0}''s island to the current island."
 msgstr "§aΟρίστηκε το νησί του/της {0}'' ως το τρέχον νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 #, java-format
 msgid "§aTeleporting to {0}''s island."
 msgstr "§aΤηλεμεταφορά στο νησί του/της {0}''."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§aTeleporting you to your island."
 msgstr "§aΣε τηλεμεταφέρουμε στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 #, java-format
 msgid "§aTeleporting you to {0}''s island."
 msgstr "§aΣε τηλεμεταφέρουμε στο νησί του/της {0}''."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§aToggled chat §cOFF§a for {0}"
 msgstr "§aΗ συνομιλία ορίστηκε §cΑΝΕΝΕΡΓΗ§a για τον/την {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 #, java-format
 msgid "§aYou can invite {0} more players."
 msgstr "§aΜπορείς να προσκαλέσεις άλλους {0} παίκτες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§aYou have changed your island''s biome to {0}"
 msgstr "§aΆλλαξες το biome του νησιού σου σε {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§aYou have changed {0} blocks around you to the {1} biome"
 msgstr "§aΆλλαξες {0} blocks γύρω σου σε biome {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§aYou have completed the {0} challenge!"
 msgstr "§aΟλοκλήρωσες την πρόκληση {0}!"
 
-msgid ""
-"§aYou have joined an island! Use /island party to see the other members."
-msgstr ""
-"§aΜπήκες σε ένα νησί! Χρησιμοποίησε /island party για να δεις τα άλλα μέλη."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "§aYou have joined an island! Use /island party to see the other members."
+msgstr "§aΜπήκες σε ένα νησί! Χρησιμοποίησε /island party για να δεις τα άλλα μέλη."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§aYou may need to go to spawn, or relog, to see the changes."
-msgstr ""
-"§aΊσως χρειαστεί να πας στο spawn ή να ξανασυνδεθείς, για να δεις τις "
-"αλλαγές."
+msgstr "§aΊσως χρειαστεί να πας στο spawn ή να ξανασυνδεθείς, για να δεις τις αλλαγές."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 #, java-format
 msgid "§aYou will be teleported in {0} seconds."
 msgstr "§aΘα τηλεμεταφερθείς σε {0} δευτερόλεπτα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§aYour incoming warp is active, players may warp to your island."
-msgstr ""
-"§aΤο εισερχόμενο warp σου είναι ενεργό, οι παίκτες μπορούν να κάνουν warp "
-"στο νησί σου."
+msgstr "§aΤο εισερχόμενο warp σου είναι ενεργό, οι παίκτες μπορούν να κάνουν warp στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§aYour skyblock home has been set to your current location."
 msgstr "§aΤο skyblock home σου ορίστηκε στην τρέχουσα τοποθεσία σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§a{0} trusted {1} on the island"
 msgstr "§aΟ/Η {0} εμπιστεύτηκε τον/την {1} στο νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§a{0} §c{1}"
 msgstr "§a{0} §c{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChallenges"
 msgstr "§a§lΠροκλήσεις"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChange Home Location"
 msgstr "§a§lΑλλαγή Τοποθεσίας Home"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChange Warp Location"
 msgstr "§a§lΑλλαγή Τοποθεσίας Warp"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Level"
 msgstr "§a§lΕπίπεδο Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Lock"
 msgstr "§a§lΚλείδωμα Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Log"
 msgstr "§a§lΑρχείο Καταγραφής Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Warp"
 msgstr "§a§lWarp Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lJoin an Island"
 msgstr "§a§lΣυμμετοχή σε Νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn Home"
 msgstr "§a§lΕπιστροφή Home"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn to Spawn"
 msgstr "§a§lΕπιστροφή στο Spawn"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn to the main menu"
 msgstr "§a§lΕπιστροφή στο κύριο μενού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lStart an Island"
 msgstr "§a§lΈναρξη Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "§bLeadership transferred by {0}§b to {1}"
 msgstr "§bΗ ηγεσία μεταβιβάστηκε από τον/την {0}§b στον/στην {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 #, java-format
 msgid "§buSkyBlock§e depends on §9{0}§e >= §av{1}"
 msgstr "§buSkyBlock§e απαιτεί §9{0}§e >= §av{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 #, java-format
-msgid ""
-"§buSkyBlock§e depends on §9{0}§e >= §av{1}§e but only §cv{2}§e was found!\n"
-msgstr ""
-"§buSkyBlock§e απαιτεί §9{0}§e >= §av{1}§e αλλά βρέθηκε μόνο §cv{2}§e!\n"
+msgid "§buSkyBlock§e depends on §9{0}§e >= §av{1}§e but only §cv{2}§e was found!\n"
+msgstr "§buSkyBlock§e απαιτεί §9{0}§e >= §av{1}§e αλλά βρέθηκε μόνο §cv{2}§e!\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 #, java-format
 msgid "§b{0}§d activated the island warp."
 msgstr "§bΟ/Η {0}§d ενεργοποίησε το warp του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 #, java-format
 msgid "§b{0}§d changed the island warp location."
 msgstr "§bΟ/Η {0}§d άλλαξε την τοποθεσία του warp του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d deactivated the island warp."
 msgstr "§bΟ/Η {0}§d απενεργοποίησε το warp του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d has been removed from the island group."
 msgstr "§bΟ/Η {0}§d αφαιρέθηκε από την ομάδα του νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§b{0}§d has joined your island group."
 msgstr "§bΟ/Η {0}§d μπήκε στην ομάδα του νησιού σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d locked the island."
 msgstr "§bΟ/Η {0}§d κλείδωσε το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d unlocked the island."
 msgstr "§bΟ/Η {0}§d ξεκλείδωσε το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§c-"
 msgstr "§c-"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "§cABORTED:§e Protect-All was aborted!"
 msgstr "§cΑΚΥΡΩΘΗΚΕ:§e Το Protect-All ακυρώθηκε!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§cBack to Main Menu"
 msgstr "§cΠίσω στο Κύριο Μενού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "§cBanned:§e You are banned from this island."
 msgstr "§cΑποκλεισμένος:§e Είσαι αποκλεισμένος από αυτό το νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§cClick to leave"
 msgstr "§cΚλικ για αποχώρηση"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§cClick within §9{0}§c to leave!"
 msgstr "§cΚάνε κλικ μέσα σε §9{0}§c για να αποχωρήσεις!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§cClick within §9{0}§c to restart!"
 msgstr "§cΚάνε κλικ μέσα σε §9{0}§c για να κάνεις επανεκκίνηση!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cCommand is currently disabled!"
 msgstr "§cΗ εντολή είναι προς το παρόν απενεργοποιημένη!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "§cCommand only available for players."
 msgstr "§cΗ εντολή είναι διαθέσιμη μόνο για παίκτες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "§cCommand only available to players"
 msgstr "§cΗ εντολή είναι διαθέσιμη μόνο σε παίκτες"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§cInvalid arguments. Use /is biome <biome> [radius|chunk|all]"
-msgstr ""
-"§cΜη έγκυρα ορίσματα. Χρησιμοποίησε /is biome <biome> [radius|chunk|all]"
+msgstr "§cΜη έγκυρα ορίσματα. Χρησιμοποίησε /is biome <biome> [radius|chunk|all]"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cInvalid field {0}"
 msgstr "§cΜη έγκυρο πεδίο {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§cInvalid permission {0}. Must be one of {1}"
 msgstr "§cΜη έγκυρο δικαίωμα {0}. Πρέπει να είναι ένα από τα {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "§cLocked:§e That island is locked! No entry allowed."
-msgstr ""
-"§cΚλειδωμένο:§e Αυτό το νησί είναι κλειδωμένο! Δεν επιτρέπεται η είσοδος."
+msgstr "§cΚλειδωμένο:§e Αυτό το νησί είναι κλειδωμένο! Δεν επιτρέπεται η είσοδος."
 
-msgid ""
-"§cMAINTENANCE: §4Deactivated§e all uSkyBlock features back to operational."
-msgstr ""
-"§cΣΥΝΤΗΡΗΣΗ: §4Απενεργοποιήθηκαν§e όλες οι λειτουργίες του uSkyBlock, "
-"επιστροφή σε κανονική λειτουργία."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "§cMAINTENANCE: §4Deactivated§e all uSkyBlock features back to operational."
+msgstr "§cΣΥΝΤΗΡΗΣΗ: §4Απενεργοποιήθηκαν§e όλες οι λειτουργίες του uSkyBlock, επιστροφή σε κανονική λειτουργία."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "§cMAINTENANCE: §aActivated§e all uSkyBlock features currently disabled."
-msgstr ""
-"§cΣΥΝΤΗΡΗΣΗ: §aΕνεργοποιήθηκαν§e όλες οι λειτουργίες του uSkyBlock που ήταν "
-"απενεργοποιημένες."
+msgstr "§cΣΥΝΤΗΡΗΣΗ: §aΕνεργοποιήθηκαν§e όλες οι λειτουργίες του uSkyBlock που ήταν απενεργοποιημένες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cMAINTENANCE:§e uSkyBlock is currently in maintenance mode"
-msgstr ""
-"§cΣΥΝΤΗΡΗΣΗ:§e Το uSkyBlock είναι αυτή τη στιγμή σε λειτουργία συντήρησης"
+msgstr "§cΣΥΝΤΗΡΗΣΗ:§e Το uSkyBlock είναι αυτή τη στιγμή σε λειτουργία συντήρησης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "§cMaintenance mode can only be changed from console!"
 msgstr "§cΗ λειτουργία συντήρησης μπορεί να αλλάξει μόνο από την κονσόλα!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
-msgid ""
-"§cNo access!\n"
+msgid "§cNo access!\n"
 "§7({0})"
-msgstr ""
-"§cΔεν έχεις πρόσβαση!\n"
+msgstr "§cΔεν έχεις πρόσβαση!\n"
 "§7({0})"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "§cNo item in hand!"
 msgstr "§cΔεν κρατάς αντικείμενο στο χέρι!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "§cNot enough items in chest to complete challenge!"
-msgstr ""
-"§cΔεν υπάρχουν αρκετά αντικείμενα στο σεντούκι για να ολοκληρωθεί η πρόκληση!"
+msgstr "§cΔεν υπάρχουν αρκετά αντικείμενα στο σεντούκι για να ολοκληρωθεί η πρόκληση!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "§cNote:§e Construction might still be ongoing."
 msgstr "§cΣημείωση:§e Η κατασκευή μπορεί να είναι ακόμη σε εξέλιξη."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "§cOFF"
 msgstr "§cΑΝΕΝΕΡΓΟ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§cPURGE: §9Purged island at {0}"
 msgstr "§cPURGE: §9Έγινε purge στο νησί στο {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
-msgid ""
-"§cRemoved ignore-flag of {0}s island, it will now show up on top-ten and "
-"purge."
-msgstr ""
-"§cΑφαιρέθηκε η σημαία παράβλεψης από το νησί του/της {0}, πλέον θα "
-"εμφανίζεται στο top-ten και στο purge."
+msgid "§cRemoved ignore-flag of {0}s island, it will now show up on top-ten and purge."
+msgstr "§cΑφαιρέθηκε η σημαία παράβλεψης από το νησί του/της {0}, πλέον θα εμφανίζεται στο top-ten και στο purge."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§cRepeat §9{0}§c to toggle it off"
 msgstr "§cΕπανάλαβε §9{0}§c για να το απενεργοποιήσεις"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§cSKY §f> §7 {0}"
 msgstr "§cSKY §f> §7 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§cSet {0}s island to be ignored on top-ten and purge."
 msgstr "§cΟρίστηκε το νησί του/της {0} να αγνοείται στο top-ten και στο purge."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 #, java-format
 msgid "§cSorry! {0}"
 msgstr "§cΣυγγνώμη! {0}"
 
-msgid ""
-"§cThat players island is in the process of generating, you cannot warp to it "
-"right now."
-msgstr ""
-"§cΤο νησί αυτού του παίκτη βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείς "
-"να κάνεις warp σε αυτό τώρα."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+msgid "§cThat players island is in the process of generating, you cannot warp to it right now."
+msgstr "§cΤο νησί αυτού του παίκτη βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείς να κάνεις warp σε αυτό τώρα."
 
-msgid ""
-"§cThe island owning this piece of nether is being deleted! Sending you to "
-"spawn."
-msgstr ""
-"§cΤο νησί που κατέχει αυτό το κομμάτι nether διαγράφεται! Σε στέλνουμε στο "
-"spawn."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
+msgid "§cThe island owning this piece of nether is being deleted! Sending you to spawn."
+msgstr "§cΤο νησί που κατέχει αυτό το κομμάτι nether διαγράφεται! Σε στέλνουμε στο spawn."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§cThe island you are on is being deleted! Sending you to spawn."
 msgstr "§cΤο νησί στο οποίο βρίσκεσαι διαγράφεται! Σε στέλνουμε στο spawn."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§cThis island is full."
 msgstr "§cΑυτό το νησί είναι γεμάτο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§cToggled chat to {0} §aON"
 msgstr "§cΗ συνομιλία άλλαξε σε {0} §aΕΝΕΡΓΗ"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "§cTrying to abort protect-all task."
 msgstr "§cΠροσπάθεια ακύρωσης της εργασίας protect-all."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to get state for {0}"
 msgstr "§cΔεν ήταν δυνατή η λήψη κατάστασης για {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to set field {0} to ''{1}''"
 msgstr "§cΔεν ήταν δυνατός ο ορισμός του πεδίου {0} σε ''{1}''"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to set field {0} to ''{1}'', a number was expected"
-msgstr ""
-"§cΔεν ήταν δυνατός ο ορισμός του πεδίου {0} σε ''{1}'', αναμενόταν αριθμός"
+msgstr "§cΔεν ήταν δυνατός ο ορισμός του πεδίου {0} σε ''{1}'', αναμενόταν αριθμός"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 #, java-format
 msgid "§cWARNING: §9{0}§e is warping to your island!"
 msgstr "§cΠΡΟΕΙΔΟΠΟΙΗΣΗ: §9{0}§e κάνει warp στο νησί σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§cWARNING: §eTeleporting you to mid-air."
 msgstr "§cΠΡΟΕΙΔΟΠΟΙΗΣΗ: §eΣε τηλεμεταφέρουμε στον αέρα."
 
-msgid ""
-"§cWARNING:§e Could not transfer all the required items to your inventory!"
-msgstr ""
-"§cΠΡΟΕΙΔΟΠΟΙΗΣΗ:§e Δεν ήταν δυνατή η μεταφορά όλων των απαιτούμενων "
-"αντικειμένων στο inventory σου!"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+msgid "§cWARNING:§e Could not transfer all the required items to your inventory!"
+msgstr "§cΠΡΟΕΙΔΟΠΟΙΗΣΗ:§e Δεν ήταν δυνατή η μεταφορά όλων των απαιτούμενων αντικειμένων στο inventory σου!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/LocateChestTask.java
 #, java-format
 msgid "§cWatchdog!§9 Unable to locate a chest within {0}, bailing out."
 msgstr "§cWatchdog!§9 Δεν βρέθηκε σεντούκι μέσα σε {0}, ακύρωση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/GriefEvents.java
 msgid "§cWither Despawned!§e It wandered too far from your island."
 msgstr "§cΤο Wither εξαφανίστηκε!§e Απομακρύνθηκε πάρα πολύ από το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 #, java-format
 msgid "§cYou can restart your island in {0} seconds."
 msgstr "§cΜπορείς να κάνεις επανεκκίνηση του νησιού σου σε {0} δευτερόλεπτα."
 
-msgid ""
-"§cYou do not have permission to change the biome of your current island."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
+msgid "§cYou do not have permission to change the biome of your current island."
 msgstr "§cΔεν έχετε άδεια να αλλάξετε το βιοτόπιο του τρέχοντος νησιού σας."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§cYou do not have permission to change your biome to that type."
 msgstr "§cΔεν έχετε άδεια να αλλάξετε το βιοτόπιό σας σε αυτόν τον τύπο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "§cYou do not have permission to enable/disable your island''s warp!"
-msgstr ""
-"§cΔεν έχετε άδεια να ενεργοποιήσετε/απενεργοποιήσετε το warp του νησιού σας!"
+msgstr "§cΔεν έχετε άδεια να ενεργοποιήσετε/απενεργοποιήσετε το warp του νησιού σας!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "§cYou do not have permission to set your island''s warp point!"
 msgstr "§cΔεν έχετε άδεια να ορίσετε το σημείο warp του νησιού σας!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§cYou have misspelled the biome name. Must be one of {0}"
-msgstr ""
-"§cΈχετε γράψει λάθος το όνομα του βιοτόπιου. Πρέπει να είναι ένα από τα {0}"
+msgstr "§cΈχετε γράψει λάθος το όνομα του βιοτόπιου. Πρέπει να είναι ένα από τα {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "§cYou have reached your spawn-limit for your island."
 msgstr "§cΈχετε φτάσει το όριο εμφάνισης (spawn-limit) για το νησί σας."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "§cYou need to be on your own island to set the warp!"
 msgstr "§cΠρέπει να είστε στο δικό σας νησί για να ορίσετε το warp!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cYour island is in the process of generating, you cannot create now."
-msgstr ""
-"§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να "
-"δημιουργήσετε τώρα."
+msgstr "§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να δημιουργήσετε τώρα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "§cYour island is in the process of generating, you cannot restart now."
-msgstr ""
-"§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να κάνετε "
-"επανεκκίνηση τώρα."
+msgstr "§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να κάνετε επανεκκίνηση τώρα."
 
-msgid ""
-"§cYour island is in the process of generating, you cannot teleport home "
-"right now."
-msgstr ""
-"§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να "
-"τηλεμεταφερθείτε σπίτι αυτή τη στιγμή."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
+msgid "§cYour island is in the process of generating, you cannot teleport home right now."
+msgstr "§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να τηλεμεταφερθείτε σπίτι αυτή τη στιγμή."
 
-msgid ""
-"§cYour island is in the process of generating, you cannot warp to other "
-"players islands right now."
-msgstr ""
-"§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να κάνετε "
-"warp προς τα νησιά άλλων παικτών αυτή τη στιγμή."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+msgid "§cYour island is in the process of generating, you cannot warp to other players islands right now."
+msgstr "§cΤο νησί σας βρίσκεται σε διαδικασία δημιουργίας, δεν μπορείτε να κάνετε warp προς τα νησιά άλλων παικτών αυτή τη στιγμή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§call"
 msgstr "§cόλα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 #, java-format
 msgid "§c{0}"
 msgstr "§c{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§c{0} revoked trust in {1} on the island"
 msgstr "§cΟ/Η {0} ανακάλεσε την εμπιστοσύνη στον/στην {1} στο νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§c{0} was set to ''{1}''"
 msgstr "§cΤο {0} ορίστηκε σε ''{1}''"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lLeave Island"
 msgstr "§c§lΑποχώρηση από το Νησί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lRestart Island"
 msgstr "§c§lΕπανεκκίνηση Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the biome."
 msgstr "§c§lΔεν μπορείτε να αλλάξετε το βιοτόπιο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the lock."
 msgstr "§c§lΔεν μπορείτε να αλλάξετε το κλείδωμα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the warp."
 msgstr "§c§lΔεν μπορείτε να αλλάξετε το warp."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 #, java-format
 msgid "§d** You are entering §b{0}''s §disland."
 msgstr "§d** Εισέρχεστε στο §dνησί του/της §b{0}§d."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 #, java-format
 msgid "§d** You are leaving §b{0}''s §disland."
 msgstr "§d** Αποχωρείτε από το §dνησί του/της §b{0}§d."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§dTotal times completed: §f{0}"
 msgstr "§dΣυνολικές φορές ολοκληρώθηκε: §f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§e... Scanning complete, you can try again"
 msgstr "§e... Η σάρωση ολοκληρώθηκε, μπορείτε να δοκιμάσετε ξανά"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e<Click to change this player''s permissions>"
 msgstr "§e<Κάντε κλικ για να αλλάξετε τα δικαιώματα αυτού του παίκτη>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 #, java-format
 msgid "§eAnimation-tick changed to {0}."
 msgstr "§eΤο animation-tick άλλαξε σε {0}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eAnimation-tick must be a valid integer."
 msgstr "§eΤο animation-tick πρέπει να είναι έγκυρος ακέραιος."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "§eBlocks on {0}s Island (page {1,number} of {2,number}):"
 msgstr "§eBlocks στο Νησί του/της {0} (σελίδα {1,number} από {2,number}):"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "§eCan only be executed as a player"
 msgstr "§eΜπορεί να εκτελεστεί μόνο ως παίκτης"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§eChallenge {0} has been completed for {1}"
 msgstr "§eΗ πρόκληση {0} ολοκληρώθηκε για τον/την {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§eChallenges has been disabled. Contact an administrator."
-msgstr ""
-"§eΟι προκλήσεις έχουν απενεργοποιηθεί. Επικοινωνήστε με έναν διαχειριστή."
+msgstr "§eΟι προκλήσεις έχουν απενεργοποιηθεί. Επικοινωνήστε με έναν διαχειριστή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§eChanged biome of {0}s island to {1}."
 msgstr "§eΤο βιοτόπιο του νησιού του/της {0} άλλαξε σε {1}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eChanging your obsidian back into lava. Be careful!"
 msgstr "§eΜετατρέπουμε τον οψιδιανό σας πίσω σε λάβα. Προσοχή!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "§eClearing all old (empty) island locations."
 msgstr "§eΓίνεται εκκαθάριση όλων των παλιών (κενών) τοποθεσιών νησιών."
 
-msgid ""
-"§eClick here to return to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eClick here to return to\n"
 "§ethe main island screen."
-msgstr ""
-"§eΚάντε κλικ εδώ για επιστροφή στην\n"
+msgstr "§eΚάντε κλικ εδώ για επιστροφή στην\n"
 "§eκύρια οθόνη νησιού."
 
-msgid ""
-"§eClick here to return to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eClick here to return to\n"
 "§eyour island group''s info."
-msgstr ""
-"§eΚάντε κλικ εδώ για επιστροφή στις\n"
+msgstr "§eΚάντε κλικ εδώ για επιστροφή στις\n"
 "§eπληροφορίες της ομάδας του νησιού σας."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§eClick here to return to the main island screen."
 msgstr "§eΚάντε κλικ εδώ για επιστροφή στην κύρια οθόνη νησιού."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eClick here to show next page"
 msgstr "§eΚάντε κλικ εδώ για προβολή επόμενης σελίδας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eClick here to show previous page"
 msgstr "§eΚάντε κλικ εδώ για προβολή προηγούμενης σελίδας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "§eCmd Cooldown"
 msgstr "§eΧρόνος επαναφόρτισης εντολής"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 #, java-format
 msgid "§eCompleted protect-all in {0}, {1} new regions were created!"
-msgstr ""
-"§eΟλοκληρώθηκε το protect-all στο {0}, δημιουργήθηκαν {1} νέες περιοχές!"
+msgstr "§eΟλοκληρώθηκε το protect-all στο {0}, δημιουργήθηκαν {1} νέες περιοχές!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "§eConfiguration reloaded from file."
 msgstr "§eΗ διαμόρφωση επαναφορτώθηκε από το αρχείο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 #, java-format
 msgid "§eConverted {0}/{1} files in {2}"
 msgstr "§eΜετατράπηκαν {0}/{1} αρχεία στο {2}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eCurrency reward: §f{0,number,###.##} {1} §a ({2,number,##.##})%"
 msgstr "§eΑνταμοιβή νομίσματος: §f{0,number,###.##} {1} §a ({2,number,##.##})%"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§eCurrent Biome: §b{0}"
 msgstr "§eΤρέχον Βιοτόπιο: §b{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§eCurrent Level: §a{0,number,##.#}"
 msgstr "§eΤρέχον Επίπεδο: §a{0,number,##.#}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§eCurrent value for {0} is ''{1}''"
 msgstr "§eΗ τρέχουσα τιμή για {0} είναι ''{1}''"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 #, java-format
-msgid ""
-"§eDoing §9{0}§e is §cRISKY§e. Repeat the command within §a{1}§e seconds to "
-"accept!"
-msgstr ""
-"§eΗ εκτέλεση του §9{0}§e είναι §cΡΙΨΟΚΙΝΔΥΝΗ§e. Επαναλάβετε την εντολή μέσα "
-"σε §a{1}§e δευτερόλεπτα για να αποδεχτείτε!"
+msgid "§eDoing §9{0}§e is §cRISKY§e. Repeat the command within §a{1}§e seconds to accept!"
+msgstr "§eΗ εκτέλεση του §9{0}§e είναι §cΡΙΨΟΚΙΝΔΥΝΗ§e. Επαναλάβετε την εντολή μέσα σε §a{1}§e δευτερόλεπτα για να αποδεχτείτε!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eExp reward: §f{0,number,#.#}"
 msgstr "§eΑνταμοιβή exp: §f{0,number,#.#}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 #, java-format
-msgid ""
-"§eFinding all islands that have been abandoned for more than {0} days below "
-"level {1}"
-msgstr ""
-"§eΕύρεση όλων των νησιών που έχουν εγκαταλειφθεί για πάνω από {0} ημέρες, "
-"κάτω από επίπεδο {1}"
+msgid "§eFinding all islands that have been abandoned for more than {0} days below level {1}"
+msgstr "§eΕύρεση όλων των νησιών που έχουν εγκαταλειφθεί για πάνω από {0} ημέρες, κάτω από επίπεδο {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "§eFinished generation of the Top Ten list"
 msgstr "§eΟλοκληρώθηκε η δημιουργία της λίστας Top Ten"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 #, java-format
-msgid ""
-"§eFlushed §a{0} islands§e, §b{1} players and §6{2} challenge-completions."
-msgstr ""
-"§eΕκκαθαρίστηκαν §a{0} νησιά§e, §b{1} παίκτες και §6{2} ολοκληρώσεις "
-"προκλήσεων."
+msgid "§eFlushed §a{0} islands§e, §b{1} players and §6{2} challenge-completions."
+msgstr "§eΕκκαθαρίστηκαν §a{0} νησιά§e, §b{1} παίκτες και §6{2} ολοκληρώσεις προκλήσεων."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "§eGenerating the Top Ten list"
 msgstr "§eΔημιουργία της λίστας Top Ten"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§eGetting your island ready, please be patient, it can take a while."
-msgstr ""
-"§eΕτοιμάζουμε το νησί σας, παρακαλώ κάντε υπομονή, μπορεί να πάρει λίγο "
-"χρόνο."
+msgstr "§eΕτοιμάζουμε το νησί σας, παρακαλώ κάντε υπομονή, μπορεί να πάρει λίγο χρόνο."
 
-msgid ""
-"§eHover over a player''s icon to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eHover over a player''s icon to\n"
 "§eview their permissions. The\n"
 "§eleader can change permissions\n"
 "§eby clicking a player''s icon."
-msgstr ""
-"§eΠεράστε το ποντίκι πάνω από το εικονίδιο ενός παίκτη για\n"
+msgstr "§eΠεράστε το ποντίκι πάνω από το εικονίδιο ενός παίκτη για\n"
 "§eνα δείτε τα δικαιώματά του. Ο\n"
 "§eαρχηγός μπορεί να αλλάξει δικαιώματα\n"
 "§eκάνοντας κλικ στο εικονίδιο ενός παίκτη."
 
-msgid ""
-"§eHover over an icon to view\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eHover over an icon to view\n"
 "§ea permission. Change the\n"
 "§epermission by clicking it."
-msgstr ""
-"§eΠεράστε το ποντίκι πάνω από ένα εικονίδιο για να δείτε\n"
+msgstr "§eΠεράστε το ποντίκι πάνω από ένα εικονίδιο για να δείτε\n"
 "§eένα δικαίωμα. Αλλάξτε το\n"
 "§eδικαίωμα κάνοντας κλικ πάνω του."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 #, java-format
 msgid "§eInfo for §9{0}"
 msgstr "§eΠληροφορίες για §9{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§eInformation about {0}''s Island:"
 msgstr "§eΠληροφορίες για το Νησί του/της {0}:"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #, java-format
 msgid "§eInvalid command: {0}"
 msgstr "§eΜη έγκυρη εντολή: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 #, java-format
 msgid "§eInvalid player {0} supplied."
 msgstr "§eΔόθηκε μη έγκυρος παίκτης {0}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§eInvitation for {0}''s island has timedout or been cancelled."
 msgstr "§eΗ πρόσκληση για το νησί του/της {0} έληξε ή ακυρώθηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§eInvitation for {0}§e has timedout or been cancelled."
 msgstr "§eΗ πρόσκληση για τον/την {0}§e έληξε ή ακυρώθηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eIsland world-guard regions updated for {0}"
 msgstr "§eΟι περιοχές WorldGuard του νησιού ενημερώθηκαν για {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eItem reward(s): §f{0}"
 msgstr "§eΑνταμοιβή(ές) αντικειμένων: §f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§eItems will be traded for reward."
 msgstr "§eΤα αντικείμενα θα ανταλλαχθούν για ανταμοιβή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eLoading chunks at {0}"
 msgstr "§eΦόρτωση chunks στο {0}"
 
-msgid ""
-"§eLock Status: §8Inactive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eLock Status: §8Inactive\n"
 "§fYour island is currently §aunlocked.\n"
 "§fAll players are able to enter your\n"
 "§fisland, but only you and your group\n"
 "§fmembers may build there."
-msgstr ""
-"§eΚατάσταση Κλειδώματος: §8Ανενεργό\n"
+msgstr "§eΚατάσταση Κλειδώματος: §8Ανενεργό\n"
 "§fΤο νησί σας είναι αυτή τη στιγμή §aξεκλείδωτο.\n"
 "§fΌλοι οι παίκτες μπορούν να εισέλθουν στο\n"
 "§fνησί σας, αλλά μόνο εσείς και τα μέλη της\n"
 "§fομάδας σας μπορείτε να χτίζετε εκεί."
 
-msgid ""
-"§eLock Status: §aActive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eLock Status: §aActive\n"
 "§fYour island is currently §clocked.\n"
 "§fPlayers outside of your group\n"
 "§fare unable to enter your island."
-msgstr ""
-"§eΚατάσταση Κλειδώματος: §aΕνεργό\n"
+msgstr "§eΚατάσταση Κλειδώματος: §aΕνεργό\n"
 "§fΤο νησί σας είναι αυτή τη στιγμή §cκλειδωμένο.\n"
 "§fΟι παίκτες εκτός της ομάδας σας\n"
 "§fδεν μπορούν να εισέλθουν στο νησί σας."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§eLog-file has been flushed."
 msgstr "§eΤο αρχείο καταγραφής (log) εκκαθαρίστηκε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§eLogging disabled!"
 msgstr "§eΗ καταγραφή απενεργοποιήθηκε!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§eMembers: §2{0}/{1}"
 msgstr "§eΜέλη: §2{0}/{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§eMust be within {0} meters."
 msgstr "§eΠρέπει να βρίσκεστε εντός {0} μέτρων."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "§eNOTE: Your entire island and all your belongings will be RESET!"
-msgstr ""
-"§eΣΗΜΕΙΩΣΗ: Ολόκληρο το νησί σας και όλα τα υπάρχοντά σας θα ΕΠΑΝΑΦΕΡΘΟΥΝ!"
+msgstr "§eΣΗΜΕΙΩΣΗ: Ολόκληρο το νησί σας και όλα τα υπάρχοντά σας θα ΕΠΑΝΑΦΕΡΘΟΥΝ!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§eNo active cooldowns for §9{0}§e found."
 msgstr "§eΔεν βρέθηκαν ενεργοί χρόνοι επαναφόρτισης για §9{0}§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eNo currently shown regions for this player"
 msgstr "§eΔεν εμφανίζονται αυτή τη στιγμή περιοχές για αυτόν τον παίκτη"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eNo island found at your current location"
 msgstr "§eΔεν βρέθηκε νησί στην τρέχουσα τοποθεσία σας"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "§eNo island found at your location!"
 msgstr "§eΔεν βρέθηκε νησί στην τοποθεσία σας!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "§eNo orphans currently registered."
 msgstr "§eΔεν υπάρχουν ορφανά καταχωρημένα αυτή τη στιγμή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "§eNo pending invites"
 msgstr "§eΔεν υπάρχουν εκκρεμείς προσκλήσεις"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 #, java-format
 msgid "§eOrphans ({0}/{1}): {2}"
 msgstr "§eΟρφανά ({0}/{1}): {2}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§ePermissions for §9{0}§e:"
 msgstr "§eΔικαιώματα για §9{0}§e:"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 #, java-format
 msgid "§ePlayer {0} has no island!"
 msgstr "§eΟ παίκτης {0} δεν έχει νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 #, java-format
-msgid ""
-"§ePlayer §d{0}§e already has an island.§eUse §d/usb island remove <name>§e "
-"to remove him first."
-msgstr ""
-"§eΟ παίκτης §d{0}§e έχει ήδη νησί.§eΧρησιμοποιήστε §d/usb island remove "
-"<name>§e για να τον αφαιρέσετε πρώτα."
+msgid "§ePlayer §d{0}§e already has an island.§eUse §d/usb island remove <name>§e to remove him first."
+msgstr "§eΟ παίκτης §d{0}§e έχει ήδη νησί.§eΧρησιμοποιήστε §d/usb island remove <name>§e για να τον αφαιρέσετε πρώτα."
 
-msgid ""
-"§eProgress: {0,number,##}% ({1}/{2} - success:{3}, failed:{4}, skipped:{5}) "
-"~ {6}"
-msgstr ""
-"§eΠρόοδος: {0,number,##}% ({1}/{2} - επιτυχία:{3}, αποτυχία:{4}, παράλειψη:"
-"{5}) ~ {6}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
+msgid "§eProgress: {0,number,##}% ({1}/{2} - success:{3}, failed:{4}, skipped:{5}) ~ {6}"
+msgstr "§eΠρόοδος: {0,number,##}% ({1}/{2} - επιτυχία:{3}, αποτυχία:{4}, παράλειψη:{5}) ~ {6}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§eRank: "
 msgstr "§eΒαθμίδα: "
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§eRemoving {0}''s island."
 msgstr "§eΑφαίρεση του νησιού του/της {0}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "§eResending chunks to the client"
 msgstr "§eΕπαναποστολή chunks στον client"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§eReset cooldown on {0} for {1}§e to {2} seconds"
 msgstr "§eΕπαναφορά του cooldown στο {0} για τον/την {1}§e σε {2} δευτερόλεπτα"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eRiding is only allowed on your own island!"
 msgstr "§eΗ ιππασία επιτρέπεται μόνο στο δικό σας νησί!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "§eSending you to spawn."
 msgstr "§eΣας στέλνουμε στο spawn."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "§eStarting a protect-all task. It will take a while."
 msgstr "§eΈναρξη εργασίας protect-all. Θα πάρει λίγο χρόνο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 #, java-format
 msgid "§eStill the following blocks short: {0}"
 msgstr "§eΛείπουν ακόμα τα εξής blocks: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
-msgid ""
-"§eStill the following entities short:\n"
+msgid "§eStill the following entities short:\n"
 "{0}"
-msgstr ""
-"§eΛείπουν ακόμα τα εξής entities:\n"
+msgstr "§eΛείπουν ακόμα τα εξής entities:\n"
 "{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eStopped displaying regions"
 msgstr "§eΣταμάτησε η εμφάνιση περιοχών"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eThe following leaders trusts you:"
 msgstr "§eΟι παρακάτω αρχηγοί σας εμπιστεύονται:"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§eThe following players are banned from warping to your island:"
-msgstr ""
-"§eΟι παρακάτω παίκτες είναι αποκλεισμένοι από το να κάνουν warp στο νησί σας:"
+msgstr "§eΟι παρακάτω παίκτες είναι αποκλεισμένοι από το να κάνουν warp στο νησί σας:"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eThe following players are trusted on your island:"
 msgstr "§eΟι παρακάτω παίκτες είναι έμπιστοι στο νησί σας:"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "§eThe island has been §cLOCKED§e."
 msgstr "§eΤο νησί έχει §cΚΛΕΙΔΩΘΕΙ§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "§eThe player is not currently online"
 msgstr "§eΟ παίκτης δεν είναι αυτή τη στιγμή online"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§eThis challenge requires:"
 msgstr "§eΑυτή η πρόκληση απαιτεί:"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§eTo ban/unban from your island, use /island ban <player>"
-msgstr ""
-"§eΓια αποκλεισμό/άρση αποκλεισμού από το νησί σου, χρησιμοποίησε /island ban "
-"<player>"
+msgstr "§eΓια αποκλεισμό/άρση αποκλεισμού από το νησί σου, χρησιμοποίησε /island ban <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #, java-format
 msgid "§eTo complete this challenge, use §f/c c {0}"
 msgstr "§eΓια να ολοκληρώσεις αυτή την πρόκληση, χρησιμοποίησε §f/c c {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eTo trust/untrust from your island, use /island trust <player>"
-msgstr ""
-"§eΓια εμπιστοσύνη/άρση εμπιστοσύνης στο νησί σου, χρησιμοποίησε /island "
-"trust <player>"
+msgstr "§eΓια εμπιστοσύνη/άρση εμπιστοσύνης στο νησί σου, χρησιμοποίησε /island trust <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§eToggled permission §9{0}§e for §9{1}§e to {2}"
 msgstr "§eΈγινε εναλλαγή της άδειας §9{0}§e για τον/την §9{1}§e σε {2}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eTrading isn't allowed on other islands. Do it in spawn."
 msgstr "§eΟι συναλλαγές δεν επιτρέπονται σε άλλα νησιά. Κάν’ το στο spawn."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eTrying to complete challenge §a{0}"
 msgstr "§eΠροσπάθεια ολοκλήρωσης πρόκλησης §a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eUnable to ban unknown player {0}"
 msgstr "§eΑδυναμία αποκλεισμού άγνωστου παίκτη {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§eUnable to toggle permission §9{0}§e for §9{1}"
 msgstr "§eΑδυναμία εναλλαγής άδειας §9{0}§e για τον/την §9{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eUnloading chunks at {0}"
 msgstr "§eΓίνεται εκφόρτωση chunks στο {0}"
 
-msgid ""
-"§eUse§f /island invite <playername>§e to invite a player to your island."
-msgstr ""
-"§eΧρησιμοποίησε§f /island invite <playername>§e για να προσκαλέσεις έναν "
-"παίκτη στο νησί σου."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
+msgid "§eUse§f /island invite <playername>§e to invite a player to your island."
+msgstr "§eΧρησιμοποίησε§f /island invite <playername>§e για να προσκαλέσεις έναν παίκτη στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§eValid fields are {0}"
 msgstr "§eΈγκυρα πεδία είναι: {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eVillager-trading isn't allowed."
 msgstr "§eΟι συναλλαγές με villagers δεν επιτρέπονται."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "§eVisitors can't drop items!"
 msgstr "§eΟι επισκέπτες δεν μπορούν να πετάξουν αντικείμενα!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§eWALL OF FAME (page {0} of {1}):"
 msgstr "§eΤΟΙΧΟΣ ΔΟΞΑΣ (σελίδα {0} από {1}):"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/asyncworldedit/PlayerJob.java
 msgid "§eWaiting for our turn §c{0,number,###}%"
 msgstr "§eΑναμονή για τη σειρά μας §c{0,number,###}%"
 
-msgid ""
-"§eWarp Status: §8Inactive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eWarp Status: §8Inactive\n"
 "§fOther players can't warp to your\n"
 "§fisland. Set a warp point using\n"
 "§d/island setwarp §fbefore activating."
-msgstr ""
-"§eΚατάσταση Warp: §8Ανενεργό\n"
+msgstr "§eΚατάσταση Warp: §8Ανενεργό\n"
 "§fΆλλοι παίκτες δεν μπορούν να κάνουν warp στο\n"
 "§fνησί σου. Όρισε σημείο warp με\n"
 "§d/island setwarp §fπριν την ενεργοποίηση."
 
-msgid ""
-"§eWarp Status: §aActive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eWarp Status: §aActive\n"
 "§fOther players may warp to your\n"
 "§fisland at anytime to the point\n"
 "§fyou set using §d/island setwarp."
-msgstr ""
-"§eΚατάσταση Warp: §aΕνεργό\n"
+msgstr "§eΚατάσταση Warp: §aΕνεργό\n"
 "§fΆλλοι παίκτες μπορούν να κάνουν warp στο\n"
 "§fνησί σου οποιαδήποτε στιγμή στο σημείο\n"
 "§fπου όρισες με §d/island setwarp."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§eYou are no longer trusted on §4{0}''s §eisland."
 msgstr "§eΔεν σε εμπιστεύονται πλέον στο νησί του/της §4{0}§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§eYou are now trusted on §4{0}''s §eisland."
 msgstr "§eΤώρα σε εμπιστεύονται στο νησί του/της §4{0}§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eYou are the following items short:{0}"
 msgstr "§eΣου λείπουν τα ακόλουθα αντικείμενα:{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§eYou can change your biome again in {0,number,#} seconds."
 msgstr "§eΜπορείς να αλλάξεις ξανά biome σε {0,number,#} δευτερόλεπτα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "§eYou can create a new island in {0,number,#} seconds."
 msgstr "§eΜπορείς να δημιουργήσεις νέο νησί σε {0,number,#} δευτερόλεπτα."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eYou can not use another island''s portals!"
 msgstr "§eΔεν μπορείς να χρησιμοποιήσεις τις πύλες άλλου νησιού!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "§eYou can only use spawn-eggs on your own island."
 msgstr "§eΜπορείς να χρησιμοποιείς spawn-eggs μόνο στο δικό σου νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eYou cannot break vehicles while being a visitor!"
 msgstr "§eΔεν μπορείς να σπάσεις οχήματα ενώ είσαι επισκέπτης!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "§eYou cannot drop items at the spawn point!"
 msgstr "§eΔεν μπορείς να πετάξεις αντικείμενα στο σημείο spawn!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eYou cannot hurt island-members."
 msgstr "§eΔεν μπορείς να τραυματίσεις μέλη του νησιού."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #, java-format
 msgid "§eYou do not have access (§4{0}§e)"
 msgstr "§eΔεν έχεις πρόσβαση (§4{0}§e)"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§eYou do not have access to that island-schematic!"
 msgstr "§eΔεν έχεις πρόσβαση σε αυτό το island-schematic!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§eYou have accepted the invitation to join an island."
 msgstr "§eΑποδέχτηκες την πρόσκληση για να μπεις σε ένα νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have banned §4{0}§e from warping to your island."
 msgstr "§eΈχεις αποκλείσει τον/την §4{0}§e από το να κάνει warp στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have been §aUNBANNED§e from {0}§e''s island."
 msgstr "§eΈγινε §aΑΡΣΗ ΑΠΟΚΛΕΙΣΜΟΥ§e από το νησί του/της {0}§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 #, java-format
 msgid "§eYou have been §cBANNED§e from {0}§e''s island."
 msgstr "§eΈγινε §cΑΠΟΚΛΕΙΣΜΟΣ§e από το νησί του/της {0}§e."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§eYou have left the island and returned to the player spawn."
 msgstr "§eΈφυγες από το νησί και επέστρεψες στο spawn των παικτών."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§eYou have rejected the invitation to join an island."
 msgstr "§eΑπέρριψες την πρόσκληση για να μπεις σε ένα νησί."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have unbanned §a{0}§e from warping to your island."
 msgstr "§eΈκανες άρση αποκλεισμού στον/στην §a{0}§e για warp στο νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§eYou must be on your island to change the biome!"
 msgstr "§eΠρέπει να βρίσκεσαι στο νησί σου για να αλλάξεις το biome!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§eYou must be on your island to use this command."
-msgstr ""
-"§eΠρέπει να βρίσκεσαι στο νησί σου για να χρησιμοποιήσεις αυτή την εντολή."
+msgstr "§eΠρέπει να βρίσκεσαι στο νησί σου για να χρησιμοποιήσεις αυτή την εντολή."
 
-msgid ""
-"§eYou must remove all players from your island before you can restart it (/"
-"island kick <player>). See a list of players currently part of your island "
-"using /island party."
-msgstr ""
-"§eΠρέπει να αφαιρέσεις όλους τους παίκτες από το νησί σου πριν μπορέσεις να "
-"το επανεκκινήσεις (/island kick <player>). Δες μια λίστα των παικτών που "
-"είναι αυτή τη στιγμή στο νησί σου με /island party."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "§eYou must remove all players from your island before you can restart it (/island kick <player>). See a list of players currently part of your island using /island party."
+msgstr "§eΠρέπει να αφαιρέσεις όλους τους παίκτες από το νησί σου πριν μπορέσεις να το επανεκκινήσεις (/island kick <player>). Δες μια λίστα των παικτών που είναι αυτή τη στιγμή στο νησί σου με /island party."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§eYou own this island, use /island remove <player> instead."
-msgstr ""
-"§eΕσύ είσαι ο ιδιοκτήτης αυτού του νησιού, χρησιμοποίησε /island remove "
-"<player> αντί γι’ αυτό."
+msgstr "§eΕσύ είσαι ο ιδιοκτήτης αυτού του νησιού, χρησιμοποίησε /island remove <player> αντί γι’ αυτό."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eYour inventory is §4full§e. Items dropped on the ground."
 msgstr "§eΤο inventory σου είναι §4γεμάτο§e. Τα αντικείμενα έπεσαν στο έδαφος."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eYour inventory must have another empty space!"
 msgstr "§eΤο inventory σου πρέπει να έχει μία ακόμα κενή θέση!"
 
 #. I18N: Message sent when a player locks their island
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§eYour island is now locked. Only your party members may enter."
-msgstr ""
-"§eΤο νησί σου είναι τώρα κλειδωμένο. Μόνο τα μέλη της ομάδας σου μπορούν να "
-"μπουν."
+msgstr "§eΤο νησί σου είναι τώρα κλειδωμένο. Μόνο τα μέλη της ομάδας σου μπορούν να μπουν."
 
-msgid ""
-"§eYour island is unlocked and anyone may enter, however only you and your "
-"party members may build or remove blocks."
-msgstr ""
-"§eΤο νησί σου είναι ξεκλείδωτο και μπορεί να μπει οποιοσδήποτε, όμως μόνο "
-"εσύ και τα μέλη της ομάδας σου μπορείτε να χτίζετε ή να αφαιρείτε blocks."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
+msgid "§eYour island is unlocked and anyone may enter, however only you and your party members may build or remove blocks."
+msgstr "§eΤο νησί σου είναι ξεκλείδωτο και μπορεί να μπει οποιοσδήποτε, όμως μόνο εσύ και τα μέλη της ομάδας σου μπορείτε να χτίζετε ή να αφαιρείτε blocks."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§eYour rank is: §f{0}"
 msgstr "§eΤο rank σου είναι: §f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§echallenge: {0} has been reset for {1}"
 msgstr "§eη πρόκληση: {0} επαναφέρθηκε για τον/την {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "§e{0}"
 msgstr "§e{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§e{0} has had all challenges reset."
 msgstr "§eΣτον/στην {0} έγινε επαναφορά όλων των προκλήσεων."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§e{0} has had their biome changed to {1}."
 msgstr "§eΣτον/στην {0} άλλαξε το biome σε {1}."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 #, java-format
 msgid "§e{0} old island locations will be used before new ones."
 msgstr "§eΘα χρησιμοποιηθούν πρώτα {0} παλιές τοποθεσίες νησιών πριν από νέες."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§e{0}''s§9 Permissions"
 msgstr "§eΔικαιώματα του/της §9{0}§e"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§e{0}''§9s Permissions"
 msgstr "§eΔικαιώματα του/της §9{0}§e"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§e{0}s island at {1} has been protected"
 msgstr "§eΤο νησί του/της {0} στο {1} προστατεύτηκε"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
-msgid ""
-"§e{0}§e tried to invite you, but you are already in a party.To leave your "
-"current party, use: /island leave."
-msgstr ""
-"§eΟ/Η §e{0} προσπάθησε να σε προσκαλέσει, αλλά είσαι ήδη σε ομάδα. Για να "
-"φύγεις από την τρέχουσα ομάδα σου, χρησιμοποίησε: /island leave."
+msgid "§e{0}§e tried to invite you, but you are already in a party.To leave your current party, use: /island leave."
+msgstr "§eΟ/Η §e{0} προσπάθησε να σε προσκαλέσει, αλλά είσαι ήδη σε ομάδα. Για να φύγεις από την τρέχουσα ομάδα σου, χρησιμοποίησε: /island leave."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to activate."
 msgstr "§e§lΚάνε κλικ εδώ για ενεργοποίηση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to change biomes."
 msgstr "§e§lΚάνε κλικ εδώ για αλλαγή biome."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to change."
 msgstr "§e§lΚάνε κλικ εδώ για αλλαγή."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to deactivate."
 msgstr "§e§lΚάνε κλικ εδώ για απενεργοποίηση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to lock your island."
 msgstr "§e§lΚάνε κλικ εδώ για να κλειδώσεις το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to unlock your island."
 msgstr "§e§lΚάνε κλικ εδώ για να ξεκλειδώσεις το νησί σου."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to view challenges."
 msgstr "§e§lΚάνε κλικ εδώ για προβολή προκλήσεων."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§e§lClick to change to this biome."
 msgstr "§e§lΚάνε κλικ για αλλαγή σε αυτό το biome."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§e§lClick to complete this challenge."
 msgstr "§e§lΚάνε κλικ για να ολοκληρώσεις αυτή την πρόκληση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lIsland Log"
 msgstr "§e§lΚαταγραφή Νησιού"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§f/island [accept/reject]§e to accept or reject the invite."
-msgstr ""
-"§f/island [accept/reject]§e για να αποδεχτείς ή να απορρίψεις την πρόσκληση."
+msgstr "§f/island [accept/reject]§e για να αποδεχτείς ή να απορρίψεις την πρόσκληση."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§fComplete most challenges in"
 msgstr "§fΟλοκλήρωσε τις περισσότερες προκλήσεις στο"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fSet incoming warp to your current location using §e/island setwarp"
-msgstr ""
-"§fΌρισε το εισερχόμενο warp στην τρέχουσα τοποθεσία σου με §e/island setwarp"
+msgstr "§fΌρισε το εισερχόμενο warp στην τρέχουσα τοποθεσία σου με §e/island setwarp"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§fThis player §acan"
 msgstr "§fΑυτός ο παίκτης §aμπορεί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§fThis player §ccannot"
 msgstr "§fΑυτός ο παίκτης §cδεν μπορεί"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fToggle your warp on/off using §e/island togglewarp"
 msgstr "§fΕναλλαγή warp on/off με §e/island togglewarp"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fWarp to another island using §e/island warp <player>"
 msgstr "§fΚάνε warp σε άλλο νησί με §e/island warp <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§fthis rank to unlock the next rank."
 msgstr "§fαυτό το rank για να ξεκλειδώσεις το επόμενο rank."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/ItemStackUtil.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeFormat.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§f{0}x §7{1}"
 msgstr "§f{0}x §7{1}"
+

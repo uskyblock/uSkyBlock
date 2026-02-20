@@ -1,266 +1,324 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2026-02-20 13:52\n"
+"Last-Translator: \n"
+"Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Crowdin-Language: zh-TW\n"
+"X-Crowdin-File: /master/uSkyBlock-Core/src/main/po/keys.pot\n"
+"X-Crowdin-File-ID: 12\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid " §4{0} §b{1}"
 msgstr " §4{0} §b{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 #, java-format
 msgid " §f{0}x §7{1}"
 msgstr " §f{0}x §7{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "#"
 msgstr "#"
 
-msgid ""
-"- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
+msgid "- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"
 msgstr "- 清除中：{0,number,##}%（{1}/{2}），已用時 {3}，預計完成 ~{4}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "ANIMAL"
 msgstr "動物"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "Biome: {0}"
 msgstr "生態域：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are ALLLLLLL ALOOOOONE!"
 msgstr "但你完完全全是孤~單~一~人！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are Talking to your self!"
 msgstr "但你在跟自己說話！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are Yelling in the wind!"
 msgstr "但你在對著風大喊！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But your fantasy friends are gone!"
 msgstr "但你的幻想朋友不見了！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "COPPER_GOLEM"
 msgstr "銅傀儡"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Can {0}"
 msgstr "可{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Cannot {0}"
 msgstr "不可{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Challenge Menu"
 msgstr "挑戰選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Biome"
 msgstr "變更生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Island Biome"
 msgstr "變更島嶼生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "Cleared cooldown on {0} for {1}"
 msgstr "已為 {1} 清除 {0} 的冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to grant this permission."
 msgstr "點擊這裡授予此權限。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to remove this permission."
 msgstr "點擊這裡移除此權限。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Click to warp to the island!"
 msgstr "點擊傳送到該島嶼！"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Command"
 msgstr "指令"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Controls player-cooldowns"
 msgstr "管理玩家冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Could not create your Island. Please contact a server moderator."
 msgstr "無法建立你的島嶼。請聯絡伺服器管理員。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "Current radius: {0}"
 msgstr "目前半徑：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Decrease radius of biome change"
 msgstr "縮小生態域變更半徑"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Description"
 msgstr "描述"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "East"
 msgstr "東"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Either send a message directly to your group, or toggle it on/off."
 msgstr "你可以直接傳訊息給你的群組，或切換開/關。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error: That player does not have an island!"
 msgstr "錯誤：該玩家沒有島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "GOLEM"
 msgstr "傀儡"
 
-msgid ""
-"Gain island levels by expanding\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Gain island levels by expanding\n"
 "your skyblock and completing\n"
 "certain challenges. Rarer blocks\n"
 "will add more to your level.\n"
 "§e§lClick here to refresh.\n"
 "§e§l(must be on island)"
-msgstr ""
-"透過擴建你的空島並完成\n"
+msgstr "透過擴建你的空島並完成\n"
 "特定挑戰來提升島嶼等級。\n"
 "越稀有的方塊會讓等級提升更多。\n"
 "§e§l點擊這裡刷新。\n"
 "§e§l（必須在島上）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "Group Members: §2{0}§7/§e{1}"
 msgstr "群組成員：§2{0}§7/§e{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Increase radius of biome change"
 msgstr "擴大生態域變更半徑"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
 msgstr "提供的指令無效，只支援 restart 和 biome！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Invite Players"
 msgstr "邀請玩家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Island Biome"
 msgstr "島嶼生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Create Menu"
 msgstr "建立島嶼選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group"
 msgstr "島嶼群組"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group Members"
 msgstr "島嶼群組成員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Log"
 msgstr "島嶼記錄"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Menu"
 msgstr "島嶼選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Restart Menu"
 msgstr "重置島嶼選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Kick Players"
 msgstr "踢出玩家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Leader"
 msgstr "隊長"
 
-msgid ""
-"Leaves your island.\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Leaves your island.\n"
 "§4WARNING! §cwill remove all your items!"
-msgstr ""
-"離開你的島嶼。\n"
+msgstr "離開你的島嶼。\n"
 "§4警告！§c將移除你所有物品！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "Let the player change their islands biome to {0}"
 msgstr "允許玩家將其島嶼生態域變更為 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "MONSTER"
 msgstr "怪物"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Manage challenges for a player"
 msgstr "管理玩家的挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Member"
 msgstr "成員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/placeholder/PlaceholderReplacerImpl.java
 msgid "N/A"
 msgstr "不適用"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "No active cooldown on {0} for {1} detected!"
 msgstr "未偵測到 {1} 的 {0} 有啟用中的冷卻時間！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North"
 msgstr "北"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-East"
 msgstr "東北"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-West"
 msgstr "西北"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 #, java-format
 msgid "Owner: {0}"
 msgstr "擁有者：{0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"
 msgstr "權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Permissions"
 msgstr "權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "READY"
 msgstr "就緒"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "Rank: {0}"
 msgstr "階級：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "Removing {0} from island"
 msgstr "正在將 {0} 從島嶼移除"
 
-msgid ""
-"Restarts your island.\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Restarts your island.\n"
 "§4WARNING! §cwill remove your items and island!"
-msgstr ""
-"重置你的島嶼。\n"
+msgstr "重置你的島嶼。\n"
 "§4警告！§c將移除你的物品與島嶼！"
 
-msgid ""
-"Return to your island''s home\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Return to your island''s home\n"
 "point. You can change your home\n"
 "point to any location on your\n"
 "island using §b/island sethome\n"
 "§e§lClick here to return home."
-msgstr ""
-"返回你的島嶼家點。\n"
+msgstr "返回你的島嶼家點。\n"
 "你可以使用 §b/island sethome\n"
 "將家點改到島上任何位置。\n"
 "§e§l點擊這裡回家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Score Count Block"
 msgstr "計分方塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Set Island Warp"
 msgstr "設定島嶼傳送點"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South"
 msgstr "南"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-East"
 msgstr "東南"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-West"
 msgstr "西南"
 
-msgid ""
-"Start your skyblock journey\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Start your skyblock journey\n"
 "by starting your own island.\n"
 "Complete challenges to earn\n"
 "items and skybucks to help\n"
@@ -268,8 +326,7 @@ msgid ""
 "invite others to join in\n"
 "building your island empire!\n"
 "§e§lClick here to start!"
-msgstr ""
-"建立你自己的島嶼，\n"
+msgstr "建立你自己的島嶼，\n"
 "開始你的空島旅程。\n"
 "完成挑戰以獲得物品與天幣，\n"
 "幫助擴建你的空島。\n"
@@ -277,75 +334,80 @@ msgstr ""
 "你的島嶼帝國！\n"
 "§e§l點擊這裡開始！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Teleport to the spawn area."
 msgstr "傳送到出生點區域。"
 
-msgid ""
-"The island biome affects things\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "The island biome affects things\n"
 "like grass color and spawning\n"
 "of both animals and monsters."
-msgstr ""
-"島嶼生態域會影響草的顏色，\n"
+msgstr "島嶼生態域會影響草的顏色，\n"
 "以及動物與怪物的生成。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "The island has been created."
 msgstr "島嶼已建立。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Lock"
 msgstr "切換島嶼鎖定"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Warp"
 msgstr "切換島嶼傳送"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "UNKNOWN"
 msgstr "未知"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/AdminCommand.java
 msgid "Ultimate SkyBlock Admin"
 msgstr "Ultimate SkyBlock 管理員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/CreateIslandTask.java
 #, java-format
 msgid "Unable to locate schematic {0}, contact a server-admin"
 msgstr "無法找到結構檔 {0}，請聯絡伺服器管理員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "Use §9/is h§r or the §9/is§r menu to go there."
 msgstr "使用 §9/is h§r 或 §9/is§r 選單前往。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "VILLAGER"
 msgstr "村民"
 
-msgid ""
-"View a list of §9challenges that\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View a list of §9challenges that\n"
 "you can complete on your island\n"
 "to earn skybucks, items, perks,\n"
 "and titles."
-msgstr ""
-"查看你在島上可以完成的\n"
+msgstr "查看你在島上可以完成的\n"
 "§9挑戰§f清單，以獲得天幣、\n"
 "物品、加成與稱號。"
 
-msgid ""
-"View a log of events from\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View a log of events from\n"
 "your island such as member,\n"
 "biome, and warp changes.\n"
 "§e§lClick to view the log."
-msgstr ""
-"查看你島嶼的事件記錄，\n"
+msgstr "查看你島嶼的事件記錄，\n"
 "例如成員、生態域與傳送點變更。\n"
 "§e§l點擊查看記錄。"
 
-msgid ""
-"View the members of your island\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "View the members of your island\n"
 "group and their permissions. If\n"
 "you are the island leader, you\n"
 "can change the member permissions.\n"
 "§e§lClick here to view or change."
-msgstr ""
-"查看你的島嶼群組成員及其權限。\n"
+msgstr "查看你的島嶼群組成員及其權限。\n"
 "如果你是隊長，你可以變更成員權限。\n"
 "§e§l點擊這裡查看或變更。"
 
-msgid ""
-"Want to join another player''s\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Want to join another player''s\n"
 "island instead of starting\n"
 "your own? If another player\n"
 "invites you to their island\n"
@@ -353,8 +415,7 @@ msgid ""
 "§e/island accept§f to join them.\n"
 "§e§lClick here to accept an invite!\n"
 "§e§l(You must be invited first)"
-msgstr ""
-"想加入其他玩家的島嶼，\n"
+msgstr "想加入其他玩家的島嶼，\n"
 "而不是自己開始嗎？如果其他玩家\n"
 "邀請你加入他們的島嶼，\n"
 "你可以點擊這裡或使用\n"
@@ -362,2144 +423,2667 @@ msgstr ""
 "§e§l點擊這裡接受邀請！\n"
 "§e§l（你必須先被邀請）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "West"
 msgstr "西"
 
-msgid ""
-"When you teleport to your\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "When you teleport to your\n"
 "island you will be taken to\n"
 "this location.\n"
 "§e§lClick here to change."
-msgstr ""
-"當你傳送到你的島嶼時，\n"
+msgstr "當你傳送到你的島嶼時，\n"
 "將會到達這個位置。\n"
 "§e§l點擊這裡變更。"
 
-msgid ""
-"When your warp is activated,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "When your warp is activated,\n"
 "other players will be taken to\n"
 "this point when they teleport\n"
 "to your island."
-msgstr ""
-"當你的傳送點啟用時，\n"
+msgstr "當你的傳送點啟用時，\n"
 "其他玩家傳送到你的島嶼\n"
 "會到達此位置。"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 #, java-format
 msgid "Wrote documentation to {0}"
 msgstr "已將文件寫入 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "You cannot pick up other players' loot when you are a visitor!"
 msgstr "你是訪客時不能撿起其他玩家的戰利品！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AcceptRejectCommand.java
 msgid "accept/reject an invitation."
 msgstr "接受/拒絕邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "act"
 msgstr "動作"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 #, java-format
 msgid "additional perks {0}"
 msgstr "額外加成 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "adds the player to the island"
 msgstr "將玩家加入島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 msgid "advanced command for getting island-data"
 msgstr "用於取得島嶼資料的進階指令"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "advanced command for setting island-data"
 msgstr "用於設定島嶼資料的進階指令"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "advanced info about items"
 msgstr "關於物品的進階資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass cooldowns"
 msgstr "允許使用者略過冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass teleport-delay"
 msgstr "允許使用者略過傳送延遲"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to bypass visitor-protections"
 msgstr "允許使用者略過訪客保護"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to place [usb] signs"
 msgstr "允許使用者放置 [usb] 告示牌"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "allows user to query for others levels"
 msgstr "允許使用者查詢他人等級"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "allows user to see others island info"
 msgstr "允許使用者查看他人的島嶼資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows user to use [usb] signs"
 msgstr "允許使用者使用 [usb] 告示牌"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "ban/unban a player from your island."
 msgstr "在你的島嶼上封鎖/解除封鎖玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "change the biome of the island"
 msgstr "更改島嶼的生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "change the island''s biome."
 msgstr "更改島嶼的生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "changes a members island-permissions"
 msgstr "更改成員的島嶼權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "check your or another''s island info"
 msgstr "查看你或其他人的島嶼資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "check your or anothers island level"
 msgstr "查看你或其他人的島嶼等級"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "clear orphans"
 msgstr "清除孤兒資料"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "clears the cooldown on a command (* = all)"
 msgstr "清除指令的冷卻時間（* = 全部）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "complete all challenges in the rank"
 msgstr "完成該階級的所有挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "complete and list challenges"
 msgstr "完成並列出挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "control debugging"
 msgstr "控制除錯"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "controls async jobs"
 msgstr "控制非同步作業"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "count orphans"
 msgstr "統計孤兒資料數量"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "create an island"
 msgstr "建立一個島嶼"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "d"
 msgstr "d"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "delete the island (removes the blocks)"
 msgstr "刪除島嶼（移除方塊）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "delete your island and start a new one."
 msgstr "刪除你的島嶼並重新開始一個新的。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LogCommand.java
 msgid "display log"
 msgstr "顯示日誌"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "display the top10 of islands"
 msgstr "顯示島嶼前10名"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/VersionCommand.java
 msgid "displays version information"
 msgstr "顯示版本資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "enable/disable warping to your island."
 msgstr "啟用/停用傳送到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "enables user to all-ways generate top-ten (no caching)"
 msgstr "允許使用者每次都重新產生前十名（不使用快取）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "exempt player from biome-cooldown"
 msgstr "讓玩家免於生態域冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "exempt player from create-cooldown"
 msgstr "讓玩家免於建立冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "exempt player from restart-cooldown"
 msgstr "讓玩家免於重置冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "exempts user from being banned"
 msgstr "讓使用者免於被封鎖"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "flush current content of the logger to file."
 msgstr "將目前記錄器內容刷新到檔案。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "flushes all caches to files"
 msgstr "將所有快取刷新到檔案"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "general island command"
 msgstr "一般島嶼指令"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "h"
 msgstr "h"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "hides the regions again"
 msgstr "再次隱藏區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ImportCommand.java
 msgid "imports players and islands from other formats"
 msgstr "從其他格式匯入玩家與島嶼"
 
-msgid ""
-"invite\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "invite\n"
 "other players to the island if\n"
 "there is enough room for more\n"
 "members"
-msgstr ""
-"邀請\n"
+msgstr "邀請\n"
 "其他玩家到島嶼上，若\n"
 "還有足夠空間容納更多\n"
 "成員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "invite a player to your island"
 msgstr "邀請玩家到你的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "invite others to the island."
 msgstr "邀請其他人到島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "island"
 msgstr "島嶼"
 
-msgid ""
-"kick\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "kick\n"
 "other players from the island,\n"
 "but they are unable to kick\n"
 "the island leader."
-msgstr ""
-"踢出\n"
+msgstr "踢出\n"
 "其他玩家離開島嶼，\n"
 "但他們無法踢出\n"
 "島嶼領隊。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "kick others from the island."
 msgstr "將其他人踢出島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "leave your party"
 msgstr "離開你的隊伍"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "list orphans"
 msgstr "列出孤兒資料"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "lists all the active cooldowns"
 msgstr "列出所有啟用中的冷卻時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "load current chunk"
 msgstr "載入目前區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "load the region chunks"
 msgstr "載入區域區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "loaded chunk at {0},{1}"
 msgstr "已載入位於 {0},{1} 的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "lock your island to non-party members."
 msgstr "將你的島嶼鎖定給非隊伍成員。"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "m"
 msgstr "m"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "manage islands"
 msgstr "管理島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "manage orphans"
 msgstr "管理孤兒資料"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "manually update the top 10 list"
 msgstr "手動更新前10名清單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ms/job"
 msgstr "ms/作業"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ms/tick"
 msgstr "ms/刻"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "name"
 msgstr "名稱"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "only available for players"
 msgstr "僅供玩家使用"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "party"
 msgstr "隊伍"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "print out info about the island"
 msgstr "列印島嶼資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "protects all islands (time consuming)"
 msgstr "保護所有島嶼（耗時）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "protects the island"
 msgstr "保護島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "purges all abandoned islands"
 msgstr "清除所有被遺棄的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "purges the island"
 msgstr "清除島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunk around the player"
 msgstr "刷新玩家周圍的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunks around the player"
 msgstr "刷新玩家周圍的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "refreshes the existing animations"
 msgstr "刷新現有動畫"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "regenerate current chunk"
 msgstr "重新生成目前區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "region manipulations"
 msgstr "區域操作"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "reload configuration from file."
 msgstr "從檔案重新載入設定。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "remove a member from your island."
 msgstr "從你的島嶼移除一名成員。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "removes the player from the island"
 msgstr "將玩家從島嶼移除"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets all challenges for the player"
 msgstr "為玩家重置所有挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets the challenge for the player"
 msgstr "為玩家重置挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "restarts the cooldown on the command"
 msgstr "重新開始該指令的冷卻時間"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "s"
 msgstr "s"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "saves documentation of the commands to a file"
 msgstr "將指令文件儲存到檔案"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "set a player''s island to your location"
 msgstr "將某玩家的島嶼設定到你的位置"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "set debug-level"
 msgstr "設定除錯等級"
 
-msgid ""
-"set the island''s warp,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "set the island''s warp,\n"
 "which allows non-group\n"
 "members to teleport to\n"
 "the island."
-msgstr ""
-"設定島嶼的傳送點，\n"
+msgstr "設定島嶼的傳送點，\n"
 "讓非群組\n"
 "成員也能傳送到\n"
 "島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "set the island''s warp."
 msgstr "設定島嶼的傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "set the island-home"
 msgstr "設定島嶼家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "set the ticks between animations"
 msgstr "設定動畫之間的刻數間隔"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "set your island''s warp location"
 msgstr "設定你島嶼的傳送點位置"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "sets the biome of the island"
 msgstr "設定島嶼的生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "show information about the challenge"
 msgstr "顯示挑戰資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show party information"
 msgstr "顯示隊伍資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show pending invites"
 msgstr "顯示待處理的邀請"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PlayerInfoCommand.java
 msgid "show player-information"
 msgstr "顯示玩家資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MobLimitCommand.java
 msgid "show the islands limits"
 msgstr "顯示島嶼限制"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows a specific players perks"
 msgstr "顯示特定玩家的特權"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "shows information about your party"
 msgstr "顯示你的隊伍資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows perk-information"
 msgstr "顯示特權資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current chunk"
 msgstr "顯示目前區塊的邊界"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current island"
 msgstr "顯示目前島嶼的邊界"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the inner-chunks"
 msgstr "顯示內部區塊的邊界"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the outer-chunks"
 msgstr "顯示外部區塊的邊界"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "shows the component format for the currently held item"
 msgstr "顯示目前手持物品的元件格式"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the non-chunk-aligned borders"
 msgstr "顯示未對齊區塊的邊界"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "successfully regenerated chunk at {0},{1}"
 msgstr "已成功重新生成位於 {0},{1} 的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "successfully unloaded chunk at {0},{1}"
 msgstr "已成功卸載位於 {0},{1} 的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandTalkCommand.java
 msgid "talk to players on your island"
 msgstr "與你島嶼上的玩家聊天"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/PartyTalkCommand.java
 msgid "talk to your island party"
 msgstr "與你的島嶼隊伍聊天"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another players island"
 msgstr "傳送到其他玩家的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
 msgid "teleport to the island home"
 msgstr "傳送到島嶼家園"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SpawnCommand.java
 msgid "teleports you to the skyblock spawn"
 msgstr "將你傳送到空島出生點"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AutoCommand.java
 msgid "teleports you to your island (or create one)"
 msgstr "將你傳送到你的島嶼（或建立一座）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "ticks"
 msgstr "刻"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "time"
 msgstr "時間"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "to unlock this rank"
 msgstr "以解鎖此階級"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "toggle debug-logging"
 msgstr "切換除錯記錄"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island''s lock."
 msgstr "切換島嶼的鎖定狀態。"
 
-msgid ""
-"toggle the island''s warp,\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "toggle the island''s warp,\n"
 "allowing them to turn it\n"
 "on or off at anytime, but\n"
 "not set the location."
-msgstr ""
-"切換島嶼的傳送點，\n"
+msgstr "切換島嶼的傳送點，\n"
 "允許他們隨時將其\n"
 "開啟或關閉，但\n"
 "不能設定位置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island''s warp."
 msgstr "切換島嶼的傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "toggles maintenance mode"
 msgstr "切換維護模式"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "toggles the islands ignore status"
 msgstr "切換島嶼的忽略狀態"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "transfer leadership to another member"
 msgstr "將隊長身分轉移給另一位成員"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
 msgstr "將隊長身分轉移給另一位玩家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "trust/untrust a player to help on your island."
 msgstr "信任/取消信任某位玩家，讓他能在你的島上幫忙。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "try to complete a challenge"
 msgstr "嘗試完成一項挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"
 msgstr "卸載目前區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "update the WG regions"
 msgstr "更新 WG 區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "various WorldGuard utilities"
 msgstr "各種 WorldGuard 工具"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "各種區塊指令"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "warp to another player''s island"
 msgstr "傳送到其他玩家的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "withdraw an invite"
 msgstr "撤回邀請"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "{0,number,00.00}  {1,number,#} {2}"
 msgstr "{0,number,00.00}  {1,number,#} {2}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "{0,number,0}:{1,number,00}.{2,number,000}"
 msgstr "{0,number,0}:{1,number,00}.{2,number,000}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "{0} <{1}>"
 msgstr "{0} <{1}>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "{0} changed the island biome to {1}"
 msgstr "{0} 已將島嶼生態域變更為 {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "{0} created an area with {1} biome"
 msgstr "{0} 建立了一個 {1} 生態域的區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "{0} tried to take over the island!"
 msgstr "{0} 試圖接管這座島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WitherTagEvents.java
 #, java-format
 msgid "{0}''s Wither"
 msgstr "{0} 的凋零"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§d invited {1}"
 msgstr "{0}§d 邀請了 {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§e has invited you to join their island!"
 msgstr "{0}§e 邀請你加入他們的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "{0}§e has rejected the invitation."
 msgstr "{0}§e 已拒絕邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "{0}§e is already leader of your island!"
 msgstr "{0}§e 已經是你島嶼的隊長！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2+"
 msgstr "§2+"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2chunk"
 msgstr "§2區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§2§lThis is your current biome."
 msgstr "§2§l這是你目前的生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4** You are entering a protected - but abandoned - island area."
 msgstr "§4** 你正在進入一個受保護但已被遺棄的島嶼區域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4** You are leaving an abandoned island."
 msgstr "§4** 你正在離開一座被遺棄的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4A purge is already running.§e Either §9confirm§e or §9stop§e it."
 msgstr "§4清除已在進行中。§e 請選擇 §9確認§e 或 §9停止§e。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #, java-format
-msgid ""
-"§4All required items must be placed on your island, within {0} blocks of you."
+msgid "§4All required items must be placed on your island, within {0} blocks of you."
 msgstr "§4所有所需物品必須放置在你的島上，且在你周圍 {0} 方塊內。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #, java-format
 msgid "§4Ambiguous challenge name: {0}. Did you mean:{1}"
 msgstr "§4挑戰名稱不明確：{0}。你是指：{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "§4Challenge has never been completed"
 msgstr "§4此挑戰從未完成過"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4Challenge {0} has already been completed"
 msgstr "§4挑戰 {0} 已經完成過"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§4Could not locate rank of {0}"
 msgstr "§4無法找到 {0} 的階級"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "§4ERROR:§e {0}"
 msgstr "§4錯誤：§e {0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 #, java-format
 msgid "§4Error writing documentation: {0}"
 msgstr "§4寫入文件時發生錯誤：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4Error! §9No valid island found for purging."
 msgstr "§4錯誤！ §9找不到可清除的有效島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 #, java-format
 msgid "§4FAILED!§e could not unload chunk at {0},{1}"
 msgstr "§4失敗！§e 無法卸載位於 {0},{1} 的區塊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "§4Hold your horses! §eYou have to be patient..."
 msgstr "§4別急！ §e你得有點耐心……"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Invalid argument, try INFO, FINE, FINER, FINEST"
 msgstr "§4無效的參數，請嘗試 INFO、FINE、FINER、FINEST"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4Invalid challenge name! Use /c help for more information"
 msgstr "§4無效的挑戰名稱！使用 /c help 取得更多資訊"
 
-msgid ""
-"§4Island at this location has members!\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "§4Island at this location has members!\n"
 "§eUse §9/usb island delete <name>§e to delete it."
-msgstr ""
-"§4此位置的島嶼有成員！\n"
+msgstr "§4此位置的島嶼有成員！\n"
 "§e使用 §9/usb island delete <name>§e 來刪除它。"
 
-msgid ""
-"§4Island found!§e You already have an island. If you want a fresh island, "
-"type§b /is restart§e to get one"
-msgstr ""
-"§4找到島嶼！§e 你已經有一座島了。若你想要全新的島，輸入§b /is restart§e 來取"
-"得一座"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
+msgid "§4Island found!§e You already have an island. If you want a fresh island, type§b /is restart§e to get one"
+msgstr "§4找到島嶼！§e 你已經有一座島了。若你想要全新的島，輸入§b /is restart§e 來取得一座"
 
-msgid ""
-"§4Island found!§e You are already a member of an island. To start your own, "
-"first§b /is leave"
-msgstr ""
-"§4找到島嶼！§e 你已經是某座島的成員。若要開始自己的島，請先§b /is leave"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
+msgid "§4Island found!§e You are already a member of an island. To start your own, first§b /is leave"
+msgstr "§4找到島嶼！§e 你已經是某座島的成員。若要開始自己的島，請先§b /is leave"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§4Island level has been disabled, contact an administrator."
 msgstr "§4島嶼等級已被停用，請聯絡管理員。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "§4Island not found: unable to set the island!"
 msgstr "§4找不到島嶼：無法設定島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4It''s a bad idea to replace your lava!"
 msgstr "§4替換你的熔岩不是個好主意！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Logging is not enabled, use §d/usb debug enable"
 msgstr "§4尚未啟用記錄，請使用 §d/usb debug enable"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§4Logging wasn't active, so you can't disable it!"
 msgstr "§4記錄並未啟用，因此你無法停用它！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§4Members are already trusted!"
 msgstr "§4成員已經是受信任的！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequireIslandCommand.java
 msgid "§4No Island. §eUse §b/is create§e to get one"
 msgstr "§4沒有島嶼。 §e使用 §b/is create§e 來取得一座"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #, java-format
 msgid "§4No challenge matched: {0}"
 msgstr "§4沒有符合的挑戰：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No challenge named {0} was found!"
 msgstr "§4找不到名為 {0} 的挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4No challenge with id {0} found"
 msgstr "§4找不到 id 為 {0} 的挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 #, java-format
 msgid "§4No importer named §e{0}§4 found"
 msgstr "§4找不到名為 §e{0}§4 的匯入器"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§4No player named {0} found!"
 msgstr "§4找不到名為 {0} 的玩家！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No player named {0} was found!"
 msgstr "§4找不到名為 {0} 的玩家！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§4No rank named {0} was found!"
 msgstr "§4找不到名為 {0} 的階級！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4No valid island at your location"
 msgstr "§4你所在位置沒有有效的島嶼"
 
-msgid ""
-"§4No valid island provided, either stand within one, or provide an island "
-"name"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "§4No valid island provided, either stand within one, or provide an island name"
 msgstr "§4未提供有效島嶼：請站在島內，或提供島嶼名稱"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4No valid player-name supplied."
 msgstr "§4未提供有效的玩家名稱。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "§4Only leader can transfer leadership!"
 msgstr "§4只有隊長才能轉移隊長身分！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "§4Only supported for players"
 msgstr "§4僅支援玩家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4Only the island''s owner can invite!"
 msgstr "§4只有島嶼擁有者才能邀請！"
 
-msgid ""
-"§4Only the owner may restart this island. Leave this island in order to "
-"start your own (/island leave)."
-msgstr ""
-"§4只有擁有者可以重啟這座島。請離開此島以開始你自己的島（/island leave）。"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "§4Only the owner may restart this island. Leave this island in order to start your own (/island leave)."
+msgstr "§4只有擁有者可以重啟這座島。請離開此島以開始你自己的島（/island leave）。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "§4PURGE:§9 Aborted purging abandoned islands."
 msgstr "§4清除：§9 已中止清除被遺棄的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "§4PURGE:§9 Finished purging abandoned islands."
 msgstr "§4清除：§9 已完成清除被遺棄的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "§4PURGE:§9 Scanning aborted."
 msgstr "§4清除：§9 掃描已中止。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 #, java-format
-msgid ""
-"§4PURGE:§9 Scanning done, found {0} candidates, below level {1}, ready for "
-"purgatory."
+msgid "§4PURGE:§9 Scanning done, found {0} candidates, below level {1}, ready for purgatory."
 msgstr "§4清除：§9 掃描完成，找到 {0} 個候選者，等級低於 {1}，準備送入清除。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 #, java-format
 msgid "§4PURGE:§e Do §9usb purge confirm§e within {0} to accept."
 msgstr "§4清除：§e 請在 {0} 內執行 §9usb purge confirm§e 以接受。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§4Player is already assigned to this island!"
 msgstr "§4該玩家已經被指派到這座島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 #, java-format
 msgid "§4Player {0} has no island to transfer!"
 msgstr "§4玩家 {0} 沒有可轉移的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Purge aborted!"
 msgstr "§4清除已中止！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} days."
 msgstr "§4需求將在 {0} 天後重置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} hours."
 msgstr "§4需求將在 {0} 小時後重置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4Requirements will reset in {0} minutes."
 msgstr "§4需求將在 {0} 分鐘後重置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "§4Since your island is locked, your incoming warp has been deactivated."
 msgstr "§4由於你的島嶼已鎖定，你的入島傳送已被停用。"
 
-msgid ""
-"§4Sorry!§e A protect-all is already running. Let it complete first, or use "
-"§9usb protectall §cstop"
-msgstr ""
-"§4抱歉！§e 全域保護已在進行中。請先讓它完成，或使用 §9usb protectall §cstop"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "§4Sorry!§e A protect-all is already running. Let it complete first, or use §9usb protectall §cstop"
+msgstr "§4抱歉！§e 全域保護已在進行中。請先讓它完成，或使用 §9usb protectall §cstop"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Starting purge..."
 msgstr "§4開始清除……"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4Stop kickin' yourself!"
 msgstr "§4別自己踢自己！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4That island is §clocked.§e No teleporting to the island."
 msgstr "§4那座島已§c鎖定§e。無法傳送到該島。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4That player does not exist!"
 msgstr "§4該玩家不存在！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4That player does not have an active warp."
 msgstr "§4該玩家沒有啟用中的傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "§4That player does not have an island!"
 msgstr "§4該玩家沒有島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4That player has forbidden you from teleporting to their island."
 msgstr "§4該玩家已禁止你傳送到他們的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4That player has forbidden you from warping to their island."
 msgstr "§4該玩家已禁止你傳送到他們的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§4That player has no island."
 msgstr "§4該玩家沒有島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4That player is already member on another island. "
 msgstr "§4該玩家已是另一座島的成員。 "
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4That player is invalid or does not have an island!"
 msgstr "§4該玩家無效或沒有島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4That player is not part of your island group, and not on your island!"
 msgstr "§4該玩家不是你島嶼群組的一部分，且不在你的島上！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4That player is offline or doesn't exist."
 msgstr "§4該玩家離線或不存在。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4That player is the leader of your island!"
 msgstr "§4該玩家是你島嶼的島主！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4The level must be a valid number"
 msgstr "§4等級必須是有效的數字"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4The {0} challenge is not available yet!"
 msgstr "§4{0} 挑戰尚未開放！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4The {0} challenge is not repeatable!"
 msgstr "§4{0} 挑戰不可重複！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4This Challenge is not repeatable!"
 msgstr "§4此挑戰不可重複！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§4This challenge is currently unavailable."
 msgstr "§4此挑戰目前不可用。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequirePlayerCommand.java
 msgid "§4This command can only be executed by a player"
 msgstr "§4此指令只能由玩家執行"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§4Top ten list is empty! Only islands above level {0} is considered."
 msgstr "§4前十名清單是空的！只會計入等級高於 {0} 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4Trying to abort purge"
 msgstr "§4嘗試中止清除作業"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4Unable to find a safe home-location on your island!"
 msgstr "§4無法在你的島上找到安全的家位置！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§4Unable to warp you to that player''s island!"
 msgstr "§4無法將你傳送到該玩家的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§4Unknown player {0}"
 msgstr "§4未知玩家 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4WARNING: You will lose your current island if you accept!"
 msgstr "§4警告：若你接受，將會失去目前的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} days."
 msgstr "§4你可以在 {0} 天後再次完成。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} hours."
 msgstr "§4你可以在 {0} 小時後再次完成。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this again in {0} minutes."
 msgstr "§4你可以在 {0} 分鐘後再次完成。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§4You can complete this {0} more time(s)."
 msgstr "§4你還可以再完成 {0} 次。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§4You can only convert obsidian once every 10 seconds"
 msgstr "§4你每 10 秒只能轉換一次黑曜石"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§4You can only submit challenges in the skyblock world!"
 msgstr "§4你只能在 Skyblock 世界提交挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§4You can only submit challenges when you have an island!"
 msgstr "§4你必須擁有島嶼才能提交挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "§4You can only transfer ownership to party-members!"
 msgstr "§4你只能將擁有權轉移給隊伍成員！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§4You can't ban members. Remove them first!"
 msgstr "§4你不能封鎖成員。請先移除他們！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You can't invite any more players."
 msgstr "§4你無法再邀請更多玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You can't invite yourself!"
 msgstr "§4你不能邀請你自己！"
 
-msgid ""
-"§4You can't leave your island if you are the only person. Try using /island "
-"restart if you want a new one!"
-msgstr ""
-"§4你是唯一成員時不能離開你的島嶼。若想要新的島，請嘗試使用 /island restart！"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
+msgid "§4You can't leave your island if you are the only person. Try using /island restart if you want a new one!"
+msgstr "§4你是唯一成員時不能離開你的島嶼。若想要新的島，請嘗試使用 /island restart！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4You can't remove the leader from the Island!"
 msgstr "§4你不能把島主從島嶼中移除！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4You can't use that command right now. Leave your current party first."
 msgstr "§4你現在不能使用該指令。請先離開目前的隊伍。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4You cannot complete the {0} challenge again yet!"
 msgstr "§4你還不能再次完成 {0} 挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4You do not have access to that command!"
 msgstr "§4你無權使用該指令！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§4You do not have an island!"
 msgstr "§4你沒有島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§4You do not have permission to change the biome of this island!"
 msgstr "§4你沒有權限更改此島嶼的生態域！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4You do not have permission to create a warp on your island!"
 msgstr "§4你沒有權限在你的島上建立傳送點！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "§4You do not have permission to invite others to this island!"
 msgstr "§4你沒有權限邀請其他人到此島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "§4You do not have permission to kick others from this island!"
 msgstr "§4你沒有權限將其他人從此島嶼踢出！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§4You do not have permission to kick/ban players."
 msgstr "§4你沒有權限踢出/封鎖玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You do not have permission to lock your island!"
 msgstr "§4你沒有權限鎖定你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You do not have permission to unlock your island!"
 msgstr "§4你沒有權限解鎖你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4You do not have permission to warp to other islands!"
 msgstr "§4你沒有權限傳送到其他島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "§4You don't have access to this command!"
 msgstr "§4你無權使用此指令！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "§4You don't have permissions to uninvite players."
 msgstr "§4你沒有權限取消邀請玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§4You haven't been invited."
 msgstr "§4你尚未被邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§4You must be closer to your island to set your skyblock home!"
 msgstr "§4你必須更靠近你的島才能設定 Skyblock 家！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§4You must be in the skyblock world to leave your party!"
 msgstr "§4你必須在 Skyblock 世界中才能離開你的隊伍！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4You must be on your island to do that!"
 msgstr "§4你必須在你的島上才能這麼做！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4You must be standing within {0} blocks of all required items."
 msgstr "§4你必須站在所有所需物品 {0} 方塊範圍內。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4You must be the party leader to lock your island!"
 msgstr "§4你必須是隊伍隊長才能鎖定你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§4You must be the party leader to unlock your island!"
 msgstr "§4你必須是隊伍隊長才能解鎖你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "§4You must provide the age in days to purge!"
 msgstr "§4你必須提供要清除的天數（以天計）！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§4You will lose all required items when you complete this challenge!"
 msgstr "§4完成此挑戰時，你將失去所有所需物品！"
 
-msgid ""
-"§4You''ve hit the {0} limit!§e You can''t have more of that type on your "
-"island!§9 Max: {1,number}"
-msgstr ""
-"§4你已達到 {0} 的上限！§e你的島上不能再有更多此類型！§9 最大值：{1,number}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
+msgid "§4You''ve hit the {0} limit!§e You can''t have more of that type on your island!§9 Max: {1,number}"
+msgstr "§4你已達到 {0} 的上限！§e你的島上不能再有更多此類型！§9 最大值：{1,number}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§4Your current location is not a safe home-location."
 msgstr "§4你目前的位置不是安全的家位置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§4Your incoming warp is inactive, players may not warp to your island."
 msgstr "§4你的入站傳送點未啟用，玩家可能無法傳送到你的島嶼。"
 
-msgid ""
-"§4Your island is full, or you have too many pending invites. You can't "
-"invite anyone else."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "§4Your island is full, or you have too many pending invites. You can't invite anyone else."
 msgstr "§4你的島嶼已滿，或尚有太多待處理邀請。你不能再邀請任何人。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "§4Your island is locked. You must unlock it before enabling your warp."
 msgstr "§4你的島嶼已鎖定。你必須先解鎖才能啟用傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4Your island must be level {0} to complete this challenge!"
 msgstr "§4你的島嶼必須達到等級 {0} 才能完成此挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§4{0}"
 msgstr "§4{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has been kicked from the island."
 msgstr "§4{0} 已被踢出島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has been removed from the island."
 msgstr "§4{0} 已從島嶼移除。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has kicked you from their island!"
 msgstr "§4{0} 已把你從他們的島嶼踢出！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 #, java-format
 msgid "§4{0} has left your island!"
 msgstr "§4{0} 已離開你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} has removed you from their island!"
 msgstr "§4{0} 已將你從他們的島嶼移除！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§4{0} is exempt from being banned."
 msgstr "§4{0} 免於被封鎖。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} is exempt from being kicked."
 msgstr "§4{0} 免於被踢出。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 #, java-format
-msgid ""
-"§4{0} is limited. §eScanning your island to see if you are allowed to place "
-"more, please be patient"
+msgid "§4{0} is limited. §eScanning your island to see if you are allowed to place more, please be patient"
 msgstr "§4{0} 受到限制。§e正在掃描你的島嶼以確認是否允許放置更多，請稍候"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§4{0} tried to ban you from their island!"
 msgstr "§4{0} 試圖將你從他們的島嶼封鎖！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 #, java-format
 msgid "§4{0} tried to kick you from their island!"
 msgstr "§4{0} 試圖把你從他們的島嶼踢出！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§4{0}s island at {1} was already protected"
 msgstr "§4{0} 的島嶼位於 {1}，已受保護"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§4§lChallenges disabled."
 msgstr "§4§l挑戰已停用。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4§lLocked Challenge"
 msgstr "§4§l已鎖定的挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§4§lYou can't repeat this challenge."
 msgstr "§4§l你不能重複此挑戰。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§6Currency Reward: §a{0}"
 msgstr "§6金錢獎勵：§a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§6Exp Reward: §a{0}"
 msgstr "§6經驗獎勵：§a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§6Item Reward: §a"
 msgstr "§6物品獎勵：§a"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 #, java-format
 msgid "§7 - name: §9{0}"
 msgstr "§7 - 名稱：§9{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§7 - §6{0}§7 : {1}"
 msgstr "§7 - §6{0}§7：{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "§7- SCANNING: {0,number,##}% ({1}/{2} failed: {3}) ~ {4}"
 msgstr "§7- 掃描中：{0,number,##}%（{1}/{2} 失敗：{3}）~ {4}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "§7----------------"
 msgstr "§7----------------"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 #, java-format
 msgid "§7Complete {0}"
 msgstr "§7完成 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 #, java-format
 msgid "§7Complete {0} more {1} §7challenges"
 msgstr "§7再完成 {0} 個 {1} §7挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7Current page"
 msgstr "§7目前頁面"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7First Page"
 msgstr "§7第一頁"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§7Last Page"
 msgstr "§7最後一頁"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§7Page {0}"
 msgstr "§7第 {0} 頁"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§7Requires {0}"
 msgstr "§7需要 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§7Teleport cancelled"
 msgstr "§7傳送已取消"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome in your current chunk to §9{0}§7, "
-"be patient."
+msgid "§7The pixies are busy changing the biome in your current chunk to §9{0}§7, be patient."
 msgstr "§7小精靈正忙著把你目前區塊的生態域變更為 §9{0}§7，請稍候。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome near you to §9{0}§7, be patient."
+msgid "§7The pixies are busy changing the biome near you to §9{0}§7, be patient."
 msgstr "§7小精靈正忙著把你附近的生態域變更為 §9{0}§7，請稍候。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
-msgid ""
-"§7The pixies are busy changing the biome of your island to §9{0}§7, be "
-"patient."
+msgid "§7The pixies are busy changing the biome of your island to §9{0}§7, be patient."
 msgstr "§7小精靈正忙著把你島嶼的生態域變更為 §9{0}§7，請稍候。"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Usage: {0}"
 msgstr "§7用法：{0}"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Use §3/{0} ? {1} §7 to display previous page\n"
 msgstr "§7使用 §3/{0} ? {1} §7 以顯示上一頁\n"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 #, java-format
 msgid "§7Use §3/{0} ? {1}§7 to display next page\n"
 msgstr "§7使用 §3/{0} ? {1}§7 以顯示下一頁\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§7and more..."
 msgstr "§7以及更多..."
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/ItemStackUtil.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeFormat.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§7{0}"
 msgstr "§7{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 #, java-format
 msgid "§7{0}: §a{1}§7 (max. {2})"
 msgstr "§7{0}：§a{1}§7（最大 {2}）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Be patient, young padawan"
 msgstr "§9請耐心點，年輕的 Padawan"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 msgid "§9Creating an island at your location"
 msgstr "§9正在你的位置建立島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 #, java-format
 msgid "§9Creating an island §7{0}§9 of you"
 msgstr "§9正在於你§7{0}§9處建立島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/asyncworldedit/PlayerJob.java
 msgid "§9Creating island...§e{0,number,###}%"
 msgstr "§9建立島嶼中...§e{0,number,###}%"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§9Deleted abandoned island at your current location."
 msgstr "§9已刪除你目前位置的廢棄島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Hold your horses! You have to be patient..."
 msgstr "§9先別急！你得有點耐心……"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "§9Job Statistics"
 msgstr "§9工作統計"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Not really patient, are you?"
 msgstr "§9你其實不太有耐心，對吧？"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9Patience you MUST have, young padawan"
 msgstr "§9年輕的學徒啊，你必須要有耐心"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§9Player Permissions"
 msgstr "§9玩家權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§9Rank is {0}"
 msgstr "§9等級為 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "§9The two most powerful warriors are patience and time."
 msgstr "§9最強大的兩位戰士是耐心與時間。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 #, java-format
 msgid "§9{0}§7 timed out"
 msgstr "§9{0}§7 逾時"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 #, java-format
 msgid "§9{0}§f has completed the §9{1}§f challenge!"
 msgstr "§9{0}§f 已完成 §9{1}§f 挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§9{1} §7- {0}"
 msgstr "§9{1} §7- {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§a#%2d §7(%5.2f): §e%s §7%s"
 msgstr "§a#%2d §7(%5.2f)：§e%s §7%s"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aClick to create!"
 msgstr "§a點擊以建立！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aClick to restart!"
 msgstr "§a點擊以重置！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "§aCongratulations! §eYour island has appeared."
 msgstr "§a恭喜！§e你的島嶼已出現。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§aInvite sent to {0}"
 msgstr "§a已送出邀請給 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§aIsland level is {0,number,###.##}"
 msgstr "§a島嶼等級為 {0,number,###.##}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§aMore players can be invited to this island."
 msgstr "§a此島嶼還可以邀請更多玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "§aON"
 msgstr "§a開"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 #, java-format
 msgid "§aSet {0}''s island to the current island."
 msgstr "§a已將 {0}'' 的島嶼設定為目前島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 #, java-format
 msgid "§aTeleporting to {0}''s island."
 msgstr "§a正在傳送到 {0}'' 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§aTeleporting you to your island."
 msgstr "§a正在傳送你到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 #, java-format
 msgid "§aTeleporting you to {0}''s island."
 msgstr "§a正在傳送你到 {0}'' 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§aToggled chat §cOFF§a for {0}"
 msgstr "§a已為 {0} 將聊天切換為 §c關閉"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 #, java-format
 msgid "§aYou can invite {0} more players."
 msgstr "§a你還可以邀請 {0} 位玩家。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§aYou have changed your island''s biome to {0}"
 msgstr "§a你已將你的島嶼生態域改為 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§aYou have changed {0} blocks around you to the {1} biome"
 msgstr "§a你已將你周圍的 {0} 個方塊改為 {1} 生態域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§aYou have completed the {0} challenge!"
 msgstr "§a你已完成 {0} 挑戰！"
 
-msgid ""
-"§aYou have joined an island! Use /island party to see the other members."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "§aYou have joined an island! Use /island party to see the other members."
 msgstr "§a你已加入一座島嶼！使用 /island party 查看其他成員。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "§aYou may need to go to spawn, or relog, to see the changes."
 msgstr "§a你可能需要回到重生點或重新登入，才能看到變更。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 #, java-format
 msgid "§aYou will be teleported in {0} seconds."
 msgstr "§a你將在 {0} 秒後傳送。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§aYour incoming warp is active, players may warp to your island."
 msgstr "§a你的來訪傳送點已啟用，玩家可傳送到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "§aYour skyblock home has been set to your current location."
 msgstr "§a你的空島家已設為你目前位置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§a{0} trusted {1} on the island"
 msgstr "§a{0} 已在島上信任 {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§a{0} §c{1}"
 msgstr "§a{0} §c{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChallenges"
 msgstr "§a§l挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChange Home Location"
 msgstr "§a§l變更家位置"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lChange Warp Location"
 msgstr "§a§l變更傳送點位置"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Level"
 msgstr "§a§l島嶼等級"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Lock"
 msgstr "§a§l島嶼鎖定"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Log"
 msgstr "§a§l島嶼紀錄"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lIsland Warp"
 msgstr "§a§l島嶼傳送"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lJoin an Island"
 msgstr "§a§l加入島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn Home"
 msgstr "§a§l返回家"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn to Spawn"
 msgstr "§a§l返回重生點"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lReturn to the main menu"
 msgstr "§a§l返回主選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§a§lStart an Island"
 msgstr "§a§l開始一座島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 #, java-format
 msgid "§bLeadership transferred by {0}§b to {1}"
 msgstr "§b隊長身分已由 {0}§b 轉交給 {1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 #, java-format
 msgid "§buSkyBlock§e depends on §9{0}§e >= §av{1}"
 msgstr "§buSkyBlock§e 依賴 §9{0}§e >= §av{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 #, java-format
-msgid ""
-"§buSkyBlock§e depends on §9{0}§e >= §av{1}§e but only §cv{2}§e was found!\n"
+msgid "§buSkyBlock§e depends on §9{0}§e >= §av{1}§e but only §cv{2}§e was found!\n"
 msgstr "§buSkyBlock§e 依賴 §9{0}§e >= §av{1}§e，但只找到 §cv{2}§e！\n"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 #, java-format
 msgid "§b{0}§d activated the island warp."
 msgstr "§b{0}§d 已啟用島嶼傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 #, java-format
 msgid "§b{0}§d changed the island warp location."
 msgstr "§b{0}§d 已變更島嶼傳送點位置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d deactivated the island warp."
 msgstr "§b{0}§d 已停用島嶼傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d has been removed from the island group."
 msgstr "§b{0}§d 已從島嶼群組中移除。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§b{0}§d has joined your island group."
 msgstr "§b{0}§d 已加入你的島嶼群組。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d locked the island."
 msgstr "§b{0}§d 已鎖定島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§b{0}§d unlocked the island."
 msgstr "§b{0}§d 已解鎖島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§c-"
 msgstr "§c-"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "§cABORTED:§e Protect-All was aborted!"
 msgstr "§c已中止：§e Protect-All 已被中止！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§cBack to Main Menu"
 msgstr "§c返回主選單"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "§cBanned:§e You are banned from this island."
 msgstr "§c已封鎖：§e 你已被此島嶼封鎖。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§cClick to leave"
 msgstr "§c點擊以離開"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§cClick within §9{0}§c to leave!"
 msgstr "§c請在 §9{0}§c 內點擊以離開！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§cClick within §9{0}§c to restart!"
 msgstr "§c請在 §9{0}§c 內點擊以重置！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cCommand is currently disabled!"
 msgstr "§c指令目前已停用！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "§cCommand only available for players."
 msgstr "§c此指令僅供玩家使用。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "§cCommand only available to players"
 msgstr "§c此指令僅供玩家使用"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§cInvalid arguments. Use /is biome <biome> [radius|chunk|all]"
 msgstr "§c參數無效。使用 /is biome <biome> [radius|chunk|all]"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cInvalid field {0}"
 msgstr "§c無效欄位 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§cInvalid permission {0}. Must be one of {1}"
 msgstr "§c無效權限 {0}。必須是 {1} 其中之一"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "§cLocked:§e That island is locked! No entry allowed."
 msgstr "§c已鎖定：§e 該島嶼已鎖定！禁止進入。"
 
-msgid ""
-"§cMAINTENANCE: §4Deactivated§e all uSkyBlock features back to operational."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "§cMAINTENANCE: §4Deactivated§e all uSkyBlock features back to operational."
 msgstr "§c維護：§4已停用§e 所有 uSkyBlock 功能並恢復正常運作。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "§cMAINTENANCE: §aActivated§e all uSkyBlock features currently disabled."
 msgstr "§c維護：§a已啟用§e 所有目前停用的 uSkyBlock 功能。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cMAINTENANCE:§e uSkyBlock is currently in maintenance mode"
 msgstr "§c維護：§e uSkyBlock 目前處於維護模式"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "§cMaintenance mode can only be changed from console!"
 msgstr "§c維護模式只能從控制台更改！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
-msgid ""
-"§cNo access!\n"
+msgid "§cNo access!\n"
 "§7({0})"
-msgstr ""
-"§c無權限！\n"
+msgstr "§c無權限！\n"
 "§7({0})"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "§cNo item in hand!"
 msgstr "§c手上沒有物品！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "§cNot enough items in chest to complete challenge!"
 msgstr "§c箱子中的物品不足以完成挑戰！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "§cNote:§e Construction might still be ongoing."
 msgstr "§c注意：§e建造可能仍在進行中。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "§cOFF"
 msgstr "§c關"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§cPURGE: §9Purged island at {0}"
 msgstr "§c清除：§9已清除位於 {0} 的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
-msgid ""
-"§cRemoved ignore-flag of {0}s island, it will now show up on top-ten and "
-"purge."
+msgid "§cRemoved ignore-flag of {0}s island, it will now show up on top-ten and purge."
 msgstr "§c已移除 {0} 的島嶼忽略旗標，它現在會顯示在前十名與清除中。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§cRepeat §9{0}§c to toggle it off"
 msgstr "§c再次輸入 §9{0}§c 以將其關閉"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 #, java-format
 msgid "§cSKY §f> §7 {0}"
 msgstr "§cSKY §f> §7 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§cSet {0}s island to be ignored on top-ten and purge."
 msgstr "§c已將 {0} 的島嶼設為在前十名與清除中忽略。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 #, java-format
 msgid "§cSorry! {0}"
 msgstr "§c抱歉！{0}"
 
-msgid ""
-"§cThat players island is in the process of generating, you cannot warp to it "
-"right now."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+msgid "§cThat players island is in the process of generating, you cannot warp to it right now."
 msgstr "§c該玩家的島嶼正在生成中，你現在無法傳送到那裡。"
 
-msgid ""
-"§cThe island owning this piece of nether is being deleted! Sending you to "
-"spawn."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
+msgid "§cThe island owning this piece of nether is being deleted! Sending you to spawn."
 msgstr "§c擁有這塊地獄區域的島嶼正在被刪除！將你送回重生點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "§cThe island you are on is being deleted! Sending you to spawn."
 msgstr "§c你所在的島嶼正在被刪除！將你送回重生點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§cThis island is full."
 msgstr "§c此島嶼已滿。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 #, java-format
 msgid "§cToggled chat to {0} §aON"
 msgstr "§c已將聊天切換為 {0} §a開"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "§cTrying to abort protect-all task."
 msgstr "§c正在嘗試中止 protect-all 任務。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to get state for {0}"
 msgstr "§c無法取得 {0} 的狀態"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to set field {0} to ''{1}''"
 msgstr "§c無法將欄位 {0} 設為 ''{1}''"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§cUnable to set field {0} to ''{1}'', a number was expected"
 msgstr "§c無法將欄位 {0} 設為 ''{1}''，需要數字"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 #, java-format
 msgid "§cWARNING: §9{0}§e is warping to your island!"
 msgstr "§c警告：§9{0}§e 正在傳送到你的島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "§cWARNING: §eTeleporting you to mid-air."
 msgstr "§c警告：§e正在將你傳送到半空中。"
 
-msgid ""
-"§cWARNING:§e Could not transfer all the required items to your inventory!"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+msgid "§cWARNING:§e Could not transfer all the required items to your inventory!"
 msgstr "§c警告：§e無法將所有所需物品轉移到你的背包！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/LocateChestTask.java
 #, java-format
 msgid "§cWatchdog!§9 Unable to locate a chest within {0}, bailing out."
 msgstr "§c監視器！§9在 {0} 內找不到箱子，正在放棄。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/GriefEvents.java
 msgid "§cWither Despawned!§e It wandered too far from your island."
 msgstr "§c凋零已消失！§e它離你的島嶼太遠了。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 #, java-format
 msgid "§cYou can restart your island in {0} seconds."
 msgstr "§c你可以在 {0} 秒後重置你的島嶼。"
 
-msgid ""
-"§cYou do not have permission to change the biome of your current island."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
+msgid "§cYou do not have permission to change the biome of your current island."
 msgstr "§c你沒有權限變更你目前島嶼的生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§cYou do not have permission to change your biome to that type."
 msgstr "§c你沒有權限將生態域變更為該類型。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "§cYou do not have permission to enable/disable your island''s warp!"
 msgstr "§c你沒有權限啟用/停用你島嶼的傳送點！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "§cYou do not have permission to set your island''s warp point!"
 msgstr "§c你沒有權限設定你島嶼的傳送點位置！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 #, java-format
 msgid "§cYou have misspelled the biome name. Must be one of {0}"
 msgstr "§c你把生態域名稱拼錯了。必須是以下其中之一：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "§cYou have reached your spawn-limit for your island."
 msgstr "§c你已達到你島嶼的生成上限。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "§cYou need to be on your own island to set the warp!"
 msgstr "§c你需要在自己的島上才能設定傳送點！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§cYour island is in the process of generating, you cannot create now."
 msgstr "§c你的島嶼正在生成中，你現在無法建立。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "§cYour island is in the process of generating, you cannot restart now."
 msgstr "§c你的島嶼正在生成中，你現在無法重新開始。"
 
-msgid ""
-"§cYour island is in the process of generating, you cannot teleport home "
-"right now."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
+msgid "§cYour island is in the process of generating, you cannot teleport home right now."
 msgstr "§c你的島嶼正在生成中，你現在無法傳送回家。"
 
-msgid ""
-"§cYour island is in the process of generating, you cannot warp to other "
-"players islands right now."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
+msgid "§cYour island is in the process of generating, you cannot warp to other players islands right now."
 msgstr "§c你的島嶼正在生成中，你現在無法傳送到其他玩家的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§call"
 msgstr "§c全部"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 #, java-format
 msgid "§c{0}"
 msgstr "§c{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§c{0} revoked trust in {1} on the island"
 msgstr "§c{0} 已在島上撤銷對 {1} 的信任"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 #, java-format
 msgid "§c{0} was set to ''{1}''"
 msgstr "§c{0} 已設為「{1}」"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lLeave Island"
 msgstr "§c§l離開島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lRestart Island"
 msgstr "§c§l重新開始島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the biome."
 msgstr "§c§l你無法變更生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the lock."
 msgstr "§c§l你無法變更鎖定狀態。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§c§lYou can't change the warp."
 msgstr "§c§l你無法變更傳送點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 #, java-format
 msgid "§d** You are entering §b{0}''s §disland."
 msgstr "§d** 你正在進入 §b{0}§d 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 #, java-format
 msgid "§d** You are leaving §b{0}''s §disland."
 msgstr "§d** 你正在離開 §b{0}§d 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§dTotal times completed: §f{0}"
 msgstr "§d總完成次數：§f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§e... Scanning complete, you can try again"
 msgstr "§e... 掃描完成，你可以再試一次"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e<Click to change this player''s permissions>"
 msgstr "§e<點擊以變更此玩家的權限>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 #, java-format
 msgid "§eAnimation-tick changed to {0}."
 msgstr "§e動畫 tick 已變更為 {0}。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eAnimation-tick must be a valid integer."
 msgstr "§e動畫 tick 必須是有效的整數。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "§eBlocks on {0}s Island (page {1,number} of {2,number}):"
 msgstr "§e{0} 的島嶼上的方塊（第 {1,number} / {2,number} 頁）："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "§eCan only be executed as a player"
 msgstr "§e只能以玩家身分執行"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§eChallenge {0} has been completed for {1}"
 msgstr "§e{1} 已完成挑戰 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "§eChallenges has been disabled. Contact an administrator."
 msgstr "§e挑戰已被停用。請聯絡管理員。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§eChanged biome of {0}s island to {1}."
 msgstr "§e已將 {0} 的島嶼生態域變更為 {1}。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eChanging your obsidian back into lava. Be careful!"
 msgstr "§e正在把你的黑曜石變回岩漿。小心！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "§eClearing all old (empty) island locations."
 msgstr "§e正在清除所有舊的（空的）島嶼位置。"
 
-msgid ""
-"§eClick here to return to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eClick here to return to\n"
 "§ethe main island screen."
-msgstr ""
-"§e點擊此處返回\n"
+msgstr "§e點擊此處返回\n"
 "§e島嶼主畫面。"
 
-msgid ""
-"§eClick here to return to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eClick here to return to\n"
 "§eyour island group''s info."
-msgstr ""
-"§e點擊此處返回\n"
+msgstr "§e點擊此處返回\n"
 "§e你的島嶼群組資訊。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§eClick here to return to the main island screen."
 msgstr "§e點擊此處返回島嶼主畫面。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eClick here to show next page"
 msgstr "§e點擊此處顯示下一頁"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eClick here to show previous page"
 msgstr "§e點擊此處顯示上一頁"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "§eCmd Cooldown"
 msgstr "§e指令冷卻"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 #, java-format
 msgid "§eCompleted protect-all in {0}, {1} new regions were created!"
 msgstr "§e在 {0} 完成 protect-all，已建立 {1} 個新區域！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "§eConfiguration reloaded from file."
 msgstr "§e已從檔案重新載入設定。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 #, java-format
 msgid "§eConverted {0}/{1} files in {2}"
 msgstr "§e已在 {2} 轉換 {0}/{1} 個檔案"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eCurrency reward: §f{0,number,###.##} {1} §a ({2,number,##.##})%"
 msgstr "§e貨幣獎勵：§f{0,number,###.##} {1} §a（{2,number,##.##}）%"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§eCurrent Biome: §b{0}"
 msgstr "§e目前生態域：§b{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§eCurrent Level: §a{0,number,##.#}"
 msgstr "§e目前等級：§a{0,number,##.#}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§eCurrent value for {0} is ''{1}''"
 msgstr "§e{0} 目前的值為「{1}」"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 #, java-format
-msgid ""
-"§eDoing §9{0}§e is §cRISKY§e. Repeat the command within §a{1}§e seconds to "
-"accept!"
+msgid "§eDoing §9{0}§e is §cRISKY§e. Repeat the command within §a{1}§e seconds to accept!"
 msgstr "§e執行 §9{0}§e 很§c危險§e。請在 §a{1}§e 秒內重複輸入指令以接受！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eExp reward: §f{0,number,#.#}"
 msgstr "§e經驗值獎勵：§f{0,number,#.#}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 #, java-format
-msgid ""
-"§eFinding all islands that have been abandoned for more than {0} days below "
-"level {1}"
+msgid "§eFinding all islands that have been abandoned for more than {0} days below level {1}"
 msgstr "§e正在尋找低於等級 {1}、已被遺棄超過 {0} 天的所有島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "§eFinished generation of the Top Ten list"
 msgstr "§e前十排行榜生成完成"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 #, java-format
-msgid ""
-"§eFlushed §a{0} islands§e, §b{1} players and §6{2} challenge-completions."
+msgid "§eFlushed §a{0} islands§e, §b{1} players and §6{2} challenge-completions."
 msgstr "§e已清除 §a{0} 個島嶼§e、§b{1} 位玩家§e 以及 §6{2} 筆挑戰完成紀錄。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "§eGenerating the Top Ten list"
 msgstr "§e正在生成前十排行榜"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "§eGetting your island ready, please be patient, it can take a while."
 msgstr "§e正在為你的島嶼準備，請耐心等候，可能需要一些時間。"
 
-msgid ""
-"§eHover over a player''s icon to\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eHover over a player''s icon to\n"
 "§eview their permissions. The\n"
 "§eleader can change permissions\n"
 "§eby clicking a player''s icon."
-msgstr ""
-"§e將滑鼠移到玩家的圖示上\n"
+msgstr "§e將滑鼠移到玩家的圖示上\n"
 "§e以檢視其權限。\n"
 "§e隊長可點擊玩家圖示\n"
 "§e來變更權限。"
 
-msgid ""
-"§eHover over an icon to view\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eHover over an icon to view\n"
 "§ea permission. Change the\n"
 "§epermission by clicking it."
-msgstr ""
-"§e將滑鼠移到圖示上以檢視\n"
+msgstr "§e將滑鼠移到圖示上以檢視\n"
 "§e一項權限。點擊它即可\n"
 "§e變更該權限。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 #, java-format
 msgid "§eInfo for §9{0}"
 msgstr "§e§9{0}§e 的資訊"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #, java-format
 msgid "§eInformation about {0}''s Island:"
 msgstr "§e關於 {0} 的島嶼資訊："
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #, java-format
 msgid "§eInvalid command: {0}"
 msgstr "§e無效指令：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 #, java-format
 msgid "§eInvalid player {0} supplied."
 msgstr "§e提供的玩家 {0} 無效。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§eInvitation for {0}''s island has timedout or been cancelled."
 msgstr "§e{0} 的島嶼邀請已逾時或已取消。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
 msgid "§eInvitation for {0}§e has timedout or been cancelled."
 msgstr "§e對 {0}§e 的邀請已逾時或已取消。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eIsland world-guard regions updated for {0}"
 msgstr "§e已更新 {0} 的島嶼 WorldGuard 區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eItem reward(s): §f{0}"
 msgstr "§e物品獎勵：§f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§eItems will be traded for reward."
 msgstr "§e物品將會交換為獎勵。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eLoading chunks at {0}"
 msgstr "§e正在載入位於 {0} 的區塊"
 
-msgid ""
-"§eLock Status: §8Inactive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eLock Status: §8Inactive\n"
 "§fYour island is currently §aunlocked.\n"
 "§fAll players are able to enter your\n"
 "§fisland, but only you and your group\n"
 "§fmembers may build there."
-msgstr ""
-"§e鎖定狀態：§8未啟用\n"
+msgstr "§e鎖定狀態：§8未啟用\n"
 "§f你的島嶼目前為§a未鎖定§f。\n"
 "§f所有玩家都能進入你的\n"
 "§f島嶼，但只有你和你的群組\n"
 "§f成員可以在此建造。"
 
-msgid ""
-"§eLock Status: §aActive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eLock Status: §aActive\n"
 "§fYour island is currently §clocked.\n"
 "§fPlayers outside of your group\n"
 "§fare unable to enter your island."
-msgstr ""
-"§e鎖定狀態：§a已啟用\n"
+msgstr "§e鎖定狀態：§a已啟用\n"
 "§f你的島嶼目前為§c已鎖定§f。\n"
 "§f群組外的玩家\n"
 "§f無法進入你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§eLog-file has been flushed."
 msgstr "§e記錄檔已清空寫入。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "§eLogging disabled!"
 msgstr "§e記錄已停用！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§eMembers: §2{0}/{1}"
 msgstr "§e成員：§2{0}/{1}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§eMust be within {0} meters."
 msgstr "§e必須在 {0} 公尺內。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "§eNOTE: Your entire island and all your belongings will be RESET!"
 msgstr "§e注意：你的整座島嶼以及你所有的物品都會被重置！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§eNo active cooldowns for §9{0}§e found."
 msgstr "§e找不到 §9{0}§e 的任何啟用中冷卻時間。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eNo currently shown regions for this player"
 msgstr "§e目前沒有為此玩家顯示任何區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eNo island found at your current location"
 msgstr "§e在你目前的位置找不到島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "§eNo island found at your location!"
 msgstr "§e在你的位置找不到島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "§eNo orphans currently registered."
 msgstr "§e目前沒有登記任何孤兒。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "§eNo pending invites"
 msgstr "§e沒有待處理的邀請"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 #, java-format
 msgid "§eOrphans ({0}/{1}): {2}"
 msgstr "§e孤兒（{0}/{1}）：{2}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§ePermissions for §9{0}§e:"
 msgstr "§e§9{0}§e 的權限："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 #, java-format
 msgid "§ePlayer {0} has no island!"
 msgstr "§e玩家 {0} 沒有島嶼！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 #, java-format
-msgid ""
-"§ePlayer §d{0}§e already has an island.§eUse §d/usb island remove <name>§e "
-"to remove him first."
-msgstr ""
-"§e玩家 §d{0}§e 已經有島嶼了。§e請先使用 §d/usb island remove <name>§e 移除"
-"他。"
+msgid "§ePlayer §d{0}§e already has an island.§eUse §d/usb island remove <name>§e to remove him first."
+msgstr "§e玩家 §d{0}§e 已經有島嶼了。§e請先使用 §d/usb island remove <name>§e 移除他。"
 
-msgid ""
-"§eProgress: {0,number,##}% ({1}/{2} - success:{3}, failed:{4}, skipped:{5}) "
-"~ {6}"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
+msgid "§eProgress: {0,number,##}% ({1}/{2} - success:{3}, failed:{4}, skipped:{5}) ~ {6}"
 msgstr "§e進度：{0,number,##}%（{1}/{2} - 成功:{3}，失敗:{4}，略過:{5}）~ {6}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "§eRank: "
 msgstr "§e階級： "
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§eRemoving {0}''s island."
 msgstr "§e正在移除 {0} 的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "§eResending chunks to the client"
 msgstr "§e正在將區塊重新傳送給客戶端"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 #, java-format
 msgid "§eReset cooldown on {0} for {1}§e to {2} seconds"
 msgstr "§e已將 {1}§e 的 {0} 冷卻時間重置為 {2} 秒"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eRiding is only allowed on your own island!"
 msgstr "§e只能在你自己的島上騎乘！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "§eSending you to spawn."
 msgstr "§e正在送你到出生點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "§eStarting a protect-all task. It will take a while."
 msgstr "§e正在開始 protect-all 任務。這會花一些時間。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 #, java-format
 msgid "§eStill the following blocks short: {0}"
 msgstr "§e仍缺少以下方塊：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
-msgid ""
-"§eStill the following entities short:\n"
+msgid "§eStill the following entities short:\n"
 "{0}"
-msgstr ""
-"§e仍缺少以下實體：\n"
+msgstr "§e仍缺少以下實體：\n"
 "{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "§eStopped displaying regions"
 msgstr "§e已停止顯示區域"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eThe following leaders trusts you:"
 msgstr "§e以下隊長信任你："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§eThe following players are banned from warping to your island:"
 msgstr "§e以下玩家被禁止傳送到你的島嶼："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eThe following players are trusted on your island:"
 msgstr "§e以下玩家在你的島嶼上被信任："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "§eThe island has been §cLOCKED§e."
 msgstr "§e該島嶼已被§c鎖定§e。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "§eThe player is not currently online"
 msgstr "§e該玩家目前不在線上"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "§eThis challenge requires:"
 msgstr "§e此挑戰需要："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "§eTo ban/unban from your island, use /island ban <player>"
 msgstr "§e要從你的島嶼封鎖/解除封鎖玩家，請使用 /island ban <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #, java-format
 msgid "§eTo complete this challenge, use §f/c c {0}"
 msgstr "§e要完成此挑戰，請使用 §f/c c {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "§eTo trust/untrust from your island, use /island trust <player>"
 msgstr "§e要在你的島嶼信任/取消信任玩家，請使用 /island trust <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§eToggled permission §9{0}§e for §9{1}§e to {2}"
 msgstr "§e已將 §9{1}§e 的權限 §9{0}§e 切換為 {2}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eTrading isn't allowed on other islands. Do it in spawn."
 msgstr "§e不允許在其他島嶼進行交易。請到出生點交易。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eTrying to complete challenge §a{0}"
 msgstr "§e正在嘗試完成挑戰 §a{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eUnable to ban unknown player {0}"
 msgstr "§e無法封鎖未知玩家 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 #, java-format
 msgid "§eUnable to toggle permission §9{0}§e for §9{1}"
 msgstr "§e無法切換 §9{1}§e 的權限 §9{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 #, java-format
 msgid "§eUnloading chunks at {0}"
 msgstr "§e正在卸載位於 {0} 的區塊"
 
-msgid ""
-"§eUse§f /island invite <playername>§e to invite a player to your island."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
+msgid "§eUse§f /island invite <playername>§e to invite a player to your island."
 msgstr "§e使用§f /island invite <playername>§e 來邀請玩家到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #, java-format
 msgid "§eValid fields are {0}"
 msgstr "§e有效欄位為 {0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eVillager-trading isn't allowed."
 msgstr "§e不允許村民交易。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "§eVisitors can't drop items!"
 msgstr "§e訪客不能丟棄物品！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§eWALL OF FAME (page {0} of {1}):"
 msgstr "§e名人堂（第 {0} 頁 / 共 {1} 頁）："
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/asyncworldedit/PlayerJob.java
 msgid "§eWaiting for our turn §c{0,number,###}%"
 msgstr "§e等待輪到我們 §c{0,number,###}%"
 
-msgid ""
-"§eWarp Status: §8Inactive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eWarp Status: §8Inactive\n"
 "§fOther players can't warp to your\n"
 "§fisland. Set a warp point using\n"
 "§d/island setwarp §fbefore activating."
-msgstr ""
-"§e傳送點狀態：§8未啟用\n"
+msgstr "§e傳送點狀態：§8未啟用\n"
 "§f其他玩家無法傳送到你的\n"
 "§f島嶼。啟用前請先使用\n"
 "§d/island setwarp §f設定傳送點。"
 
-msgid ""
-"§eWarp Status: §aActive\n"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "§eWarp Status: §aActive\n"
 "§fOther players may warp to your\n"
 "§fisland at anytime to the point\n"
 "§fyou set using §d/island setwarp."
-msgstr ""
-"§e傳送點狀態：§a已啟用\n"
+msgstr "§e傳送點狀態：§a已啟用\n"
 "§f其他玩家可隨時傳送到你的\n"
 "§f島嶼，位置為你使用\n"
 "§d/island setwarp §f設定的點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§eYou are no longer trusted on §4{0}''s §eisland."
 msgstr "§e你已不再被信任於 §4{0}'' 的 §e島嶼上。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 #, java-format
 msgid "§eYou are now trusted on §4{0}''s §eisland."
 msgstr "§e你現在已被信任於 §4{0}'' 的 §e島嶼上。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #, java-format
 msgid "§eYou are the following items short:{0}"
 msgstr "§e你還缺少以下物品：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§eYou can change your biome again in {0,number,#} seconds."
 msgstr "§e你可在 {0,number,#} 秒後再次更改生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "§eYou can create a new island in {0,number,#} seconds."
 msgstr "§e你可在 {0,number,#} 秒後建立新的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eYou can not use another island''s portals!"
 msgstr "§e你不能使用其他島嶼的傳送門！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "§eYou can only use spawn-eggs on your own island."
 msgstr "§e你只能在自己的島嶼上使用生怪蛋。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "§eYou cannot break vehicles while being a visitor!"
 msgstr "§e身為訪客時你不能破壞載具！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "§eYou cannot drop items at the spawn point!"
 msgstr "§e你不能在出生點丟棄物品！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eYou cannot hurt island-members."
 msgstr "§e你不能傷害島嶼成員。"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #, java-format
 msgid "§eYou do not have access (§4{0}§e)"
 msgstr "§e你沒有權限（§4{0}§e）"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§eYou do not have access to that island-schematic!"
 msgstr "§e你無法使用該島嶼樣板！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§eYou have accepted the invitation to join an island."
 msgstr "§e你已接受加入島嶼的邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have banned §4{0}§e from warping to your island."
 msgstr "§e你已封鎖 §4{0}§e 傳送到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have been §aUNBANNED§e from {0}§e''s island."
 msgstr "§e你已從 {0}§e'' 的島嶼 §a解除封鎖§e。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 #, java-format
 msgid "§eYou have been §cBANNED§e from {0}§e''s island."
 msgstr "§e你已被 {0}§e'' 的島嶼 §c封鎖§e。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§eYou have left the island and returned to the player spawn."
 msgstr "§e你已離開島嶼並返回玩家出生點。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§eYou have rejected the invitation to join an island."
 msgstr "§e你已拒絕加入島嶼的邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 #, java-format
 msgid "§eYou have unbanned §a{0}§e from warping to your island."
 msgstr "§e你已解除封鎖 §a{0}§e 傳送到你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "§eYou must be on your island to change the biome!"
 msgstr "§e你必須在你的島嶼上才能更改生態域！"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "§eYou must be on your island to use this command."
 msgstr "§e你必須在你的島嶼上才能使用此指令。"
 
-msgid ""
-"§eYou must remove all players from your island before you can restart it (/"
-"island kick <player>). See a list of players currently part of your island "
-"using /island party."
-msgstr ""
-"§e你必須先將所有玩家從你的島嶼移除，才能重置島嶼（/island kick <player>）。使"
-"用 /island party 可查看目前在你島嶼隊伍中的玩家列表。"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "§eYou must remove all players from your island before you can restart it (/island kick <player>). See a list of players currently part of your island using /island party."
+msgstr "§e你必須先將所有玩家從你的島嶼移除，才能重置島嶼（/island kick <player>）。使用 /island party 可查看目前在你島嶼隊伍中的玩家列表。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "§eYou own this island, use /island remove <player> instead."
 msgstr "§e你是這座島嶼的擁有者，請改用 /island remove <player>。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§eYour inventory is §4full§e. Items dropped on the ground."
 msgstr "§e你的背包已§4滿§e。物品已掉落在地上。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "§eYour inventory must have another empty space!"
 msgstr "§e你的背包必須再有一個空格！"
 
 #. I18N: Message sent when a player locks their island
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "§eYour island is now locked. Only your party members may enter."
 msgstr "§e你的島嶼已上鎖。只有你的隊伍成員可以進入。"
 
-msgid ""
-"§eYour island is unlocked and anyone may enter, however only you and your "
-"party members may build or remove blocks."
-msgstr ""
-"§e你的島嶼已解鎖，任何人都可以進入，但只有你與你的隊伍成員可以建造或移除方"
-"塊。"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
+msgid "§eYour island is unlocked and anyone may enter, however only you and your party members may build or remove blocks."
+msgstr "§e你的島嶼已解鎖，任何人都可以進入，但只有你與你的隊伍成員可以建造或移除方塊。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 #, java-format
 msgid "§eYour rank is: §f{0}"
 msgstr "§e你的階級為：§f{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§echallenge: {0} has been reset for {1}"
 msgstr "§e已為 {1} 重置挑戰：{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #, java-format
 msgid "§e{0}"
 msgstr "§e{0}"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #, java-format
 msgid "§e{0} has had all challenges reset."
 msgstr "§e{0} 的所有挑戰已重置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§e{0} has had their biome changed to {1}."
 msgstr "§e{0} 的生態域已變更為 {1}。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 #, java-format
 msgid "§e{0} old island locations will be used before new ones."
 msgstr "§e將會先使用 {0} 個舊的島嶼位置，再使用新的位置。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§e{0}''s§9 Permissions"
 msgstr "§e{0}''的§9 權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #, java-format
 msgid "§e{0}''§9s Permissions"
 msgstr "§e{0}''§9的權限"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #, java-format
 msgid "§e{0}s island at {1} has been protected"
 msgstr "§e已保護 {0} 位於 {1} 的島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 #, java-format
-msgid ""
-"§e{0}§e tried to invite you, but you are already in a party.To leave your "
-"current party, use: /island leave."
-msgstr ""
-"§e§e{0} 嘗試邀請你，但你已在隊伍中。要離開目前的隊伍，請使用：/island leave。"
+msgid "§e{0}§e tried to invite you, but you are already in a party.To leave your current party, use: /island leave."
+msgstr "§e§e{0} 嘗試邀請你，但你已在隊伍中。要離開目前的隊伍，請使用：/island leave。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to activate."
 msgstr "§e§l點擊此處啟用。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to change biomes."
 msgstr "§e§l點擊此處更改生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to change."
 msgstr "§e§l點擊此處更改。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to deactivate."
 msgstr "§e§l點擊此處停用。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to lock your island."
 msgstr "§e§l點擊此處鎖定你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to unlock your island."
 msgstr "§e§l點擊此處解鎖你的島嶼。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lClick here to view challenges."
 msgstr "§e§l點擊此處查看挑戰。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "§e§lClick to change to this biome."
 msgstr "§e§l點擊以切換到此生態域。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§e§lClick to complete this challenge."
 msgstr "§e§l點擊以完成此挑戰。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§e§lIsland Log"
 msgstr "§e§l島嶼紀錄"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "§f/island [accept/reject]§e to accept or reject the invite."
 msgstr "§f/island [accept/reject]§e 以接受或拒絕邀請。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§fComplete most challenges in"
 msgstr "§f完成此階級中的大多數挑戰"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fSet incoming warp to your current location using §e/island setwarp"
 msgstr "§f使用 §e/island setwarp §f將傳入傳送點設定為你目前的位置"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§fThis player §acan"
 msgstr "§f此玩家 §a可以"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "§fThis player §ccannot"
 msgstr "§f此玩家 §c不可以"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fToggle your warp on/off using §e/island togglewarp"
 msgstr "§f使用 §e/island togglewarp §f切換你的傳送點開/關"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "§fWarp to another island using §e/island warp <player>"
 msgstr "§f使用 §e/island warp <player> §f傳送到其他島嶼"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "§fthis rank to unlock the next rank."
 msgstr "§f以解鎖下一個階級。"
 
+#: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/ItemStackUtil.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeFormat.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #, java-format
 msgid "§f{0}x §7{1}"
 msgstr "§f{0}x §7{1}"
+
