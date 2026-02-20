@@ -22,7 +22,7 @@ msgstr " §4{0} §b{1}"
 
 #, java-format
 msgid " §f{0}x §7{1}"
-msgstr ""
+msgstr " §f{0}x §7{1}"
 
 msgid "#"
 msgstr "#"
@@ -52,7 +52,7 @@ msgid "But your fantasy friends are gone!"
 msgstr "Men dine fantasivenner er smuttet!"
 
 msgid "COPPER_GOLEM"
-msgstr ""
+msgstr "KOBBER_GOLEM"
 
 #, java-format
 msgid "Can {0}"
@@ -82,7 +82,7 @@ msgid "Click here to remove this permission."
 msgstr "Klik her for at fjerne tilladelsen."
 
 msgid "Click to warp to the island!"
-msgstr ""
+msgstr "Klik for at warpe til øen!"
 
 msgid "Command"
 msgstr "Kommando"
@@ -95,10 +95,10 @@ msgstr "Kunne ikke oprette din ø. Venligst kontakt en server administrator."
 
 #, java-format
 msgid "Current radius: {0}"
-msgstr ""
+msgstr "Nuværende radius: {0}"
 
 msgid "Decrease radius of biome change"
-msgstr ""
+msgstr "Formindsk radius for biome-ændring"
 
 msgid "Description"
 msgstr "Beskrivelse"
@@ -134,7 +134,7 @@ msgid "Group Members: §2{0}§7/§e{1}"
 msgstr "Ø medlemmer: §2{0}§7/§e{1}"
 
 msgid "Increase radius of biome change"
-msgstr ""
+msgstr "Forøg radius for biome-ændring"
 
 msgid "Invalid command supplied, only restart and biome supported!"
 msgstr "Forkert kommando givet, kun restart og biome er understøttet!"
@@ -240,6 +240,11 @@ msgid ""
 "island using §b/island sethome\n"
 "§e§lClick here to return home."
 msgstr ""
+"Vend tilbage til din øs hjemmepunkt.\n"
+"Du kan ændre dit hjemmepunkt\n"
+"til en hvilken som helst placering\n"
+"på din ø med §b/island sethome\n"
+"§e§lKlik her for at vende hjem."
 
 msgid "Score Count Block"
 msgstr "Score Antal Blok"
@@ -358,6 +363,14 @@ msgid ""
 "§e§lClick here to accept an invite!\n"
 "§e§l(You must be invited first)"
 msgstr ""
+"Vil du slutte dig til en anden spillers\n"
+"ø i stedet for at starte\n"
+"din egen? Hvis en anden spiller\n"
+"inviterer dig til deres ø\n"
+"kan du klikke her eller bruge\n"
+"§e/island accept§f for at slutte dig til dem.\n"
+"§e§lKlik her for at acceptere en invitation!\n"
+"§e§l(Du skal først være inviteret)"
 
 msgid "West"
 msgstr "Vest"
@@ -410,7 +423,7 @@ msgid "advanced command for setting island-data"
 msgstr "avanceret kommando til at sætte ø-data"
 
 msgid "advanced info about items"
-msgstr ""
+msgstr "avanceret info om genstande"
 
 msgid "allows user to bypass cooldowns"
 msgstr "tillader brugere at omgå tidsbegrænsninger"
@@ -470,7 +483,7 @@ msgid "control debugging"
 msgstr "håndter debugging"
 
 msgid "controls async jobs"
-msgstr ""
+msgstr "styrer asynkrone jobs"
 
 msgid "count orphans"
 msgstr "tæl horeunger"
@@ -574,14 +587,14 @@ msgid "lists all the active cooldowns"
 msgstr "list alle aktive cooldowns"
 
 msgid "load current chunk"
-msgstr ""
+msgstr "indlæs nuværende chunk"
 
 msgid "load the region chunks"
 msgstr "load chunks fra regionen"
 
 #, java-format
 msgid "loaded chunk at {0},{1}"
-msgstr ""
+msgstr "indlæste chunk ved {0},{1}"
 
 msgid "lock your island to non-party members."
 msgstr "lås din ø for ikke-medlemmer."
@@ -608,7 +621,7 @@ msgid "name"
 msgstr "navn"
 
 msgid "only available for players"
-msgstr ""
+msgstr "kun tilgængelig for spillere"
 
 msgid "party"
 msgstr "selskab"
@@ -635,10 +648,10 @@ msgid "refreshes the chunks around the player"
 msgstr "genindlæser chunks omkring spilleren"
 
 msgid "refreshes the existing animations"
-msgstr ""
+msgstr "opdaterer de eksisterende animationer"
 
 msgid "regenerate current chunk"
-msgstr ""
+msgstr "regenerer nuværende chunk"
 
 msgid "region manipulations"
 msgstr "region manipulationer"
@@ -679,6 +692,10 @@ msgid ""
 "members to teleport to\n"
 "the island."
 msgstr ""
+"sæt øens warp,\n"
+"som tillader ikke-gruppe-\n"
+"medlemmer at teleportere\n"
+"til øen."
 
 msgid "set the island''s warp."
 msgstr "sæt øens besøgspunkt."
@@ -687,7 +704,7 @@ msgid "set the island-home"
 msgstr "sæt øens start-position"
 
 msgid "set the ticks between animations"
-msgstr ""
+msgstr "sæt ticks mellem animationer"
 
 msgid "set your island''s warp location"
 msgstr "sæt din øs besøgspunkt"
@@ -708,16 +725,16 @@ msgid "show player-information"
 msgstr "vis spiller-information"
 
 msgid "show the islands limits"
-msgstr ""
+msgstr "vis øens grænser"
 
 msgid "shows a specific players perks"
-msgstr ""
+msgstr "viser en specifik spillers perks"
 
 msgid "shows information about your party"
 msgstr "viser informationer om dit selskab"
 
 msgid "shows perk-information"
-msgstr ""
+msgstr "viser perk-information"
 
 msgid "shows the borders of the current chunk"
 msgstr "viser kanterne i den nuværende chunk"
@@ -732,18 +749,18 @@ msgid "shows the borders of the outer-chunks"
 msgstr "viser kanterne for de ydre chunks"
 
 msgid "shows the component format for the currently held item"
-msgstr ""
+msgstr "viser komponentformatet for den genstand, du holder lige nu"
 
 msgid "shows the non-chunk-aligned borders"
 msgstr "viser de ikke-chunk-tilrettede kanter"
 
 #, java-format
 msgid "successfully regenerated chunk at {0},{1}"
-msgstr ""
+msgstr "chunk ved {0},{1} blev regenereret"
 
 #, java-format
 msgid "successfully unloaded chunk at {0},{1}"
-msgstr ""
+msgstr "chunk ved {0},{1} blev unloaded"
 
 msgid "talk to players on your island"
 msgstr "snak med spillere på din ø"
@@ -784,6 +801,10 @@ msgid ""
 "on or off at anytime, but\n"
 "not set the location."
 msgstr ""
+"slå øens warp til/fra,\n"
+"så de kan slå den\n"
+"til eller fra når som helst,\n"
+"men ikke sætte placeringen."
 
 msgid "toggle the island''s warp."
 msgstr "aktiver/deaktiver øens besøgspunkt."
@@ -810,7 +831,7 @@ msgid "try to complete a challenge"
 msgstr "forsøg at aflever en udfordring"
 
 msgid "unload current chunk"
-msgstr ""
+msgstr "unload nuværende chunk"
 
 msgid "update the WG regions"
 msgstr "opdater world-guard regioner"
@@ -819,7 +840,7 @@ msgid "various WorldGuard utilities"
 msgstr "blandede WorldGuard værktøjer"
 
 msgid "various chunk commands"
-msgstr ""
+msgstr "forskellige chunk-kommandoer"
 
 msgid "warp to another player''s island"
 msgstr "besøg en andens ø"
@@ -870,10 +891,10 @@ msgid "{0}§e is already leader of your island!"
 msgstr "{0}§e er allerede leder på din ø!"
 
 msgid "§2+"
-msgstr ""
+msgstr "§2+"
 
 msgid "§2chunk"
-msgstr ""
+msgstr "§2chunk"
 
 msgid "§2§lThis is your current biome."
 msgstr "§2§lDette er din nuværende biome."
@@ -885,7 +906,7 @@ msgid "§4** You are leaving an abandoned island."
 msgstr "§4** Du forlader nu en forladt ø."
 
 msgid "§4A purge is already running.§e Either §9confirm§e or §9stop§e it."
-msgstr ""
+msgstr "§4En purge kører allerede.§e Enten §9bekræft§e eller §9stop§e den."
 
 #, java-format
 msgid ""
@@ -895,7 +916,7 @@ msgstr ""
 
 #, java-format
 msgid "§4Ambiguous challenge name: {0}. Did you mean:{1}"
-msgstr ""
+msgstr "§4Tvetydigt udfordringsnavn: {0}. Mente du:{1}"
 
 msgid "§4Challenge has never been completed"
 msgstr "§4Udfordringen er aldrig blevet gennemført"
@@ -906,11 +927,11 @@ msgstr "§4Udfordringen {0} er allerede blevet gennemført"
 
 #, java-format
 msgid "§4Could not locate rank of {0}"
-msgstr ""
+msgstr "§4Kunne ikke finde rank for {0}"
 
 #, java-format
 msgid "§4ERROR:§e {0}"
-msgstr ""
+msgstr "§4FEJL:§e {0}"
 
 #, java-format
 msgid "§4Error writing documentation: {0}"
@@ -921,7 +942,7 @@ msgstr "§4Fejl! §9Ingen valid ø fundet, til genbrug."
 
 #, java-format
 msgid "§4FAILED!§e could not unload chunk at {0},{1}"
-msgstr ""
+msgstr "§4MISLYKKEDES!§e kunne ikke unload chunk ved {0},{1}"
 
 msgid "§4Hold your horses! §eYou have to be patient..."
 msgstr "§4Tag den med ro! §eDu bliver nødt til at være tålmodig..."
@@ -976,7 +997,7 @@ msgstr "§4Ingen ø. §e Brug §9/is create§e for at få en"
 
 #, java-format
 msgid "§4No challenge matched: {0}"
-msgstr ""
+msgstr "§4Ingen udfordring matchede: {0}"
 
 #, java-format
 msgid "§4No challenge named {0} was found!"
@@ -984,7 +1005,7 @@ msgstr "§4Ingen udfordringer med navn {0} fundet!"
 
 #, java-format
 msgid "§4No challenge with id {0} found"
-msgstr ""
+msgstr "§4Ingen udfordring med id {0} fundet"
 
 #, java-format
 msgid "§4No flatland detected at {0}''s island!"
@@ -1050,10 +1071,12 @@ msgid ""
 "§4PURGE:§9 Scanning done, found {0} candidates, below level {1}, ready for "
 "purgatory."
 msgstr ""
+"§4PURGE:§9 Scanning færdig, fandt {0} kandidater, under level {1}, klar til "
+"skærsilden."
 
 #, java-format
 msgid "§4PURGE:§e Do §9usb purge confirm§e within {0} to accept."
-msgstr ""
+msgstr "§4PURGE:§e Gør §9usb purge confirm§e inden for {0} for at acceptere."
 
 msgid "§4Player is already assigned to this island!"
 msgstr "§4Spilleren er allerede del af denne ø!"
@@ -1063,7 +1086,7 @@ msgid "§4Player {0} has no island to transfer!"
 msgstr "§4Spiller {0} har ingen ø at overføre!"
 
 msgid "§4Purge aborted!"
-msgstr ""
+msgstr "§4Purge afbrudt!"
 
 #, java-format
 msgid "§4Requirements will reset in {0} days."
@@ -1115,7 +1138,7 @@ msgid "§4That player has no island."
 msgstr "§4Den spiller har ingen ø."
 
 msgid "§4That player is already member on another island. "
-msgstr ""
+msgstr "§4Den spiller er allerede medlem på en anden ø. "
 
 msgid "§4That player is invalid or does not have an island!"
 msgstr "§4Den spiller er invalid eller har ingen ø!"
@@ -1438,6 +1461,8 @@ msgid ""
 "§7The pixies are busy changing the biome in your current chunk to §9{0}§7, "
 "be patient."
 msgstr ""
+"§7Feerne er i gang med at ændre biomet i din nuværende chunk til §9{0}§7, "
+"vær tålmodig."
 
 #, java-format
 msgid ""
@@ -1703,13 +1728,13 @@ msgid "§b{0}§d unlocked the island."
 msgstr "§b{0}§d låste øen op."
 
 msgid "§c-"
-msgstr ""
+msgstr "§c-"
 
 msgid "§cABORTED:§e Protect-All was aborted!"
 msgstr "§cAFBRUDT:§e Protect-All blev afbrudt!"
 
 msgid "§cBack to Main Menu"
-msgstr ""
+msgstr "§cTilbage til hovedmenuen"
 
 msgid "§cBanned:§e You are banned from this island."
 msgstr "§cForvist:§e Du har ikke lov til at komme på denne ø."
@@ -1739,7 +1764,7 @@ msgid "§cFailed to change language to §e{0}"
 msgstr "§cKunne ikke skifte sprog til §e{0}"
 
 msgid "§cInvalid arguments. Use /is biome <biome> [radius|chunk|all]"
-msgstr ""
+msgstr "§cUgyldige argumenter. Brug /is biome <biome> [radius|chunk|all]"
 
 #, java-format
 msgid "§cInvalid field {0}"
@@ -1922,7 +1947,7 @@ msgstr ""
 "§cDin ø er ved at blive re-genereret, du kan ikke bruge warp i øjeblikket."
 
 msgid "§call"
-msgstr ""
+msgstr "§call"
 
 #, java-format
 msgid "§c{0}"
@@ -2014,7 +2039,7 @@ msgstr ""
 "§etil din ø''s medlemsmenu."
 
 msgid "§eClick here to return to the main island screen."
-msgstr ""
+msgstr "§eKlik her for at vende tilbage til øens hovedskærm."
 
 msgid "§eClick here to show next page"
 msgstr "§fKlik her for næste side"
@@ -2066,6 +2091,8 @@ msgid ""
 "§eFinding all islands that have been abandoned for more than {0} days below "
 "level {1}"
 msgstr ""
+"§eFinder alle øer som har været forladt i mere end {0} dage og er under "
+"level {1}"
 
 msgid "§eFinished generation of the Top Ten list"
 msgstr "§eBlev færdig med genereringen af top 10"
@@ -2088,6 +2115,10 @@ msgid ""
 "§eleader can change permissions\n"
 "§eby clicking a player''s icon."
 msgstr ""
+"§eHold musen over en spillers ikon for\n"
+"§eat se deres tilladelser. Lederen\n"
+"§ekan ændre tilladelser\n"
+"§eved at klikke på en spillers ikon."
 
 msgid ""
 "§eHover over an icon to view\n"
@@ -2198,7 +2229,7 @@ msgstr "§eIngen udestående invitationer"
 
 #, java-format
 msgid "§eOrphans ({0}/{1}): {2}"
-msgstr ""
+msgstr "§eForældreløse ({0}/{1}): {2}"
 
 #, java-format
 msgid "§ePermissions for §9{0}§e:"
@@ -2321,7 +2352,7 @@ msgid "§eValid fields are {0}"
 msgstr "§eFelter {0}"
 
 msgid "§eVillager-trading isn't allowed."
-msgstr ""
+msgstr "§eVillager-handel er ikke tilladt."
 
 msgid "§eVisitors can't drop items!"
 msgstr "§eBesøgende kan ikke smide ting!"
@@ -2368,13 +2399,13 @@ msgid "§eYou are the following items short:{0}"
 msgstr "§eDu mangler følgende:{0}"
 
 msgid "§eYou can change your biome again in {0,number,#} seconds."
-msgstr ""
+msgstr "§eDu kan ændre dit biome igen om {0,number,#} sekunder."
 
 msgid "§eYou can create a new island in {0,number,#} seconds."
 msgstr "§eDu kan opette en ny ø om {0,number,#} sekunder."
 
 msgid "§eYou can not use another island''s portals!"
-msgstr ""
+msgstr "§eDu kan ikke bruge en anden øs portaler!"
 
 msgid "§eYou can only use spawn-eggs on your own island."
 msgstr "§eDu kan kun brug spawn-æg på din egen ø."
@@ -2383,7 +2414,7 @@ msgid "§eYou cannot break vehicles while being a visitor!"
 msgstr "§eDu kan ikke smadre køretøjer som en besøgende!"
 
 msgid "§eYou cannot drop items at the spawn point!"
-msgstr ""
+msgstr "§eDu kan ikke smide genstande ved spawn-punktet!"
 
 msgid "§eYou cannot hurt island-members."
 msgstr "§eDu kan ikke skade medlemmer af øen."
@@ -2464,7 +2495,7 @@ msgstr "§eudfordring: {0} er blevet nulstillet for {1}"
 
 #, java-format
 msgid "§e{0}"
-msgstr ""
+msgstr "§e{0}"
 
 #, java-format
 msgid "§e{0} has had all challenges reset."
@@ -2495,6 +2526,8 @@ msgid ""
 "§e{0}§e tried to invite you, but you are already in a party.To leave your "
 "current party, use: /island leave."
 msgstr ""
+"§e{0}§e forsøgte at invitere dig, men du er allerede i en party. For at "
+"forlade din nuværende party, brug: /island leave."
 
 msgid "§e§lClick here to activate."
 msgstr "§e§lKlik her for at aktivere."
