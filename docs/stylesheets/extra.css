@@ -1,0 +1,40 @@
+:root {
+  --usb-primary: #1f7a52;
+  --usb-primary-dark: #15583b;
+  --usb-accent: #d5f28a;
+  --usb-surface: #f4f9f2;
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--usb-primary);
+  --md-primary-fg-color--light: #299365;
+  --md-primary-fg-color--dark: var(--usb-primary-dark);
+  --md-accent-fg-color: #5e7f20;
+  --md-default-bg-color: var(--usb-surface);
+}
+
+.md-header {
+  background: linear-gradient(90deg, var(--usb-primary-dark), var(--usb-primary));
+}
+
+.md-main__inner {
+  margin-top: 1.2rem;
+}
+
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  letter-spacing: 0.01em;
+}
+
+.md-typeset a {
+  text-decoration-thickness: 2px;
+}
+
+.md-typeset .admonition.tip {
+  border-color: #6e9330;
+}
+
+.md-typeset .admonition.tip > .admonition-title {
+  background-color: #edf7d7;
+}

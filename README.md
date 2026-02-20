@@ -4,6 +4,14 @@ This is a continually updated and custom version of Talabrek's Ultimate SkyBlock
 
 We are on [Spigot](https://www.spigotmc.org/resources/uskyblock-revived.66795/). Currently [Open Issues](https://github.com/uskyblock/uSkyBlock/issues)
 
+# Documentation
+
+Primary docs now live in this repository under `docs/` and are published via GitHub Pages:
+
+- https://uskyblock.github.io/uSkyBlock/
+
+The legacy wiki is being migrated page-by-page and should be considered historical until migration is complete.
+
 # Installation
 
 uSkyBlock depends on the following plugins:
@@ -74,7 +82,7 @@ To build the plugin, you need Java 21 and the project uses Gradle.
 
 The resulting JAR can be found in `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`.
 
-See also the [Wiki](https://github.com/uskyblock/uSkyBlock/wiki/Building) for more details.
+See also the docs page: https://uskyblock.github.io/uSkyBlock/developer/building/
 
 # API
 uSkyBlock has an API (since v2.0.1-RC1.65).
@@ -90,13 +98,13 @@ if (plugin instanceof uSkyBlockAPI && plugin.isEnabled()) {
   ));
 }
 ```
-For further details regarding the API, visit the Wiki page: https://github.com/uskyblock/uSkyBlock/wiki/uSkyBlock-API
+For further details regarding the API, visit: https://uskyblock.github.io/uSkyBlock/developer/api/
 
 ## Contributing
 
 Fork-away, and create pull-requests - we review and accept almost any changes.
 
-But *please* conform with the (https://github.com/uskyblock/uSkyBlock/wiki/Coding-Guidelines)
+But please conform with the coding guidelines: https://uskyblock.github.io/uSkyBlock/contributing/coding-guidelines/
 
 ## License
 
