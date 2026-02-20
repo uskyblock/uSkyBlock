@@ -89,18 +89,17 @@ tasks.register<Exec>("extractTranslation") {
     inputs.files(javaFiles)
     outputs.file(potFile)
 
-    workingDir = rootProject.projectDir // Execute from root to get relative paths in POT
+    workingDir = rootProject.projectDir
     executable = "xgettext"
     args(
         "--language=C#", // C# parser handles Java lambdas and + concatenation better than Java parser in xgettext
         "--keyword=tr",
         "--keyword=marktr",
         "--from-code=UTF-8",
-        "--add-comments=I18N:", // Extracts dev hints for AI context
+        "--add-comments=I18N:",
         "--add-location=file"
     )
     args("--output=${potFile.absolutePath}")
-    // Pass relative paths to ensure relative location comments
     args(javaFiles.map { it.relativeTo(rootProject.projectDir).path })
 
     doFirst {
@@ -116,16 +115,17 @@ tasks.register<Exec>("extractTranslation") {
             // Correct the format flag from csharp-format to java-format
             val content = potFile.readText().replace("csharp-format", "java-format")
             potFile.writeText(content)
-            // Sort the POT file alphabetically by msgid
-            ProcessBuilder("msgcat", "-s", "-o", potFile.absolutePath, potFile.absolutePath)
-                .inheritIO().start().waitFor()
+            ProcessBuilder(
+                "msgcat", "-s", "--no-wrap", "--add-location=file",
+                "-o", potFile.absolutePath, potFile.absolutePath
+            ).inheritIO().start().waitFor()
         }
     }
 }
 
 val mergeTranslation = tasks.register("mergeTranslation") {
     group = "translation"
-    description = "Merges extracted strings into .po files"
+    description = "Manual fallback: merge keys.pot into .po files (Crowdin-managed repos usually skip this)"
     dependsOn("extractTranslation")
 
     doLast {
@@ -138,9 +138,11 @@ val mergeTranslation = tasks.register("mergeTranslation") {
                     "--no-fuzzy-matching",
                     "--backup=none",
                     "--no-wrap",
+                    "--add-location=file",
                     poFile.absolutePath,
                     potFile.absolutePath
                 ).inheritIO().start().waitFor()
+
                 ProcessBuilder(
                     "msgattrib",
                     "--clear-fuzzy",
@@ -151,7 +153,7 @@ val mergeTranslation = tasks.register("mergeTranslation") {
                     poFile.absolutePath,
                     poFile.absolutePath
                 ).inheritIO().start().waitFor()
-                // Sort the PO file alphabetically by msgid
+
                 ProcessBuilder(
                     "msgcat",
                     "-s",
@@ -179,10 +181,10 @@ val generateExtraTranslations = tasks.register("generateExtraTranslations") {
 
 tasks.register("cleanTranslationFiles") {
     group = "translation"
-    description = "Cleans up .po and .pot files (removes timestamps)"
+    description = "Cleans up POT file (removes timestamps)"
 
     doLast {
-        fileTree(poDir) { include("*.po", "*.pot") }.forEach { file ->
+        fileTree(poDir) { include("*.pot") }.forEach { file ->
             var content = file.readText()
             content = content.replace(Regex("\"POT-Creation-Date:.*\\n"), "")
             file.writeText(content)
@@ -192,7 +194,7 @@ tasks.register("cleanTranslationFiles") {
 
 tasks.register("updateTranslation") {
     group = "translation"
-    description = "Updates all translation files"
-    dependsOn(mergeTranslation, generateExtraTranslations)
+    description = "Updates translation sources for Crowdin"
+    dependsOn("extractTranslation", "generateExtraTranslations")
     finalizedBy("cleanTranslationFiles")
 }
