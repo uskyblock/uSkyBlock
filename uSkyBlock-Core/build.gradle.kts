@@ -84,7 +84,7 @@ tasks.register<Exec>("extractTranslation") {
     val coreDir = projectDir
 
     val javaFiles = fileTree(bukkitUtilsDir.resolve("src/main/java")) { include("**/*.java") }.files +
-            fileTree(coreDir.resolve("src/main/java")) { include("**/*.java") }.files
+        fileTree(coreDir.resolve("src/main/java")) { include("**/*.java") }.files
 
     inputs.files(javaFiles)
     outputs.file(potFile)
@@ -96,7 +96,8 @@ tasks.register<Exec>("extractTranslation") {
         "--keyword=tr",
         "--keyword=marktr",
         "--from-code=UTF-8",
-        "--add-comments=I18N:" // Extracts dev hints for AI context
+        "--add-comments=I18N:", // Extracts dev hints for AI context
+        "--add-location=file"
     )
     args("--output=${potFile.absolutePath}")
     // Pass relative paths to ensure relative location comments
@@ -131,13 +132,35 @@ val mergeTranslation = tasks.register("mergeTranslation") {
         val potFile = file("$poDir/keys.pot")
         fileTree(poDir) { include("*.po") }.forEach { poFile ->
             if (poFile.name != "xx_PIRATE.po" && poFile.name != "xx_lol_US.po") {
-                ProcessBuilder("msgmerge", "--update", "--no-fuzzy-matching", "--backup=none", "--no-location", poFile.absolutePath, potFile.absolutePath)
-                    .inheritIO().start().waitFor()
-                ProcessBuilder("msgattrib", "--clear-fuzzy", "--empty", "--no-obsolete", "--no-location", "-o", poFile.absolutePath, poFile.absolutePath)
-                    .inheritIO().start().waitFor()
+                ProcessBuilder(
+                    "msgmerge",
+                    "--update",
+                    "--no-fuzzy-matching",
+                    "--backup=none",
+                    "--no-wrap",
+                    poFile.absolutePath,
+                    potFile.absolutePath
+                ).inheritIO().start().waitFor()
+                ProcessBuilder(
+                    "msgattrib",
+                    "--clear-fuzzy",
+                    "--empty",
+                    "--no-obsolete",
+                    "--no-wrap",
+                    "-o",
+                    poFile.absolutePath,
+                    poFile.absolutePath
+                ).inheritIO().start().waitFor()
                 // Sort the PO file alphabetically by msgid
-                ProcessBuilder("msgcat", "-s", "-o", poFile.absolutePath, poFile.absolutePath)
-                    .inheritIO().start().waitFor()
+                ProcessBuilder(
+                    "msgcat",
+                    "-s",
+                    "--no-wrap",
+                    "--add-location=file",
+                    "-o",
+                    poFile.absolutePath,
+                    poFile.absolutePath
+                ).inheritIO().start().waitFor()
             }
         }
     }
