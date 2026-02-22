@@ -8,6 +8,9 @@ plugins {
 
 dependencies {
     api(libs.org.jetbrains.annotations)
+    api(libs.net.kyori.adventure.api)
+    api(libs.net.kyori.adventure.text.minimessage)
+    implementation(libs.net.kyori.adventure.text.serializer.legacy)
     testImplementation(libs.junit.junit)
     testImplementation(libs.org.junit.vintage.junit.vintage.engine)
     testImplementation(libs.org.hamcrest.hamcrest)

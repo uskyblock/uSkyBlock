@@ -17,7 +17,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Command with nested commandMap inside.
@@ -47,7 +50,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
         this.aliases = name.split("\\|");
         this.name = aliases[0];
         this.permission = permission;
-        this.description = description;
+        this.description = trLegacy(description);
         this.params = params != null ? params.split(" ") : new String[0];
         commandMap = new HashMap<>();
         aliasMap = new HashMap<>();
@@ -122,9 +125,11 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             }
             if (!hasAccess(cmd, sender)) {
                 if (cmd != null) {
-                    sender.sendMessage(tr("\u00a7eYou do not have access (\u00a74{0}\u00a7e)", cmd.getPermission()));
+                    sender.sendMessage(trLegacy("<error>You do not have access (<primary><permission></primary>)",
+                        unparsed("permission", cmd.getPermission())));
                 } else {
-                    sender.sendMessage(tr("\u00a7eInvalid command: {0}", cmdName));
+                    sender.sendMessage(trLegacy("<error>Invalid command: <cmd><command></cmd>",
+                        unparsed("command", cmdName)));
                 }
                 showUsage(sender, args[0]);
             } else if (!cmd.execute(sender, cmdName, data, subArgs)) {
@@ -137,7 +142,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
     }
 
     public void showUsage(CommandSender sender, int page) {
-        String msg = tr("\u00a77Usage: {0}", getShortDescription(sender, this));
+        String msg = trLegacy("<muted>Usage: <usage>", legacyArg("usage", getShortDescription(sender, this)));
         if (!hasAccess(this, sender)) {
             sender.sendMessage(msg.split("\n"));
             return;
@@ -154,7 +159,9 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             msg = msg.substring(0, msg.length() - 1); // Remove \n
             maxPage = (int) Math.round(Math.ceil(cmds.size() * 1f / MAX_PER_PAGE));
             realPage = Math.max(1, Math.min(maxPage, page));
-            msg += " \u00a77[" + realPage + "/" + maxPage + "]\n";
+            msg += miniToLegacy("<muted> [<page>/<max-page>]<newline>",
+                unparsed("page", String.valueOf(realPage)),
+                unparsed("max-page", String.valueOf(maxPage)));
             cmds = cmds.subList((realPage - 1) * MAX_PER_PAGE, Math.min(realPage * MAX_PER_PAGE, cmds.size()));
         }
         for (String key : cmds) {
@@ -164,9 +171,13 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             }
         }
         if (realPage > 0 && maxPage > realPage) {
-            msg += tr("\u00a77Use \u00a73/{0} ? {1}\u00a77 to display next page\n", getName(), (realPage + 1));
+            msg += trLegacy("<muted>Use <cmd>/<command> ? <page></cmd> to display the next page<newline>",
+                unparsed("command", getName()),
+                unparsed("page", String.valueOf(realPage + 1)));
         } else if (realPage > 0 && maxPage == realPage) {
-            msg += tr("\u00a77Use \u00a73/{0} ? {1} \u00a77 to display previous page\n", getName(), (realPage - 1));
+            msg += trLegacy("<muted>Use <cmd>/<command> ? <page></cmd> to display the previous page<newline>",
+                unparsed("command", getName()),
+                unparsed("page", String.valueOf(realPage - 1)));
         }
         sender.sendMessage(msg.split("\n"));
     }
@@ -175,7 +186,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
         String cmdName = arg.toLowerCase();
         Command cmd = cmdName.isEmpty() ? this : aliasMap.get(cmdName);
         if (cmd != null && hasAccess(cmd, sender)) {
-            String msg = tr("\u00a77Usage: {0}", name) + " \u00a7e";
+            String msg = trLegacy("<muted>Usage: <cmd><command></cmd> ", unparsed("command", name));
             msg += getShortDescription(sender, cmd);
             if (cmd.getUsage() != null && !cmd.getUsage().isEmpty()) {
                 msg += "\u00a77" + cmd.getUsage();
@@ -188,7 +199,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             if (cmds.isEmpty()) {
                 showUsage(sender, 1);
             } else {
-                String msg = tr("\u00a77Usage: {0}", getShortDescription(sender, this));
+                String msg = trLegacy("<muted>Usage: <usage>", legacyArg("usage", getShortDescription(sender, this)));
                 if (hasAccess(this, sender)) {
                     for (String key : cmds) {
                         Command scmd = commandMap.get(key);
@@ -214,7 +225,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
         msg += "\u00a7a";
         msg += getParamsAsString(cmd);
         if (cmd instanceof CompositeCommand) {
-            msg += " [command|help]";
+            msg += miniToLegacy("<secondary> [command|help]");
         }
         msg += "\u00a77 - \u00a7e";
         msg += cmd.getDescription();

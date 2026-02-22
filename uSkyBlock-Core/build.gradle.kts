@@ -17,6 +17,10 @@ dependencies {
     testImplementation(libs.junit.junit)
     testImplementation(libs.org.junit.vintage.junit.vintage.engine)
     testImplementation(libs.org.mockito.mockito.core)
+    testImplementation(libs.net.kyori.adventure.api)
+    testImplementation(libs.net.kyori.adventure.text.minimessage)
+    testImplementation(libs.net.kyori.adventure.text.serializer.legacy)
+    implementation(libs.net.kyori.adventure.text.serializer.plain)
     compileOnly(libs.net.milkbowl.vault.vaultapi)
     compileOnly(libs.org.spigotmc.spigot.api)
     compileOnly(libs.org.mvplugins.multiverse.core.multiverse.core)
@@ -31,6 +35,8 @@ dependencies {
     }
     compileOnly(libs.net.kyori.adventure.api)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
+    compileOnly(libs.net.kyori.adventure.text.minimessage)
+    compileOnly(libs.net.kyori.adventure.text.serializer.legacy)
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.org.apache.httpcomponents.httpclient)
     compileOnly(libs.org.apache.maven.maven.artifact)
@@ -94,6 +100,7 @@ tasks.register<Exec>("extractTranslation") {
     args(
         "--language=C#", // C# parser handles Java lambdas and + concatenation better than Java parser in xgettext
         "--keyword=tr",
+        "--keyword=trLegacy",
         "--keyword=marktr",
         "--from-code=UTF-8",
         "--add-comments=I18N:",
@@ -113,12 +120,16 @@ tasks.register<Exec>("extractTranslation") {
     doLast {
         if (potFile.exists()) {
             // Correct the format flag from csharp-format to java-format
-            val content = potFile.readText().replace("csharp-format", "java-format")
+            var content = potFile.readText().replace("csharp-format", "java-format")
             potFile.writeText(content)
             ProcessBuilder(
                 "msgcat", "-s", "--no-wrap", "--add-location=file",
                 "-o", potFile.absolutePath, potFile.absolutePath
             ).inheritIO().start().waitFor()
+
+            // Keep keys.pot stable by removing xgettext's generated timestamp.
+            content = potFile.readText().replace(Regex("\"POT-Creation-Date:.*\\n"), "")
+            potFile.writeText(content)
         }
     }
 }
@@ -179,22 +190,8 @@ val generateExtraTranslations = tasks.register("generateExtraTranslations") {
     }
 }
 
-tasks.register("cleanTranslationFiles") {
-    group = "translation"
-    description = "Cleans up POT file (removes timestamps)"
-
-    doLast {
-        fileTree(poDir) { include("*.pot") }.forEach { file ->
-            var content = file.readText()
-            content = content.replace(Regex("\"POT-Creation-Date:.*\\n"), "")
-            file.writeText(content)
-        }
-    }
-}
-
 tasks.register("updateTranslation") {
     group = "translation"
     description = "Updates translation sources for Crowdin"
     dependsOn("extractTranslation", "generateExtraTranslations")
-    finalizedBy("cleanTranslationFiles")
 }

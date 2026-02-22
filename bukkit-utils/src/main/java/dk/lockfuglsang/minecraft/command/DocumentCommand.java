@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Command that traverses all the commands in a plugin, and generates documentation for them.
@@ -62,13 +63,13 @@ public class DocumentCommand extends AbstractCommand {
         }
         File docFile = new File(plugin.getDataFolder(), filename);
         try (FileOutputStream fos = new FileOutputStream(docFile);
-             PrintStream ps = new PrintStream(fos, true, StandardCharsets.UTF_8))
-        {
+             PrintStream ps = new PrintStream(fos, true, StandardCharsets.UTF_8)) {
             visitor.writeTo(ps);
-            sender.sendMessage(tr("Wrote documentation to {0}", docFile));
+            sender.sendMessage(trLegacy("Wrote documentation to <file>", unparsed("file", docFile.getAbsolutePath())));
             return true;
         } catch (IOException e) {
-            sender.sendMessage(tr("\u00a74Error writing documentation: {0}", e.getMessage()));
+            sender.sendMessage(trLegacy("<error>Error writing documentation: <reason>",
+                unparsed("reason", e.getMessage() != null ? e.getMessage() : "")));
         }
         return false;
     }
