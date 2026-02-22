@@ -63,7 +63,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
-        verify(player).sendMessage("§eYou do not have access (§4plugin§e)");
+        verify(player).sendMessage("§cYou do not have access (§bplugin§c)");
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
-        verify(player).sendMessage("§eYou do not have access (§4admin.admin.superadmin§e)");
+        verify(player).sendMessage("§cYou do not have access (§badmin.admin.superadmin§c)");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class CompositeCommandTest {
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
         verify(player).sendMessage("executed admin");
-        assertThat(messages, Matchers.contains("executed admin", "§eYou do not have access (§4perm.sub§e)"));
+        assertThat(messages, Matchers.contains("executed admin", "§cYou do not have access (§bperm.sub§c)"));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class CompositeCommandTest {
         // Act
         executor.onCommand(player, null, "alias", new String[]{"admin",  "sub"});
 
-        assertThat(messages, Matchers.contains("§eYou do not have access (§4plugin§e)"));
+        assertThat(messages, Matchers.contains("§cYou do not have access (§bplugin§c)"));
     }
 
     @Test

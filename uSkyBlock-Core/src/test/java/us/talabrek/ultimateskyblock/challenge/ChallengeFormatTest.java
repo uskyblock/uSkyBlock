@@ -51,7 +51,7 @@ public class ChallengeFormatTest {
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(0);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
-        assertThat(missingRequirement, is("§7§9Cobble Stone Generator, §f2x §7§aPumpkin §9Farmer"));
+        assertThat(missingRequirement, is("§9Cobble Stone Generator, §a2§rx §aPumpkin §9Farmer"));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ChallengeFormatTest {
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(0);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
-        assertThat(missingRequirement, is("§7§9Cobble Stone Generator, §7§aPumpkin §9Farmer"));
+        assertThat(missingRequirement, is("§9Cobble Stone Generator, §aPumpkin §9Farmer"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ChallengeFormatTest {
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(1);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
-        assertThat(missingRequirement, is("§f2x §7§aPumpkin §9Farmer"));
+        assertThat(missingRequirement, is("§a2§rx §aPumpkin §9Farmer"));
     }
 
     @Test
