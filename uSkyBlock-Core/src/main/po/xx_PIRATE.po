@@ -1,19 +1,18 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: uSkyBlock\n"
+"Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: R4zorax\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: xx-PIRATE\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid " - name: <primary><name>"
@@ -661,6 +660,102 @@ msgstr "<error>all"
 msgid "<leader>'s Wither"
 msgstr "<leader>'s Wither"
 
+#. I18N: Label for detailed warp location in admin island info debug output.
+msgid "<muted>     loc: <primary><warp-location></primary>"
+msgstr "<muted>     loc: <primary><warp-location></primary>"
+
+#. I18N: Label for max passive-animal count in admin island info debug output.
+msgid "<muted>  - animals: <primary><animals></primary>"
+msgstr "<muted>  - animals: <primary><animals></primary>"
+
+#. I18N: Label for the list of island names this player is banned from in admin player info output.
+msgid "<muted>  - banned from: <primary><banned-islands></primary>"
+msgstr "<muted>  - banned from: <primary><banned-islands></primary>"
+
+#. I18N: Label for island biome name in admin island info debug output.
+msgid "<muted>  - biome: <primary><biome></primary>"
+msgstr "<muted>  - biome: <primary><biome></primary>"
+
+#. I18N: Label for max copper golem count in admin island info debug output.
+msgid "<muted>  - copper-golems: <primary><copper-golems></primary>"
+msgstr "<muted>  - copper-golems: <primary><copper-golems></primary>"
+
+#. I18N: Label for max iron golem count in admin island info debug output.
+msgid "<muted>  - golems: <primary><golems></primary>"
+msgstr "<muted>  - golems: <primary><golems></primary>"
+
+#. I18N: Label showing whether the player currently owns an island in admin player info output.
+msgid "<muted>  - hasIsland: <primary><has-island></primary>"
+msgstr "<muted>  - hasIsland: <primary><has-island></primary>"
+
+#. I18N: Label for the stored home location in admin player info debug output.
+msgid "<muted>  - home: <primary><home></primary>"
+msgstr "<muted>  - home: <primary><home></primary>"
+
+#. I18N: Label showing whether island protection checks are ignored in admin island info debug output.
+msgid "<muted>  - ignore: <primary><ignore></primary>"
+msgstr "<muted>  - ignore: <primary><ignore></primary>"
+
+#. I18N: Label for the player's island center location in admin player info debug output.
+msgid "<muted>  - island: <primary><island></primary>"
+msgstr "<muted>  - island: <primary><island></primary>"
+
+#. I18N: Label for party leader in admin island info debug output.
+msgid "<muted>  - leader: <primary><leader></primary>"
+msgstr "<muted>  - captain: <primary><leader></primary>"
+
+#. I18N: Label for island level value in admin island info debug output.
+msgid "<muted>  - level: <primary><level></primary>"
+msgstr "<muted>  - level: <primary><level></primary>"
+
+#. I18N: Label for island location identifier in admin island info debug output.
+msgid "<muted>  - location: <primary><location></primary>"
+msgstr "<muted>  - location: <primary><location></primary>"
+
+#. I18N: Label showing whether island is locked in admin island info debug output.
+msgid "<muted>  - locked: <primary><locked></primary>"
+msgstr "<muted>  - locked: <primary><locked></primary>"
+
+#. I18N: Label for maximum party size limit in admin island info debug output.
+msgid "<muted>  - maxParty: <primary><max-party></primary>"
+msgstr "<muted>  - maxParty: <primary><max-party></primary>"
+
+#. I18N: Label for party member list in admin island info debug output.
+msgid "<muted>  - members: <primary><members></primary>"
+msgstr "<muted>  - members: <primary><members></primary>"
+
+#. I18N: Label for max monster count in admin island info debug output.
+msgid "<muted>  - monsters: <primary><monsters></primary>"
+msgstr "<muted>  - monsters: <primary><monsters></primary>"
+
+#. I18N: Label for the account name in admin player info debug output.
+msgid "<muted>  - name: <primary><name></primary>"
+msgstr "<muted>  - name: <primary><name></primary>"
+
+#. I18N: Label for the display name / nickname in admin player info debug output.
+msgid "<muted>  - nick: <primary><nick></primary>"
+msgstr "<muted>  - nick: <primary><nick></primary>"
+
+#. I18N: Label for island schematic name in admin island info debug output.
+msgid "<muted>  - schematic: <primary><schematic></primary>"
+msgstr "<muted>  - schematic: <primary><schematic></primary>"
+
+#. I18N: Label for party size in admin island info debug output.
+msgid "<muted>  - size: <primary><size></primary>"
+msgstr "<muted>  - size: <primary><size></primary>"
+
+#. I18N: Label for the list of islands where this player is trusted in admin player info output.
+msgid "<muted>  - trusted on: <primary><trusted-islands></primary>"
+msgstr "<muted>  - trusted on: <primary><trusted-islands></primary>"
+
+#. I18N: Label for max villager count in admin island info debug output.
+msgid "<muted>  - villagers: <primary><villagers></primary>"
+msgstr "<muted>  - villagers: <primary><villagers></primary>"
+
+#. I18N: Label showing whether island warp is configured in admin island info debug output.
+msgid "<muted>  - warp: <primary><warp></primary>"
+msgstr "<muted>  - warp: <primary><warp></primary>"
+
 msgid "<muted>** You are entering <primary><leader></primary>'s island."
 msgstr "<muted>** Ye be enterin' <primary><leader></primary>'s island."
 
@@ -956,6 +1051,10 @@ msgstr "<primary><player></primary> unlocked the island."
 msgid "<primary><player></primary>'s permissions"
 msgstr "<primary><player></primary>'s permissions"
 
+#. I18N: Section header for banned player list in admin island info debug output.
+msgid "<primary>Bans:"
+msgstr "<primary>Bans:"
+
 msgid "<primary>Be patient, young padawan"
 msgstr "<primary>Be patient, young padawan"
 
@@ -983,17 +1082,37 @@ msgstr "<primary>Deleted abandoned island at yer current location."
 msgid "<primary>Hold your horses! You have to be patient..."
 msgstr "<primary>Hold yer horses! Ye have to be patient..."
 
+#. I18N: Header line for the admin island info debug output.
+msgid "<primary>Island Info:"
+msgstr "<primary>Island Info:"
+
 msgid "<primary>Job Statistics"
 msgstr "<primary>Job Statistics"
 
 msgid "<primary>Leadership transferred by <from><primary> to <to>"
 msgstr "<primary>Leadership transferred by <from><primary> to <to>"
 
+#. I18N: Section header for configured island limits in admin island info debug output.
+msgid "<primary>Limits:"
+msgstr "<primary>Limits:"
+
+#. I18N: Section header for island activity log in admin island info debug output.
+msgid "<primary>Log:"
+msgstr "<primary>Log:"
+
 msgid "<primary>Not really patient, are you?"
 msgstr "<primary>Not really patient, be ye?"
 
+#. I18N: Section header for party-related fields in admin island info debug output.
+msgid "<primary>Party:"
+msgstr "<primary>Party:"
+
 msgid "<primary>Patience you MUST have, young padawan"
 msgstr "<primary>Patience ye MUST have, young padawan"
+
+#. I18N: Header line for the admin player info debug output.
+msgid "<primary>Player Info:"
+msgstr "<primary>Pirate Info:"
 
 msgid "<primary>Player Permissions"
 msgstr "<primary>Pirate Permissions"

@@ -14,6 +14,7 @@ concepts:
   cooldown: "Required wait time before reusing an action."
   leaderboard: "Ranked top list of islands/players."
   schematic: "Template used to generate an island."
+  orphan: "Abandoned/unassigned island (technical admin term for islands pending cleanup/reassignment)."
 
 languages:
   ar:
@@ -32,6 +33,7 @@ languages:
     cooldown: "وقت الانتظار"
     leaderboard: "لوحة المتصدرين"
     schematic: "مخطط"
+    orphan: "جزيرة مهجورة"
   be:
     island: "востраў"
     challenge: "выпрабаванне"
@@ -48,6 +50,7 @@ languages:
     cooldown: "час аднаўлення"
     leaderboard: "табліца лідараў"
     schematic: "схема"
+    orphan: "закінуты востраў"
   bg:
     island: "остров"
     challenge: "предизвикателство"
@@ -64,6 +67,7 @@ languages:
     cooldown: "време за възстановяване"
     leaderboard: "класация"
     schematic: "схема"
+    orphan: "изоставен остров"
   bn:
     island: "দ্বীপ"
     challenge: "চ্যালেঞ্জ"
@@ -80,6 +84,7 @@ languages:
     cooldown: "কুলডাউন"
     leaderboard: "লিডারবোর্ড"
     schematic: "স্কেম্যাটিক"
+    orphan: "পরিত্যক্ত দ্বীপ"
   bs:
     island: "otok"
     challenge: "izazov"
@@ -96,6 +101,7 @@ languages:
     cooldown: "vrijeme hlađenja"
     leaderboard: "rang-lista"
     schematic: "shema"
+    orphan: "napušteni otok"
   ca:
     island: "illa"
     challenge: "repte"
@@ -112,6 +118,7 @@ languages:
     cooldown: "temps de reutilització"
     leaderboard: "classificació"
     schematic: "esquema"
+    orphan: "illa abandonada"
   cs:
     island: "ostrov"
     challenge: "výzva"
@@ -128,6 +135,7 @@ languages:
     cooldown: "doba obnovení"
     leaderboard: "žebříček"
     schematic: "schéma"
+    orphan: "opuštěný ostrov"
   da:
     island: "ø"
     challenge: "udfordring"
@@ -144,11 +152,12 @@ languages:
     cooldown: "nedkølingstid"
     leaderboard: "rangliste"
     schematic: "skema"
+    orphan: "forladt ø"
   de:
     island: "Insel"
     challenge: "Herausforderung"
     rank: "Rang"
-    party: "Gruppe"
+    party: "Party"
     leader: "Leiter"
     warp: "Warp"
     click_here: "Klicke hier"
@@ -160,6 +169,7 @@ languages:
     cooldown: "Abklingzeit"
     leaderboard: "Bestenliste"
     schematic: "Schema"
+    orphan: "verlassene Insel"
   el:
     island: "νησί"
     challenge: "πρόκληση"
@@ -176,6 +186,7 @@ languages:
     cooldown: "χρόνος επαναφόρτισης"
     leaderboard: "πίνακας κατάταξης"
     schematic: "σχήμα"
+    orphan: "εγκαταλελειμμένο νησί"
   en_GB:
     island: "island"
     challenge: "challenge"
@@ -192,6 +203,7 @@ languages:
     cooldown: "cooldown"
     leaderboard: "leaderboard"
     schematic: "schematic"
+    orphan: "abandoned island"
   es:
     island: "isla"
     challenge: "desafío"
@@ -208,6 +220,7 @@ languages:
     cooldown: "tiempo de reutilización"
     leaderboard: "clasificación"
     schematic: "esquema"
+    orphan: "isla abandonada"
   et:
     island: "saar"
     challenge: "väljakutse"
@@ -224,6 +237,7 @@ languages:
     cooldown: "taastumisaeg"
     leaderboard: "edetabel"
     schematic: "skeem"
+    orphan: "mahajäetud saar"
   eu:
     island: "uharte"
     challenge: "erronka"
@@ -240,6 +254,7 @@ languages:
     cooldown: "berreskuratze-denbora"
     leaderboard: "sailkapena"
     schematic: "eskema"
+    orphan: "abandonatutako uhartea"
   fa:
     island: "جزیره"
     challenge: "چالش"
@@ -256,6 +271,7 @@ languages:
     cooldown: "زمان انتظار"
     leaderboard: "جدول برترین‌ها"
     schematic: "شماتیک"
+    orphan: "جزیره رهاشده"
   fi:
     island: "saari"
     challenge: "haaste"
@@ -272,6 +288,7 @@ languages:
     cooldown: "palautumisaika"
     leaderboard: "tulostaulukko"
     schematic: "skeema"
+    orphan: "hylätty saari"
   fil:
     island: "isla"
     challenge: "hamon"
@@ -288,6 +305,7 @@ languages:
     cooldown: "cooldown"
     leaderboard: "leaderboard"
     schematic: "skematik"
+    orphan: "inabandunang isla"
   fr:
     island: "île"
     challenge: "défi"
@@ -304,6 +322,7 @@ languages:
     cooldown: "délai de recharge"
     leaderboard: "classement"
     schematic: "schéma"
+    orphan: "île abandonnée"
   ga:
     island: "oileán"
     challenge: "dúshlán"
@@ -320,6 +339,7 @@ languages:
     cooldown: "am fuaraithe"
     leaderboard: "clár ceannairí"
     schematic: "scéim"
+    orphan: "oileán tréigthe"
   gl:
     island: "illa"
     challenge: "desafío"
@@ -336,6 +356,7 @@ languages:
     cooldown: "tempo de reutilización"
     leaderboard: "clasificación"
     schematic: "esquema"
+    orphan: "illa abandonada"
   he:
     island: "אי"
     challenge: "אתגר"
@@ -352,6 +373,7 @@ languages:
     cooldown: "זמן קירור"
     leaderboard: "טבלת מובילים"
     schematic: "סכמה"
+    orphan: "אי נטוש"
   hi:
     island: "द्वीप"
     challenge: "चुनौती"
@@ -368,6 +390,7 @@ languages:
     cooldown: "कूलडाउन"
     leaderboard: "लीडरबोर्ड"
     schematic: "स्कीमैटिक"
+    orphan: "परित्यक्त द्वीप"
   hr:
     island: "otok"
     challenge: "izazov"
@@ -384,6 +407,7 @@ languages:
     cooldown: "vrijeme hlađenja"
     leaderboard: "rang-lista"
     schematic: "shema"
+    orphan: "napušteni otok"
   hu:
     island: "sziget"
     challenge: "kihívás"
@@ -400,6 +424,7 @@ languages:
     cooldown: "újratöltési idő"
     leaderboard: "ranglista"
     schematic: "séma"
+    orphan: "elhagyott sziget"
   id:
     island: "pulau"
     challenge: "tantangan"
@@ -416,6 +441,7 @@ languages:
     cooldown: "cooldown"
     leaderboard: "papan peringkat"
     schematic: "skematik"
+    orphan: "pulau terlantar"
   is:
     island: "eyja"
     challenge: "áskorun"
@@ -432,6 +458,7 @@ languages:
     cooldown: "biðtími"
     leaderboard: "stigatafla"
     schematic: "sniðmát"
+    orphan: "yfirgefin eyja"
   it:
     island: "isola"
     challenge: "sfida"
@@ -448,6 +475,7 @@ languages:
     cooldown: "tempo di ricarica"
     leaderboard: "classifica"
     schematic: "schema"
+    orphan: "isola abbandonata"
   ja:
     island: "島"
     challenge: "チャレンジ"
@@ -464,6 +492,7 @@ languages:
     cooldown: "クールダウン"
     leaderboard: "リーダーボード"
     schematic: "設計図"
+    orphan: "放棄された島"
   ko:
     island: "섬"
     challenge: "도전"
@@ -480,6 +509,7 @@ languages:
     cooldown: "쿨다운"
     leaderboard: "리더보드"
     schematic: "설계도"
+    orphan: "버려진 섬"
   lb:
     island: "Insel"
     challenge: "Erausfuerderung"
@@ -496,6 +526,7 @@ languages:
     cooldown: "Ofkillzäit"
     leaderboard: "Ranglëscht"
     schematic: "Schema"
+    orphan: "verloosse Insel"
   lt:
     island: "sala"
     challenge: "iššūkis"
@@ -512,6 +543,7 @@ languages:
     cooldown: "atkrovimo laikas"
     leaderboard: "lyderių lentelė"
     schematic: "schema"
+    orphan: "apleista sala"
   lv:
     island: "sala"
     challenge: "izaicinājums"
@@ -528,6 +560,7 @@ languages:
     cooldown: "atjaunošanās laiks"
     leaderboard: "līderu tabula"
     schematic: "shēma"
+    orphan: "pamesta sala"
   mk:
     island: "остров"
     challenge: "предизвик"
@@ -544,6 +577,7 @@ languages:
     cooldown: "време на ладење"
     leaderboard: "ранг-листа"
     schematic: "шема"
+    orphan: "напуштен остров"
   ms:
     island: "pulau"
     challenge: "cabaran"
@@ -560,6 +594,7 @@ languages:
     cooldown: "cooldown"
     leaderboard: "papan pendahulu"
     schematic: "skematik"
+    orphan: "pulau terbiar"
   mt:
     island: "gżira"
     challenge: "sfida"
@@ -576,6 +611,7 @@ languages:
     cooldown: "ħin ta' cooldown"
     leaderboard: "klassifika"
     schematic: "skema"
+    orphan: "gżira abbandunata"
   nb:
     island: "øy"
     challenge: "utfordring"
@@ -592,6 +628,7 @@ languages:
     cooldown: "nedkjølingstid"
     leaderboard: "resultatliste"
     schematic: "skjema"
+    orphan: "forlatt øy"
   nl:
     island: "eiland"
     challenge: "uitdaging"
@@ -608,6 +645,7 @@ languages:
     cooldown: "afkoeltijd"
     leaderboard: "ranglijst"
     schematic: "schema"
+    orphan: "verlaten eiland"
   pl:
     island: "wyspa"
     challenge: "wyzwanie"
@@ -624,6 +662,7 @@ languages:
     cooldown: "czas odnowienia"
     leaderboard: "ranking"
     schematic: "schemat"
+    orphan: "opuszczona wyspa"
   pt_BR:
     island: "ilha"
     challenge: "desafio"
@@ -640,6 +679,7 @@ languages:
     cooldown: "tempo de recarga"
     leaderboard: "classificação"
     schematic: "esquema"
+    orphan: "ilha abandonada"
   pt_PT:
     island: "ilha"
     challenge: "desafio"
@@ -656,6 +696,7 @@ languages:
     cooldown: "tempo de recarga"
     leaderboard: "classificação"
     schematic: "esquema"
+    orphan: "ilha abandonada"
   ro:
     island: "insulă"
     challenge: "provocare"
@@ -672,6 +713,7 @@ languages:
     cooldown: "timp de reactivare"
     leaderboard: "clasament"
     schematic: "schemă"
+    orphan: "insulă abandonată"
   ru:
     island: "остров"
     challenge: "испытание"
@@ -688,6 +730,7 @@ languages:
     cooldown: "время перезарядки"
     leaderboard: "таблица лидеров"
     schematic: "схема"
+    orphan: "заброшенный остров"
   sk:
     island: "ostrov"
     challenge: "výzva"
@@ -704,6 +747,7 @@ languages:
     cooldown: "obnovovací čas"
     leaderboard: "rebríček"
     schematic: "schéma"
+    orphan: "opustený ostrov"
   sl:
     island: "otok"
     challenge: "izziv"
@@ -720,6 +764,7 @@ languages:
     cooldown: "čas ohlajanja"
     leaderboard: "lestvica"
     schematic: "shema"
+    orphan: "zapuščen otok"
   sq:
     island: "ishull"
     challenge: "sfidë"
@@ -736,6 +781,7 @@ languages:
     cooldown: "koha e rifreskimit"
     leaderboard: "renditja"
     schematic: "skemë"
+    orphan: "ishull i braktisur"
   sr:
     island: "острво"
     challenge: "изазов"
@@ -752,6 +798,7 @@ languages:
     cooldown: "време хлађења"
     leaderboard: "ранг-листа"
     schematic: "шема"
+    orphan: "напуштено острво"
   sv:
     island: "ö"
     challenge: "utmaning"
@@ -768,6 +815,7 @@ languages:
     cooldown: "nedkylningstid"
     leaderboard: "topplista"
     schematic: "schema"
+    orphan: "övergiven ö"
   th:
     island: "เกาะ"
     challenge: "ความท้าทาย"
@@ -784,6 +832,7 @@ languages:
     cooldown: "คูลดาวน์"
     leaderboard: "กระดานผู้นำ"
     schematic: "สคีแมติก"
+    orphan: "เกาะร้าง"
   tr:
     island: "ada"
     challenge: "meydan okuma"
@@ -800,6 +849,7 @@ languages:
     cooldown: "bekleme süresi"
     leaderboard: "liderlik tablosu"
     schematic: "şema"
+    orphan: "terk edilmiş ada"
   uk:
     island: "острів"
     challenge: "випробування"
@@ -816,6 +866,7 @@ languages:
     cooldown: "час перезарядки"
     leaderboard: "таблиця лідерів"
     schematic: "схема"
+    orphan: "покинутий острів"
   ur:
     island: "جزیرہ"
     challenge: "چیلنج"
@@ -832,6 +883,7 @@ languages:
     cooldown: "کول ڈاؤن"
     leaderboard: "لیڈر بورڈ"
     schematic: "اسکیمیٹک"
+    orphan: "ترک شدہ جزیرہ"
   vi:
     island: "đảo"
     challenge: "thử thách"
@@ -848,38 +900,7 @@ languages:
     cooldown: "hồi chiêu"
     leaderboard: "bảng xếp hạng"
     schematic: "sơ đồ"
-  xx_PIRATE:
-    island: "isle"
-    challenge: "trial"
-    rank: "rank"
-    party: "crew"
-    leader: "captain"
-    warp: "warp"
-    click_here: "click 'ere"
-    trust: "trust"
-    member: "matey"
-    invite: "invite"
-    locked: "battened"
-    spawn: "spawn"
-    cooldown: "cooldown"
-    leaderboard: "captain's board"
-    schematic: "chart"
-  xx_lol_US:
-    island: "iland"
-    challenge: "chalenge"
-    rank: "rankz"
-    party: "party"
-    leader: "leeder"
-    warp: "warp"
-    click_here: "click herez"
-    trust: "trustz"
-    member: "membur"
-    invite: "invitez"
-    locked: "lockd"
-    spawn: "spawn"
-    cooldown: "cooldwn"
-    leaderboard: "leaderbord"
-    schematic: "skematik"
+    orphan: "đảo bị bỏ hoang"
   zh_CN:
     island: "岛屿"
     challenge: "挑战"
@@ -896,6 +917,7 @@ languages:
     cooldown: "冷却时间"
     leaderboard: "排行榜"
     schematic: "蓝图"
+    orphan: "废弃岛屿"
   zh_TW:
     island: "島嶼"
     challenge: "挑戰"
@@ -912,3 +934,4 @@ languages:
     cooldown: "冷卻時間"
     leaderboard: "排行榜"
     schematic: "藍圖"
+    orphan: "廢棄島嶼"
