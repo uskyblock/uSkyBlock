@@ -23,6 +23,13 @@ jobs:
         run: sudo apt-get install -y gettext
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
+
+      - name: Verify keys.pot is up to date (PR)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          ./gradlew :uSkyBlock-Core:extractTranslation --no-daemon --no-configuration-cache
+          git diff --exit-code -- uSkyBlock-Core/src/main/po/keys.pot
+
       - name: Build with Gradle
         run: ./gradlew build translation publishAllPublicationsToStagingRepository --no-daemon --no-configuration-cache
 
