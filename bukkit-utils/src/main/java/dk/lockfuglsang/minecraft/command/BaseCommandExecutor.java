@@ -7,7 +7,8 @@ import org.bukkit.command.CommandSender;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Command delegator.
@@ -33,9 +34,11 @@ public class BaseCommandExecutor extends CompositeCommand implements CommandExec
         dk.lockfuglsang.minecraft.command.Command cmd = this;
         if (!hasAccess(cmd, sender)) {
             if (cmd != null) {
-                sender.sendMessage(tr("\u00a7eYou do not have access (\u00a74{0}\u00a7e)", cmd.getPermission()));
+                sender.sendMessage(trLegacy("<error>You do not have access (<primary><permission></primary>)",
+                    unparsed("permission", cmd.getPermission())));
             } else {
-                sender.sendMessage(tr("\u00a7eInvalid command: {0}", alias));
+                sender.sendMessage(trLegacy("<error>Invalid command: <cmd><command></cmd>",
+                    unparsed("command", alias)));
             }
             showUsage(sender, 1);
         } else {

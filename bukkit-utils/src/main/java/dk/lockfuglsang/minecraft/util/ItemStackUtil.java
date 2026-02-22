@@ -15,7 +15,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Conversion to ItemStack from strings.
@@ -181,8 +184,10 @@ public enum ItemStackUtil {
             return "";
         }
         return item.getAmount() > 1
-            ? tr("\u00a7f{0}x \u00a77{1}", item.getAmount(), getItemName(item))
-            : tr("\u00a77{0}", getItemName(item));
+            ? miniToLegacy("<secondary><amount></secondary>x <muted><item>",
+                unparsed("amount", String.valueOf(item.getAmount())),
+                legacyArg("item", getItemName(item)))
+            : miniToLegacy("<muted><item>", legacyArg("item", getItemName(item)));
     }
 
     @NotNull
@@ -206,12 +211,12 @@ public enum ItemStackUtil {
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
             return stack.getItemMeta().getDisplayName();
         }
-        return tr(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
+        return trLegacy(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
     @NotNull
     public static String getBlockName(@NotNull BlockData block) {
-        return tr(FormatUtil.camelcase(block.getMaterial().name()).replaceAll("([A-Z])", " $1").trim());
+        return trLegacy(FormatUtil.camelcase(block.getMaterial().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
     @Contract(pure = true)

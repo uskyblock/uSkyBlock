@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+
 /**
  * Convenience implementation of the Command
  */
@@ -29,8 +31,8 @@ public abstract class AbstractCommand implements Command {
     public AbstractCommand(String name, String permission, String params, String description, String usage, UUID... permissionOverride) {
         this.aliases = name.split("\\|");
         this.permission = permission;
-        this.description = I18nUtil.tr(description);
-        this.usage = I18nUtil.tr(usage);
+        this.description = trLegacy(description);
+        this.usage = trLegacy(usage);
         this.params = params != null && !params.trim().isEmpty() ? params.split(" ") : new String[0];
         this.permissionOverride = new HashSet<>(Arrays.asList(permissionOverride));
     }

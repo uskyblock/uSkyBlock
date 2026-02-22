@@ -4,10 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public enum TimeUtil {
     ;
@@ -40,16 +43,16 @@ public enum TimeUtil {
     public static @NotNull String durationAsString(@NotNull Duration duration) {
         String result = "";
         if (duration.toDaysPart() > 0) {
-            result += " " + duration.toDaysPart() + tr("d");
+            result += " " + duration.toDaysPart() + trLegacy("d");
         }
         if (duration.toHoursPart() > 0) {
-            result += " " + duration.toHoursPart() + tr("h");
+            result += " " + duration.toHoursPart() + trLegacy("h");
         }
         if (duration.toMinutesPart() > 0) {
-            result += " " + duration.toMinutesPart() + tr("m");
+            result += " " + duration.toMinutesPart() + trLegacy("m");
         }
         if (duration.toSecondsPart() > 0 || result.isEmpty()) {
-            result += " " + duration.toSecondsPart() + tr("s");
+            result += " " + duration.toSecondsPart() + trLegacy("s");
         }
         return result.trim();
     }
@@ -58,7 +61,10 @@ public enum TimeUtil {
         long m = duration.toMinutes();
         long s = duration.toSecondsPart();
         long ms = duration.toMillisPart();
-        return String.format(tr("{0,number,0}:{1,number,00}.{2,number,000}", m, s, ms));
+        return miniToLegacy("<minutes>:<seconds>.<millis>",
+            unparsed("minutes", String.valueOf(m)),
+            unparsed("seconds", String.format(Locale.ROOT, "%02d", s)),
+            unparsed("millis", String.format(Locale.ROOT, "%03d", ms)));
     }
 
     public static long durationAsTicks(@NotNull Duration duration) {

@@ -5,7 +5,7 @@ import dk.lockfuglsang.minecraft.util.FormatUtil;
 import java.io.PrintStream;
 import java.util.List;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 
 /**
  * Simple visitor for generating plain-text documentation of an Command-hierarchy.
@@ -47,7 +47,7 @@ public class PlainTextCommandVisitor extends RowCommandVisitor implements Docume
             rowFormat += "%-" + colWidths[i] + "s";
             separator += String.format("%" + colWidths[i] + "s", "").replaceAll(" ", "-");
         }
-        out.println(String.format(rowFormat, tr("Command"), tr("Permission"), tr("Description")));
+        out.println(String.format(rowFormat, trLegacy("Command"), trLegacy("Permission"), trLegacy("Description")));
         for (Row row : getRows()) {
             if (row == null) {
                 out.println(separator);
