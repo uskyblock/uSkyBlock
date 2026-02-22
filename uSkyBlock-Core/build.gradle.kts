@@ -57,11 +57,15 @@ val i18nZip = tasks.register<Zip>("i18nZip") {
         include("*.po")
     }
     archiveFileName.set("i18n.zip")
-    destinationDirectory.set(layout.buildDirectory.dir("resources/main"))
+    // Keep archive output outside processResources destination to avoid self-copy truncation.
+    destinationDirectory.set(layout.buildDirectory.dir("generated/i18n"))
 }
 
+val i18nZipFile = i18nZip.flatMap { it.archiveFile }
+
 tasks.processResources {
-    from(i18nZip)
+    from(i18nZipFile)
+    inputs.file(i18nZipFile)
 
     val props = mapOf(
         "projectVersion" to project.version,
