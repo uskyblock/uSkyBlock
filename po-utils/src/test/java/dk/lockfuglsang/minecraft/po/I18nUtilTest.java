@@ -1,5 +1,8 @@
 package dk.lockfuglsang.minecraft.po;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,12 +23,12 @@ public class I18nUtilTest {
 
     @Test
     public void testTr_nullKey() {
-        assertThat(I18nUtil.tr(null), is(""));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(null)), is(""));
     }
 
     @Test
     public void testTr_emptyKey() {
-        assertThat(I18nUtil.tr(""), is(""));
+        assertThat(I18nUtil.legacy(I18nUtil.tr("")), is(""));
     }
 
     @Test
@@ -33,14 +36,14 @@ public class I18nUtilTest {
         String TEST_STRING = "\u00a7eYou do not have access to that island-schematic!";
         String TEST_RESULT = "\u00a7eYou have no azzess to the schemz";
 
-        assertThat(I18nUtil.tr(TEST_STRING), is(TEST_RESULT));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
     }
 
     @Test
     public void testTr_nonExistingKey() {
         String TEST_STRING = "\u00a7eYou have no access to that island-schematic!";
 
-        assertThat(I18nUtil.tr(TEST_STRING), is(TEST_STRING));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_STRING));
     }
 
     @Test
@@ -49,7 +52,7 @@ public class I18nUtilTest {
         String TEST_ARG = "linksssofrechts";
         String TEST_RESULT = "\u00a74* \u00a77No expired coolupz for \u00a76" + TEST_ARG + "\u00a77 found.";
 
-        assertThat(I18nUtil.tr(TEST_STRING, TEST_ARG), is(TEST_RESULT));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
     }
 
     @Test
@@ -58,7 +61,99 @@ public class I18nUtilTest {
         String TEST_ARG = "Bukkit";
         String TEST_RESULT = "\u00a7eThis key is unknown to " + TEST_ARG + ".";
 
-        assertThat(I18nUtil.tr(TEST_STRING, TEST_ARG), is(TEST_RESULT));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithMiniMessageColorTags() {
+        String TEST_STRING = "<yellow>Hello <blue>{0}</blue>!</yellow>";
+        String TEST_ARG = "World";
+        String TEST_RESULT = "\u00a7eHello \u00a79World\u00a7e!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithMixedLegacyAndMiniMessage() {
+        String TEST_STRING = "\u00a7eHello <blue>{0}</blue>!";
+        String TEST_ARG = "World";
+        String TEST_RESULT = "\u00a7eHello <blue>World</blue>!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithUnknownMiniMessageTag() {
+        String TEST_STRING = "Hello <player>!";
+        String TEST_RESULT = "Hello <player>!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_existingKeyWithLocaleFallbackToLanguageFile() {
+        I18nUtil.setLocale(Locale.US);
+        String TEST_STRING = "\u00a7eYou do not have access to that island-schematic!";
+        String TEST_RESULT = "\u00a7eYou have no azzess to the schemz";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithSemanticStyleTags() {
+        String TEST_STRING = "<primary>Hello <secondary>{0}</secondary><primary>!";
+        String TEST_ARG = "World";
+        String TEST_RESULT = "\u00a7bHello \u00a7aWorld\u00a7b!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithNamedUnparsedPlaceholder() {
+        String TEST_STRING = "Hello <name>!";
+        String TEST_RESULT = "Hello <red>World</red>!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, Placeholder.unparsed("name", "<red>World</red>"))), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithNamedComponentPlaceholder() {
+        String TEST_STRING = "Hello <name>!";
+        String TEST_RESULT = "Hello World!";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, Placeholder.component("name", Component.text("World")))), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTrLegacy_nonExistingKeyWithNumberFormatter() {
+        String TEST_STRING = "Value: <value>";
+        String TEST_RESULT = "Value: 250.25";
+
+        assertThat(I18nUtil.trLegacy(TEST_STRING, Formatter.number("value", 250.25d)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTrLegacy_withLegacyArgColoredValue() {
+        String TEST_STRING = "<yellow>Hello <name>!</yellow>";
+        String TEST_RESULT = "\u00a7eHello \u00a7cWorld\u00a7e!";
+
+        assertThat(I18nUtil.trLegacy(TEST_STRING, I18nUtil.legacyArg("name", "\u00a7cWorld")), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTrLegacy_withLegacyArgNullValue() {
+        String TEST_STRING = "Hello <name>!";
+        String TEST_RESULT = "Hello !";
+
+        assertThat(I18nUtil.trLegacy(TEST_STRING, I18nUtil.legacyArg("name", null)), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testTr_nonExistingKeyWithEscapedMiniMessageTag() {
+        String TEST_STRING = "Hello \\<blue>World";
+        String TEST_RESULT = "Hello <blue>World";
+
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
     }
 
     @Test
@@ -66,7 +161,7 @@ public class I18nUtilTest {
         String TEST_STRING = "\u00a7eNo active cooldowns for \u00a79{0}\u00a7e found.";
         String TEST_RESULT = "\u00a74* \u00a77No expired coolupz for \u00a76{0}\u00a77 found.";
 
-        assertThat(I18nUtil.tr(TEST_STRING, (Object[]) null), is(TEST_RESULT));
+        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, (Object[]) null)), is(TEST_RESULT));
     }
 
     @Test
@@ -87,29 +182,38 @@ public class I18nUtilTest {
     }
 
     @Test
-    public void testPre_nullString() {
-        assertThat(I18nUtil.pre(null), is(""));
+    public void testMiniToLegacy_nullString() {
+        assertThat(I18nUtil.miniToLegacy(null), is(""));
     }
 
     @Test
-    public void testPre_emptyString() {
-        assertThat(I18nUtil.pre(""), is(""));
+    public void testMiniToLegacy_emptyString() {
+        assertThat(I18nUtil.miniToLegacy(""), is(""));
     }
 
     @Test
-    public void testPre_withNonFormattedString() {
+    public void testMiniToLegacy_withNonFormattedString() {
         String TEST_STRING = "\u00a7eThis is a test string";
 
-        assertThat(I18nUtil.pre(TEST_STRING), is(TEST_STRING));
+        assertThat(I18nUtil.miniToLegacy(TEST_STRING), is(TEST_STRING));
     }
 
     @Test
-    public void testPre_withFormattedString() {
-        String TEST_STRING = "\u00a7bThis is a test for {0} regarding {1}.";
-        Object[] TEST_ARGS = new String[]{"Jinxert", "Ultimate Skyblock"};
+    public void testMiniToLegacy_withFormattedString() {
+        String TEST_STRING = "<aqua>This is a test for <user> regarding <plugin>.";
         String TEST_RESULT = "\u00a7bThis is a test for Jinxert regarding Ultimate Skyblock.";
 
-        assertThat(I18nUtil.pre(TEST_STRING, TEST_ARGS), is(TEST_RESULT));
+        assertThat(I18nUtil.miniToLegacy(TEST_STRING,
+            Placeholder.unparsed("user", "Jinxert"),
+            Placeholder.unparsed("plugin", "Ultimate Skyblock")), is(TEST_RESULT));
+    }
+
+    @Test
+    public void testMiniToLegacy_withSemanticAliasTags() {
+        String TEST_STRING = "Use <cmd>/is home</cmd> <muted>to return.";
+        String TEST_RESULT = "Use \u00a7b/is home\u00a7r \u00a77to return.";
+
+        assertThat(I18nUtil.miniToLegacy(TEST_STRING), is(TEST_RESULT));
     }
 
     @Test

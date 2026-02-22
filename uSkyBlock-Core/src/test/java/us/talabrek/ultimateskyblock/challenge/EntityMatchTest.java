@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +22,7 @@ public class EntityMatchTest {
         when(fakeSheep.getColor()).thenReturn(DyeColor.RED);
         when(fakeSheep.getType()).thenReturn(EntityType.SHEEP);
 
-        assertEquals("Red Sheep", matcher.getDisplayName());
+        assertEquals("Red Sheep", legacy(matcher.getDisplayName()));
         assertEquals(1, matcher.getCount());
         assertTrue(matcher.matches(fakeSheep));
 
@@ -37,7 +38,7 @@ public class EntityMatchTest {
         when(fakeSheep.getColor()).thenReturn(DyeColor.YELLOW);
         when(fakeSheep.getType()).thenReturn(EntityType.SHEEP);
 
-        assertEquals("Yellow Sheep", matcher.getDisplayName());
+        assertEquals("Yellow Sheep", legacy(matcher.getDisplayName()));
         assertEquals(9, matcher.getCount());
         assertTrue(matcher.matches(fakeSheep));
 
@@ -52,7 +53,7 @@ public class EntityMatchTest {
         Cow fakeCow = mock(Cow.class);
         when(fakeCow.getType()).thenReturn(EntityType.COW);
 
-        assertEquals("Red Cow", matcher.getDisplayName());
+        assertEquals("Red Cow", legacy(matcher.getDisplayName()));
         assertTrue(matcher.matches(fakeCow));
     }
 }

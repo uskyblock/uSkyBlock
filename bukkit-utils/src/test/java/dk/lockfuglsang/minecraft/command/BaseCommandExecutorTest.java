@@ -42,7 +42,7 @@ public class BaseCommandExecutorTest {
     public void testNoPermissions() {
         CommandSender sender = createCommandSender();
         mycmd.onCommand(sender, null, "mycmd", new String[]{"mycmd", "h", "your", "momma"});
-        assertThat(getMessages(), is("§eYou do not have access (§4myplugin.perm.mycmd§e)\n" +
+        assertThat(getMessages(), is("§cYou do not have access (§bmyplugin.perm.mycmd§c)\n" +
                 "§7Usage: §3mycmd§a [command|help]§7 - §emain myplugin command"));
     }
 
