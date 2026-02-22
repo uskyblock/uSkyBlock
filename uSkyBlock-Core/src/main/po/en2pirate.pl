@@ -42,18 +42,23 @@ sub get_pirate {
     my $pirate = $txt;
     utf8::encode($pirate);
     print "txt: $txt\n";
-    foreach my $key (keys %dict) {
-        my $value  = $dict{$key};
-        my $ukey   = ucfirst($key);
-        my $uvalue = ucfirst($value);
+    my @parts = split /(<[^>]+>)/, $pirate;
+    for (my $i = 0; $i < scalar(@parts); $i++) {
+        next if $parts[$i] =~ /^<[^>]+>$/;
+        foreach my $key (keys %dict) {
+            my $value  = $dict{$key};
+            my $ukey   = ucfirst($key);
+            my $uvalue = ucfirst($value);
 
-        # Do not translate if the word is immediately preceded by '/'
-        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
-        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
+            # Do not translate if the word is immediately preceded by '/'
+            $parts[$i] =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
+            $parts[$i] =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
+        }
+        foreach my $key (keys %part_dict) {
+            $parts[$i] =~ s/$key/$part_dict{$key}/g;
+        }
     }
-    foreach my $key (keys %part_dict) {
-        $pirate =~ s/$key/$part_dict{$key}/g;
-    }
+    $pirate = join('', @parts);
     if ($pirate =~ m/\{0/) {
         $pirate =~ s/''/'/g;
         $pirate =~ s/'/''/g;
