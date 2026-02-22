@@ -18,6 +18,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.world.WorldManager;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.util.Map;
@@ -26,7 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Responsible for teleporting (and cancelling teleporting) of players.
@@ -74,16 +77,16 @@ public class TeleportLogic implements Listener {
         }
 
         if (homeLocation == null) {
-            player.sendMessage(tr("\u00a74Unable to find a safe home-location on your island!"));
+            send(player, tr("<error>Unable to find a safe home location on your island!"));
             if (player.isFlying()) {
-                player.sendMessage(tr("\u00a7cWARNING: \u00a7eTeleporting you to mid-air."));
+                send(player, tr("<error>Warning:</error> <muted>Teleporting you to mid-air."));
                 safeTeleport(player, playerInfo.getIslandLocation(), true);
             }
             return;
         }
 
         worldManager.removeCreatures(homeLocation);
-        player.sendMessage(tr("\u00a7aTeleporting you to your island."));
+        send(player, tr("<secondary>Teleporting you to your island."));
         safeTeleport(player, homeLocation, force);
     }
 
@@ -104,7 +107,8 @@ public class TeleportLogic implements Listener {
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             PaperLib.teleportAsync(player, targetLoc);
         } else {
-            player.sendMessage(tr("\u00a7aYou will be teleported in {0} seconds.", teleportDelay));
+            send(player, tr("<secondary>You will be teleported in <seconds> seconds.",
+                unparsed("seconds", String.valueOf(teleportDelay.toSeconds()))));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 PaperLib.teleportAsync(player, targetLoc);
@@ -131,7 +135,8 @@ public class TeleportLogic implements Listener {
                 PaperLib.teleportAsync(player, spawnLocation);
             }
         } else {
-            player.sendMessage(tr("\u00a7aYou will be teleported in {0} seconds.", teleportDelay));
+            send(player, tr("<secondary>You will be teleported in <seconds> seconds.",
+                unparsed("seconds", String.valueOf(teleportDelay.toSeconds()))));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 if (Settings.extras_sendToSpawn) {
@@ -156,16 +161,17 @@ public class TeleportLogic implements Listener {
 
         Location warpLocation = null;
         if (playerInfo == null) {
-            player.sendMessage(tr("\u00a74That player does not exist!"));
+            send(player, tr("<error>That player does not exist!"));
             return;
         }
 
         warpLocation = plugin.getSafeWarpLocation(playerInfo);
         if (warpLocation == null) {
-            player.sendMessage(tr("\u00a74Unable to warp you to that player''s island!"));
+            send(player, tr("<error>Unable to warp you to that player's island!"));
             return;
         }
-        player.sendMessage(tr("\u00a7aTeleporting you to {0}''s island.", playerInfo.getDisplayName()));
+        send(player, tr("<secondary>Teleporting you to <player>'s island.",
+            legacyArg("player", playerInfo.getDisplayName())));
         safeTeleport(player, warpLocation, force);
     }
 
@@ -202,7 +208,7 @@ public class TeleportLogic implements Listener {
                 if (distance > cancelDistance) {
                     task.cancel();
                     pendingTeleports.remove(player.getUniqueId());
-                    player.sendMessage(tr("\u00a77Teleport cancelled"));
+                    send(player, tr("Teleport cancelled"));
                 }
             }
         }

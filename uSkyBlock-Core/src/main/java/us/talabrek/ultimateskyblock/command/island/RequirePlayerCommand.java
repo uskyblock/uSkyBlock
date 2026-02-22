@@ -1,9 +1,9 @@
 package us.talabrek.ultimateskyblock.command.island;
 
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public abstract class RequirePlayerCommand extends AbstractCommand {
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(I18nUtil.tr("\u00a74This command can only be executed by a player"));
+            sendPlayerOnly(sender);
             return false;
         }
         Player player = (Player) sender;

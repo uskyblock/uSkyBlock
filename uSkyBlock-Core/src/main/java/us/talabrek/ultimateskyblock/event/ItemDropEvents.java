@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Handles the internal item-drop protection.
@@ -44,12 +46,12 @@ public class ItemDropEvents implements Listener {
         }
         if (!visitorsCanDrop && !plugin.playerIsOnIsland(player) && !plugin.playerIsInSpawn(player)) {
             event.setCancelled(true);
-            plugin.notifyPlayer(player, tr("\u00a7eVisitors can't drop items!"));
+            plugin.notifyPlayer(player, tr("<error>Visitors can't drop items."));
             return;
         }
         if (plugin.playerIsInSpawn(player)) {
             event.setCancelled(true);
-            plugin.notifyPlayer(player, tr("\u00a7eYou cannot drop items at the spawn point!"));
+            plugin.notifyPlayer(player, tr("<error>You cannot drop items at spawn."));
             return;
         }
         addDropInfo(player, event.getItemDrop().getItemStack());
@@ -79,7 +81,7 @@ public class ItemDropEvents implements Listener {
             if (lore == null) {
                 lore = new ArrayList<>();
             }
-            String ownerTag = tr("Owner: {0}", player.getName());
+            String ownerTag = trLegacy("Owner: <player>", unparsed("player", player.getName()));
             if (!lore.contains(ownerTag)) {
                 lore.add(ownerTag);
             }
@@ -94,7 +96,7 @@ public class ItemDropEvents implements Listener {
         if (meta != null) {
             List<String> lore = meta.getLore();
             if (lore != null && !lore.isEmpty()) {
-                lore.removeIf(line -> line.contains(tr("Owner: {0}", "")));
+                lore.removeIf(line -> line.contains(trLegacy("Owner: <player>", unparsed("player", ""))));
                 meta.setLore(lore);
                 stack.setItemMeta(meta);
                 item.setItemStack(stack);
@@ -139,7 +141,7 @@ public class ItemDropEvents implements Listener {
             List<String> lore = meta.getLore();
             if (lore != null && !lore.isEmpty()) {
                 String lastLine = lore.get(lore.size() - 1);
-                return lastLine.equalsIgnoreCase(tr("Owner: {0}", player.getName()));
+                return lastLine.equalsIgnoreCase(trLegacy("Owner: <player>", unparsed("player", player.getName())));
             }
         }
         return false;

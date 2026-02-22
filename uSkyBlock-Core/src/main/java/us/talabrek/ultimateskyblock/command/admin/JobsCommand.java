@@ -13,12 +13,20 @@ import java.util.List;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.plainText;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 /**
  * Command for reporting and controlling async jobs.
  */
 public class JobsCommand extends CompositeCommand {
+    // I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+    private static final String JOBS_HEADER = marktr("<muted>jobs   ms/job   ms/tick  ticks    active   time     name");
+    // Not translatable: formatting template with placeholders only.
+    private static final String JOBS_ROW = "<muted><jobs> <ms-per-job> <ms-per-tick> <ticks> <error><active></error> <elapsed> <primary><name>";
 
     @Inject
     public JobsCommand() {
@@ -27,26 +35,26 @@ public class JobsCommand extends CompositeCommand {
         add(new AbstractCommand("stats|s", "usb.admin.jobs.stats", "show statistics") {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(tr("\u00a79Job Statistics")).append("\n");
-                sb.append(tr("\u00a77----------------")).append("\n");
+                send(sender, tr("<primary>Job Statistics"));
+                send(sender, parseMini("<muted>----------------"));
                 Map<String, JobManager.Stats> stats = JobManager.getStats();
                 List<String> jobs = new ArrayList<>(stats.keySet());
                 Collections.sort(jobs);
-                sb.append(String.format("\u00a77%-6s %-8s %-8s %-8s %-8s %-8s %-20s\n",
-                    tr("#"), tr("ms/job"), tr("ms/tick"), tr("ticks"), tr("act"), tr("time"), tr("name")));
+
+                send(sender, tr(JOBS_HEADER));
+
                 for (String jobName : jobs) {
                     JobManager.Stats stat = stats.get(jobName);
-                    sb.append(String.format("\u00a77%6d %8s %8s %8d \u00a7c%8d \u00a77%8s \u00a79%-20s \n", stat.getJobs(),
-                        TimeUtil.durationAsShort(stat.getAvgRunningTimePerJob()),
-                        TimeUtil.durationAsShort(stat.getAvgRunningTimePerTick()),
-                        stat.getTicks(),
-                        stat.getRunningJobs(),
-                        TimeUtil.durationAsShort(stat.getAvgTimeElapsedPerJob()),
-                        tr(jobName)
+                    send(sender, parseMini(JOBS_ROW,
+                        unparsed("jobs", String.format("%6d", stat.getJobs())),
+                        unparsed("ms-per-job", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgRunningTimePerJob()))),
+                        unparsed("ms-per-tick", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgRunningTimePerTick()))),
+                        unparsed("ticks", String.format("%8d", stat.getTicks())),
+                        unparsed("active", String.format("%8d", stat.getRunningJobs())),
+                        unparsed("elapsed", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgTimeElapsedPerJob()))),
+                        unparsed("name", String.format("%-20s", plainText(tr(jobName))))
                     ));
                 }
-                sender.sendMessage(sb.toString().split("\n"));
                 return true;
             }
         });

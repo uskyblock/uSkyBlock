@@ -12,6 +12,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 
@@ -71,16 +72,15 @@ public class GenerateTask extends BukkitRunnable {
                 plugin.clearPlayerInventory(player);
                 if (player != null && player.isOnline()) {
                     if (plugin.getConfig().getBoolean("options.restart.teleportWhenReady", true)) {
-                        player.sendMessage(tr("\u00a7aCongratulations! \u00a7eYour island has appeared."));
+                        send(player, tr("<success>Congratulations!</success> Your island is ready."));
                         if (AsyncWorldEditHandler.isAWE()) {
-                            player.sendMessage(tr("\u00a7cNote:\u00a7e Construction might still be ongoing."));
+                            send(player, tr("<muted>Note: Construction may still be in progress.</muted>"));
                         }
                         plugin.getTeleportLogic().homeTeleport(player, true);
                     } else {
-                        player.sendMessage(
-                            tr("\u00a7aCongratulations! \u00a7eYour island has appeared."),
-                            tr("Use \u00a79/is h\u00a7r or the \u00a79/is\u00a7r menu to go there."),
-                            tr("\u00a7cNote:\u00a7e Construction might still be ongoing.")
+                        send(player, tr("<success>Congratulations!</success> Your island is ready."),
+                            tr("<muted>Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.</muted>"),
+                            tr("<muted>Note: Construction may still be in progress.</muted>")
                         );
                     }
                 }

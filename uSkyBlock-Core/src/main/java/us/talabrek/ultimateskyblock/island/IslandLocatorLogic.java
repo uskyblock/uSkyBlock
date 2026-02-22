@@ -16,6 +16,9 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -104,13 +107,14 @@ public class IslandLocatorLogic {
         if (worldManager.isSkyWorld(player.getWorld()) && !plugin.islandInSpawn(player.getLocation())) {
             Location location = LocationUtil.alignToDistance(player.getLocation(), Settings.island_distance);
             if (isAvailableLocation(location)) {
-                player.sendMessage(tr("\u00a79Creating an island at your location"));
+                send(player, tr("<primary>Creating an island at your location"));
                 return location;
             }
             Vector v = player.getLocation().getDirection().normalize();
             location = LocationUtil.alignToDistance(location.add(v.multiply(Settings.island_distance)), Settings.island_distance);
             if (isAvailableLocation(location)) {
-                player.sendMessage(tr("\u00a79Creating an island \u00a77{0}\u00a79 of you", LocationUtil.getCardinalDirection(player.getLocation().getYaw())));
+                send(player, tr("Creating an island <primary><direction></primary> of you",
+                    component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw())))));
                 return location;
             }
         }

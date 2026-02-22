@@ -52,8 +52,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 /**
  * The home of challenge business logic.
@@ -302,38 +311,44 @@ public class ChallengeLogic implements Listener {
         PlayerInfo pi = plugin.getPlayerInfo(player);
         Optional<Challenge> opt = getChallengeById(id);
         if (opt.isEmpty()) {
-            player.sendMessage(tr("\u00a74No challenge with id {0} found", id.id()));
+            send(player, tr("<error>No challenge with id <challenge-id> found", unparsed("challenge-id", id.id())));
             return;
         }
         Challenge challenge = opt.get();
         if (!plugin.playerIsOnOwnIsland(player)) {
-            player.sendMessage(tr("\u00a74You must be on your island to do that!"));
+            send(player, tr("<error>You must be on your island to do that!"));
             return;
         }
         if (!challenge.getRank().isAvailable(pi)) {
-            player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
+            send(player, tr("<error>The <challenge> challenge is not available yet!",
+                legacyArg("challenge", challenge.getDisplayName())));
             return;
         }
         ChallengeCompletion completion = getChallengeCompletion(pi, id);
         if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
-            player.sendMessage(tr("\u00a74The {0} challenge is not repeatable!", challenge.getDisplayName()));
+            send(player, tr("<error>The <challenge> challenge is not repeatable!",
+                legacyArg("challenge", challenge.getDisplayName())));
             return;
         }
         if (completion.isOnCooldown() && completion.getTimesCompletedInCooldown() >= challenge.getRepeatLimit() && challenge.getRepeatLimit() > 0) {
-            player.sendMessage(tr("\u00a74You cannot complete the {0} challenge again yet!", challenge.getDisplayName()));
+            send(player, tr("<error>You cannot complete the <challenge> challenge again yet!",
+                legacyArg("challenge", challenge.getDisplayName())));
             return;
         }
-        player.sendMessage(tr("\u00a7eTrying to complete challenge \u00a7a{0}", challenge.getDisplayName()));
+        send(player, tr("Trying to complete challenge <primary><challenge></primary>.",
+            legacyArg("challenge", challenge.getDisplayName())));
         if (challenge.getType() == Challenge.Type.PLAYER) {
             tryCompleteOnPlayer(player, challenge);
         } else if (challenge.getType() == Challenge.Type.ISLAND) {
             if (!tryCompleteOnIsland(player, challenge)) {
-                player.sendMessage(tr("\u00a74{0}", challenge.getDescription()));
-                player.sendMessage(tr("\u00a74You must be standing within {0} blocks of all required items.", challenge.getRadius()));
+                send(player, parseMini("<error><description>", legacyArg("description", challenge.getDescription())));
+                send(player, tr("<error>You must be standing within <radius> blocks of all required items.",
+                    unparsed("radius", String.valueOf(challenge.getRadius()))));
             }
         } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
             if (!tryCompleteIslandLevel(player, challenge)) {
-                player.sendMessage(tr("\u00a74Your island must be level {0} to complete this challenge!", challenge.getRequiredLevel()));
+                send(player, tr("<error>Your island must be level <level> to complete this challenge!",
+                    number("level", challenge.getRequiredLevel())));
             }
         }
     }
@@ -370,7 +385,7 @@ public class ChallengeLogic implements Listener {
         }
         String diff = blockCollection.diff(itemStacks);
         if (diff != null) {
-            player.sendMessage(diff);
+            sendLegacy(player, diff);
             return false;
         }
         return true;
@@ -424,13 +439,14 @@ public class ChallengeLogic implements Listener {
             }
         }
         if (!countMap.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
+            send(player, tr("Still missing the following entities:"));
             for (Map.Entry<EntityMatch, Integer> entry : countMap.entrySet()) {
-                sb.append("\u00a7e - ");
-                sb.append(" \u00a74").append(entry.getValue()).append(" \u00a7ex");
-                sb.append(" \u00a7b").append(entry.getKey().getDisplayName()).append("\n");
+                send(player, parseMini(
+                    "<muted> - <error><count></error> x <primary><entity></primary>",
+                    number("count", entry.getValue()),
+                    component("entity", entry.getKey().getDisplayName())
+                ));
             }
-            player.sendMessage(tr("\u00a7eStill the following entities short:\n{0}", sb.toString()).split("\n"));
         }
         return countMap.isEmpty();
     }
@@ -448,7 +464,9 @@ public class ChallengeLogic implements Listener {
                 int requiredAmount = required.getValue();
                 String name = ItemStackUtil.getItemName(requiredType);
                 if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                    sb.append(tr(" \u00a74{0} \u00a7b{1}", (requiredAmount - getCountOf(player.getInventory(), requiredType)), name));
+                    sb.append(miniToLegacy(" <error><count></error> <primary><item></primary>",
+                        number("count", requiredAmount - getCountOf(player.getInventory(), requiredType)),
+                        legacyArg("item", name)));
                     hasAll = false;
                 }
             }
@@ -463,7 +481,7 @@ public class ChallengeLogic implements Listener {
                 giveReward(player, challenge);
                 return true;
             } else {
-                player.sendMessage(tr("\u00a7eYou are the following items short:{0}", sb.toString()));
+                send(player, tr("You are still missing the following items:<items>", legacyArg("items", sb.toString())));
             }
         }
         return false;
@@ -476,7 +494,8 @@ public class ChallengeLogic implements Listener {
     }
 
     private boolean giveReward(Player player, Challenge challenge) {
-        player.sendMessage(tr("\u00a7aYou have completed the {0} challenge!", challenge.getDisplayName()));
+        send(player, tr("You completed the <primary><challenge></primary> challenge!",
+            legacyArg("challenge", challenge.getDisplayName())));
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         Reward reward;
         boolean isFirstCompletion = checkChallenge(playerInfo, challenge.getId()) == 0;
@@ -488,11 +507,14 @@ public class ChallengeLogic implements Listener {
         player.giveExp(reward.getXpReward());
         boolean wasBroadcast = false;
         if (defaults.broadcastCompletion && isFirstCompletion) {
-            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(config.getString("broadcastText")) + tr("\u00a79{0}\u00a7f has completed the \u00a79{1}\u00a7f challenge!", player.getName(), challenge.getDisplayName()));
+            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(config.getString("broadcastText")) +
+                trLegacy("<primary><player></primary> has completed the <primary><challenge></primary> challenge!",
+                    unparsed("player", player.getName()),
+                    legacyArg("challenge", challenge.getDisplayName())));
             wasBroadcast = true;
         }
-        player.sendMessage(tr("\u00a7eItem reward(s): \u00a7f{0}", reward.getRewardText()));
-        player.sendMessage(tr("\u00a7eExp reward: \u00a7f{0,number,#.#}", reward.getXpReward()));
+        send(player, tr("Item rewards: <primary><items></primary>", legacyArg("items", reward.getRewardText())));
+        send(player, tr("XP reward: <primary><experience:'#.#'></primary>", number("experience", reward.getXpReward())));
         if (defaults.enableEconomyPlugin) {
             double rewBonus = 1;
             Perk perk = perkLogic.getPerk(player);
@@ -503,8 +525,10 @@ public class ChallengeLogic implements Listener {
             hookManager.getEconomyHook().ifPresent((hook) -> {
                 hook.depositPlayer(player, currencyReward);
 
-                player.sendMessage(tr("\u00a7eCurrency reward: \u00a7f{0,number,###.##} {1} \u00a7a ({2,number,##.##})%",
-                    currencyReward, hook.getCurrenyName(), percentage));
+                send(player, tr("Currency reward: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>",
+                    number("amount", currencyReward),
+                    unparsed("currency", hook.getCurrenyName()),
+                    number("bonus", percentage)));
             });
         }
         if (reward.getPermissionReward() != null) {
@@ -531,7 +555,7 @@ public class ChallengeLogic implements Listener {
             player.getWorld().dropItem(player.getLocation(), item);
         }
         if (!leftOvers.isEmpty()) {
-            player.sendMessage(tr("\u00a7eYour inventory is \u00a74full\u00a7e. Items dropped on the ground."));
+            send(player, tr("<error>Your inventory is full.</error> <muted>Items were dropped on the ground."));
         }
         for (String cmd : reward.getCommands()) {
             String command = cmd.replaceAll("\\{challenge\\}", Matcher.quoteReplacement(challenge.getName()));
@@ -548,9 +572,9 @@ public class ChallengeLogic implements Listener {
         ItemMeta meta = currentChallengeItem.getItemMeta();
         List<String> lores = meta.getLore();
         if (challenge.isRepeatable() || completion.getTimesCompleted() == 0) {
-            lores.add(tr("\u00a7e\u00a7lClick to complete this challenge."));
+            lores.add(trLegacy("<primary><bold>Click to complete this challenge."));
         } else {
-            lores.add(tr("\u00a74\u00a7lYou can't repeat this challenge."));
+            lores.add(trLegacy("<error><bold>You can't repeat this challenge."));
         }
         if (completion.getTimesCompleted() > 0) {
             meta.addEnchant(Enchantment.LOYALTY, 1, true);
@@ -637,13 +661,12 @@ public class ChallengeLogic implements Listener {
         List<String> lores = new ArrayList<>();
         ItemStack currentChallengeItem = rank.getDisplayItem();
         ItemMeta meta4 = currentChallengeItem.getItemMeta();
-        meta4.setDisplayName("\u00a7e\u00a7l" + tr("Rank: {0}", rank.getName()));
-        lores.add(tr("\u00a7fComplete most challenges in"));
-        lores.add(tr("\u00a7fthis rank to unlock the next rank."));
+        meta4.setDisplayName("\u00a7e\u00a7l" + trLegacy("Rank: <rank>", legacyArg("rank", rank.getName())));
+        lores.addAll(Arrays.asList(trLegacy("<muted>Complete most challenges in<newline>this rank to unlock the next rank.").split("\n")));
         if (location < (CHALLENGE_PAGE_SIZE / 2)) {
-            lores.add(tr("\u00a7eClick here to show previous page"));
+            lores.add(trLegacy("<primary>Click here to show the previous page."));
         } else {
-            lores.add(tr("\u00a7eClick here to show next page"));
+            lores.add(trLegacy("<primary>Click here to show the next page."));
         }
         meta4.setLore(lores);
         currentChallengeItem.setItemMeta(meta4);
@@ -682,7 +705,7 @@ public class ChallengeLogic implements Listener {
                     if (defaults.showLockedChallengeName) {
                         lores.add(meta4.getDisplayName());
                     }
-                    meta4.setDisplayName(tr("\u00a74\u00a7lLocked Challenge"));
+                    meta4.setDisplayName(trLegacy("<error><bold>Locked Challenge"));
                     lores.addAll(missingReqs);
                     lores.addAll(missingRankRequirements);
                     meta4.setLore(lores);

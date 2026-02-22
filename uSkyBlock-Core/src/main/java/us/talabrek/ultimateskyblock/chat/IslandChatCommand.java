@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.chat;
 
-import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.BaseCommandExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -8,9 +7,14 @@ import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * The chat command for party messages
@@ -27,7 +31,7 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
 
     @Override
     public String getUsage() {
-        return tr("Either send a message directly to your group, or toggle it on/off.");
+        return trLegacy("Either send a message directly to your group, or toggle it on/off.");
     }
 
     @Override
@@ -40,13 +44,14 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
             IslandChatEvent.Type type = this instanceof PartyTalkCommand ? IslandChatEvent.Type.PARTY : IslandChatEvent.Type.ISLAND;
             if (args == null || args.length == 0) {
                 String chatType = type == IslandChatEvent.Type.PARTY
-                        ? tr("party")
-                        : tr("island");
+                        ? trLegacy("party")
+                        : trLegacy("island");
                 if (chatLogic.toggle(player, type)) {
-                    player.sendMessage(tr("\u00a7cToggled chat to {0} \u00a7aON", chatType));
-                    player.sendMessage(tr("\u00a7cRepeat \u00a79{0}\u00a7c to toggle it off", "/" + alias));
+                    send(player, tr("Toggled <primary><chat-type></primary> chat <success>on</success>.", unparsed("chat-type", chatType)));
+                    send(player, tr("<muted>Repeat <cmd><command></cmd> to toggle it off.</muted>",
+                        unparsed("command", "/" + alias)));
                 } else {
-                    player.sendMessage(tr("\u00a7aToggled chat \u00a7cOFF\u00a7a for {0}", chatType));
+                    send(player, tr("Toggled <primary><chat-type></primary> chat off.", unparsed("chat-type", chatType)));
                 }
                 return true;
             } else if (args != null && args.length == 1 && (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help"))) {
@@ -56,7 +61,7 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
             String message = String.join(" ", args);
             Bukkit.getServer().getPluginManager().callEvent(new IslandChatEvent(player, type, message));
         } else {
-            commandSender.sendMessage(tr("\u00a7cCommand only available to players"));
+            sendPlayerOnly(commandSender);
         }
         return true;
     }

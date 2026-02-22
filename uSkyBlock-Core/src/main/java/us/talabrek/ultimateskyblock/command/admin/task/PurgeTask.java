@@ -7,12 +7,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
@@ -32,7 +34,10 @@ public class PurgeTask extends BukkitRunnable {
         this.purgeList = purgeList;
         this.timer = Timer.start();
         Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
-        tracker = new ProgressTracker(sender, marktr("- PURGING: {0,number,##}% ({1}/{2}), elapsed {3}, estimated completion ~{4}"), 25, feedbackEvery);
+        tracker = new ProgressTracker(sender,
+            marktr("- PURGING: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
+            25,
+            feedbackEvery);
         active = true;
     }
 
@@ -48,7 +53,12 @@ public class PurgeTask extends BukkitRunnable {
             completed++;
             Duration elapsed = timer.elapsed();
             Duration eta = elapsed.dividedBy(completed).multipliedBy(total - completed);
-            tracker.progressUpdate(completed, total, TimeUtil.durationAsString(elapsed), TimeUtil.durationAsTicks(eta));
+            tracker.progressUpdate(
+                completed,
+                total,
+                unparsed("elapsed", TimeUtil.durationAsString(elapsed)),
+                unparsed("eta", String.valueOf(TimeUtil.durationAsTicks(eta)))
+            );
         }
         plugin.getOrphanLogic().save();
     }
@@ -67,9 +77,9 @@ public class PurgeTask extends BukkitRunnable {
             doPurge();
             log(Level.INFO, "Finished purging marked inactive islands.");
             if (active) {
-                sender.sendMessage(I18nUtil.tr("\u00a74PURGE:\u00a79 Finished purging abandoned islands."));
+                send(sender, I18nUtil.tr("<error>PURGE:<primary> Finished purging abandoned islands."));
             } else {
-                sender.sendMessage(I18nUtil.tr("\u00a74PURGE:\u00a79 Aborted purging abandoned islands."));
+                send(sender, I18nUtil.tr("<error>PURGE:<primary> Aborted purging abandoned islands."));
             }
         } finally {
             active = false;

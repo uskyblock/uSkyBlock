@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.event;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -37,6 +36,8 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.LimitLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 
 /**
  * Handling of mob-related events.
@@ -200,7 +201,7 @@ public class GriefEvents implements Listener {
             shooter.remove();
             IslandInfo islandInfo = plugin.getIslandInfo(withersIsland);
             if (islandInfo != null) {
-                islandInfo.sendMessageToOnlineMembers(I18nUtil.tr("\u00a7cWither Despawned!\u00a7e It wandered too far from your island."));
+                islandInfo.sendMessageToOnlineMembers(trLegacy("<error>Wither despawned!</error> <muted>It wandered too far from your island."));
             }
         }
     }

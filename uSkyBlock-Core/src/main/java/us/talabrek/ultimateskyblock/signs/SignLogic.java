@@ -29,6 +29,9 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,7 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 
 /**
@@ -251,7 +255,7 @@ public class SignLogic {
             }
             List<String> lines = wordWrap(challenge.getDisplayName(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
             if (challengeLocked) {
-                lines.add(tr("\u00a74\u00a7lLocked Challenge"));
+                lines.add(trLegacy("<error><bold>Locked Challenge"));
             } else {
                 lines.addAll(wordWrap(challenge.getDescription(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
             }
@@ -265,7 +269,8 @@ public class SignLogic {
             if (missing > 0) {
                 sign.setLine(3, format + missing);
             } else if (missing == 0) {
-                sign.setLine(3, format + tr("READY"));
+                // I18N: Status label on challenge signs when all requirements are met.
+                sign.setLine(3, format + trLegacy("Ready"));
             } else if (lines.size() > 3) {
                 sign.setLine(3, lines.get(3));
             } else {
@@ -318,7 +323,8 @@ public class SignLogic {
                     return;
                 }
                 if (!challenge.getRank().isAvailable(playerInfo)) {
-                    player.sendMessage(tr("\u00a74The {0} challenge is not available yet!", challenge.getDisplayName()));
+                    send(player, tr("<error>The <challenge> challenge is not available yet!",
+                        legacyArg("challenge", challenge.getDisplayName())));
                     return;
                 }
                 scheduler.sync(() -> tryComplete(player, chestLoc, challenge));
@@ -361,11 +367,11 @@ public class SignLogic {
             if (successfulItemTransfer) {
                 challengeLogic.completeChallenge(player, challenge.getId());
             } else {
-                player.sendMessage(tr("\u00a7cWARNING:\u00a7e Could not transfer all the required items to your inventory!"));
+                send(player, tr("<error>Warning:</error> <muted>Could not transfer all required items to your inventory."));
             }
             updateSignsOnContainer(chest.getLocation());
         } else {
-            player.sendMessage(tr("\u00a7cNot enough items in chest to complete challenge!"));
+            send(player, tr("<error>Not enough items in chest to complete challenge!"));
         }
     }
 

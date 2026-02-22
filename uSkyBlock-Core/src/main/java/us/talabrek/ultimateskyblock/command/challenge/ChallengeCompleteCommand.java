@@ -7,12 +7,15 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
  * Complete Challenge Command
@@ -29,7 +32,7 @@ public class ChallengeCompleteCommand extends AbstractCommand {
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(tr("\u00a7cCommand only available for players."));
+            sendPlayerOnly(sender);
             return false;
         }
         if (args == null || args.length == 0) {
@@ -41,9 +44,12 @@ public class ChallengeCompleteCommand extends AbstractCommand {
             case FOUND -> challengeLogic.completeChallenge(player, result.getChallenge().getId());
             case AMBIGUOUS -> {
                 String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
-                player.sendMessage(tr("\u00a74Ambiguous challenge name: {0}. Did you mean:{1}", result.getNormalizedInput(), hint));
+                send(player, tr("<error>Ambiguous challenge name: <input>. Did you mean:<suggestions>",
+                    unparsed("input", result.getNormalizedInput()),
+                    unparsed("suggestions", hint)));
             }
-            case NOT_FOUND -> player.sendMessage(tr("\u00a74No challenge matched: {0}", result.getNormalizedInput()));
+            case NOT_FOUND -> send(player, tr("<error>No challenge matched: <input>",
+                unparsed("input", result.getNormalizedInput())));
         }
         return true;
     }

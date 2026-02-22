@@ -9,37 +9,42 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public class RestartCommand extends RequireIslandCommand {
 
     @Inject
     public RestartCommand(@NotNull uSkyBlock plugin) {
         super(plugin, "restart|reset", "usb.island.restart", "?schematic", marktr("delete your island and start a new one."));
-        addFeaturePermission("usb.exempt.cooldown.restart", tr("exempt player from restart-cooldown"));
+        addFeaturePermission("usb.exempt.cooldown.restart", trLegacy("exempt player from restart-cooldown"));
     }
 
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (island.getPartySize() > 1) {
             if (!island.isLeader(player)) {
-                player.sendMessage(tr("\u00a74Only the owner may restart this island. Leave this island in order to start your own (/island leave)."));
+                send(player, tr("<error>Only the owner may restart this island. Leave this island first to start your own (/is leave)."));
             } else {
-                player.sendMessage(tr("\u00a7eYou must remove all players from your island before you can restart it (/island kick <player>). See a list of players currently part of your island using /island party."));
+                send(player, tr("<error>You must remove all players from your island before you can restart it.</error> <muted>Use <cmd>/is kick [player]</cmd>. See your current island group with <cmd>/is party</cmd>."));
             }
             return true;
         }
         Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "restart");
         if (cooldown.isPositive()) {
-            player.sendMessage(tr("\u00a7cYou can restart your island in {0} seconds.", cooldown.toSeconds()));
+            send(player, tr("<error>You can restart your island in <seconds> seconds.",
+                unparsed("seconds", String.valueOf(cooldown.toSeconds()))));
             return true;
         } else {
             if (pi.isIslandGenerating()) {
-                player.sendMessage(tr("\u00a7cYour island is in the process of generating, you cannot restart now."));
+                send(player, tr("<error>Your island is in the process of generating, you cannot restart now."));
                 return true;
             }
             if (plugin.getConfig().getBoolean("island-schemes-enabled", true)) {
@@ -54,7 +59,7 @@ public class RestartCommand extends RequireIslandCommand {
                 plugin.getServer().getPluginManager().callEvent(new RestartIslandEvent(player, pi.getIslandLocation(), cSchem));
                 return true;
             } else {
-                player.sendMessage(tr("\u00a7eNOTE: Your entire island and all your belongings will be RESET!"));
+                send(player, tr("<error>Warning:</error> <muted>Your entire island and all your belongings will be reset."));
                 return true;
             }
         }

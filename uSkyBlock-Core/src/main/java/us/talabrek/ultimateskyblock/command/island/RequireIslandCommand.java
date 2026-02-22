@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public abstract class RequireIslandCommand extends RequirePlayerCommand {
                 return doExecute(alias, player, playerInfo, islandInfo, data, args);
             }
         }
-        player.sendMessage(tr("\u00a74No Island. \u00a7eUse \u00a7b/is create\u00a7e to get one"));
+        send(player, tr("<error>You do not have an island.</error> <muted>Use <cmd>/is create</cmd> to get one."));
         return false;
     }
 }

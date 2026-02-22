@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.event;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
@@ -13,6 +12,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 @Singleton
 public class WitherTagEvents implements Listener {
@@ -31,7 +33,7 @@ public class WitherTagEvents implements Listener {
             && event.getEntity() instanceof Wither wither) {
             IslandInfo islandInfo = plugin.getIslandInfo(event.getLocation());
             if (islandInfo != null && islandInfo.getLeader() != null) {
-                wither.setCustomName(I18nUtil.tr("{0}''s Wither", islandInfo.getLeader()));
+                wither.setCustomName(trLegacy("<leader>'s Wither", unparsed("leader", islandInfo.getLeader())));
                 NamespacedKey key = new NamespacedKey(plugin, ENTITY_ORIGIN_METADATA);
                 wither.getPersistentDataContainer().set(key, PersistentDataType.STRING, islandInfo.getName());
             }

@@ -7,12 +7,15 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.util.Scheduler;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Handles confirms.
@@ -61,10 +64,12 @@ public class ConfirmHandler {
         scheduler.async(() -> {
             ConfirmCommand confirmCommand = confirmMap.remove(uuid);
             if (confirmCommand != null && player.isOnline()) {
-                player.sendMessage(I18nUtil.tr("\u00a79{0}\u00a77 timed out", command));
+                send(player, I18nUtil.tr("<cmd><command></cmd> timed out.", unparsed("command", command)));
             }
         }, timeout);
-        player.sendMessage(I18nUtil.tr("\u00a7eDoing \u00a79{0}\u00a7e is \u00a7cRISKY\u00a7e. Repeat the command within \u00a7a{1}\u00a7e seconds to accept!", command, timeout.toSeconds()));
+        send(player, I18nUtil.tr("Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>",
+            unparsed("command", command),
+            unparsed("timeout", String.valueOf(timeout.toSeconds()))));
         return false;
     }
 

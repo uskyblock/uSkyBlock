@@ -26,6 +26,9 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +38,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public class WorldGuardHandler {
     private static final String CN = WorldGuardHandler.class.getName();
@@ -143,18 +147,20 @@ public class WorldGuardHandler {
         region.setPriority(100);
         if (uSkyBlock.getInstance().getConfig().getBoolean("worldguard.entry-message", true)) {
             if (owners.size() == 0) {
-                region.setFlag(Flags.GREET_MESSAGE, tr("\u00a74** You are entering a protected - but abandoned - island area."));
+                region.setFlag(Flags.GREET_MESSAGE, trLegacy("<error>** You are entering a protected - but abandoned - island area."));
             } else {
-                region.setFlag(Flags.GREET_MESSAGE, tr("\u00a7d** You are entering \u00a7b{0}''s \u00a7disland.", islandConfig.getLeader()));
+                region.setFlag(Flags.GREET_MESSAGE, trLegacy("<muted>** You are entering <primary><leader></primary>'s island.",
+                    unparsed("leader", islandConfig.getLeader())));
             }
         } else {
             region.setFlag(Flags.GREET_MESSAGE, null);
         }
         if (uSkyBlock.getInstance().getConfig().getBoolean("worldguard.exit-message", true)) {
             if (owners.size() == 0) {
-                region.setFlag(Flags.FAREWELL_MESSAGE, tr("\u00a74** You are leaving an abandoned island."));
+                region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("<error>** You are leaving an abandoned island."));
             } else {
-                region.setFlag(Flags.FAREWELL_MESSAGE, tr("\u00a7d** You are leaving \u00a7b{0}''s \u00a7disland.", islandConfig.getLeader()));
+                region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("<muted>** You are leaving <primary><leader></primary>'s island.",
+                    unparsed("leader", islandConfig.getLeader())));
             }
         } else {
             region.setFlag(Flags.FAREWELL_MESSAGE, null);
@@ -190,9 +196,9 @@ public class WorldGuardHandler {
                 ProtectedRegion region = regionManager.getRegion(islandName + "island");
                 updateLockStatus(region, true);
                 // I18N: Message sent when a player locks their island
-                sender.sendMessage(tr("\u00a7eYour island is now locked. Only your party members may enter."));
+                send(sender, tr("Your island is now <error>locked</error>. Only your party members may enter."));
             } else {
-                sender.sendMessage(tr("\u00a74You must be the party leader to lock your island!"));
+                send(sender, tr("<error>You must be the party leader to lock your island!"));
             }
         } catch (Exception ex) {
             LogUtil.log(Level.SEVERE, "ERROR: Failed to lock " + islandName + "'s Island (" + sender.getName() + ")", ex);
@@ -205,9 +211,9 @@ public class WorldGuardHandler {
             if (regionManager.hasRegion(islandName + "island")) {
                 ProtectedRegion region = regionManager.getRegion(islandName + "island");
                 updateLockStatus(region, false);
-                sender.sendMessage(tr("\u00a7eYour island is unlocked and anyone may enter, however only you and your party members may build or remove blocks."));
+                send(sender, tr("Your island is now <secondary>unlocked</secondary>. Anyone may enter, but only you and your party members may build or remove blocks."));
             } else {
-                sender.sendMessage(tr("\u00a74You must be the party leader to unlock your island!"));
+                send(sender, tr("<error>You must be the party leader to unlock your island!"));
             }
         } catch (Exception ex) {
             LogUtil.log(Level.SEVERE, "ERROR: Failed to unlock " + islandName + "'s Island (" + sender.getName() + ")", ex);

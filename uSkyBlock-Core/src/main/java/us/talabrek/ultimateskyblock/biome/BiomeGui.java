@@ -17,8 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public class BiomeGui extends InventoryGui {
 
@@ -49,7 +51,7 @@ public class BiomeGui extends InventoryGui {
     }
 
     private static Inventory createInventory(int size) {
-        return Bukkit.createInventory(null, size, "\u00a79" + tr("Island Biome"));
+        return Bukkit.createInventory(null, size, "\u00a79" + trLegacy("Island Biome"));
     }
 
     @Override
@@ -71,7 +73,7 @@ public class BiomeGui extends InventoryGui {
     private InventoryButton createBiomeButton(BiomeEntry biomeEntry, Biome currentBiome) {
         ItemStack displayItem = biomeEntry.displayItem().clone();
         ItemMeta itemMeta = Objects.requireNonNull(displayItem.getItemMeta());
-        itemMeta.setDisplayName("\u00a7a" + tr("Biome: {0}", biomeEntry.name()));
+        itemMeta.setDisplayName("\u00a7a" + trLegacy("Biome: <biome>", unparsed("biome", biomeEntry.name())));
         List<String> lore = new ArrayList<>(
             Arrays.stream(biomeEntry.description().split("\\R"))
                 .filter(line -> !line.isBlank())
@@ -79,10 +81,10 @@ public class BiomeGui extends InventoryGui {
                 .toList()
         );
         if (biomeEntry.biome().equals(currentBiome)) {
-            lore.add(tr("\u00a72\u00a7lThis is your current biome."));
+            lore.add(trLegacy("<secondary><bold>This is your current biome."));
             itemMeta.addEnchant(Enchantment.LOYALTY, 1, true);
         } else {
-            lore.add(tr("\u00a7e\u00a7lClick to change to this biome."));
+            lore.add(trLegacy("<primary><bold>Click to change to this biome."));
         }
         itemMeta.setLore(lore);
         displayItem.setItemMeta(itemMeta);
@@ -106,10 +108,10 @@ public class BiomeGui extends InventoryGui {
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.RED_CARPET);
                 ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(tr("\u00a7c-"));
+                itemMeta.setDisplayName(miniToLegacy("<error>-"));
                 List<String> lore = List.of(
-                    tr("Decrease radius of biome change"),
-                    tr("Current radius: {0}", formatRadius(radius))
+                    trLegacy("Decrease radius of biome change"),
+                    trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius)))
                 );
                 itemMeta.setLore(lore);
                 displayItem.setItemMeta(itemMeta);
@@ -129,10 +131,10 @@ public class BiomeGui extends InventoryGui {
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.GREEN_CARPET);
                 ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(tr("\u00a72+"));
+                itemMeta.setDisplayName(miniToLegacy("<secondary>+"));
                 List<String> lore = List.of(
-                    tr("Increase radius of biome change"),
-                    tr("Current radius: {0}", formatRadius(radius))
+                    trLegacy("Increase radius of biome change"),
+                    trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius)))
                 );
                 itemMeta.setLore(lore);
                 displayItem.setItemMeta(itemMeta);
@@ -152,7 +154,7 @@ public class BiomeGui extends InventoryGui {
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.GRASS_BLOCK);
                 ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(tr("Current radius: {0}", formatRadius(radius)));
+                itemMeta.setDisplayName(trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius))));
                 displayItem.setItemMeta(itemMeta);
                 return displayItem;
             });
@@ -160,9 +162,9 @@ public class BiomeGui extends InventoryGui {
 
     private static String formatRadius(String radius) {
         return switch (radius) {
-            case "chunk" -> tr("\u00a72chunk");
-            case "all" -> tr("\u00a7call");
-            default -> tr("\u00a7e{0}", radius);
+            case "chunk" -> trLegacy("<secondary>chunk");
+            case "all" -> trLegacy("<error>all");
+            default -> miniToLegacy("<primary><radius>", unparsed("radius", radius));
         };
     }
 
@@ -171,8 +173,8 @@ public class BiomeGui extends InventoryGui {
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.OAK_SIGN);
                 ItemMeta itemMeta = requireNonNull(displayItem.getItemMeta());
-                itemMeta.setDisplayName(tr("\u00a7cBack to Main Menu"));
-                itemMeta.setLore(List.of(tr("\u00a7eClick here to return to the main island screen.")));
+                itemMeta.setDisplayName(trLegacy("<error>Back to Main Menu"));
+                itemMeta.setLore(List.of(trLegacy("<muted>Click here to return to the main island screen.")));
                 displayItem.setItemMeta(itemMeta);
                 return displayItem;
             })

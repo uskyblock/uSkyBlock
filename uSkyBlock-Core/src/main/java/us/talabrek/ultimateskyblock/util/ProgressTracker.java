@@ -1,11 +1,15 @@
 package us.talabrek.ultimateskyblock.util;
 
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.CommandSender;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.time.Instant;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * General progress tracker using throttling
@@ -27,18 +31,21 @@ public class ProgressTracker {
         this.lastProgressTime = Instant.MIN;
     }
 
-    public void progressUpdate(long progress, long total, Object... args) {
+    public void progressUpdate(long progress, long total, TagResolver... resolvers) {
         Instant now = Instant.now();
         float pct = 100f * progress / (total > 0 ? total : 1f);
         if (now.isAfter(lastProgressTime.plus(progressEvery)) || pct > (lastProgressPct + progressEveryPct)) {
             lastProgressPct = pct;
             lastProgressTime = now;
-            Object[] newArgs = new Object[args.length + 3];
-            newArgs[0] = pct;
-            newArgs[1] = progress;
-            newArgs[2] = total;
-            System.arraycopy(args, 0, newArgs, 3, args.length);
-            sender.sendMessage(tr(format, newArgs));
+            int extra = resolvers != null ? resolvers.length : 0;
+            TagResolver[] progressResolvers = new TagResolver[extra + 3];
+            progressResolvers[0] = number("progress_pct", pct);
+            progressResolvers[1] = unparsed("progress", String.valueOf(progress));
+            progressResolvers[2] = unparsed("total", String.valueOf(total));
+            if (extra > 0) {
+                System.arraycopy(resolvers, 0, progressResolvers, 3, extra);
+            }
+            send(sender, tr(format, progressResolvers));
         }
     }
 }

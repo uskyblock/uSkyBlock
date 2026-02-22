@@ -2,8 +2,8 @@ package us.talabrek.ultimateskyblock.player;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -36,7 +36,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.plainText;
 
 public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.api.PlayerInfo {
     private static final String CN = PlayerInfo.class.getName();
@@ -182,8 +186,9 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         }
         IslandInfo island = getIslandInfo();
         if (island != null) {
-            island.sendMessageToOnlineMembers(tr("\u00a79{0}\u00a7f has completed the \u00a79{1}\u00a7f challenge!",
-                getPlayerName(), challenge.getDisplayName()));
+            island.sendMessageToOnlineMembers(trLegacy("<primary><player></primary> has completed the <primary><challenge></primary> challenge!",
+                unparsed("player", getPlayerName()),
+                legacyArg("challenge", challenge.getDisplayName())));
         }
     }
 
@@ -299,17 +304,37 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     @Override
     public String toString() {
-        // TODO: 01/06/2015 - R4zorax: use i18n.tr
-        String str = "\u00a7bPlayer Info:\n";
-        str += ChatColor.GRAY + "  - name: " + ChatColor.DARK_AQUA + getPlayerName() + "\n";
-        str += ChatColor.GRAY + "  - nick: " + ChatColor.DARK_AQUA + getDisplayName() + "\n";
-        str += ChatColor.GRAY + "  - hasIsland: " + ChatColor.DARK_AQUA + getHasIsland() + "\n";
-        str += ChatColor.GRAY + "  - home: " + ChatColor.DARK_AQUA + LocationUtil.asString(getHomeLocation()) + "\n";
-        str += ChatColor.GRAY + "  - island: " + ChatColor.DARK_AQUA + LocationUtil.asString(getIslandLocation()) + "\n";
-        str += ChatColor.GRAY + "  - banned from: " + ChatColor.DARK_AQUA + getBannedFrom() + "\n";
-        str += ChatColor.GRAY + "  - trusted on: " + ChatColor.DARK_AQUA + playerData.getStringList("trustedOn") + "\n";
-        // TODO: 28/12/2014 - R4zorax: Some info about challenges?
-        return str;
+        StringBuilder plain = new StringBuilder();
+        for (Component line : asComponentLines()) {
+            if (plain.length() > 0) {
+                plain.append('\n');
+            }
+            plain.append(plainText(line));
+        }
+        return plain.toString();
+    }
+
+    public @NotNull Component[] asComponentLines() {
+        String bannedFrom = String.join(", ", getBannedFrom());
+        String trustedOn = String.join(", ", playerData.getStringList("trustedOn"));
+        return new Component[] {
+            // I18N: Header line for the admin player info debug output.
+            tr("<primary>Player Info:"),
+            // I18N: Label for the account name in admin player info debug output.
+            tr("<muted>  - name: <primary><name></primary>", unparsed("name", getPlayerName())),
+            // I18N: Label for the display name / nickname in admin player info debug output.
+            tr("<muted>  - nick: <primary><nick></primary>", legacyArg("nick", getDisplayName())),
+            // I18N: Label showing whether the player currently owns an island in admin player info output.
+            tr("<muted>  - hasIsland: <primary><has-island></primary>", unparsed("has-island", String.valueOf(getHasIsland()))),
+            // I18N: Label for the stored home location in admin player info debug output.
+            tr("<muted>  - home: <primary><home></primary>", unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())))),
+            // I18N: Label for the player's island center location in admin player info debug output.
+            tr("<muted>  - island: <primary><island></primary>", unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())))),
+            // I18N: Label for the list of island names this player is banned from in admin player info output.
+            tr("<muted>  - banned from: <primary><banned-islands></primary>", unparsed("banned-islands", bannedFrom)),
+            // I18N: Label for the list of islands where this player is trusted in admin player info output.
+            tr("<muted>  - trusted on: <primary><trusted-islands></primary>", unparsed("trusted-islands", trustedOn))
+        };
     }
 
     @Override

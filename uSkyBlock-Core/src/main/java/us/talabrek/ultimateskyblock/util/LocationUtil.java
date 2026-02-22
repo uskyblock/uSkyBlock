@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.util;
 
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
@@ -22,7 +21,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
@@ -32,14 +32,14 @@ public enum LocationUtil {
     ;
     private static final Pattern LOCATION_PATTERN = Pattern.compile("((?<world>[^:]+):)?(?<x>[\\-0-9\\.]+),(?<y>[\\-0-9\\.]+),(?<z>[\\-0-9\\.]+)(:(?<yaw>[\\-0-9\\.]+):(?<pitch>[\\-0-9\\.]+))?");
     private static final String[] CARDINAL_DIRECTION = {
-            I18nUtil.marktr("North"),
-            I18nUtil.marktr("North-East"),
-            I18nUtil.marktr("East"),
-            I18nUtil.marktr("South-East"),
-            I18nUtil.marktr("South"),
-            I18nUtil.marktr("South-West"),
-            I18nUtil.marktr("West"),
-            I18nUtil.marktr("North-West")
+            marktr("North"),
+            marktr("North-East"),
+            marktr("East"),
+            marktr("South-East"),
+            marktr("South"),
+            marktr("South-West"),
+            marktr("West"),
+            marktr("North-West")
     };
 
     public static String asString(Location loc) {
@@ -266,7 +266,7 @@ public enum LocationUtil {
     }
 
     public static String getCardinalDirection(float yaw) {
-        return tr(CARDINAL_DIRECTION[((int) Math.round((((int)yaw + 360) % 360) / 45d)) % CARDINAL_DIRECTION.length]);
+        return CARDINAL_DIRECTION[((int) Math.round((((int)yaw + 360) % 360) / 45d)) % CARDINAL_DIRECTION.length];
     }
 
     public static class ScanChest extends BukkitRunnable {

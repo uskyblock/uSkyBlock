@@ -12,13 +12,17 @@ import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * An incremental (synchroneous) task for protecting all islands.
@@ -74,20 +78,29 @@ public class ProtectAllTask extends BukkitRunnable {
                         log.log(Level.INFO, "Error occurred trying to process " + fileName, e);
                         failed++;
                     }
-                    tracker.progressUpdate(success + failed + skipped, total, failed, skipped, getElapsed(tStart));
+                    tracker.progressUpdate(
+                        success + failed + skipped,
+                        total,
+                        unparsed("failed", String.valueOf(failed)),
+                        unparsed("skipped", String.valueOf(skipped)),
+                        unparsed("elapsed", getElapsed(tStart))
+                    );
                 }
             }
         } finally {
             if (!active) {
-                sender.sendMessage(tr("\u00a7cABORTED:\u00a7e Protect-All was aborted!"));
+                send(sender, tr("<error>Aborted:</error> <muted>Protect-all was aborted."));
             }
             active = false;
         }
-        String message = tr("\u00a7eCompleted protect-all in {0}, {1} new regions were created!", getElapsed(tStart), success);
         if (sender instanceof Player && ((Player) sender).isOnline()) {
-            sender.sendMessage(message);
+            send(sender, tr("Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
+                unparsed("elapsed", getElapsed(tStart)),
+                unparsed("count", String.valueOf(success))));
         }
-        LogUtil.log(Level.INFO, message);
+        LogUtil.log(Level.INFO, trLegacy("Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
+            unparsed("elapsed", getElapsed(tStart)),
+            unparsed("count", String.valueOf(success))));
     }
 
     private String getElapsed(Instant tStart) {

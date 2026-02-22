@@ -44,6 +44,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 
 /**
  * The main /island command
@@ -95,11 +96,11 @@ public class IslandCommand extends BaseCommandExecutor {
         this.plugin = plugin;
         this.menu = menu;
 
-        addFeaturePermission("usb.mod.bypasscooldowns", tr("allows user to bypass cooldowns"));
-        addFeaturePermission("usb.mod.bypassprotection", tr("allows user to bypass visitor-protections"));
-        addFeaturePermission("usb.mod.bypassteleport", tr("allows user to bypass teleport-delay"));
-        addFeaturePermission("usb.island.signs.use", tr("allows user to use [usb] signs"));
-        addFeaturePermission("usb.island.signs.place", tr("allows user to place [usb] signs"));
+        addFeaturePermission("usb.mod.bypasscooldowns", trLegacy("allows users to bypass cooldowns"));
+        addFeaturePermission("usb.mod.bypassprotection", trLegacy("allows users to bypass visitor protections"));
+        addFeaturePermission("usb.mod.bypassteleport", trLegacy("allows users to bypass teleport delay"));
+        addFeaturePermission("usb.island.signs.use", trLegacy("allows users to use [usb] signs"));
+        addFeaturePermission("usb.island.signs.place", trLegacy("allows users to place [usb] signs"));
 
         addTab("island", allPlayerTabCompleter);
         addTab("player", allPlayerTabCompleter);
