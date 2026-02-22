@@ -17,9 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.prefix;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * The data-object for a challenge
@@ -166,23 +170,30 @@ public class Challenge {
                 Duration cooldown = completion.getCooldown();
                 if (timesCompleted < getRepeatLimit() || getRepeatLimit() <= 0) {
                     if (getRepeatLimit() > 0) {
-                        lores.add(tr("\u00a74You can complete this {0} more time(s).", getRepeatLimit() - timesCompleted));
+                        lores.add(trLegacy("<muted>You can complete this <primary><remaining></primary> more time(s).",
+                            unparsed("remaining", String.valueOf(getRepeatLimit() - timesCompleted))));
                     }
                     if (cooldown.toDays() > 0) {
-                        lores.add(tr("\u00a74Requirements will reset in {0} days.", cooldown.toDays()));
+                        lores.add(trLegacy("<muted>Requirements will reset in <primary><days></primary> days.",
+                            unparsed("days", String.valueOf(cooldown.toDays()))));
                     } else if (cooldown.toHours() > 0) {
-                        lores.add(tr("\u00a74Requirements will reset in {0} hours.", cooldown.toHours()));
+                        lores.add(trLegacy("<muted>Requirements will reset in <primary><hours></primary> hours.",
+                            unparsed("hours", String.valueOf(cooldown.toHours()))));
                     } else {
-                        lores.add(tr("\u00a74Requirements will reset in {0} minutes.", cooldown.toMinutes()));
+                        lores.add(trLegacy("<muted>Requirements will reset in <primary><minutes></primary> minutes.",
+                            unparsed("minutes", String.valueOf(cooldown.toMinutes()))));
                     }
                 } else {
-                    lores.add(tr("\u00a74This challenge is currently unavailable."));
+                    lores.add(trLegacy("<error>This challenge is currently unavailable."));
                     if (cooldown.toDays() > 0) {
-                        lores.add(tr("\u00a74You can complete this again in {0} days.", cooldown.toDays()));
+                        lores.add(trLegacy("<muted>You can complete this again in <primary><days></primary> days.",
+                            unparsed("days", String.valueOf(cooldown.toDays()))));
                     } else if (cooldown.toHours() > 0) {
-                        lores.add(tr("\u00a74You can complete this again in {0} hours.", cooldown.toHours()));
+                        lores.add(trLegacy("<muted>You can complete this again in <primary><hours></primary> hours.",
+                            unparsed("hours", String.valueOf(cooldown.toHours()))));
                     } else {
-                        lores.add(tr("\u00a74You can complete this again in {0} minutes.", cooldown.toMinutes()));
+                        lores.add(trLegacy("<muted>You can complete this again in <primary><minutes></primary> minutes.",
+                            unparsed("minutes", String.valueOf(cooldown.toMinutes()))));
                     }
                 }
             }
@@ -191,60 +202,70 @@ public class Challenge {
         Map<ItemStack, Integer> requiredItemsForChallenge = getRequiredItems(timesCompleted);
         if (!requiredItemsForChallenge.isEmpty() || !requiredBlocks.isEmpty()
             || (requiredEntities != null && !requiredEntities.isEmpty())) {
-            lores.add(tr("\u00a7eThis challenge requires:"));
+            lores.add(trLegacy("<muted>This challenge requires:"));
         }
         List<String> details = new ArrayList<>();
         if (!requiredItemsForChallenge.isEmpty()) {
             for (Map.Entry<ItemStack, Integer> requiredItem : requiredItemsForChallenge.entrySet()) {
                 if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(tr("\u00a77and more..."));
+                    details.add(trLegacy("<muted>and more..."));
                     break;
                 }
                 int requiredAmount = requiredItem.getValue();
                 ItemStack requiredType = requiredItem.getKey();
                 details.add(requiredAmount > 1
-                    ? tr("\u00a7f{0}x \u00a77{1}", requiredAmount, ItemStackUtil.getItemName(requiredType))
-                    : tr("\u00a77{0}", ItemStackUtil.getItemName(requiredType)));
+                    ? miniToLegacy("<secondary><count></secondary>x <muted><item>",
+                        unparsed("count", String.valueOf(requiredAmount)),
+                        legacyArg("item", ItemStackUtil.getItemName(requiredType)))
+                    : miniToLegacy("<muted><item>", legacyArg("item", ItemStackUtil.getItemName(requiredType))));
             }
         }
         if (!requiredBlocks.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
             for (BlockRequirement blockRequirement : requiredBlocks) {
                 if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(tr("\u00a77and more..."));
+                    details.add(trLegacy("<muted>and more..."));
                     break;
                 }
                 details.add(blockRequirement.amount() > 1
-                    ? tr("\u00a7f{0}x \u00a77{1}", blockRequirement.amount(), ItemStackUtil.getBlockName(blockRequirement.type()))
-                    : tr("\u00a77{0}", ItemStackUtil.getBlockName(blockRequirement.type())));
+                    ? miniToLegacy("<secondary><count></secondary>x <muted><block>",
+                        unparsed("count", String.valueOf(blockRequirement.amount())),
+                        legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type())))
+                    : miniToLegacy("<muted><block>", legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type()))));
             }
         }
         if (requiredEntities != null && !requiredEntities.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
             for (EntityMatch entityMatch : requiredEntities) {
                 if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(tr("\u00a77and more..."));
+                    details.add(trLegacy("<muted>and more..."));
                     break;
                 }
                 details.add(entityMatch.getCount() > 1
-                    ? tr("\u00a7f{0}x \u00a77{1}", entityMatch.getCount(), entityMatch.getDisplayName())
-                    : tr("\u00a77{0}", entityMatch.getDisplayName()));
+                    ? miniToLegacy("<secondary><count></secondary>x <muted><entity>",
+                        unparsed("count", String.valueOf(entityMatch.getCount())),
+                        component("entity", entityMatch.getDisplayName()))
+                    : miniToLegacy("<muted><entity>", component("entity", entityMatch.getDisplayName())));
             }
         }
         lores.addAll(wrappedDetails(details));
         if (type == Challenge.Type.PLAYER) {
             if (takeItems) {
-                lores.add(tr("\u00a7eItems will be traded for reward."));
+                lores.add(trLegacy("<muted>Items will be traded for the reward."));
             }
         } else if (type == Challenge.Type.ISLAND) {
-            lores.add(tr("\u00a7eMust be within {0} meters.", getRadius()));
+            lores.add(trLegacy("<muted>Must be within <primary><radius></primary> meters.",
+                unparsed("radius", String.valueOf(getRadius()))));
         }
-        List<String> lines = wordWrap("\u00a7a" + reward.getRewardText(), 20, MAX_LINE);
-        lores.add(tr("\u00a76Item Reward: \u00a7a") + lines.getFirst());
+        List<String> lines = wordWrap(reward.getRewardText(), 20, MAX_LINE);
+        lores.add(trLegacy("<muted>Item reward: <primary><reward-line></primary>", legacyArg("reward-line", lines.getFirst())));
         lores.addAll(lines.subList(1, lines.size()));
         if (withCurrency) {
-            lores.add(tr("\u00a76Currency Reward: \u00a7a{0}", reward.getCurrencyReward()));
+            lores.add(trLegacy("<muted>Currency reward: <primary><currency></primary>",
+                unparsed("currency", String.valueOf(reward.getCurrencyReward()))));
         }
-        lores.add(tr("\u00a76Exp Reward: \u00a7a{0}", reward.getXpReward()));
-        lores.add(tr("\u00a7dTotal times completed: \u00a7f{0}", completion.getTimesCompleted()));
+        lores.add(trLegacy("<muted>XP reward: <primary><experience></primary>",
+            unparsed("experience", String.valueOf(reward.getXpReward()))));
+        lores.add(trLegacy("<muted>Total completions: <primary><times></primary>",
+            unparsed("times", String.valueOf(completion.getTimesCompleted()))));
 
         meta.setLore(lores);
         currentChallengeItem.setItemMeta(meta);
@@ -290,7 +311,7 @@ public class Challenge {
     public List<String> getMissingRequirements(PlayerInfo playerInfo) {
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, requiredChallenges, uSkyBlock.getInstance().getChallengeLogic());
         if (missingRequirement != null) {
-            return wordWrap(tr("\u00a77Requires {0}", missingRequirement), MAX_LINE);
+            return wordWrap(trLegacy("<muted>Requires <requirement>", legacyArg("requirement", missingRequirement)), MAX_LINE);
         }
         return Collections.emptyList();
     }

@@ -14,8 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 public class TrustCommand extends RequireIslandCommand {
 
@@ -27,36 +31,42 @@ public class TrustCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(final String alias, final Player player, final PlayerInfo pi, final IslandInfo island, Map<String, Object> data, String... args) {
         if (args.length == 0) {
-            player.sendMessage(tr("\u00a7eThe following players are trusted on your island:"));
-            player.sendMessage(tr("\u00a74{0}", island.getTrustees()));
-            player.sendMessage(tr("\u00a7eThe following leaders trusts you:"));
-            player.sendMessage(tr("\u00a74{0}", getLeaderNames(pi)));
-            player.sendMessage(tr("\u00a7eTo trust/untrust from your island, use /island trust <player>"));
+            send(player, tr("The following players are trusted on your island:"));
+            send(player, parseMini("<primary><players>", unparsed("players", String.join(", ", island.getTrustees()))));
+            send(player, tr("The following leaders trust you:"));
+            send(player, parseMini("<primary><leaders>", unparsed("leaders", String.join(", ", getLeaderNames(pi)))));
+            send(player, tr("<muted>To trust or untrust on your island, use <cmd>/is trust [player]</cmd>.</muted>"));
             return true;
         } else if (args.length == 1) {
             final String name = args[0];
             if (island.getMembers().contains(name)) {
-                player.sendMessage(tr("\u00a74Members are already trusted!"));
+                send(player, tr("<error>Members are already trusted!"));
                 return true;
             }
             //noinspection deprecation
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
             if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-                player.sendMessage(tr("\u00a74Unknown player {0}", name));
+                send(player, tr("<error>Unknown player <player>", unparsed("player", name)));
                 return true;
             }
             if (alias.equals("trust")) {
                 island.trustPlayer(offlinePlayer, player);
                 if (offlinePlayer.isOnline()) {
-                    offlinePlayer.getPlayer().sendMessage(tr("\u00a7eYou are now trusted on \u00a74{0}''s \u00a7eisland.", pi.getDisplayName()));
+                    send(offlinePlayer.getPlayer(), tr("You are now trusted on <primary><leader></primary>'s island.",
+                        legacyArg("leader", pi.getDisplayName())));
                 }
-                island.sendMessageToIslandGroup(true, marktr("\u00a7a{0} trusted {1} on the island"), player.getName(), name);
+                island.sendMessageToIslandGroup(tr("<primary><player></primary> trusted <primary><target></primary> on the island.",
+                    unparsed("player", player.getName()),
+                    unparsed("target", name)));
             } else {
                 island.untrustPlayer(offlinePlayer, player);
                 if (offlinePlayer.isOnline()) {
-                    offlinePlayer.getPlayer().sendMessage(tr("\u00a7eYou are no longer trusted on \u00a74{0}''s \u00a7eisland.", pi.getDisplayName()));
+                    send(offlinePlayer.getPlayer(), tr("You are no longer trusted on <primary><leader></primary>'s island.",
+                        legacyArg("leader", pi.getDisplayName())));
                 }
-                island.sendMessageToIslandGroup(true, marktr("\u00a7c{0} revoked trust in {1} on the island"), player.getName(), name);
+                island.sendMessageToIslandGroup(tr("<primary><player></primary> revoked trust for <primary><target></primary> on the island.",
+                    unparsed("player", player.getName()),
+                    unparsed("target", name)));
             }
             WorldGuardHandler.updateRegion(island);
             return true;

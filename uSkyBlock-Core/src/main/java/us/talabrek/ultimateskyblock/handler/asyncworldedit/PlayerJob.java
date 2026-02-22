@@ -1,12 +1,15 @@
 package us.talabrek.ultimateskyblock.handler.asyncworldedit;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Logger;
+
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 
 /**
  * Internal state of a job
@@ -56,18 +59,19 @@ class PlayerJob {
 
     public int progress(int blocksPlaced) {
         if (blocksPlaced < startOffset) {
-            showProgress(I18nUtil.tr("\u00a7eWaiting for our turn \u00a7c{0,number,###}%", 100d * blocksPlaced / startOffset));
+            showProgress(I18nUtil.tr("<muted>Waiting for our turn: <primary><progress:'###'>%</primary>",
+                number("progress", 100d * blocksPlaced / startOffset)));
             log.finer("waiting: " + this);
             return blocksPlaced;
         }
         this.placedBlocks = Math.min(blocksPlaced - startOffset, (maxQueuedBlocks - offset));
         this.percentage = Math.floor(Math.min((100d * getPlacedBlocks() / maxQueuedBlocks), 100));
-        showProgress(I18nUtil.tr("\u00a79Creating island...\u00a7e{0,number,###}%", percentage));
+        showProgress(I18nUtil.tr("<muted>Creating island: <primary><progress:'###'>%</primary>", number("progress", percentage)));
         log.finer("progress: " + this);
         return blocksPlaced - placedBlocks;
     }
 
-    private void showProgress(String message) {
+    private void showProgress(Component message) {
         Instant now = Instant.now();
         if (now.isAfter(lastProgress.plus(progressInterval)) || percentage > (lastProgressPct + progressEveryPct)) {
             plugin.getPlayerLogic().getNotificationManager().sendActionBar(player, message);

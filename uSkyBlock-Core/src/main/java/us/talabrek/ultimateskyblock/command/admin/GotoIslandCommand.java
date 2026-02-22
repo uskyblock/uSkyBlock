@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.command.admin;
 
 import com.google.inject.Inject;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +9,9 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
  * Teleports to the player's island.
@@ -19,27 +21,26 @@ public class GotoIslandCommand extends AbstractPlayerInfoCommand {
 
     @Inject
     public GotoIslandCommand(@NotNull uSkyBlock plugin) {
-        super("goto", "usb.mod.goto", marktr("teleport to another players island"));
+        super("goto", "usb.mod.goto", marktr("teleport to another player's island"));
         this.plugin = plugin;
     }
 
     @Override
     protected void doExecute(final CommandSender sender, final PlayerInfo playerInfo) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(I18nUtil.tr("\u00a74Only supported for players"));
+        if (!(sender instanceof Player player)) {
+            sendPlayerOnly(sender);
             return;
         }
-        final Player player = (Player) sender;
         if (!playerInfo.getHasIsland()) {
-            sender.sendMessage(I18nUtil.tr("\u00a74That player does not have an island!"));
+            send(sender, tr("<error>That player does not have an island!"));
         } else if (playerInfo.getHomeLocation() != null) {
-            sender.sendMessage(tr("\u00a7aTeleporting to {0}''s island.", playerInfo.getPlayerName()));
+            send(sender, tr("<secondary>Teleporting to <player>'s island.", unparsed("player", playerInfo.getPlayerName())));
             plugin.getTeleportLogic().safeTeleport(player, playerInfo.getHomeLocation(), true);
         } else if (playerInfo.getIslandLocation() != null) {
-            sender.sendMessage(tr("\u00a7aTeleporting to {0}''s island.", playerInfo.getPlayerName()));
+            send(sender, tr("<secondary>Teleporting to <player>'s island.", unparsed("player", playerInfo.getPlayerName())));
             plugin.getTeleportLogic().safeTeleport(player, playerInfo.getIslandLocation(), true);
         } else {
-            sender.sendMessage(I18nUtil.tr("\u00a74That player does not have an island!"));
+            send(sender, tr("<error>That player does not have an island!"));
         }
     }
 }

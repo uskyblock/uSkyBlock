@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public class BlockCollection {
     Map<Material, Integer> blockCount;
@@ -31,13 +34,15 @@ public class BlockCollection {
         for (BlockRequirement requirement : requirements) {
             int diff = requirement.amount() - count(requirement.type().getMaterial());
             if (diff > 0) {
-                sb.append(tr(" \u00a7f{0}x \u00a77{1}", diff, ItemStackUtil.getBlockName(requirement.type())));
+                sb.append(miniToLegacy(" <secondary><count>x <muted><block>",
+                    unparsed("count", String.valueOf(diff)),
+                    legacyArg("block", ItemStackUtil.getBlockName(requirement.type()))));
             }
         }
         if (sb.toString().trim().isEmpty()) {
             return null;
         }
-        return tr("\u00a7eStill the following blocks short: {0}", sb.toString());
+        return trLegacy("<muted>Still missing the following blocks: <blocks>", legacyArg("blocks", sb.toString()));
     }
 
     private int count(Material type) {

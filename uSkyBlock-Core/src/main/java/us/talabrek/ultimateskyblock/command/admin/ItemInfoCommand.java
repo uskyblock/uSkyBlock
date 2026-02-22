@@ -10,8 +10,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
  * Command for querying items reg. NBT stuff
@@ -27,17 +31,14 @@ public class ItemInfoCommand extends CompositeCommand {
                 if (sender instanceof Player player) {
                     ItemStack itemStack = player.getInventory().getItemInMainHand();
                     if (!itemStack.getType().isItem()) {
-                        player.sendMessage(tr("\u00a7cNo item in hand!"));
+                        send(player, tr("<error>No item in hand!"));
                         return true;
                     }
-                    String[] msgs = new String[]{
-                        tr("\u00a7eInfo for \u00a79{0}", ItemStackUtil.asString(itemStack)),
-                        tr("\u00a77 - name: \u00a79{0}", ItemStackUtil.getItemName(itemStack))
-                    };
-                    player.sendMessage(msgs);
+                    send(player, tr("Info for <primary><item></primary>", unparsed("item", ItemStackUtil.asString(itemStack))));
+                    send(player, tr(" - name: <primary><name>", legacyArg("name", ItemStackUtil.getItemName(itemStack))));
                     return true;
                 }
-                sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                sendPlayerOnly(sender);
                 return false;
             }
         });

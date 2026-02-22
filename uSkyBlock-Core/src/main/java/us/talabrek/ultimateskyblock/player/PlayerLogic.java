@@ -18,6 +18,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Holds the active players
@@ -147,13 +149,14 @@ public class PlayerLogic {
                         String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
                         IslandInfo islandInfo = plugin.getIslandInfo(islandName);
                         if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
-                            onlinePlayer.sendMessage(tr("\u00a7eYou have been §cBANNED§e from {0}§e''s island.", islandInfo.getLeader()),
-                                tr("\u00a7eSending you to spawn."));
+                            send(onlinePlayer, tr("You have been <error>banned</error> from <primary><leader></primary>'s island.",
+                                    unparsed("leader", islandInfo.getLeader())),
+                                tr("<muted>Sending you to spawn."));
                             teleportLogic.spawnTeleport(onlinePlayer, true);
                         } else if (islandInfo != null && islandInfo.isLocked()) {
                             if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
-                                onlinePlayer.sendMessage(tr("\u00a7eThe island has been §cLOCKED§e.", islandInfo.getLeader()),
-                                    tr("\u00a7eSending you to spawn."));
+                                send(onlinePlayer, tr("<error>The island has been locked.</error>"),
+                                    tr("<muted>Sending you to spawn."));
                                 teleportLogic.spawnTeleport(onlinePlayer, true);
                             }
                         }

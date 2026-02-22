@@ -9,11 +9,15 @@ import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public class CreateCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
@@ -22,7 +26,7 @@ public class CreateCommand extends RequirePlayerCommand {
     public CreateCommand(@NotNull uSkyBlock plugin) {
         super("create|c", "usb.island.create", "?schematic", marktr("create an island"));
         this.plugin = plugin;
-        addFeaturePermission("usb.exempt.cooldown.create", tr("exempt player from create-cooldown"));
+        addFeaturePermission("usb.exempt.cooldown.create", trLegacy("exempt player from create-cooldown"));
     }
 
     @Override
@@ -35,16 +39,13 @@ public class CreateCommand extends RequirePlayerCommand {
         } else if (pi.getHasIsland()) {
             IslandInfo island = plugin.getIslandInfo(pi);
             if (island.isLeader(player)) {
-                player.sendMessage(tr("\u00a74Island found!" +
-                    "\u00a7e You already have an island. If you want a fresh island, type" +
-                    "\u00a7b /is restart\u00a7e to get one"));
+                send(player, tr("<error>Island found.</error> <muted>You already have an island. If you want a fresh island, use <cmd>/is restart</cmd>."));
             } else {
-                player.sendMessage(tr("\u00a74Island found!" +
-                    "\u00a7e You are already a member of an island. To start your own, first" +
-                    "\u00a7b /is leave"));
+                send(player, tr("<error>Island found.</error> <muted>You are already a member of an island. To start your own, first use <cmd>/is leave</cmd>."));
             }
         } else {
-            player.sendMessage(tr("\u00a7eYou can create a new island in {0,number,#} seconds.", cooldown.toSeconds()));
+            send(player, tr("You can create a new island in <primary><seconds></primary> seconds.",
+                unparsed("seconds", String.valueOf(cooldown.toSeconds()))));
         }
         return true;
     }

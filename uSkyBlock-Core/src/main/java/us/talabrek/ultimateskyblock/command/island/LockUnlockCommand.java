@@ -7,6 +7,8 @@ import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendNoCommandAccess;
 
 import java.util.Map;
 
@@ -27,10 +29,10 @@ public class LockUnlockCommand extends RequireIslandCommand {
                 if (island.hasPerm(player, "canToggleLock")) {
                     island.lock(player);
                 } else {
-                    player.sendMessage(tr("\u00a74You do not have permission to lock your island!"));
+                    send(player, tr("<error>You do not have permission to lock your island!"));
                 }
             } else {
-                player.sendMessage(tr("\u00a74You don't have access to this command!"));
+                sendNoCommandAccess(player);
             }
             return true;
         }
@@ -39,10 +41,10 @@ public class LockUnlockCommand extends RequireIslandCommand {
                 if (island.hasPerm(player, "canToggleLock")) {
                     island.unlock(player);
                 } else {
-                    player.sendMessage(tr("\u00a74You do not have permission to unlock your island!"));
+                    send(player, tr("<error>You do not have permission to unlock your island!"));
                 }
             } else {
-                player.sendMessage(tr("\u00a74You don't have access to this command!"));
+                sendNoCommandAccess(player);
             }
             return true;
         }

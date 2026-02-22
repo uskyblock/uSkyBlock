@@ -13,13 +13,17 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 public class PerkCommand extends CompositeCommand {
 
     @Inject
     public PerkCommand(@NotNull uSkyBlock plugin) {
-        super("perk", "usb.admin.perk", marktr("shows perk-information"));
+        super("perk", "usb.admin.perk", marktr("shows perk information"));
         add(new AbstractCommand("list", "lists all perks") {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
@@ -29,11 +33,11 @@ public class PerkCommand extends CompositeCommand {
                     String value = (entry.getValue().toString().replaceAll("\n", "\n  ")).trim();
                     sb.append("  ").append(value).append("\n");
                 }
-                sender.sendMessage(sb.toString().split("\n"));
+                sendLegacy(sender, sb.toString().split("\n"));
                 return true;
             }
         });
-        add(new AbstractCommand("player", "", "player", marktr("shows a specific players perks")) {
+        add(new AbstractCommand("player", "", "player", marktr("shows a specific player's perks")) {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 if (args.length == 1) {
@@ -44,17 +48,18 @@ public class PerkCommand extends CompositeCommand {
                         sb.append("\u00a79").append(player.getName()).append(":\n");
                         String value = (perk.toString().replaceAll("\n", "\n  ")).trim();
                         sb.append("  ").append(value).append("\n");
-                        sender.sendMessage(sb.toString().split("\n"));
+                        sendLegacy(sender, sb.toString().split("\n"));
                         return true;
                     } else {
-                        sender.sendMessage(tr("\u00a74No player named {0} was found!", args[0]));
+                        send(sender, tr("<error>No player named <player> was found!", unparsed("player", args[0])));
                     }
                 }
                 return false;
             }
         });
         for (Map.Entry<String, Perk> entry : plugin.getPerkLogic().getPerkMap().entrySet()) {
-            addFeaturePermission(entry.getKey(), tr("additional perks {0}", stripFormatting(entry.getValue().toString().trim().replaceAll("\\n", ","))));
+            addFeaturePermission(entry.getKey(), trLegacy("additional perks <perks>",
+                unparsed("perks", stripFormatting(entry.getValue().toString().trim().replaceAll("\\n", ",")))));
         }
     }
 }

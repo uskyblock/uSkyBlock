@@ -51,9 +51,9 @@ public class WorldGuardEvents implements Listener {
             v.multiply(1.5); // Bounce
             player.setVelocity(v);
             if (islandInfo.isBanned(player)) {
-                plugin.notifyPlayer(player, tr("\u00a7cBanned:\u00a7e You are banned from this island."));
+                plugin.notifyPlayer(player, tr("<error>Banned: You are banned from this island."));
             } else {
-                plugin.notifyPlayer(player, tr("\u00a7cLocked:\u00a7e That island is locked! No entry allowed."));
+                plugin.notifyPlayer(player, tr("<error>Locked: That island is locked. No entry allowed."));
             }
         }
     }

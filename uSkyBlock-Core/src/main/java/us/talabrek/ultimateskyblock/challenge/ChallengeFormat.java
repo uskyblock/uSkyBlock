@@ -5,7 +5,9 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 public final class ChallengeFormat {
     public static String getMissingRequirement(PlayerInfo playerInfo, List<String> requiredChallenges, ChallengeLogic challengeLogic) {
@@ -37,8 +39,10 @@ public final class ChallengeFormat {
             displayName = challenge.getDisplayName();
         }
         if (count > 1) {
-            return tr("\u00a7f{0}x \u00a77{1}", count, displayName);
+            return miniToLegacy("<secondary><count></secondary>x <muted><challenge>",
+                unparsed("count", String.valueOf(count)),
+                legacyArg("challenge", displayName));
         }
-        return tr("\u00a77{0}", displayName);
+        return miniToLegacy("<muted><challenge>", legacyArg("challenge", displayName));
     }
 }

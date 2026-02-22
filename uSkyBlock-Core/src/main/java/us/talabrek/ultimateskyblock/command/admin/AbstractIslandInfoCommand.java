@@ -6,10 +6,12 @@ import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Command that lookup island info given the player name.
@@ -39,7 +41,7 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
                     doExecute(sender, playerInfo, islandInfo, subArgs);
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7ePlayer {0} has no island!", playerInfo.getPlayerName()));
+                    send(sender, tr("<error>Player <primary><player></primary> has no island.", unparsed("player", playerInfo.getPlayerName())));
                 }
             }
         } else if (sender instanceof Player && WorldGuardHandler.getIslandNameAt(((Player) sender).getLocation()) != null) {

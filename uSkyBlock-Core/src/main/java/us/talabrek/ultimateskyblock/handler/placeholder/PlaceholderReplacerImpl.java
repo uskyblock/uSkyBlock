@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.pre;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 
 /**
  * The actual replacer for placeholders
@@ -98,7 +98,7 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
             PlayerInfo playerInfo = playerLogic.getPlayerInfo(entry.uuid());
             IslandInfo islandInfo = islandLogic.getIslandInfo(playerInfo);
             if (playerInfo == null || islandInfo == null) {
-                return tr("N/A");
+                return "N/A";
             }
             return lookup(islandInfo, placeholder);
         } else if (placeholder.startsWith("usb_")) {
@@ -116,8 +116,8 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
 
     private String lookup(IslandInfo islandInfo, String placeholder) {
         return switch (placeholder) {
-            case "usb_island_level" -> pre("{0,number,##.#}", islandInfo.getLevel());
-            case "usb_island_level_int" -> pre("{0,number,#}", islandInfo.getLevel());
+            case "usb_island_level" -> miniToLegacy("<level:'##.#'>", number("level", islandInfo.getLevel()));
+            case "usb_island_level_int" -> miniToLegacy("<level:'#'>", number("level", islandInfo.getLevel()));
             case "usb_island_rank" -> getRank(islandInfo);
             case "usb_island_leader" -> islandInfo.getLeader();
             case "usb_island_golems_max" -> "" + islandInfo.getMaxGolems();
@@ -141,9 +141,9 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
             case "usb_island_members" -> "" + islandInfo.getMembers();
             case "usb_island_trustees" -> "" + islandInfo.getTrustees();
             case "usb_island_location" -> LocationUtil.asString(islandInfo.getIslandLocation());
-            case "usb_island_location_x" -> pre("{0,number,#}", islandInfo.getIslandLocation().getBlockX());
-            case "usb_island_location_y" -> pre("{0,number,#}", islandInfo.getIslandLocation().getBlockY());
-            case "usb_island_location_z" -> pre("{0,number,#}", islandInfo.getIslandLocation().getBlockZ());
+            case "usb_island_location_x" -> miniToLegacy("<x:'#'>", number("x", islandInfo.getIslandLocation().getBlockX()));
+            case "usb_island_location_y" -> miniToLegacy("<y:'#'>", number("y", islandInfo.getIslandLocation().getBlockY()));
+            case "usb_island_location_z" -> miniToLegacy("<z:'#'>", number("z", islandInfo.getIslandLocation().getBlockZ()));
             case "usb_island_schematic" -> islandInfo.getSchematicName();
             default -> throw new IllegalArgumentException("Unsupported placeholder " + placeholder);
         };
@@ -152,9 +152,9 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
     private String getRank(IslandInfo islandInfo) {
         IslandRank rank = islandLogic.getRank(islandInfo.getName());
         if (rank != null) {
-            return pre("{0,number,#}", rank.getRank());
+            return miniToLegacy("<rank:'#'>", number("rank", rank.getRank()));
         } else {
-            return tr("N/A");
+            return "N/A";
         }
     }
 

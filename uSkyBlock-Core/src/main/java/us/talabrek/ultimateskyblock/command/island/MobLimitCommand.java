@@ -9,18 +9,19 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 public class MobLimitCommand extends AbstractIslandInfoCommand {
     private final uSkyBlock plugin;
 
     @Inject
     public MobLimitCommand(@NotNull uSkyBlock plugin) {
-        super("limits", "usb.island.limit", marktr("show the islands limits"));
+        super("limits", "usb.island.limit", marktr("show the island's limits"));
         this.plugin = plugin;
     }
 
     @Override
     protected void doExecute(CommandSender sender, PlayerInfo playerInfo, IslandInfo islandInfo, String... args) {
-        sender.sendMessage(plugin.getLimitLogic().getSummary(islandInfo).split("\n"));
+        sendLegacy(sender, plugin.getLimitLogic().getSummary(islandInfo).split("\n"));
     }
 }

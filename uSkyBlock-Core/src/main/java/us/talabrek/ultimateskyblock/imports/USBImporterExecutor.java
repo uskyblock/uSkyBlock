@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.imports.fixuuidleader.UUIDLeaderImporter;
 import us.talabrek.ultimateskyblock.imports.update.USBUpdateImporter;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.io.File;
 import java.time.Duration;
@@ -19,6 +20,7 @@ import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
@@ -39,7 +41,10 @@ public class USBImporterExecutor {
         this.plugin = plugin;
         double progressEveryPct = plugin.getConfig().getDouble("importer.progressEveryPct", 10);
         Duration progressInterval = Duration.ofMillis(plugin.getConfig().getLong("importer.progressEveryMs", 10000));
-        progressTracker = new ProgressTracker(Bukkit.getConsoleSender(), marktr("\u00a7eProgress: {0,number,##}% ({1}/{2} - success:{3}, failed:{4}, skipped:{5}) ~ {6}"), progressEveryPct, progressInterval);
+        progressTracker = new ProgressTracker(Bukkit.getConsoleSender(),
+            marktr("<muted>Progress: <primary><progress_pct:'##'>%</primary> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
+            progressEveryPct,
+            progressInterval);
     }
 
     public List<String> getImporterNames() {
@@ -78,7 +83,8 @@ public class USBImporterExecutor {
         }
         final USBImporter importer = getImporter(name);
         if (importer == null) {
-            sender.sendMessage(tr("\u00a74No importer named \u00a7e{0}\u00a74 found", name));
+            send(sender, tr("<error>No importer named <primary><importer></primary> found.",
+                unparsed("importer", name)));
             return;
         }
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> doImport(sender, importer));
@@ -118,7 +124,14 @@ public class USBImporterExecutor {
                     countFailed++;
                     log(Level.WARNING, "Could not import file " + file, t);
                 }
-                progressTracker.progressUpdate(countSuccess + countFailed + countSkip, files.length, countSuccess, countFailed, countSkip, timer.elapsedAsString());
+                progressTracker.progressUpdate(
+                    countSuccess + countFailed + countSkip,
+                    files.length,
+                    unparsed("success", String.valueOf(countSuccess)),
+                    unparsed("failed", String.valueOf(countFailed)),
+                    unparsed("skipped", String.valueOf(countSkip)),
+                    unparsed("elapsed", timer.elapsedAsString())
+                );
             }
         } finally {
             complete(sender, importer);
@@ -127,7 +140,10 @@ public class USBImporterExecutor {
 
     private void complete(CommandSender sender, USBImporter importer) {
         importer.completed(countSuccess, countFailed, countSkip);
-        sender.sendMessage(tr("\u00a7eConverted {0}/{1} files in {2}", countSuccess, (countSuccess + countFailed), timer.elapsedAsString()));
+        send(sender, tr("Converted <primary><converted></primary>/<primary><total></primary> files in <primary><elapsed></primary>.",
+            unparsed("converted", String.valueOf(countSuccess)),
+            unparsed("total", String.valueOf(countSuccess + countFailed)),
+            unparsed("elapsed", timer.elapsedAsString())));
         plugin.getConfig().set("importer." + importer.getName() + ".imported", true);
         plugin.saveConfig();
     }

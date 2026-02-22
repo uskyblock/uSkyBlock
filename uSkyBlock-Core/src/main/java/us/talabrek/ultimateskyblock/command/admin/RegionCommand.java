@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.Set;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
  * Command to show the regions of interest.
@@ -53,11 +56,11 @@ public class RegionCommand extends CompositeCommand {
                         setMaterial(Material.BRICKS);
                         showRegion(player, region);
                     } else {
-                        sender.sendMessage(tr("\u00a7eNo island found at your current location"));
+                        send(sender, tr("<error>No island found at your current location."));
                     }
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -74,7 +77,7 @@ public class RegionCommand extends CompositeCommand {
                     showChunk(player, chunkCoords);
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -93,14 +96,14 @@ public class RegionCommand extends CompositeCommand {
                             showChunk(player, v);
                         }
                     } else {
-                        sender.sendMessage(tr("\u00a7eNo island found at your current location"));
+                        send(sender, tr("<error>No island found at your current location."));
                     }
                     Chunk chunk = player.getLocation().getChunk();
                     BlockVector2 chunkCoords = BlockVector2.at(chunk.getX(), chunk.getZ());
                     showChunk(player, chunkCoords);
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -119,11 +122,11 @@ public class RegionCommand extends CompositeCommand {
                             showRegion(player, rg);
                         }
                     } else {
-                        sender.sendMessage(tr("\u00a7eNo island found at your current location"));
+                        send(sender, tr("<error>No island found at your current location."));
                     }
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -142,14 +145,14 @@ public class RegionCommand extends CompositeCommand {
                             showChunk(player, v);
                         }
                     } else {
-                        sender.sendMessage(tr("\u00a7eNo island found at your current location"));
+                        send(sender, tr("<error>No island found at your current location."));
                     }
                     Chunk chunk = player.getLocation().getChunk();
                     BlockVector2 chunkCoords = BlockVector2.at(chunk.getX(), chunk.getZ());
                     showChunk(player, chunkCoords);
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -160,13 +163,13 @@ public class RegionCommand extends CompositeCommand {
                 if (sender instanceof Player) {
                     Player player = (Player) sender;
                     if (RegionCommand.this.animationHandler.removeAnimations(player)) {
-                        sender.sendMessage(tr("\u00a7eStopped displaying regions"));
+                        send(sender, tr("Stopped displaying regions."));
                     } else {
-                        sender.sendMessage(tr("\u00a7eNo currently shown regions for this player"));
+                        send(sender, tr("No regions are currently shown for this player."));
                     }
                     return true;
                 } else {
-                    sender.sendMessage(tr("\u00a7eCan only be executed as a player"));
+                    sendPlayerOnly(sender);
                 }
                 return false;
             }
@@ -177,12 +180,12 @@ public class RegionCommand extends CompositeCommand {
                 if (args.length == 1 && args[0].matches("[0-9]+")) {
                     int animTick = Integer.parseInt(args[0]);
                     RegionCommand.this.animationHandler.setAnimTick(animTick);
-                    sender.sendMessage(tr("\u00a7eAnimation-tick changed to {0}.", animTick));
+                    send(sender, tr("Animation tick changed to <primary><ticks></primary>.", unparsed("ticks", String.valueOf(animTick))));
                     RegionCommand.this.animationHandler.stop();
                     RegionCommand.this.animationHandler.start();
                     return true;
                 } else if (args.length == 1) {
-                    sender.sendMessage(tr("\u00a7eAnimation-tick must be a valid integer."));
+                    send(sender, tr("<error>Animation tick must be a valid integer."));
                 }
                 return false;
             }

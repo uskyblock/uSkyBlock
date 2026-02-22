@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
@@ -25,13 +26,13 @@ public class GenTopTenCommand extends AbstractCommand {
 
     @Override
     public boolean execute(final CommandSender sender, String alias, Map<String, Object> data, String... args) {
-        sender.sendMessage(tr("\u00a7eGenerating the Top Ten list"));
+        send(sender, tr("Generating the top ten list."));
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 plugin.getIslandLogic().generateTopTen(sender);
                 plugin.getIslandLogic().showTopTen(sender, 1);
-                sender.sendMessage(tr("\u00a7eFinished generation of the Top Ten list"));
+                send(sender, tr("Finished generating the top ten list."));
             }
         });
         return true;

@@ -13,12 +13,21 @@ import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendNoCommandAccess;
 
 public class InfoCommand extends RequireIslandCommand {
 
@@ -26,31 +35,31 @@ public class InfoCommand extends RequireIslandCommand {
 
     @Inject
     public InfoCommand(@NotNull uSkyBlock plugin, @NotNull Logger logger) {
-        super(plugin, "info", "usb.island.info", "?island", marktr("check your or another''s island info"));
+        super(plugin, "info", "usb.island.info", "?island", marktr("check your or another's island info"));
         this.logger = logger;
-        addFeaturePermission("usb.island.info.other", tr("allows user to see others island info"));
+        addFeaturePermission("usb.island.info.other", trLegacy("allows users to see others' island info"));
     }
 
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (!Settings.island_useIslandLevel) {
-            player.sendMessage(tr("\u00a74Island level has been disabled, contact an administrator."));
+            send(player, tr("<error>Island level has been disabled, contact an administrator."));
             return true;
         }
         if (PatienceTester.isRunning(player, "usb.island.info.active")) {
             return true;
         }
         if (player.hasMetadata("usb.island.info.active")) {
-            player.sendMessage(tr("\u00a74Hold your horses! \u00a7eYou have to be patient..."));
+            send(player, tr("<error>Hold your horses!</error> <muted>You have to be patient."));
             return true;
         }
         if (args.length == 0 || (args.length == 1 && args[0].matches("\\d*"))) {
             if (!plugin.playerIsOnIsland(player)) {
-                player.sendMessage(tr("\u00a7eYou must be on your island to use this command."));
+                send(player, tr("<error>You must be on your island to use this command."));
                 return true;
             }
             if (!island.isParty() && !pi.getHasIsland()) {
-                player.sendMessage(tr("\u00a74You do not have an island!"));
+                send(player, tr("<error>You do not have an island!"));
             } else {
                 getIslandInfo(player, player.getName(), alias, args.length == 1 ? Integer.parseInt(args[0], 10) : 1);
             }
@@ -59,7 +68,7 @@ public class InfoCommand extends RequireIslandCommand {
             if (hasPermission(player, "usb.island.info.other")) {
                 getIslandInfo(player, args[0], alias, args.length == 2 ? Integer.parseInt(args[1], 10) : 1);
             } else {
-                player.sendMessage(tr("\u00a74You do not have access to that command!"));
+                sendNoCommandAccess(player);
             }
             return true;
         }
@@ -69,7 +78,7 @@ public class InfoCommand extends RequireIslandCommand {
     public boolean getIslandInfo(final Player player, final String islandPlayer, final String cmd, final int page) {
         PlayerInfo info = plugin.getPlayerInfo(islandPlayer);
         if (info == null || !info.getHasIsland()) {
-            player.sendMessage(tr("\u00a74That player is invalid or does not have an island!"));
+            send(player, tr("<error>That player is invalid or does not have an island!"));
             return false;
         }
         final PlayerInfo playerInfo = islandPlayer.equals(player.getName()) ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(islandPlayer);
@@ -85,15 +94,19 @@ public class InfoCommand extends RequireIslandCommand {
                     if (currentPage > maxPage) {
                         currentPage = maxPage;
                     }
-                    player.sendMessage(tr("\u00a7eBlocks on {0}s Island (page {1,number} of {2,number}):", islandPlayer, currentPage, maxPage));
+                    send(player, tr("Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):",
+                        unparsed("player", islandPlayer),
+                        unparsed("page", String.valueOf(currentPage)),
+                        unparsed("max-page", String.valueOf(maxPage))));
                     if (cmd.equalsIgnoreCase("info") && getState() != null) {
-                        player.sendMessage(tr("Score Count Block"));
+                        send(player, tr("Score Count Block"));
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {
-                            player.sendMessage(score.getState().getColor() + tr("{0,number,00.00}  {1,number,#} {2}",
-                                score.getScore(), score.getCount(),
-                                ItemStackUtil.getBlockName(score.getBlockData())));
+                            sendLegacy(player, score.getState().getColor() + miniToLegacy("<score:'00.00'>  <count:'#'> <block>",
+                                number("score", score.getScore()),
+                                number("count", score.getCount()),
+                                legacyArg("block", ItemStackUtil.getBlockName(score.getBlockData()))));
                         }
-                        player.sendMessage(tr("\u00a7aIsland level is {0,number,###.##}", getState().getScore()));
+                        send(player, tr("<secondary>Island level is <level:'###.##'>", number("level", getState().getScore())));
                     }
                 }
                 PatienceTester.stopRunning(player, "usb.island.info.active");

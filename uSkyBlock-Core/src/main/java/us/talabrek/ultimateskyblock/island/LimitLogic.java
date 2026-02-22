@@ -26,21 +26,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 @Singleton
 public class LimitLogic {
     public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM, COPPER_GOLEM}
-
-    static {
-        marktr("UNKNOWN");
-        marktr("ANIMAL");
-        marktr("MONSTER");
-        marktr("VILLAGER");
-        marktr("GOLEM");
-        marktr("COPPER_GOLEM");
-    }
 
     private final WorldManager worldManager;
     private final BlockLimitLogic blockLimitLogic;
@@ -160,23 +153,49 @@ public class LimitLogic {
             }
             int cnt = count.containsKey(key) ? count.get(key) : 0;
             int max = creatureMax.get(key);
-            sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})", tr(key.name()), cnt >= max ? tr("\u00a7c{0}", cnt) : cnt, max)).append("\n");
+            String creatureCount = cnt >= max
+                ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(cnt)))
+                : String.valueOf(cnt);
+            sb.append(trLegacy("<muted><type>: <secondary><count></secondary> (max. <max>)",
+                legacyArg("type", getCreatureTypeLabel(key)),
+                legacyArg("count", creatureCount),
+                unparsed("max", String.valueOf(max)))).append("\n");
         }
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
         for (Map.Entry<Material, Integer> entry : blockLimits.entrySet()) {
             int blockCount = blockLimitLogic.getCount(entry.getKey(), islandInfo.getIslandLocation());
             if (blockCount >= 0) {
-                sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
-                    ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
-                    blockCount >= entry.getValue() ? tr("\u00a7c{0}", blockCount) : blockCount,
-                    entry.getValue())).append("\n");
+                String current = blockCount >= entry.getValue()
+                    ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(blockCount)))
+                    : String.valueOf(blockCount);
+                sb.append(trLegacy("<muted><block>: <secondary><count></secondary> (max. <max>)",
+                    legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacyArg("count", current),
+                    unparsed("max", String.valueOf(entry.getValue())))).append("\n");
             } else {
-                sb.append(tr("\u00a77{0}: \u00a7a{1}\u00a77 (max. {2})",
-                    ItemStackUtil.getItemName(new ItemStack(entry.getKey())),
-                    tr("\u00a7c{0}", "?"),
-                    entry.getValue())).append("\n");
+                sb.append(trLegacy("<muted><block>: <secondary><count></secondary> (max. <max>)",
+                    legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacyArg("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?"))),
+                    unparsed("max", String.valueOf(entry.getValue())))).append("\n");
             }
         }
         return sb.toString().trim();
+    }
+
+    private String getCreatureTypeLabel(CreatureType creatureType) {
+        return switch (creatureType) {
+            // I18N: Creature category label shown in island mob-limit summary.
+            case ANIMAL -> trLegacy("Animals");
+            // I18N: Creature category label shown in island mob-limit summary.
+            case MONSTER -> trLegacy("Monsters");
+            // I18N: Creature category label shown in island mob-limit summary.
+            case VILLAGER -> trLegacy("Villagers");
+            // I18N: Creature category label shown in island mob-limit summary.
+            case GOLEM -> trLegacy("Golems");
+            // I18N: Creature category label shown in island mob-limit summary.
+            case COPPER_GOLEM -> trLegacy("Copper Golems");
+            // I18N: Fallback creature category label shown in island mob-limit summary.
+            case UNKNOWN -> trLegacy("Unknown");
+        };
     }
 }

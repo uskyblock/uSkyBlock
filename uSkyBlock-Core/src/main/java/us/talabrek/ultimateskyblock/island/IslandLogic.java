@@ -34,6 +34,9 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,7 +54,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 /**
  * Responsible for island creation, locating locations, purging, clearing etc.
@@ -160,7 +166,7 @@ public class IslandLogic {
             if (netherRegion != null) {
                 for (Player player : WorldGuardHandler.getPlayersInRegion(netherIsland.getWorld(), netherRegion)) {
                     if (player != null && player.isOnline() && worldManager.isSkyNether(player.getWorld()) && !player.isFlying()) {
-                        player.sendMessage(tr("\u00a7cThe island owning this piece of nether is being deleted! Sending you to spawn."));
+                        send(player, tr("<error>The island owning this piece of nether is being deleted! Sending you to spawn."));
                         teleportLogic.spawnTeleport(player, true);
                     }
                 }
@@ -174,7 +180,7 @@ public class IslandLogic {
         if (region != null) {
             for (Player player : WorldGuardHandler.getPlayersInRegion(worldManager.getWorld(), region)) {
                 if (player != null && player.isOnline() && worldManager.isSkyWorld(player.getWorld()) && !player.isFlying()) {
-                    player.sendMessage(tr("\u00a7cThe island you are on is being deleted! Sending you to spawn."));
+                    send(player, tr("<error>The island you are on is being deleted! Sending you to spawn."));
                     teleportLogic.spawnTeleport(player, true);
                 }
             }
@@ -201,12 +207,15 @@ public class IslandLogic {
             if (page < 1) {
                 page = 1;
             }
-            sender.sendMessage(tr("\u00a7eWALL OF FAME (page {0} of {1}):", page, maxpage));
+            send(sender, tr("<primary>Wall of Fame</primary> <muted>(page <primary><page></primary> of <primary><max-page></primary>)</muted>:",
+                unparsed("page", String.valueOf(page)),
+                unparsed("max-page", String.valueOf(maxpage))));
             if (ranks.isEmpty()) {
                 if (Settings.island_useTopTen) {
-                    sender.sendMessage(tr("\u00a74Top ten list is empty! Only islands above level {0} is considered.", topTenCutoff));
+                    send(sender, tr("<error>Top ten list is empty! Only islands above level <level> are considered.",
+                        unparsed("level", String.valueOf(topTenCutoff))));
                 } else {
-                    sender.sendMessage(tr("\u00a74Island level has been disabled, contact an administrator."));
+                    send(sender, tr("<error>Island level has been disabled, contact an administrator."));
                 }
             }
             int place = 1;
@@ -222,25 +231,28 @@ public class IslandLogic {
                 if (showMembers && !level.getMembers().isEmpty()) {
                     members = Arrays.toString(level.getMembers().toArray(new String[0]));
                 }
-                String message = String.format(tr("\u00a7a#%2d \u00a77(%5.2f): \u00a7e%s \u00a77%s"),
-                    place, level.getScore(), level.getLeaderName(), members);
+                String message = miniToLegacy("<secondary>#<rank></secondary> <muted>(<score>):</muted> <primary><leader></primary> <muted><members></muted>",
+                    unparsed("rank", String.valueOf(place)),
+                    unparsed("score", String.format("%.2f", level.getScore())),
+                    unparsed("leader", level.getLeaderName()),
+                    unparsed("members", members));
                 if (sender instanceof Player target) {
                     String warpString = getJsonWarpString(
                         message,
-                        tr("Click to warp to the island!"),
+                        trLegacy("Click to warp to the island!"),
                         String.format("/is w %s", level.getLeaderName())
                     );
                     uSkyBlock.getInstance().execCommand(target, "console:tellraw " +
                         target.getName() + " " + warpString, false);
                 } else {
-                    sender.sendMessage(message);
+                    sendLegacy(sender, message);
                 }
 
 
                 place++;
             }
             if (rank != null) {
-                sender.sendMessage(tr("\u00a7eYour rank is: \u00a7f{0}", rank.getRank()));
+                send(sender, tr("Your rank is: <primary><rank></primary>.", unparsed("rank", String.valueOf(rank.getRank()))));
             }
         }
 

@@ -5,16 +5,17 @@ import org.bukkit.command.CommandSender;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 public class PlayerInfoCommand extends AbstractPlayerInfoCommand {
 
     @Inject
     public PlayerInfoCommand() {
-        super("info", "usb.admin.info", marktr("show player-information"));
+        super("info", "usb.admin.info", marktr("show player information"));
     }
 
     @Override
     protected void doExecute(CommandSender sender, PlayerInfo playerInfo) {
-        sender.sendMessage(playerInfo.toString());
+        send(sender, playerInfo.asComponentLines());
     }
 }

@@ -8,6 +8,7 @@ import us.talabrek.ultimateskyblock.command.admin.task.ProtectAllTask;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.util.Map;
@@ -39,17 +40,20 @@ public class ProtectAllCommand extends AbstractCommand {
         synchronized (plugin) {
             if (isProtectAllActive()) {
                 if (task != null && task.isActive() && args.length == 1 && args[0].equals("stop")) {
-                    sender.sendMessage(tr("\u00a7cTrying to abort protect-all task."));
+                    send(sender, tr("<error>Trying to abort protect-all task."));
                     task.stop();
                     return true;
                 }
-                sender.sendMessage(tr("\u00a74Sorry!\u00a7e A protect-all is already running. Let it complete first, or use \u00a79usb protectall \u00a7cstop"));
+                send(sender, tr("<error>A protect-all task is already running.</error> <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."));
                 return true;
             }
         }
-        sender.sendMessage(tr("\u00a7eStarting a protect-all task. It will take a while."));
+        send(sender, tr("Starting a protect-all task. It may take a while."));
         Duration feedbackFrequency = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
-        ProgressTracker tracker = new ProgressTracker(sender, "\u00a77- Protect-All {0,number,##}% ({1}/{2}, failed:{3}, skipped:{4}) ~ {5}", 10, feedbackFrequency);
+        ProgressTracker tracker = new ProgressTracker(sender,
+            marktr("<muted>- Protect-All <progress_pct:'##'>% (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
+            10,
+            feedbackFrequency);
         task = new ProtectAllTask(plugin, sender, islandLogic.getIslandDirectory(), tracker);
         task.runTaskAsynchronously(plugin);
         return true;

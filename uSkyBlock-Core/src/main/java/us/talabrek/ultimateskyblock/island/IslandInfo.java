@@ -1,8 +1,8 @@
 package us.talabrek.ultimateskyblock.island;
 
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -51,8 +51,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.file.FileUtil.readConfig;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.plainText;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 /**
  * Data object for an island
@@ -134,7 +142,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         config.set("general.scoreOffset", null);
         config.set("blocks.hopperCount", 0);
         setupPartyLeader(leader);
-        sendMessageToIslandGroup(false, marktr("The island has been created."));
+        log(trLegacy("The island has been created."), null);
     }
 
     public void setupPartyLeader(@NotNull final String leader) {
@@ -603,11 +611,13 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
         WorldGuardHandler.islandLock(player, name);
         config.set("general.locked", true);
-        sendMessageToIslandGroup(true, marktr("\u00a7b{0}\u00a7d locked the island."), player.getName());
+        sendMessageToIslandGroup(tr("<primary><player></primary> locked the island.",
+            unparsed("player", player.getName())));
         if (hasWarp()) {
             config.set("general.warpActive", false);
-            player.sendMessage(tr("\u00a74Since your island is locked, your incoming warp has been deactivated."));
-            sendMessageToIslandGroup(true, marktr("\u00a7b{0}\u00a7d deactivated the island warp."), player.getName());
+            send(player, tr("<error>Since your island is locked, your incoming warp has been deactivated."));
+            sendMessageToIslandGroup(tr("<primary><player></primary> deactivated the island warp.",
+                unparsed("player", player.getName())));
         }
         save();
         return true;
@@ -630,24 +640,22 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
         WorldGuardHandler.islandUnlock(player, name);
         config.set("general.locked", false);
-        sendMessageToIslandGroup(true, marktr("\u00a7b{0}\u00a7d unlocked the island."), player.getName());
+        sendMessageToIslandGroup(tr("<primary><player></primary> unlocked the island.",
+            unparsed("player", player.getName())));
         save();
         return true;
     }
 
-    public void sendMessageToIslandGroup(boolean broadcast, @NotNull String message, @Nullable Object... args) {
+    public void sendMessageToIslandGroup(@NotNull Component message) {
         Validate.notNull(message, "Message cannot be null");
-        Validate.notEmpty(message, "Message cannot be empty");
 
-        if (broadcast) {
-            for (UUID uuid : getMemberUUIDs()) {
-                Player player = plugin.getPlayerDB().getPlayer(uuid);
-                if (player != null && player.isOnline()) {
-                    player.sendMessage(tr("\u00a7cSKY \u00a7f> \u00a77 {0}", tr(message, args)));
-                }
+        for (UUID uuid : getMemberUUIDs()) {
+            Player player = plugin.getPlayerDB().getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                send(player, tr("<primary>SKY</primary><muted> ></muted> <message>", component("message", message)));
             }
         }
-        log(message, args);
+        log(legacy(message), null);
     }
 
     @Override
@@ -899,7 +907,8 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         config.set("party.members." + UUIDUtil.asString(member.getUniqueId()), null);
         config.set("party.currentSize", getPartySize() - 1);
 
-        sendMessageToIslandGroup(true, marktr("\u00a7b{0}\u00a7d has been removed from the island group."), member.getPlayerName());
+        sendMessageToIslandGroup(tr("<primary><player></primary> has been removed from the island group.",
+            unparsed("player", member.getPlayerName())));
         WorldGuardHandler.updateRegion(this);
         plugin.getEventLogic().fireMemberLeftEvent(this, member);
         save();
@@ -948,7 +957,9 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 String msg = split[1];
                 Object[] args = new Object[split.length - 2];
                 System.arraycopy(split, 2, args, 0, args.length);
-                convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.durationAsString(Duration.between(then, now)), tr(msg, args)));
+                convertedList.add(miniToLegacy("<primary><age> <muted>- <message>",
+                    legacyArg("age", TimeUtil.durationAsString(Duration.between(then, now))),
+                    legacyArg("message", trLegacy(msg, args))));
             } else {
                 Matcher m = OLD_LOG_PATTERN.matcher(logEntry);
                 if (m.matches()) {
@@ -961,7 +972,9 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                     }
                     String msg = m.group("msg");
                     if (parsedDate != null) {
-                        convertedList.add(tr("\u00a79{1} \u00a77- {0}", TimeUtil.durationAsString(Duration.between(parsedDate, now)), msg));
+                        convertedList.add(miniToLegacy("<primary><age> <muted>- <message>",
+                            legacyArg("age", TimeUtil.durationAsString(Duration.between(parsedDate, now))),
+                            legacyArg("message", msg)));
                     } else {
                         convertedList.add(logEntry);
                     }
@@ -999,37 +1012,73 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     @Override
     public String toString() {
-        String str = "\u00a7bIsland Info:\n";
-        str += ChatColor.GRAY + "  - level: " + ChatColor.DARK_AQUA + String.format("%5.2f", getLevel()) + "\n";
-        str += ChatColor.GRAY + "  - location: " + ChatColor.DARK_AQUA + name + "\n";
-        str += ChatColor.GRAY + "  - biome: " + ChatColor.DARK_AQUA + getBiomeName() + "\n";
-        str += ChatColor.GRAY + "  - schematic: " + ChatColor.DARK_AQUA + getSchematicName() + "\n";
-        str += ChatColor.GRAY + "  - warp: " + ChatColor.DARK_AQUA + hasWarp() + "\n";
+        StringBuilder plain = new StringBuilder();
+        for (Component line : asComponentLines()) {
+            if (plain.length() > 0) {
+                plain.append('\n');
+            }
+            plain.append(plainText(line));
+        }
+        return plain.toString();
+    }
+
+    public @NotNull Component[] asComponentLines() {
+        List<Component> lines = new ArrayList<>();
+        // I18N: Header line for the admin island info debug output.
+        lines.add(tr("<primary>Island Info:"));
+        // I18N: Label for island level value in admin island info debug output.
+        lines.add(tr("<muted>  - level: <primary><level></primary>", unparsed("level", String.format("%5.2f", getLevel()))));
+        // I18N: Label for island location identifier in admin island info debug output.
+        lines.add(tr("<muted>  - location: <primary><location></primary>", unparsed("location", name)));
+        // I18N: Label for island biome name in admin island info debug output.
+        lines.add(tr("<muted>  - biome: <primary><biome></primary>", unparsed("biome", getBiomeName())));
+        // I18N: Label for island schematic name in admin island info debug output.
+        lines.add(tr("<muted>  - schematic: <primary><schematic></primary>", unparsed("schematic", getSchematicName())));
+        // I18N: Label showing whether island warp is configured in admin island info debug output.
+        lines.add(tr("<muted>  - warp: <primary><warp></primary>", unparsed("warp", String.valueOf(hasWarp()))));
         if (hasWarp()) {
-            str += ChatColor.GRAY + "     loc: " + ChatColor.DARK_AQUA + LocationUtil.asString(getWarpLocation()) + "\n";
+            // I18N: Label for detailed warp location in admin island info debug output.
+            lines.add(tr("<muted>     loc: <primary><warp-location></primary>",
+                unparsed("warp-location", String.valueOf(LocationUtil.asString(getWarpLocation())))));
         }
-        str += ChatColor.GRAY + "  - locked: " + ChatColor.DARK_AQUA + isLocked() + "\n";
-        str += ChatColor.GRAY + "  - ignore: " + ChatColor.DARK_AQUA + ignore() + "\n";
-        str += ChatColor.DARK_AQUA + "Party:\n";
-        str += ChatColor.GRAY + "  - leader: " + ChatColor.DARK_AQUA + getLeader() + "\n";
-        str += ChatColor.GRAY + "  - members: " + ChatColor.DARK_AQUA + getMembers() + "\n";
-        str += ChatColor.GRAY + "  - size: " + ChatColor.DARK_AQUA + getPartySize() + "\n";
-        str += ChatColor.DARK_AQUA + "Limits:\n";
-        str += ChatColor.GRAY + "  - maxParty: " + ChatColor.DARK_AQUA + getMaxPartySize() + "\n";
-        str += ChatColor.GRAY + "  - animals: " + ChatColor.DARK_AQUA + getMaxAnimals() + "\n";
-        str += ChatColor.GRAY + "  - monsters: " + ChatColor.DARK_AQUA + getMaxMonsters() + "\n";
-        str += ChatColor.GRAY + "  - villagers: " + ChatColor.DARK_AQUA + getMaxVillagers() + "\n";
-        str += ChatColor.GRAY + "  - golems: " + ChatColor.DARK_AQUA + getMaxGolems() + "\n";
-        str += ChatColor.GRAY + "  - copper-golems: " + ChatColor.DARK_AQUA + getMaxCopperGolems() + "\n";
-        str += ChatColor.DARK_AQUA + "Bans:\n";
+        // I18N: Label showing whether island is locked in admin island info debug output.
+        lines.add(tr("<muted>  - locked: <primary><locked></primary>", unparsed("locked", String.valueOf(isLocked()))));
+        // I18N: Label showing whether island protection checks are ignored in admin island info debug output.
+        lines.add(tr("<muted>  - ignore: <primary><ignore></primary>", unparsed("ignore", String.valueOf(ignore()))));
+        // I18N: Section header for party-related fields in admin island info debug output.
+        lines.add(tr("<primary>Party:"));
+        // I18N: Label for party leader in admin island info debug output.
+        lines.add(tr("<muted>  - leader: <primary><leader></primary>", legacyArg("leader", getLeader())));
+        // I18N: Label for party member list in admin island info debug output.
+        lines.add(tr("<muted>  - members: <primary><members></primary>", legacyArg("members", String.valueOf(getMembers()))));
+        // I18N: Label for party size in admin island info debug output.
+        lines.add(tr("<muted>  - size: <primary><size></primary>", unparsed("size", String.valueOf(getPartySize()))));
+        // I18N: Section header for configured island limits in admin island info debug output.
+        lines.add(tr("<primary>Limits:"));
+        // I18N: Label for maximum party size limit in admin island info debug output.
+        lines.add(tr("<muted>  - maxParty: <primary><max-party></primary>", unparsed("max-party", String.valueOf(getMaxPartySize()))));
+        // I18N: Label for max passive-animal count in admin island info debug output.
+        lines.add(tr("<muted>  - animals: <primary><animals></primary>", unparsed("animals", String.valueOf(getMaxAnimals()))));
+        // I18N: Label for max monster count in admin island info debug output.
+        lines.add(tr("<muted>  - monsters: <primary><monsters></primary>", unparsed("monsters", String.valueOf(getMaxMonsters()))));
+        // I18N: Label for max villager count in admin island info debug output.
+        lines.add(tr("<muted>  - villagers: <primary><villagers></primary>", unparsed("villagers", String.valueOf(getMaxVillagers()))));
+        // I18N: Label for max iron golem count in admin island info debug output.
+        lines.add(tr("<muted>  - golems: <primary><golems></primary>", unparsed("golems", String.valueOf(getMaxGolems()))));
+        // I18N: Label for max copper golem count in admin island info debug output.
+        lines.add(tr("<muted>  - copper-golems: <primary><copper-golems></primary>",
+            unparsed("copper-golems", String.valueOf(getMaxCopperGolems()))));
+        // I18N: Section header for banned player list in admin island info debug output.
+        lines.add(tr("<primary>Bans:"));
         for (String ban : getBans()) {
-            str += ChatColor.GRAY + "  - " + ban + "\n";
+            lines.add(parseMini("<muted>  - <primary><ban></primary>", unparsed("ban", ban)));
         }
-        str += ChatColor.DARK_AQUA + "Log:\n";
-        for (String log : getLog()) {
-            str += ChatColor.GRAY + "  - " + log + "\n";
+        // I18N: Section header for island activity log in admin island info debug output.
+        lines.add(tr("<primary>Log:"));
+        for (String entry : getLog()) {
+            lines.add(parseMini("<muted>  - <entry>", legacyArg("entry", entry)));
         }
-        return str;
+        return lines.toArray(new Component[0]);
     }
 
     @Override
@@ -1081,9 +1130,9 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     }
 
     public void sendMessageToOnlineMembers(String msg) {
-        String message = tr("\u00a7cSKY \u00a7f> \u00a77 {0}", msg);
+        Component message = tr("<primary>SKY</primary><muted> ></muted> <message>", legacyArg("message", msg));
         for (Player player : getOnlineMembers()) {
-            player.sendMessage(message);
+            send(player, message);
         }
     }
 

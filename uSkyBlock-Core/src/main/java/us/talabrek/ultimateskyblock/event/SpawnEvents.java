@@ -67,13 +67,13 @@ public class SpawnEvents implements Listener {
         if (RIGHT_CLICKS.contains(event.getAction()) && item != null && item.getItemMeta() instanceof SpawnEggMeta) {
             if (!plugin.playerIsOnIsland(player)) {
                 event.setCancelled(true);
-                plugin.notifyPlayer(player, tr("\u00a7eYou can only use spawn-eggs on your own island."));
+                plugin.notifyPlayer(player, tr("<error>You can only use spawn eggs on your own island."));
                 return;
             }
 
             checkLimits(event, getSpawnEggType(item), player.getLocation());
             if (event.useItemInHand() == Event.Result.DENY) {
-                plugin.notifyPlayer(player, tr("\u00a7cYou have reached your spawn-limit for your island."));
+                plugin.notifyPlayer(player, tr("<error>You have reached your spawn limit for your island."));
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
             }

@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.chat;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -21,20 +20,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.Type;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 /**
  * The primary logic of uSkyBlocks chat-handling
  */
 @Singleton
 public class ChatLogic {
-    private static final List<String> ALONE_MESSAGES = Arrays.asList(
-        I18nUtil.tr("But you are ALLLLLLL ALOOOOONE!"),
-        I18nUtil.tr("But you are Yelling in the wind!"),
-        I18nUtil.tr("But your fantasy friends are gone!"),
-        I18nUtil.tr("But you are Talking to your self!")
+    private static final List<String> ALONE_MESSAGE_KEYS = Arrays.asList(
+        marktr("But you are ALLLLLLL ALOOOOONE!"),
+        marktr("But you are yelling in the wind!"),
+        marktr("But your fantasy friends are gone!"),
+        marktr("But you are talking to yourself!")
     );
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
@@ -96,11 +101,12 @@ public class ChatLogic {
         msg = placeholderHandler.replacePlaceholders(sender, msg);
         List<Player> onlineMembers = getRecipients(sender, type);
         if (onlineMembers.size() <= 1) {
-            sender.sendMessage(I18nUtil.tr("\u00a7cSorry! {0}", "\u00a79" +
-                ALONE_MESSAGES.get(((int) Math.round(Math.random() * ALONE_MESSAGES.size())) % ALONE_MESSAGES.size())));
+            int randomIndex = ThreadLocalRandom.current().nextInt(ALONE_MESSAGE_KEYS.size());
+            send(sender, tr("<error>Sorry!</error> <primary><reason></primary>",
+                component("reason", tr(ALONE_MESSAGE_KEYS.get(randomIndex)))));
         } else {
             for (Player member : onlineMembers) {
-                member.sendMessage(msg);
+                sendLegacy(member, msg);
             }
         }
     }

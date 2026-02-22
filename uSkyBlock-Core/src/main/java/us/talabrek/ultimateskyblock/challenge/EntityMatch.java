@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import com.google.gson.Gson;
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -16,6 +18,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
 
 /**
  * Data object holding values for matching an entity against a challenge.
@@ -114,7 +118,7 @@ public class EntityMatch {
         return type.name() + (meta.isEmpty() ? "" : ":" + gson.toJson(meta));
     }
 
-    public String getDisplayName() {
+    public Component getDisplayName() {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> extra = new HashMap<>(meta);
         for (String key : COLOR_KEYS) {
@@ -131,7 +135,7 @@ public class EntityMatch {
         if (!extra.isEmpty()) {
             sb.append(":").append(gson.toJson(extra));
         }
-        return sb.toString();
+        return fromLegacy(sb.toString());
     }
 
     /**

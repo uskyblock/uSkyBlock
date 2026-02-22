@@ -6,10 +6,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
  * Task instead of anonymous runnable - so we get some info on /timings paste
@@ -34,7 +36,8 @@ public class CreateIslandTask extends BukkitRunnable {
     @Override
     public void run() {
         if (!plugin.getIslandGenerator().createIsland(next, cSchem)) {
-            player.sendMessage(tr("Unable to locate schematic {0}, contact a server-admin", cSchem));
+            send(player, tr("Unable to locate schematic <schematic>, contact a server admin",
+                unparsed("schematic", cSchem)));
         }
         GenerateTask generateTask = new GenerateTask(plugin, player, playerPerk.getPlayerInfo(), next, playerPerk, cSchem);
         Duration heartBeat = Duration.ofMillis(plugin.getConfig().getInt("asyncworldedit.watchDog.heartBeatMs", 2000));

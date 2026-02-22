@@ -17,7 +17,9 @@ import us.talabrek.ultimateskyblock.player.PlayerLogic;
 
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.pre;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.uSkyBlock.depends;
 
 public class PluginInfo {
@@ -51,41 +53,57 @@ public class PluginInfo {
 
     public String getVersionInfo(boolean checkEnabled) {
         PluginDescriptionFile description = plugin.getDescription();
-        StringBuilder msg = new StringBuilder(pre("\u00a77Name: \u00a7b{0}\n", description.getName()));
-        msg.append(pre("\u00a77Version: \u00a7b{0}\n", description.getVersion()));
-        msg.append(pre("\u00a77Description: \u00a7b{0}\n", description.getDescription()));
-        msg.append(pre("\u00a77Language: \u00a7b{0} ({1})\n", config.getYamlConfig().get("language", "en"), I18nUtil.getI18n().getLocale()));
-        msg.append(pre("\u00a79  State: d={0}, r={1}, i={2}, p={3}, n={4}, awe={5}\n", Settings.island_distance, Settings.island_radius,
-            islandLogic.getSize(), playerLogic.getSize(),
-            Settings.nether_enabled, AsyncWorldEditHandler.isAWE()));
-        msg.append(pre("\u00a77Server: \u00a7e{0} {1}\n", Bukkit.getName(), Bukkit.getVersion()));
-        msg.append(pre("\u00a79  State: online={0}, bungee={1}\n", ServerUtil.isOnlineMode(),
-            ServerUtil.isBungeeEnabled()));
-        msg.append(pre("\u00a77------------------------------\n"));
+        StringBuilder msg = new StringBuilder(miniToLegacy("<muted>Name: <primary><name><newline>",
+            unparsed("name", description.getName())));
+        msg.append(miniToLegacy("<muted>Version: <primary><version><newline>",
+            unparsed("version", description.getVersion())));
+        msg.append(miniToLegacy("<muted>Description: <primary><description><newline>",
+            unparsed("description", String.valueOf(description.getDescription()))));
+        msg.append(miniToLegacy("<muted>Language: <primary><language> (<locale>)<newline>",
+            unparsed("language", String.valueOf(config.getYamlConfig().get("language", "en"))),
+            unparsed("locale", String.valueOf(I18nUtil.getI18n().getLocale()))));
+        msg.append(miniToLegacy("<primary>  State: d=<distance>, r=<radius>, i=<islands>, p=<players>, n=<nether>, awe=<awe><newline>",
+            unparsed("distance", String.valueOf(Settings.island_distance)),
+            unparsed("radius", String.valueOf(Settings.island_radius)),
+            unparsed("islands", String.valueOf(islandLogic.getSize())),
+            unparsed("players", String.valueOf(playerLogic.getSize())),
+            unparsed("nether", String.valueOf(Settings.nether_enabled)),
+            unparsed("awe", String.valueOf(AsyncWorldEditHandler.isAWE()))));
+        msg.append(miniToLegacy("<muted>Server: <primary><name> <version></primary><newline>",
+            unparsed("name", Bukkit.getName()),
+            unparsed("version", Bukkit.getVersion())));
+        msg.append(miniToLegacy("<primary>  State: online=<online>, bungee=<bungee><newline>",
+            unparsed("online", String.valueOf(ServerUtil.isOnlineMode())),
+            unparsed("bungee", String.valueOf(ServerUtil.isBungeeEnabled()))));
+        msg.append(miniToLegacy("<muted>------------------------------<newline>"));
         for (String[] dep : depends) {
             Plugin dependency = Bukkit.getPluginManager().getPlugin(dep[0]);
             if (dependency != null) {
-                String status = pre("N/A");
+                String status = miniToLegacy("N/A");
                 if (checkEnabled) {
                     if (dependency.isEnabled()) {
                         if (VersionUtil.getVersion(dependency.getDescription().getVersion()).isLT(dep[1])) {
-                            status = pre("\u00a7eWRONG-VERSION");
+                            status = miniToLegacy("<error>WRONG-VERSION");
                         } else {
-                            status = pre("\u00a72ENABLED");
+                            status = miniToLegacy("<secondary>ENABLED");
                         }
                     } else {
-                        status = pre("\u00a74DISABLED");
+                        status = miniToLegacy("<error>DISABLED");
                     }
                 }
-                msg.append(pre("\u00a77\u00a7d{0} \u00a7f{1} \u00a77({2}\u00a77)\n", dependency.getName(),
-                    dependency.getDescription().getVersion(), status));
+                msg.append(miniToLegacy("<muted><primary><dependency> <version></primary><muted> (<status>)<newline>",
+                    unparsed("dependency", dependency.getName()),
+                    unparsed("version", dependency.getDescription().getVersion()),
+                    legacyArg("status", status)));
             }
         }
-        msg.append(pre("\u00a77------------------------------\n"));
+        msg.append(miniToLegacy("<muted>------------------------------<newline>"));
 
         if (config.getYamlConfig().getBoolean("plugin-updates.check", true) && updateChecker.isUpdateAvailable()) {
-            msg.append(pre("\u00a7bA new update of uSkyBlock is available: \u00a7f{0}\n", updateChecker.getLatestVersion()));
-            msg.append(pre("\u00a7fVisit {0} to download.\n", "https://www.uskyblock.ovh/get"));
+            msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <primary><version></primary><newline>",
+                unparsed("version", updateChecker.getLatestVersion())));
+            msg.append(miniToLegacy("<muted>Visit <primary><url></primary> to download.<newline>",
+                unparsed("url", "https://www.uskyblock.ovh/get")));
         }
 
         return msg.toString();
