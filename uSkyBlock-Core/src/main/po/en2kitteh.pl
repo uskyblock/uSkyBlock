@@ -58,18 +58,23 @@ sub get_lolcat {
     my $lolcat = $txt;
     utf8::encode($lolcat);
     print "txt: $txt\n";
-    foreach my $key (keys %dict) {
-        my $value  = $dict{$key};
-        my $ukey   = ucfirst($key);
-        my $uvalue = ucfirst($value);
+    my @parts = split /(<[^>]+>)/, $lolcat;
+    for (my $i = 0; $i < scalar(@parts); $i++) {
+        next if $parts[$i] =~ /^<[^>]+>$/;
+        foreach my $key (keys %dict) {
+            my $value  = $dict{$key};
+            my $ukey   = ucfirst($key);
+            my $uvalue = ucfirst($value);
 
-        # Do not translate if the word is immediately preceded by '/'
-        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
-        $lolcat =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
+            # Do not translate if the word is immediately preceded by '/'
+            $parts[$i] =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$key\E\b/$1$value/g;
+            $parts[$i] =~ s/(?<!\/)\b((§[0-9a-fklmor])?)\Q$ukey\E\b/$1$uvalue/g;
+        }
+        foreach my $key (keys %part_dict) {
+            $parts[$i] =~ s/$key/$part_dict{$key}/g;
+        }
     }
-    foreach my $key (keys %part_dict) {
-        $lolcat =~ s/$key/$part_dict{$key}/g;
-    }
+    $lolcat = join('', @parts);
     if ($lolcat =~ m/\{0/) {
         $lolcat =~ s/''/'/g;
         $lolcat =~ s/'/''/g;
