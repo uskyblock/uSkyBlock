@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: uSkyBlock\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: R4zorax\n"
+"Last-Translator: minoneer <minoneer@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: xx-PIRATE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 msgid " - name: <primary><name>"
 msgstr " - name: <primary><name>"
 
@@ -441,6 +441,9 @@ msgstr "<error>Unable to warp ye to that pirate's island!"
 msgid "<error>Unknown player <player>"
 msgstr "<error>Unknown pirate <player>"
 
+msgid "<error>Unsupported locale: <locale>"
+msgstr "<error>Unsupported locale: <locale>"
+
 msgid "<error>Villager trading isn't allowed."
 msgstr "<error>Villager tradin' isn't allowed."
 
@@ -795,6 +798,9 @@ msgstr "<muted>Currency bounty: <primary><currency></primary>"
 msgid "<muted>Current biome: <primary><biome></primary>"
 msgstr "<muted>Current biome: <primary><biome></primary>"
 
+msgid "<muted>Current language: <primary><locale></primary></muted>"
+msgstr "<muted>Current language: <primary><locale></primary></muted>"
+
 msgid "<muted>Current level: <secondary><level></secondary>"
 msgstr "<muted>Current level: <secondary><level></secondary>"
 
@@ -807,6 +813,9 @@ msgstr "<muted>First Page"
 msgid "<muted>Group members: <secondary><current></secondary>/<primary><max></primary>"
 msgstr "<muted>Group members: <secondary><current></secondary>/<primary><max></primary>"
 
+msgid "<muted>Help improve translations: <primary><url></primary></muted>"
+msgstr "<muted>Help improve translations: <primary><url></primary></muted>"
+
 msgid "<muted>Hover over a player's icon to<newline>view their permissions. The<newline>leader can change permissions<newline>by clicking a player's icon."
 msgstr "<muted>Hover over a pirate's icon to<newline>view their permissions. The<newline>captain can change permissions<newline>by clickin' a pirate's icon."
 
@@ -818,6 +827,9 @@ msgstr "<muted>Item bounty: <primary><reward-line></primary>"
 
 msgid "<muted>Items will be traded for the reward."
 msgstr "<muted>Items will be traded for the bounty."
+
+msgid "<muted>Language is already set to <primary><locale></primary>.</muted>"
+msgstr "<muted>Language is already set to <primary><locale></primary>.</muted>"
 
 msgid "<muted>Last Page"
 msgstr "<muted>Last Page"
@@ -867,8 +879,14 @@ msgstr "<muted>Sendin' ye to spawn."
 msgid "<muted>Set incoming warp to your current location using <cmd>/is setwarp</cmd>."
 msgstr "<muted>Set incomin' warp to yer current location usin' <cmd>/is setwarp</cmd>."
 
+msgid "<muted>Set language with <cmd>/usb lang [locale]</cmd>.</muted>"
+msgstr "<muted>Set language with <cmd>/usb lang [locale]</cmd>.</muted>"
+
 msgid "<muted>Still missing the following blocks: <blocks>"
 msgstr "<muted>Still missin' the followin' blocks: <blocks>"
+
+msgid "<muted>System locale suggestion: <primary><locale></primary></muted>"
+msgstr "<muted>System locale suggestion: <primary><locale></primary></muted>"
 
 msgid "<muted>This challenge requires:"
 msgstr "<muted>This challenge requires:"
@@ -914,6 +932,12 @@ msgstr "<muted>Use <cmd>/is accept</cmd> or <cmd>/is reject</cmd> to respond."
 
 msgid "<muted>Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.</muted>"
 msgstr "<muted>Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.</muted>"
+
+msgid "<muted>Use <cmd>/usb lang</cmd> to list all supported locales.</muted>"
+msgstr "<muted>Use <cmd>/usb lang</cmd> to list all supported locales.</muted>"
+
+msgid "<muted>Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.</muted>"
+msgstr "<muted>Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.</muted>"
 
 msgid "<muted>Waiting for our turn: <primary><progress:'###'>%</primary>"
 msgstr "<muted>Waitin' for our turn: <primary><progress:'###'>%</primary>"
@@ -1050,6 +1074,9 @@ msgstr "<primary><player></primary> unlocked the island."
 
 msgid "<primary><player></primary>'s permissions"
 msgstr "<primary><player></primary>'s permissions"
+
+msgid "<primary>Available locales (<count>):</primary>"
+msgstr "<primary>Available locales (<count>):</primary>"
 
 #. I18N: Section header for banned player list in admin island info debug output.
 msgid "<primary>Bans:"
@@ -1188,6 +1215,9 @@ msgstr "<secondary>Island level is <level:'###.##'>"
 
 msgid "<secondary>Island level is <score:'###.##'>"
 msgstr "<secondary>Island level is <score:'###.##'>"
+
+msgid "<secondary>Language updated to <primary><locale></primary>.</secondary>"
+msgstr "<secondary>Language updated to <primary><locale></primary>.</secondary>"
 
 msgid "<secondary>More players can be invited to this island."
 msgstr "<secondary>More pirates can be invited to this island."
@@ -2015,6 +2045,9 @@ msgstr "shows a specific pirate's perks"
 
 msgid "shows information about your party"
 msgstr "shows information about yer party"
+
+msgid "shows or sets the plugin language"
+msgstr "shows or sets the plugin language"
 
 msgid "shows perk information"
 msgstr "shows perk information"

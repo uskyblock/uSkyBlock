@@ -15,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid " - name: <primary><name>"
 msgstr ""
@@ -599,6 +598,10 @@ msgstr ""
 msgid "<error>Unknown player <player>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<error>Unsupported locale: <locale>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "<error>Villager trading isn't allowed."
 msgstr ""
@@ -1068,6 +1071,10 @@ msgstr ""
 msgid "<muted>Current biome: <primary><biome></primary>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Current language: <primary><locale></primary></muted>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "<muted>Current level: <secondary><level></secondary>"
 msgstr ""
@@ -1084,6 +1091,10 @@ msgstr ""
 msgid "<muted>Group members: <secondary><current></secondary>/<primary><max></primary>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Help improve translations: <primary><url></primary></muted>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "<muted>Hover over a player's icon to<newline>view their permissions. The<newline>leader can change permissions<newline>by clicking a player's icon."
 msgstr ""
@@ -1098,6 +1109,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "<muted>Items will be traded for the reward."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Language is already set to <primary><locale></primary>.</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -1164,8 +1179,16 @@ msgstr ""
 msgid "<muted>Set incoming warp to your current location using <cmd>/is setwarp</cmd>."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Set language with <cmd>/usb lang [locale]</cmd>.</muted>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 msgid "<muted>Still missing the following blocks: <blocks>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>System locale suggestion: <primary><locale></primary></muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
@@ -1226,6 +1249,14 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "<muted>Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.</muted>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Use <cmd>/usb lang</cmd> to list all supported locales.</muted>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<muted>Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/asyncworldedit/PlayerJob.java
@@ -1411,6 +1442,10 @@ msgstr ""
 msgid "<primary><player></primary>'s permissions"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<primary>Available locales (<count>):</primary>"
+msgstr ""
+
 #. I18N: Section header for banned player list in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<primary>Bans:"
@@ -1591,6 +1626,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "<secondary>Island level is <score:'###.##'>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "<secondary>Language updated to <primary><locale></primary>.</secondary>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -2694,6 +2733,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "shows information about your party"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "shows or sets the plugin language"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
