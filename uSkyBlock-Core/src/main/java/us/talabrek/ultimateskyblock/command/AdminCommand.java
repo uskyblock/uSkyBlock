@@ -17,6 +17,7 @@ import us.talabrek.ultimateskyblock.command.admin.GotoIslandCommand;
 import us.talabrek.ultimateskyblock.command.admin.ImportCommand;
 import us.talabrek.ultimateskyblock.command.admin.ItemInfoCommand;
 import us.talabrek.ultimateskyblock.command.admin.JobsCommand;
+import us.talabrek.ultimateskyblock.command.admin.LanguageCommand;
 import us.talabrek.ultimateskyblock.command.admin.OrphanCommand;
 import us.talabrek.ultimateskyblock.command.admin.PerkCommand;
 import us.talabrek.ultimateskyblock.command.admin.PlayerInfoCommand;
@@ -71,6 +72,7 @@ public class AdminCommand extends BaseCommandExecutor {
         @NotNull PerkCommand perkCommand,
         @NotNull FlushCommand flushCommand,
         @NotNull JobsCommand jobsCommand,
+        @NotNull LanguageCommand languageCommand,
         @NotNull DocumentCommand documentCommand,
         @NotNull RegionCommand regionCommand,
         @NotNull SetMaintenanceCommand setMaintenanceCommand,
@@ -105,6 +107,7 @@ public class AdminCommand extends BaseCommandExecutor {
         add(perkCommand);
         add(flushCommand);
         add(jobsCommand);
+        add(languageCommand);
         add(documentCommand);
         add(regionCommand);
         add(setMaintenanceCommand);

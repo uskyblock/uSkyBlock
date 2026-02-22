@@ -1,3 +1,5 @@
+import java.util.regex.Matcher
+
 plugins {
     id("buildlogic.java-conventions")
 }
@@ -49,16 +51,39 @@ java {
 }
 
 val poDir = file("src/main/po")
+val generatedI18nDir = layout.buildDirectory.dir("generated/i18n")
+val supportedLocalesFile = generatedI18nDir.map { it.file("supported-locales.txt") }
+
+val generateSupportedLocales = tasks.register("generateSupportedLocales") {
+    group = "translation"
+    description = "Generates a stable list of supported locale keys from .po files"
+    inputs.files(fileTree(poDir) { include("*.po") })
+    outputs.file(supportedLocalesFile)
+    doLast {
+        val locales = fileTree(poDir) { include("*.po") }
+            .files
+            .map { it.nameWithoutExtension }
+            .sortedBy { it.lowercase() }
+
+        val outputFile = supportedLocalesFile.get().asFile
+        outputFile.parentFile.mkdirs()
+        outputFile.writeText(locales.joinToString(separator = "\n", postfix = "\n"))
+    }
+}
 
 val i18nZip = tasks.register<Zip>("i18nZip") {
     group = "build"
     description = "Zips the .po files into i18n.zip"
+    dependsOn(generateSupportedLocales)
     from(poDir) {
         include("*.po")
     }
+    from(supportedLocalesFile) {
+        into("")
+    }
     archiveFileName.set("i18n.zip")
     // Keep archive output outside processResources destination to avoid self-copy truncation.
-    destinationDirectory.set(layout.buildDirectory.dir("generated/i18n"))
+    destinationDirectory.set(generatedI18nDir)
 }
 
 val i18nZipFile = i18nZip.flatMap { it.archiveFile }
@@ -133,6 +158,32 @@ tasks.register<Exec>("extractTranslation") {
 
             // Keep keys.pot stable by removing xgettext's generated timestamp.
             content = potFile.readText().replace(Regex("\"POT-Creation-Date:.*\\n"), "")
+
+            // Keep the curated project header stable so contributor guidance remains intact.
+            val curatedHeader = """
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: uSkyBlock\n"
+"Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: minoneer <minoneer@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+""".trimIndent()
+            content = content.replaceFirst(
+                Regex("(?s)^.*?\\n\\n(?=#: )"),
+                Matcher.quoteReplacement(curatedHeader)
+            )
             potFile.writeText(content)
         }
     }
