@@ -118,8 +118,12 @@ tasks.register<Exec>("extractTranslation") {
     val bukkitUtilsDir = project(":bukkit-utils").projectDir
     val coreDir = projectDir
 
-    val javaFiles = fileTree(bukkitUtilsDir.resolve("src/main/java")) { include("**/*.java") }.files +
-        fileTree(coreDir.resolve("src/main/java")) { include("**/*.java") }.files
+    val javaFiles = (
+        fileTree(bukkitUtilsDir.resolve("src/main/java")) { include("**/*.java") }.files +
+            fileTree(coreDir.resolve("src/main/java")) { include("**/*.java") }.files
+        )
+        .sortedBy { it.relativeTo(rootProject.projectDir).invariantSeparatorsPath }
+    val javaFilesRelativePaths = javaFiles.map { it.relativeTo(rootProject.projectDir).invariantSeparatorsPath }
 
     inputs.files(javaFiles)
     outputs.file(potFile)
@@ -136,7 +140,7 @@ tasks.register<Exec>("extractTranslation") {
         "--add-location=file"
     )
     args("--output=${potFile.absolutePath}")
-    args(javaFiles.map { it.relativeTo(rootProject.projectDir).path })
+    args(javaFilesRelativePaths)
 
     doFirst {
         try {
@@ -184,9 +188,31 @@ msgstr ""
                 Regex("(?s)^.*?\\n\\n(?=#: )"),
                 Matcher.quoteReplacement(curatedHeader)
             )
+            content = sortReferenceCommentBlocks(content)
             potFile.writeText(content)
         }
     }
+}
+
+fun sortReferenceCommentBlocks(content: String): String {
+    val lines = content.split('\n')
+    val output = mutableListOf<String>()
+    var i = 0
+    while (i < lines.size) {
+        if (lines[i].startsWith("#: ")) {
+            val refs = mutableListOf<String>()
+            while (i < lines.size && lines[i].startsWith("#: ")) {
+                refs.add(lines[i])
+                i++
+            }
+            refs.sortBy { it.lowercase() }
+            output.addAll(refs)
+        } else {
+            output.add(lines[i])
+            i++
+        }
+    }
+    return output.joinToString("\n")
 }
 
 val mergeTranslation = tasks.register("mergeTranslation") {
