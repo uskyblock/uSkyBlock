@@ -957,6 +957,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 String msg = split[1];
                 Object[] args = new Object[split.length - 2];
                 System.arraycopy(split, 2, args, 0, args.length);
+                //noinspection deprecation
                 convertedList.add(miniToLegacy("<primary><age> <muted>- <message>",
                     legacyArg("age", TimeUtil.durationAsString(Duration.between(then, now))),
                     legacyArg("message", trLegacy(msg, args))));

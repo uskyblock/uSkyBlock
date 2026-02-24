@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,7 +29,10 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 @Singleton
@@ -121,26 +125,18 @@ public class LimitLogic {
         Map<CreatureType, Integer> creatureCount = getCreatureCount(islandInfo);
         CreatureType creatureType = getCreatureType(entityType);
         int max = getMax(islandInfo, creatureType);
-        if (creatureCount.containsKey(creatureType) && creatureCount.get(creatureType) >= max) {
-            return false;
-        }
-        return true;
+        return !creatureCount.containsKey(creatureType) || creatureCount.get(creatureType) < max;
     }
 
     private int getMax(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo, CreatureType creatureType) {
-        switch (creatureType) {
-            case ANIMAL:
-                return islandInfo.getMaxAnimals();
-            case MONSTER:
-                return islandInfo.getMaxMonsters();
-            case VILLAGER:
-                return islandInfo.getMaxVillagers();
-            case COPPER_GOLEM:
-                return islandInfo.getMaxCopperGolems();
-            case GOLEM:
-                return islandInfo.getMaxGolems();
-        }
-        return Integer.MAX_VALUE;
+        return switch (creatureType) {
+            case ANIMAL -> islandInfo.getMaxAnimals();
+            case MONSTER -> islandInfo.getMaxMonsters();
+            case VILLAGER -> islandInfo.getMaxVillagers();
+            case COPPER_GOLEM -> islandInfo.getMaxCopperGolems();
+            case GOLEM -> islandInfo.getMaxGolems();
+            default -> Integer.MAX_VALUE;
+        };
     }
 
     public String getSummary(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
@@ -151,14 +147,14 @@ public class LimitLogic {
             if (key == CreatureType.UNKNOWN) {
                 continue; // Skip
             }
-            int cnt = count.containsKey(key) ? count.get(key) : 0;
+            int cnt = count.getOrDefault(key, 0);
             int max = creatureMax.get(key);
-            String creatureCount = cnt >= max
-                ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(cnt)))
-                : String.valueOf(cnt);
+            Component creatureCount = cnt >= max
+                ? parseMini("<error><count>", unparsed("count", String.valueOf(cnt)))
+                : Component.text(cnt);
             sb.append(trLegacy("<muted><type>: <secondary><count></secondary> (max. <max>)",
-                legacyArg("type", getCreatureTypeLabel(key)),
-                legacyArg("count", creatureCount),
+                component("type", getCreatureTypeLabel(key)),
+                component("count", creatureCount),
                 unparsed("max", String.valueOf(max)))).append("\n");
         }
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
@@ -182,20 +178,20 @@ public class LimitLogic {
         return sb.toString().trim();
     }
 
-    private String getCreatureTypeLabel(CreatureType creatureType) {
+    private Component getCreatureTypeLabel(CreatureType creatureType) {
         return switch (creatureType) {
             // I18N: Creature category label shown in island mob-limit summary.
-            case ANIMAL -> trLegacy("Animals");
+            case ANIMAL -> tr("Animals");
             // I18N: Creature category label shown in island mob-limit summary.
-            case MONSTER -> trLegacy("Monsters");
+            case MONSTER -> tr("Monsters");
             // I18N: Creature category label shown in island mob-limit summary.
-            case VILLAGER -> trLegacy("Villagers");
+            case VILLAGER -> tr("Villagers");
             // I18N: Creature category label shown in island mob-limit summary.
-            case GOLEM -> trLegacy("Golems");
+            case GOLEM -> tr("Golems");
             // I18N: Creature category label shown in island mob-limit summary.
-            case COPPER_GOLEM -> trLegacy("Copper Golems");
+            case COPPER_GOLEM -> tr("Copper Golems");
             // I18N: Fallback creature category label shown in island mob-limit summary.
-            case UNKNOWN -> trLegacy("Unknown");
+            case UNKNOWN -> tr("Unknown");
         };
     }
 }

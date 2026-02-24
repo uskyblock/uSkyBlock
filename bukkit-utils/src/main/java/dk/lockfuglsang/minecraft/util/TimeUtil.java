@@ -43,15 +43,19 @@ public enum TimeUtil {
     public static @NotNull String durationAsString(@NotNull Duration duration) {
         String result = "";
         if (duration.toDaysPart() > 0) {
+            // I18N: Short form of 'day', used as a suffix in duration strings
             result += " " + duration.toDaysPart() + trLegacy("d");
         }
         if (duration.toHoursPart() > 0) {
+            // I18N: Short form of 'hour', used as a suffix in duration strings
             result += " " + duration.toHoursPart() + trLegacy("h");
         }
         if (duration.toMinutesPart() > 0) {
+            // I18N: Short form of 'minute', used as a suffix in duration strings
             result += " " + duration.toMinutesPart() + trLegacy("m");
         }
         if (duration.toSecondsPart() > 0 || result.isEmpty()) {
+            // I18N: Short form of 'second', used as a suffix in duration strings
             result += " " + duration.toSecondsPart() + trLegacy("s");
         }
         return result.trim();

@@ -139,10 +139,6 @@ msgstr ""
 msgid "<error>Animation tick must be a valid integer."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
-msgid "<error>Back to Main Menu"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "<error>Banned: You are banned from this island."
 msgstr ""
@@ -891,10 +887,6 @@ msgstr ""
 msgid "<error>Your island must be level <level> to complete this challenge!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
-msgid "<error>all"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WitherTagEvents.java
 msgid "<leader>'s Wither"
 msgstr ""
@@ -1446,6 +1438,10 @@ msgstr ""
 msgid "<primary>Available locales (<count>):</primary>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
+msgid "<primary>Back to Main Menu"
+msgstr ""
+
 #. I18N: Section header for banned player list in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<primary>Bans:"
@@ -1453,6 +1449,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "<primary>Be patient, young padawan"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
+msgid "<primary>Biome: <biome>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -1485,6 +1485,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "<primary>Hold your horses! You have to be patient..."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
+msgid "<primary>Island Biome"
 msgstr ""
 
 #. I18N: Header line for the admin island info debug output.
@@ -1684,8 +1688,14 @@ msgstr ""
 msgid "<secondary>Your skyblock home has been set to your current location."
 msgstr ""
 
+#. I18N: Used in biome radius display to indicate that a single chunk is affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "<secondary>chunk"
+msgstr ""
+
+#. I18N: Used in biome radius display to indicate that the entire island is affected
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
+msgid "<secondary>island"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
@@ -1699,10 +1709,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "Animation tick changed to <primary><ticks></primary>."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
-msgid "Biome: <biome>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
@@ -1902,10 +1908,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Invite sent to <primary><player></primary>."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
-msgid "Island Biome"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -2467,6 +2469,7 @@ msgstr ""
 msgid "create an island"
 msgstr ""
 
+#. I18N: Short form of 'day', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "d"
 msgstr ""
@@ -2523,6 +2526,7 @@ msgstr ""
 msgid "general island command"
 msgstr ""
 
+#. I18N: Short form of 'hour', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "h"
 msgstr ""
@@ -2583,6 +2587,7 @@ msgstr ""
 msgid "lock your island to non-party members."
 msgstr ""
 
+#. I18N: Short form of 'minute', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "m"
 msgstr ""
@@ -2667,6 +2672,7 @@ msgstr ""
 msgid "restarts the cooldown on the command"
 msgstr ""
 
+#. I18N: Short form of 'second', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "s"
 msgstr ""

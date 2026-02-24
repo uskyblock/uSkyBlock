@@ -20,11 +20,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -47,8 +44,6 @@ public enum I18nUtil {
     private static volatile I18n i18n;
     private static volatile Locale locale;
     private static volatile File dataFolder;
-    private static volatile LegacyComponentSerializer legacySerializer;
-    private static volatile MiniMessage miniMessage;
     private static volatile List<String> supportedLocaleKeys;
     private static final String DEFAULT_LOCALE_KEY = "en";
     private static final String I18N_ZIP_RESOURCE = "i18n.zip";
@@ -67,23 +62,11 @@ public enum I18nUtil {
      * Translates the given {@link String} to the configured language. Returns the given string if no translation is
      * available. Returns an empty component if the given key is null or empty.
      *
-     * @param s String to translate.
-     * @return Translated Component.
-     */
-    public static @NotNull Component tr(@Nullable String s) {
-        return getI18n().tr(s);
-    }
-
-    /**
-     * Translates the given {@link String} to the configured language. Formats with the given {@link Object}. Returns
-     * the given String if no translation is available. Returns an empty component if the given key is null or empty.
-     *
      * @param text String to translate.
-     * @param args Arguments to format.
      * @return Translated Component.
      */
-    public static @NotNull Component tr(@Nullable String text, @Nullable Object... args) {
-        return getI18n().tr(text, args);
+    public static @NotNull Component tr(@Nullable String text) {
+        return getI18n().tr(text);
     }
 
     /**
@@ -95,7 +78,7 @@ public enum I18nUtil {
      * @param resolvers MiniMessage tag resolvers.
      * @return Translated Component.
      */
-    public static @NotNull Component tr(@Nullable String text, @Nullable TagResolver... resolvers) {
+    public static @NotNull Component tr(@Nullable String text, @NotNull TagResolver... resolvers) {
         return getI18n().tr(text, resolvers);
     }
 
@@ -116,10 +99,12 @@ public enum I18nUtil {
      * @param text String to translate.
      * @param args Arguments to format.
      * @return Translated legacy-formatted String.
+     * @deprecated Use {@link #tr(String, TagResolver...)} instead.
      */
+    @Deprecated
     @NotNull
     public static String trLegacy(@Nullable String text, @Nullable Object... args) {
-        return legacy(tr(text, args));
+        return legacy(getI18n().tr(text, args));
     }
 
     /**
@@ -131,7 +116,7 @@ public enum I18nUtil {
      * @return Translated legacy-formatted String.
      */
     @NotNull
-    public static String trLegacy(@Nullable String text, @Nullable TagResolver... resolvers) {
+    public static String trLegacy(@Nullable String text, @NotNull TagResolver... resolvers) {
         return legacy(tr(text, resolvers));
     }
 
@@ -278,12 +263,8 @@ public enum I18nUtil {
         Set<String> locales = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         addSupportedLocaleKeysFromPluginFolder(locales);
         addSupportedLocaleKeysFromZipInJar(locales);
-        if (locales.isEmpty()) {
-            locales.add(DEFAULT_LOCALE_KEY);
-        } else if (!locales.contains(DEFAULT_LOCALE_KEY)) {
-            locales.add(DEFAULT_LOCALE_KEY);
-        }
-        return Collections.unmodifiableList(new ArrayList<>(locales));
+        locales.add(DEFAULT_LOCALE_KEY);
+        return List.copyOf(locales);
     }
 
     private static void addSupportedLocaleKeysFromZipInJar(@NotNull Set<String> locales) {
@@ -379,26 +360,26 @@ public enum I18nUtil {
     /**
      * Marks the given {@link String} for translation for the .po files.
      *
-     * @param key String to mark.
+     * @param text String to mark.
      * @return Input String.
      */
     @Contract(value = "null -> null", pure = true)
-    public static String marktr(@Nullable String key) {
-        return key;
+    public static String marktr(@Nullable String text) {
+        return text;
     }
 
     /**
      * Formats the given MiniMessage string without translating and resolves named placeholders.
      * Returns an empty String if the given String is null or empty.
      *
-     * @param message   String as Adventure MiniMessage.
+     * @param text      String as Adventure MiniMessage.
      * @param resolvers MiniMessage resolvers.
      * @return Formatted legacy String with color codes.
      */
     @NotNull
-    public static String miniToLegacy(@Nullable String message, @Nullable TagResolver... resolvers) {
-        if (message != null && !message.isEmpty()) {
-            return legacy(deserializeMessage(message, resolvers));
+    public static String miniToLegacy(@Nullable String text, @NotNull TagResolver... resolvers) {
+        if (text != null && !text.isEmpty()) {
+            return legacy(deserializeMiniMessage(text, resolvers));
         }
         return "";
     }
@@ -406,14 +387,14 @@ public enum I18nUtil {
     /**
      * Formats the given MiniMessage string without translating and resolves named placeholders.
      *
-     * @param message   String as Adventure MiniMessage.
+     * @param text      String as Adventure MiniMessage.
      * @param resolvers MiniMessage resolvers.
-     * @return Formatted message as a component.
+     * @return Formatted text as a component.
      */
     @NotNull
-    public static Component parseMini(@Nullable String message, @Nullable TagResolver... resolvers) {
-        if (message != null && !message.isEmpty()) {
-            return deserializeMessage(message, resolvers);
+    public static Component parseMini(@Nullable String text, @NotNull TagResolver... resolvers) {
+        if (text != null && !text.isEmpty()) {
+            return deserializeMiniMessage(text, resolvers);
         }
         return Component.empty();
     }
@@ -436,12 +417,12 @@ public enum I18nUtil {
      * Thread safety is ensured by synchronizing modifications of shared fields.
      *
      * @param folder The plugin's data folder.
-     * @param loc    The desired Locale. If null, Locale.ENGLISH is used.
+     * @param locale The desired Locale. If null, Locale.ENGLISH is used.
      */
-    public static void initialize(@NotNull File folder, @Nullable Locale loc) {
+    public static void initialize(@NotNull File folder, @Nullable Locale locale) {
         synchronized (LOCK) {
             dataFolder = folder;
-            locale = loc;
+            I18nUtil.locale = locale;
             i18n = new I18n(getLocale());
             supportedLocaleKeys = null;
         }
@@ -461,11 +442,11 @@ public enum I18nUtil {
      * Sets the {@link Locale}. Resets to the default locale if NULL is given.
      * The I18n cache is cleared so that translations are reloaded.
      *
-     * @param loc Locale to set.
+     * @param locale Locale to set.
      */
-    public static void setLocale(@Nullable Locale loc) {
+    public static void setLocale(@Nullable Locale locale) {
         synchronized (LOCK) {
-            locale = loc;
+            I18nUtil.locale = locale;
             clearCache();
         }
     }
@@ -483,13 +464,13 @@ public enum I18nUtil {
     /**
      * Converts the given {@link String} to a {@link Locale}.
      *
-     * @param lang Language code..
+     * @param language Language code..
      * @return Locale based on the given string.
      */
     @Contract(value = "null -> null", pure = true)
-    public static Locale getLocale(@Nullable String lang) {
-        if (lang != null) {
-            String[] parts = lang.split("[-_]");
+    public static Locale getLocale(@Nullable String language) {
+        if (language != null) {
+            String[] parts = language.split("[-_]");
             if (parts.length >= 3) {
                 return Locale.of(parts[0], parts[1], parts[2]);
             } else if (parts.length == 2) {
@@ -502,23 +483,14 @@ public enum I18nUtil {
     }
 
     private static @NotNull LegacyComponentSerializer getLegacySerializer() {
-        LegacyComponentSerializer serializer = legacySerializer;
-        if (serializer == null) {
-            serializer = LegacyComponentSerializer.builder().character('\u00a7').build();
-            legacySerializer = serializer;
-        }
-        return serializer;
+        return LegacyComponentSerializer.legacySection();
     }
 
     private static @NotNull MiniMessage getMiniMessage() {
-        MiniMessage serializer = miniMessage;
-        if (serializer == null) {
-            serializer = MiniMessage.miniMessage();
-            miniMessage = serializer;
-        }
-        return serializer;
+        return MiniMessage.miniMessage();
     }
 
+    @Deprecated
     private static @Nullable Object[] normalizeArgsForMiniMessage(@Nullable Object[] args) {
         if (args == null) {
             return null;
@@ -535,27 +507,7 @@ public enum I18nUtil {
         return normalized;
     }
 
-    private static @Nullable Object[] normalizeArgsForLegacy(@Nullable Object[] args) {
-        if (args == null) {
-            return null;
-        }
-        Object[] normalized = new Object[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            if (arg instanceof Component component) {
-                normalized[i] = legacy(component);
-            } else {
-                normalized[i] = arg;
-            }
-        }
-        return normalized;
-    }
-
-    private static @NotNull Component deserializeMessage(@NotNull String message) {
-        return deserializeMessage(message, (TagResolver[]) null);
-    }
-
-    private static @NotNull Component deserializeMessage(@NotNull String message, @Nullable TagResolver... resolvers) {
+    private static @NotNull Component deserializeMiniMessage(@NotNull String message, @NotNull TagResolver... resolvers) {
         try {
             return getMiniMessage().deserialize(message, resolveSemanticTags(resolvers));
         } catch (RuntimeException e) {
@@ -564,19 +516,13 @@ public enum I18nUtil {
         }
     }
 
-    private static @NotNull TagResolver resolveSemanticTags(@Nullable TagResolver... resolvers) {
+    private static @NotNull TagResolver resolveSemanticTags(@NotNull TagResolver... resolvers) {
         if (resolvers == null || resolvers.length == 0) {
             return SEMANTIC_STYLE_TAGS;
         }
-        TagResolver[] nonNullResolvers = Arrays.stream(resolvers)
-            .filter(Objects::nonNull)
-            .toArray(TagResolver[]::new);
-        if (nonNullResolvers.length == 0) {
-            return SEMANTIC_STYLE_TAGS;
-        }
-        TagResolver[] combined = new TagResolver[nonNullResolvers.length + 1];
+        TagResolver[] combined = new TagResolver[resolvers.length + 1];
         combined[0] = SEMANTIC_STYLE_TAGS;
-        System.arraycopy(nonNullResolvers, 0, combined, 1, nonNullResolvers.length);
+        System.arraycopy(resolvers, 0, combined, 1, resolvers.length);
         return TagResolver.resolver(combined);
     }
 
@@ -688,43 +634,40 @@ public enum I18nUtil {
             return Optional.empty();
         }
 
-        public @NotNull Component tr(@Nullable String key, @Nullable Object... args) {
-            if (key == null || key.trim().isEmpty()) {
+        /**
+         * @deprecated Use {@link #tr(String, TagResolver...)} instead.
+         */
+        @Deprecated
+        private @NotNull Component tr(@Nullable String text, @Nullable Object... args) {
+            if (text == null || text.trim().isEmpty()) {
                 return Component.empty();
             }
-            String propKey = translations.getProperty(key);
-            if (propKey != null && !propKey.trim().isEmpty()) {
-                return format(propKey, args);
+            String translated = translations.getProperty(text);
+            if (translated != null && !translated.trim().isEmpty()) {
+                return format(translated, args);
             }
-            return format(key, args);
+            return format(text, args);
         }
 
-        public @NotNull Component tr(@Nullable String key, @Nullable TagResolver... resolvers) {
-            if (key == null || key.trim().isEmpty()) {
+        public @NotNull Component tr(@Nullable String text, @NotNull TagResolver... resolvers) {
+            if (text == null || text.trim().isEmpty()) {
                 return Component.empty();
             }
-            String propKey = translations.getProperty(key);
-            if (propKey != null && !propKey.trim().isEmpty()) {
-                return format(propKey, resolvers);
+            String translated = translations.getProperty(text);
+            if (translated != null && !translated.trim().isEmpty()) {
+                return deserializeMiniMessage(translated, resolvers);
             }
-            return format(key, resolvers);
+            return deserializeMiniMessage(text, resolvers);
         }
 
-        private @NotNull Component format(@NotNull String propKey, @Nullable Object[] args) {
+        @Deprecated
+        private @NotNull Component format(@NotNull String text, @Nullable Object[] args) {
             try {
                 Object[] normalizedArgs = normalizeArgsForMiniMessage(args);
-                String formatted = new MessageFormat(propKey, getLocale()).format(normalizedArgs);
-                return deserializeMessage(formatted);
+                String formatted = new MessageFormat(text, getLocale()).format(normalizedArgs);
+                return deserializeMiniMessage(formatted);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Problem with: '" + propKey + "'", e);
-            }
-        }
-
-        private @NotNull Component format(@NotNull String propKey, @Nullable TagResolver[] resolvers) {
-            try {
-                return deserializeMessage(propKey, resolvers);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Problem with: '" + propKey + "'", e);
+                throw new IllegalArgumentException("Problem with: '" + text + "'", e);
             }
         }
 
