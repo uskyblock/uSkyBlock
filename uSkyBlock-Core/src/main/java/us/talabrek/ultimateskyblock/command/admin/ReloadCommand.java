@@ -8,8 +8,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Reloads the config-files for USB.
@@ -24,7 +23,7 @@ public class ReloadCommand extends AbstractCommand {
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
         uSkyBlock.getInstance().reloadConfig();
-        send(sender, tr("Configuration reloaded from file."));
+        sendTr(sender, "Configuration reloaded from file.");
         return true;
     }
 }

@@ -19,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +26,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Command to show the regions of interest.
@@ -56,7 +55,7 @@ public class RegionCommand extends CompositeCommand {
                         setMaterial(Material.BRICKS);
                         showRegion(player, region);
                     } else {
-                        send(sender, tr("<error>No island found at your current location."));
+                        sendErrorTr(sender, "No island found at your current location.");
                     }
                     return true;
                 } else {
@@ -96,7 +95,7 @@ public class RegionCommand extends CompositeCommand {
                             showChunk(player, v);
                         }
                     } else {
-                        send(sender, tr("<error>No island found at your current location."));
+                        sendErrorTr(sender, "No island found at your current location.");
                     }
                     Chunk chunk = player.getLocation().getChunk();
                     BlockVector2 chunkCoords = BlockVector2.at(chunk.getX(), chunk.getZ());
@@ -122,7 +121,7 @@ public class RegionCommand extends CompositeCommand {
                             showRegion(player, rg);
                         }
                     } else {
-                        send(sender, tr("<error>No island found at your current location."));
+                        sendErrorTr(sender, "No island found at your current location.");
                     }
                     return true;
                 } else {
@@ -145,7 +144,7 @@ public class RegionCommand extends CompositeCommand {
                             showChunk(player, v);
                         }
                     } else {
-                        send(sender, tr("<error>No island found at your current location."));
+                        sendErrorTr(sender, "No island found at your current location.");
                     }
                     Chunk chunk = player.getLocation().getChunk();
                     BlockVector2 chunkCoords = BlockVector2.at(chunk.getX(), chunk.getZ());
@@ -163,9 +162,9 @@ public class RegionCommand extends CompositeCommand {
                 if (sender instanceof Player) {
                     Player player = (Player) sender;
                     if (RegionCommand.this.animationHandler.removeAnimations(player)) {
-                        send(sender, tr("Stopped displaying regions."));
+                        sendTr(sender, "Stopped displaying regions.");
                     } else {
-                        send(sender, tr("No regions are currently shown for this player."));
+                        sendTr(sender, "No regions are currently shown for this player.");
                     }
                     return true;
                 } else {
@@ -180,12 +179,12 @@ public class RegionCommand extends CompositeCommand {
                 if (args.length == 1 && args[0].matches("[0-9]+")) {
                     int animTick = Integer.parseInt(args[0]);
                     RegionCommand.this.animationHandler.setAnimTick(animTick);
-                    send(sender, tr("Animation tick changed to <primary><ticks></primary>.", unparsed("ticks", String.valueOf(animTick))));
+                    sendTr(sender, "Animation tick changed to <primary><ticks></primary>.", unparsed("ticks", String.valueOf(animTick)));
                     RegionCommand.this.animationHandler.stop();
                     RegionCommand.this.animationHandler.start();
                     return true;
                 } else if (args.length == 1) {
-                    send(sender, tr("<error>Animation tick must be a valid integer."));
+                    sendErrorTr(sender, "Animation tick must be a valid integer.");
                 }
                 return false;
             }

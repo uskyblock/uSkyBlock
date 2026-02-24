@@ -8,10 +8,10 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Teleports to the player's island.
@@ -32,15 +32,15 @@ public class GotoIslandCommand extends AbstractPlayerInfoCommand {
             return;
         }
         if (!playerInfo.getHasIsland()) {
-            send(sender, tr("<error>That player does not have an island!"));
+            sendErrorTr(sender, "That player does not have an island!");
         } else if (playerInfo.getHomeLocation() != null) {
-            send(sender, tr("<secondary>Teleporting to <player>'s island.", unparsed("player", playerInfo.getPlayerName())));
+            sendTr(sender, "Teleporting you to <player>'s island.", unparsed("player", playerInfo.getPlayerName()));
             plugin.getTeleportLogic().safeTeleport(player, playerInfo.getHomeLocation(), true);
         } else if (playerInfo.getIslandLocation() != null) {
-            send(sender, tr("<secondary>Teleporting to <player>'s island.", unparsed("player", playerInfo.getPlayerName())));
+            sendTr(sender, "Teleporting you to <player>'s island.", unparsed("player", playerInfo.getPlayerName()));
             plugin.getTeleportLogic().safeTeleport(player, playerInfo.getIslandLocation(), true);
         } else {
-            send(sender, tr("<error>That player does not have an island!"));
+            sendErrorTr(sender, "That player does not have an island!");
         }
     }
 }

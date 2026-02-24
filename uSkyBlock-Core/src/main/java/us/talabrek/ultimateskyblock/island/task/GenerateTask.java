@@ -12,11 +12,11 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Task for generating player-info-data after island has been formed.
@@ -72,16 +72,15 @@ public class GenerateTask extends BukkitRunnable {
                 plugin.clearPlayerInventory(player);
                 if (player != null && player.isOnline()) {
                     if (plugin.getConfig().getBoolean("options.restart.teleportWhenReady", true)) {
-                        send(player, tr("<success>Congratulations!</success> Your island is ready."));
+                        sendTr(player, "<success>Congratulations!</success> Your island is ready.");
                         if (AsyncWorldEditHandler.isAWE()) {
-                            send(player, tr("<muted>Note: Construction may still be in progress.</muted>"));
+                            sendTr(player, "Note: Construction may still be in progress.", MUTED);
                         }
                         plugin.getTeleportLogic().homeTeleport(player, true);
                     } else {
-                        send(player, tr("<success>Congratulations!</success> Your island is ready."),
-                            tr("<muted>Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.</muted>"),
-                            tr("<muted>Note: Construction may still be in progress.</muted>")
-                        );
+                        sendTr(player, "<success>Congratulations!</success> Your island is ready.");
+                        sendTr(player, "Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.", MUTED);
+                        sendTr(player, "Note: Construction may still be in progress.", MUTED);
                     }
                 }
                 for (String command : plugin.getConfig().getStringList("options.restart.extra-commands")) {

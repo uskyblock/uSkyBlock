@@ -5,13 +5,12 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class FlushCommand extends AbstractCommand {
     private final uSkyBlock plugin;
@@ -27,10 +26,10 @@ public class FlushCommand extends AbstractCommand {
         long flushedIslands = plugin.getIslandLogic().flushCache();
         long flushedPlayers = plugin.getPlayerLogic().flushCache();
         long flushedChallenges = plugin.getChallengeLogic().flushCache();
-        send(sender, tr("Flushed <secondary><islands></secondary> islands, <primary><players></primary> players, and <primary><challenges></primary> challenge completions.",
+        sendTr(sender, "Flushed <secondary><islands></secondary> islands, <primary><players></primary> players, and <primary><challenges></primary> challenge completions.",
             unparsed("islands", String.valueOf(flushedIslands)),
             unparsed("players", String.valueOf(flushedPlayers)),
-            unparsed("challenges", String.valueOf(flushedChallenges))));
+            unparsed("challenges", String.valueOf(flushedChallenges)));
         return true;
     }
 }

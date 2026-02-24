@@ -10,14 +10,14 @@ import us.talabrek.ultimateskyblock.command.admin.task.PurgeTask;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * The purge-command.
@@ -45,7 +45,7 @@ public class PurgeCommand extends AbstractCommand {
             return true;
         }
         if (args.length == 0 || !args[0].matches("[0-9]+")) {
-            send(sender, tr("<error>You must provide the age in days to purge!"));
+            sendErrorTr(sender, "You must provide the age in days to purge!");
             return false;
         }
         String days = args[0];
@@ -54,26 +54,26 @@ public class PurgeCommand extends AbstractCommand {
             try {
                 purgeLevel = Double.parseDouble(args[1]);
             } catch (NumberFormatException e) {
-                send(sender, tr("<error>The level must be a valid number"));
+                sendErrorTr(sender, "The level must be a valid number");
                 return false;
             }
         }
         final boolean force = args[args.length - 1].equalsIgnoreCase("force");
 
         Duration time = Duration.ofDays(Integer.parseInt(days, 10));
-        send(sender, tr("Finding all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>.",
+        sendTr(sender, "Finding all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>.",
             unparsed("days", args[0]),
-            unparsed("level", String.valueOf(purgeLevel))));
+            unparsed("level", String.valueOf(purgeLevel)));
         scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {
                 Duration timeout = Duration.ofMillis(plugin.getConfig().getLong("options.advanced.purgeTimeout", 600000)); // TODO: this option does not have an entry in plugin.yml
-                send(sender, tr("<error>PURGE:</error> <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm.",
-                    unparsed("timeout", TimeUtil.durationAsString(timeout))));
+                sendErrorTr(sender, "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm.",
+                    unparsed("timeout", TimeUtil.durationAsString(timeout)));
                 scheduler.async(() -> {
                     if (scanTask.isActive()) {
-                        send(sender, tr("<error>Purge timed out."));
+                        sendErrorTr(sender, "Purge timed out.");
                         scanTask.stop();
                     }
                 }, timeout);
@@ -90,13 +90,13 @@ public class PurgeCommand extends AbstractCommand {
     private void tryConfirm(CommandSender sender, String[] args) {
         if (purgeTask != null && purgeTask.isActive()) {
             if (args.length == 1 && args[0].equalsIgnoreCase("stop")) {
-                send(sender, tr("<error>Trying to abort purge"));
+                sendErrorTr(sender, "Trying to abort purge");
                 purgeTask.stop();
                 return;
             }
         }
         if (scanTask != null && scanTask.isActive() && !scanTask.isDone() && args.length == 1 && args[0].equalsIgnoreCase("stop")) {
-            send(sender, tr("<error>Trying to abort purge"));
+            sendErrorTr(sender, "Trying to abort purge");
             scanTask.stop();
             return;
         }
@@ -105,14 +105,14 @@ public class PurgeCommand extends AbstractCommand {
         } else if (scanTask != null && scanTask.isActive() && scanTask.isDone() && args.length == 1 && args[0].equalsIgnoreCase("stop")) {
             scanTask.stop();
             scanTask = null;
-            send(sender, tr("<error>Purge aborted!"));
+            sendErrorTr(sender, "Purge aborted!");
         } else {
-            send(sender, tr("<error>A purge is already running.</error> <muted>Either <primary>confirm</primary> or <primary>stop</primary> it."));
+            sendErrorTr(sender, "A purge is already running. <muted>Either <primary>confirm</primary> or <primary>stop</primary> it.");
         }
     }
 
     private void doPurge(CommandSender sender) {
-        send(sender, tr("<error>Starting purge..."));
+        sendErrorTr(sender, "Starting purge...");
         purgeTask = new PurgeTask(plugin, scanTask.getPurgeList(), sender);
         purgeTask.runTaskAsynchronously(plugin);
         scanTask.stop(); // Mark as inactive

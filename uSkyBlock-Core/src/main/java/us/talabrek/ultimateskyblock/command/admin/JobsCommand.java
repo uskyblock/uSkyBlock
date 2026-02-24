@@ -16,17 +16,20 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.plainText;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Command for reporting and controlling async jobs.
  */
 public class JobsCommand extends CompositeCommand {
     // I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
-    private static final String JOBS_HEADER = marktr("<muted>jobs   ms/job   ms/tick  ticks    active   time     name");
+    private static final String JOBS_HEADER = marktr("jobs   ms/job   ms/tick  ticks    active   time     name");
     // Not translatable: formatting template with placeholders only.
-    private static final String JOBS_ROW = "<muted><jobs> <ms-per-job> <ms-per-tick> <ticks> <error><active></error> <elapsed> <primary><name>";
+    private static final String JOBS_ROW = "<jobs> <ms-per-job> <ms-per-tick> <ticks> <primary><active></primary> <elapsed> <primary><name>";
 
     @Inject
     public JobsCommand() {
@@ -35,13 +38,13 @@ public class JobsCommand extends CompositeCommand {
         add(new AbstractCommand("stats|s", "usb.admin.jobs.stats", "show statistics") {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-                send(sender, tr("<primary>Job Statistics"));
+                sendTr(sender, "Job Statistics", PRIMARY);
                 send(sender, parseMini("<muted>----------------"));
                 Map<String, JobManager.Stats> stats = JobManager.getStats();
                 List<String> jobs = new ArrayList<>(stats.keySet());
                 Collections.sort(jobs);
 
-                send(sender, tr(JOBS_HEADER));
+                sendTr(sender, JOBS_HEADER, MUTED);
 
                 for (String jobName : jobs) {
                     JobManager.Stats stat = stats.get(jobName);

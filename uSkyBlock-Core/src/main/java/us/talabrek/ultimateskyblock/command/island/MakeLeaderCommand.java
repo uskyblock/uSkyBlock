@@ -14,7 +14,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class MakeLeaderCommand extends RequireIslandCommand {
 
@@ -28,15 +29,15 @@ public class MakeLeaderCommand extends RequireIslandCommand {
         if (args.length == 1) {
             String newLeader = args[0];
             if (!island.getMembers().contains(newLeader)) {
-                send(player, tr("<error>You can only transfer ownership to party members!"));
+                sendErrorTr(player, "You can only transfer ownership to party members!");
                 return true;
             }
             if (island.getLeader().equals(newLeader)) {
-                send(player, tr("<primary><player></primary> is already the leader of your island.", unparsed("player", newLeader)));
+                sendTr(player, "<primary><player></primary> is already the leader of your island.", unparsed("player", newLeader));
                 return true;
             }
             if (!island.isLeader(player)) {
-                send(player, tr("<error>Only the island leader can transfer leadership!"));
+                sendErrorTr(player, "Only the island leader can transfer leadership!");
                 island.sendMessageToIslandGroup(tr("<player> tried to take over the island!",
                     unparsed("player", newLeader)));
                 return true;

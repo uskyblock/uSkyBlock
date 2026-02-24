@@ -13,6 +13,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 
 public class BlockCollection {
     Map<Material, Integer> blockCount;
@@ -42,7 +43,7 @@ public class BlockCollection {
         if (sb.toString().trim().isEmpty()) {
             return null;
         }
-        return trLegacy("<muted>Still missing the following blocks: <blocks>", legacyArg("blocks", sb.toString()));
+        return trLegacy("Still missing the following blocks: <blocks>", MUTED, legacyArg("blocks", sb.toString()));
     }
 
     private int count(Material type) {

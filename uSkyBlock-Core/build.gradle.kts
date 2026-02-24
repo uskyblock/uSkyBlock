@@ -135,6 +135,8 @@ tasks.register<Exec>("extractTranslation") {
         "--keyword=tr",
         "--keyword=trLegacy",
         "--keyword=marktr",
+        "--keyword=sendTr:2",
+        "--keyword=sendErrorTr:2",
         "--from-code=UTF-8",
         "--add-comments=I18N:",
         "--add-location=file"

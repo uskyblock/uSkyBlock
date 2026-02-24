@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Sets data directly on the IslandInfo object
@@ -42,14 +42,14 @@ public class GetIslandDataCommand extends AbstractIslandInfoCommand {
             String getName = "get" + args[0].substring(0,1).toUpperCase() + args[0].substring(1);
             try {
                 Object value = IslandInfo.class.getMethod(getName).invoke(islandInfo);
-                send(sender, tr("Current value for <primary><field></primary> is '<primary><value></primary>'.",
+                sendTr(sender, "Current value for <primary><field></primary> is '<primary><value></primary>'.",
                     unparsed("field", args[0]),
-                    unparsed("value", String.valueOf(value))));
+                    unparsed("value", String.valueOf(value)));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                send(sender, tr("<error>Unable to get state for <field>", unparsed("field", args[0])));
+                sendErrorTr(sender, "Unable to get state for <field>", unparsed("field", args[0]));
             }
         } else {
-            send(sender, tr("Valid fields: <primary><fields></primary>", unparsed("fields", String.join(", ", getterNames))));
+            sendTr(sender, "Valid fields: <primary><fields></primary>", unparsed("fields", String.join(", ", getterNames)));
         }
     }
 

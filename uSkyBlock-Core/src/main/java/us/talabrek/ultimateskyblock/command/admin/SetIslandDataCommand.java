@@ -6,7 +6,6 @@ import org.bukkit.command.TabCompleter;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,8 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Sets data directly on the IslandInfo object
@@ -29,11 +29,11 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
         methodNames = new ArrayList<>();
         for (Method m : IslandInfo.class.getDeclaredMethods()) {
             if (m.getName().startsWith("set")
-                    && !m.getName().startsWith("setup")
-                    && m.getParameterTypes().length == 1
-                    && (m.getParameterTypes()[0].isPrimitive()
-                    || m.getParameterTypes()[0].isAssignableFrom(String.class)
-                    || m.getParameterTypes()[0].isAssignableFrom(Double.class)
+                && !m.getName().startsWith("setup")
+                && m.getParameterTypes().length == 1
+                && (m.getParameterTypes()[0].isPrimitive()
+                || m.getParameterTypes()[0].isAssignableFrom(String.class)
+                || m.getParameterTypes()[0].isAssignableFrom(Double.class)
             )) {
                 String fieldName = m.getName().substring(3);
                 fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
@@ -53,20 +53,20 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
                 try {
                     Object value = getValue(m.getParameterTypes()[0], stringValue);
                     m.invoke(islandInfo, value);
-                    send(sender, tr("<primary><field></primary> was set to '<primary><value></primary>'.",
+                    sendTr(sender, "<primary><field></primary> was set to '<primary><value></primary>'.",
                         unparsed("field", args[0]),
-                        unparsed("value", String.valueOf(value))));
+                        unparsed("value", String.valueOf(value)));
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    send(sender, tr("<error>Unable to set field <field> to '<value>'",
+                    sendErrorTr(sender, "Unable to set field <field> to '<value>'",
                         unparsed("field", args[0]),
-                        unparsed("value", stringValue)));
+                        unparsed("value", stringValue));
                 } catch (NumberFormatException e) {
-                    send(sender, tr("<error>Unable to set field <field> to '<value>', a number was expected",
+                    sendErrorTr(sender, "Unable to set field <field> to '<value>', a number was expected",
                         unparsed("field", args[0]),
-                        unparsed("value", stringValue)));
+                        unparsed("value", stringValue));
                 }
             } else {
-                send(sender, tr("<error>Invalid field <field>", unparsed("field", args[0])));
+                sendErrorTr(sender, "Invalid field <field>", unparsed("field", args[0]));
             }
         } else if (args.length == 1 && methodNames.contains(args[0])) {
             String methodName = "get" + args[0].substring(0, 1).toUpperCase() + args[0].substring(1);
@@ -74,17 +74,17 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
             if (m != null && m.getParameterTypes().length == 0) {
                 try {
                     Object value = m.invoke(islandInfo);
-                    send(sender, tr("Current value for <primary><field></primary> is '<primary><value></primary>'.",
+                    sendTr(sender, "Current value for <primary><field></primary> is '<primary><value></primary>'.",
                         unparsed("field", args[0]),
-                        unparsed("value", String.valueOf(value))));
+                        unparsed("value", String.valueOf(value)));
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    send(sender, tr("<error>Unable to get state for <field>", unparsed("field", args[0])));
+                    sendErrorTr(sender, "Unable to get state for <field>", unparsed("field", args[0]));
                 }
             } else {
-                send(sender, tr("<error>Unable to get state for <field>", unparsed("field", args[0])));
+                sendErrorTr(sender, "Unable to get state for <field>", unparsed("field", args[0]));
             }
         } else {
-            send(sender, tr("Valid fields: <primary><fields></primary>", unparsed("fields", String.join(", ", methodNames))));
+            sendTr(sender, "Valid fields: <primary><fields></primary>", unparsed("fields", String.join(", ", methodNames)));
         }
     }
 
@@ -109,11 +109,10 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
     private Method getMethod(String methodName) {
         for (Method m : IslandInfo.class.getDeclaredMethods()) {
             if (methodName.equalsIgnoreCase(m.getName()) ||
-                    (methodName.startsWith("get") && (
-                            ("is"+methodName.substring(3)).equalsIgnoreCase(m.getName()) ||
-                            ("has"+methodName.substring(3)).equalsIgnoreCase(m.getName())
-                    )))
-            {
+                (methodName.startsWith("get") && (
+                    ("is" + methodName.substring(3)).equalsIgnoreCase(m.getName()) ||
+                        ("has" + methodName.substring(3)).equalsIgnoreCase(m.getName())
+                ))) {
                 return m;
             }
         }

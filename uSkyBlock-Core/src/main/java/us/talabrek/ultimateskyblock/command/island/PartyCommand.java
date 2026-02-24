@@ -16,10 +16,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class PartyCommand extends CompositeCommand {
     private final uSkyBlock plugin;
@@ -43,10 +44,10 @@ public class PartyCommand extends CompositeCommand {
                 IslandInfo islandInfo = plugin.getIslandInfo((Player) sender);
                 Collection<String> pendingInvitesAsNames = inviteHandler.getPendingInvitesAsNames(islandInfo);
                 if (pendingInvitesAsNames == null || pendingInvitesAsNames.isEmpty()) {
-                    send(sender, tr("No pending invites."));
+                    sendTr(sender, "No pending invites.");
                 } else {
                     String invites = String.join(", ", pendingInvitesAsNames);
-                    send(sender, tr("Pending invites: <primary><invites></primary>", unparsed("invites", invites)));
+                    sendTr(sender, "Pending invites: <primary><invites></primary>", unparsed("invites", invites));
                 }
                 return true;
             }
@@ -58,14 +59,14 @@ public class PartyCommand extends CompositeCommand {
                     plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                         IslandInfo islandInfo = plugin.getIslandInfo((Player) sender);
                         if (!islandInfo.isLeader((Player) sender) || !islandInfo.hasPerm(sender.getName(), "canInviteOthers")) {
-                            send(sender, tr("<error>You don't have permission to uninvite players."));
+                            sendErrorTr(sender, "You don't have permission to uninvite players.");
                             return;
                         }
                         String playerName = args[0];
                         if (inviteHandler.uninvite(islandInfo, playerName)) {
-                            send(sender, tr("Successfully withdrew invite for <primary><player></primary>.", unparsed("player", playerName)));
+                            sendTr(sender, "Successfully withdrew invite for <primary><player></primary>.", unparsed("player", playerName));
                         } else {
-                            send(sender, tr("<error>No pending invite found for <player>", unparsed("player", playerName)));
+                            sendErrorTr(sender, "No pending invite found for <player>", unparsed("player", playerName));
                         }
                     });
                     return true;
@@ -83,7 +84,7 @@ public class PartyCommand extends CompositeCommand {
         }
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         if (playerInfo == null || !playerInfo.getHasIsland()) {
-            send(player, tr("<error>You do not have an island.</error> <muted>Use <cmd>/is create</cmd> to get one."));
+            sendErrorTr(player, "You do not have an island. <muted>Use <cmd>/is create</cmd> to get one.");
             return true;
         }
         if (args.length == 0) {

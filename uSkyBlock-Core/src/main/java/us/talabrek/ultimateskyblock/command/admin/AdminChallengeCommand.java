@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * The challenge admin command.
@@ -31,10 +31,7 @@ public class AdminChallengeCommand extends CompositeCommand {
     private final ChallengeLogic challengeLogic;
 
     @Inject
-    public AdminChallengeCommand(
-        @NotNull uSkyBlock plugin,
-        @NotNull ChallengeLogic challengeLogic
-    ) {
+    public AdminChallengeCommand(@NotNull uSkyBlock plugin, @NotNull ChallengeLogic challengeLogic) {
         super("challenge|ch", "usb.mod.challenges", "player", marktr("Manage challenges for a player"));
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
@@ -49,13 +46,11 @@ public class AdminChallengeCommand extends CompositeCommand {
             protected void doExecute(CommandSender sender, PlayerInfo pi, ChallengeCompletion completion) {
                 String playerName = pi.getPlayerName();
                 if (completion.getTimesCompleted() == 0) {
-                    send(sender, tr("<error>This challenge has never been completed"));
+                    sendErrorTr(sender, "This challenge has never been completed");
                 } else {
                     challengeLogic.resetChallenge(pi, completion.getId());
                     pi.save(); // TODO: is it really PlayerInfo that should be saved?
-                    send(sender, tr("Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>.",
-                        unparsed("challenge-id", completion.getId().id()),
-                        unparsed("player", playerName)));
+                    sendTr(sender, "Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>.", unparsed("challenge-id", completion.getId().id()), unparsed("player", playerName));
                 }
             }
         });
@@ -66,8 +61,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 if (playerInfo != null) {
                     challengeLogic.resetAllChallenges(playerInfo);
                     playerInfo.save(); // TODO: is it really PlayerInfo that should be saved?
-                    send(sender, tr("<primary><player></primary> has had all challenges reset.",
-                        unparsed("player", playerInfo.getPlayerName())));
+                    sendTr(sender, "<primary><player></primary> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName()));
                     return true;
                 }
                 return false;
@@ -86,8 +80,7 @@ public class AdminChallengeCommand extends CompositeCommand {
             public boolean execute(CommandSender commandSender, String alias, Map<String, Object> data, String... args) {
                 PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
                 if (playerInfo == null) {
-                    send(commandSender, tr("<error>No player named <player> was found!",
-                        unparsed("player", String.valueOf(data.get("player")))));
+                    sendErrorTr(commandSender, "No player named <player> was found!", unparsed("player", String.valueOf(data.get("player"))));
                     return false;
                 }
                 if (commandSender instanceof Player player) {
@@ -106,14 +99,11 @@ public class AdminChallengeCommand extends CompositeCommand {
         ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challengeId);
         Objects.requireNonNull(completion);
         if (completion.getTimesCompleted() > 0) {
-            send(sender, tr("<error>Challenge <challenge-id> has already been completed",
-                unparsed("challenge-id", challengeId.id())));
+            sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.id()));
         } else {
             playerInfo.completeChallenge(challenge, true);
             playerInfo.save();
-            send(sender, tr("Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>.",
-                unparsed("challenge-id", challengeId.id()),
-                unparsed("player", playerInfo.getPlayerName())));
+            sendTr(sender, "Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>.", unparsed("challenge-id", challengeId.id()), unparsed("player", playerInfo.getPlayerName()));
         }
     }
 
@@ -155,20 +145,16 @@ public class AdminChallengeCommand extends CompositeCommand {
                     }
                     case AMBIGUOUS -> {
                         String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
-                        send(sender, tr("<error>Ambiguous challenge name: <input>. Did you mean:<suggestions>",
-                            unparsed("input", result.getNormalizedInput()),
-                            unparsed("suggestions", hint)));
+                        sendErrorTr(sender, "Ambiguous challenge name: <input>. Did you mean:<suggestions>", unparsed("input", result.getNormalizedInput()), unparsed("suggestions", hint));
                         return false;
                     }
                     case NOT_FOUND -> {
-                        send(sender, tr("<error>No challenge named <challenge> was found!",
-                            unparsed("challenge", result.getNormalizedInput())));
+                        sendErrorTr(sender, "No challenge named <challenge> was found!", unparsed("challenge", result.getNormalizedInput()));
                         return false;
                     }
                 }
             } else {
-                send(sender, tr("<error>No player named <player> was found!",
-                    unparsed("player", String.valueOf(data.get("player")))));
+                sendErrorTr(sender, "No player named <player> was found!", unparsed("player", String.valueOf(data.get("player"))));
             }
             return false;
         }
@@ -188,14 +174,13 @@ public class AdminChallengeCommand extends CompositeCommand {
                 String rankName = String.join(" ", args);
                 List<Challenge> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
                 if (challenges == null || challenges.isEmpty()) {
-                    send(sender, tr("<error>No rank named <rank> was found!", unparsed("rank", rankName)));
+                    sendErrorTr(sender, "No rank named <rank> was found!", unparsed("rank", rankName));
                 } else {
                     doExecute(sender, playerInfo, rankName, challenges);
                     return true;
                 }
             } else {
-                send(sender, tr("<error>No player named <player> was found!",
-                    unparsed("player", String.valueOf(data.get("player")))));
+                sendErrorTr(sender, "No player named <player> was found!", unparsed("player", String.valueOf(data.get("player"))));
             }
             return false;
         }

@@ -14,6 +14,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 
 /**
  * Replacement for the WG ENTRY/EXIT deny flags.
@@ -51,9 +52,9 @@ public class WorldGuardEvents implements Listener {
             v.multiply(1.5); // Bounce
             player.setVelocity(v);
             if (islandInfo.isBanned(player)) {
-                plugin.notifyPlayer(player, tr("<error>Banned: You are banned from this island."));
+                plugin.notifyPlayer(player, tr("Banned: You are banned from this island.", ERROR));
             } else {
-                plugin.notifyPlayer(player, tr("<error>Locked: That island is locked. No entry allowed."));
+                plugin.notifyPlayer(player, tr("Locked: That island is locked. No entry allowed.", ERROR));
             }
         }
     }

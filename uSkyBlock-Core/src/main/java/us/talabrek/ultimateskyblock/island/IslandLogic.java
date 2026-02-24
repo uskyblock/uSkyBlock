@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -34,9 +33,6 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,10 +50,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Responsible for island creation, locating locations, purging, clearing etc.
@@ -166,7 +165,7 @@ public class IslandLogic {
             if (netherRegion != null) {
                 for (Player player : WorldGuardHandler.getPlayersInRegion(netherIsland.getWorld(), netherRegion)) {
                     if (player != null && player.isOnline() && worldManager.isSkyNether(player.getWorld()) && !player.isFlying()) {
-                        send(player, tr("<error>The island owning this piece of nether is being deleted! Sending you to spawn."));
+                        sendErrorTr(player, "The island owning this piece of nether is being deleted! Sending you to spawn.");
                         teleportLogic.spawnTeleport(player, true);
                     }
                 }
@@ -180,7 +179,7 @@ public class IslandLogic {
         if (region != null) {
             for (Player player : WorldGuardHandler.getPlayersInRegion(worldManager.getWorld(), region)) {
                 if (player != null && player.isOnline() && worldManager.isSkyWorld(player.getWorld()) && !player.isFlying()) {
-                    send(player, tr("<error>The island you are on is being deleted! Sending you to spawn."));
+                    sendErrorTr(player, "The island you are on is being deleted! Sending you to spawn.");
                     teleportLogic.spawnTeleport(player, true);
                 }
             }
@@ -207,15 +206,16 @@ public class IslandLogic {
             if (page < 1) {
                 page = 1;
             }
-            send(sender, tr("<primary>Wall of Fame</primary> <muted>(page <primary><page></primary> of <primary><max-page></primary>)</muted>:",
+            sendTr(sender, "<primary>Wall of Fame</primary> (page <primary><page></primary> of <primary><max-page></primary>):",
+                MUTED,
                 unparsed("page", String.valueOf(page)),
-                unparsed("max-page", String.valueOf(maxpage))));
+                unparsed("max-page", String.valueOf(maxpage)));
             if (ranks.isEmpty()) {
                 if (Settings.island_useTopTen) {
-                    send(sender, tr("<error>Top ten list is empty! Only islands above level <level> are considered.",
-                        unparsed("level", String.valueOf(topTenCutoff))));
+                    sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level> are considered.",
+                        unparsed("level", String.valueOf(topTenCutoff)));
                 } else {
-                    send(sender, tr("<error>Island level has been disabled, contact an administrator."));
+                    sendErrorTr(sender, "Island level has been disabled, contact an administrator.");
                 }
             }
             int place = 1;
@@ -252,7 +252,7 @@ public class IslandLogic {
                 place++;
             }
             if (rank != null) {
-                send(sender, tr("Your rank is: <primary><rank></primary>.", unparsed("rank", String.valueOf(rank.getRank()))));
+                sendTr(sender, "Your rank is: <primary><rank></primary>.", unparsed("rank", String.valueOf(rank.getRank())));
             }
         }
 

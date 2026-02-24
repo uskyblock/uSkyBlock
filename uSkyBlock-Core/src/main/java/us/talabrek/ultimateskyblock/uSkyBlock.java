@@ -76,7 +76,6 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.ServerUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.io.File;
 import java.time.Duration;
@@ -90,12 +89,13 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
@@ -221,7 +221,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (maintenanceMode && !(
             (command instanceof AdminCommand && args != null && args.length > 0 && args[0].equals("maintenance")) ||
                 command instanceof SetMaintenanceCommand)) {
-            send(sender, tr("<error>MAINTENANCE:</error> <muted>uSkyBlock is currently in maintenance mode."));
+            sendErrorTr(sender, "MAINTENANCE: <muted>uSkyBlock is currently in maintenance mode.");
             return false;
         }
         if (missingRequirements == null) {
@@ -242,13 +242,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 if (pluginManager.isPluginEnabled(pluginReq[0])) {
                     PluginDescriptionFile desc = requireNonNull(pluginManager.getPlugin(pluginReq[0])).getDescription();
                     if (VersionUtil.getVersion(desc.getVersion()).isLT(pluginReq[1])) {
-                        missingRequirements += trLegacy("<primary>uSkyBlock</primary><muted> depends on <primary><plugin></primary><muted> >= <secondary>v<required-version></secondary><muted> but only <error>v<actual-version></error><muted> was found.<newline>",
+                        missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>",
                             unparsed("plugin", pluginReq[0]),
                             unparsed("required-version", pluginReq[1]),
                             unparsed("actual-version", desc.getVersion()));
                     }
                 } else {
-                    missingRequirements += trLegacy("<primary>uSkyBlock</primary><muted> depends on <primary><plugin></primary><muted> >= <secondary>v<required-version></secondary>",
+                    missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary>",
                         unparsed("plugin", pluginReq[0]),
                         unparsed("required-version", pluginReq[1]));
                 }
@@ -335,7 +335,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public boolean restartPlayerIsland(final Player player, final Location next, final String cSchem) {
         if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            send(player, tr("<error>You do not have access to that island schematic."));
+            sendErrorTr(player, "You do not have access to that island schematic.");
             return false;
         }
         final PlayerInfo playerInfo = getPlayerInfo(player);
@@ -402,7 +402,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
 
         if (newLoc.equals(pi.getIslandLocation())) {
-            send(sender, tr("<error>Player is already assigned to this island!"));
+            sendErrorTr(sender, "Player is already assigned to this island!");
             deleteOldIsland = false;
         }
 
@@ -522,11 +522,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public void createIsland(final Player player, String cSchem) {
         PlayerInfo pi = getPlayerInfo(player);
         if (pi.isIslandGenerating()) {
-            send(player, tr("<error>Your island is currently generating. You cannot create a new one right now."));
+            sendErrorTr(player, "Your island is currently generating. You cannot create a new one right now.");
             return;
         }
         if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            send(player, tr("<error>You do not have access to that island schematic."));
+            sendErrorTr(player, "You do not have access to that island schematic.");
             return;
         }
         pi.setIslandGenerating(true);
@@ -537,7 +537,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             }
             generateIsland(player, pi, next, cSchem);
         } catch (Exception ex) {
-            send(player, tr("Could not create your island. Please contact a server moderator."));
+            sendTr(player, "Could not create your island. Please contact a server moderator.");
             log(Level.SEVERE, "Error creating island", ex);
         }
         log(Level.INFO, "Finished creating player island.");
@@ -545,12 +545,12 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     private void generateIsland(final Player player, final PlayerInfo pi, final Location next, final String cSchem) {
         if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            send(player, tr("<error>You do not have access to that island schematic."));
+            sendErrorTr(player, "You do not have access to that island schematic.");
             orphanLogic.addOrphan(next);
             return;
         }
         final PlayerPerk playerPerk = new PlayerPerk(pi, perkLogic.getPerk(player));
-        send(player, tr("Getting your island ready. Please be patient, this can take a while."));
+        sendTr(player, "Getting your island ready. Please be patient, this can take a while.");
         BukkitRunnable createTask = new CreateIslandTask(this, player, playerPerk, next, cSchem);
         IslandInfo tempInfo = islandLogic.createIslandInfo(LocationUtil.getIslandName(next), pi.getPlayerName());
         WorldGuardHandler.protectIsland(this, player, tempInfo);
@@ -988,7 +988,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Override
     public boolean onCommand(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, String[] args) {
         if (!isRequirementsMet(sender, null, args)) {
-            send(sender, tr("<error>Command is currently disabled!"));
+            sendErrorTr(sender, "Command is currently disabled!");
         }
         return true;
     }

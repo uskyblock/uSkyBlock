@@ -11,7 +11,7 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 public class ToggleWarp extends RequireIslandCommand {
 
@@ -25,7 +25,7 @@ public class ToggleWarp extends RequireIslandCommand {
         if (island.hasPerm(player, "canToggleWarp")) {
             if (!island.hasWarp()) {
                 if (island.isLocked()) {
-                    send(player, tr("<error>Your island is locked. You must unlock it before enabling your warp."));
+                    sendErrorTr(player, "Your island is locked. You must unlock it before enabling your warp.");
                     return true;
                 }
                 island.sendMessageToIslandGroup(tr("<primary><player></primary> activated the island warp.",
@@ -37,7 +37,7 @@ public class ToggleWarp extends RequireIslandCommand {
                 island.setWarp(false);
             }
         } else {
-            send(player, tr("<error>You do not have permission to enable/disable your island's warp!"));
+            sendErrorTr(player, "You do not have permission to enable/disable your island's warp!");
         }
         return true;
     }

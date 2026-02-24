@@ -7,14 +7,13 @@ import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
-
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * The chat command for party messages
@@ -39,19 +38,18 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
         if (!plugin.isRequirementsMet(commandSender, this, args)) {
             return true;
         }
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (commandSender instanceof Player player) {
             IslandChatEvent.Type type = this instanceof PartyTalkCommand ? IslandChatEvent.Type.PARTY : IslandChatEvent.Type.ISLAND;
             if (args == null || args.length == 0) {
                 String chatType = type == IslandChatEvent.Type.PARTY
-                        ? trLegacy("party")
-                        : trLegacy("island");
+                    ? trLegacy("party")
+                    : trLegacy("island");
                 if (chatLogic.toggle(player, type)) {
-                    send(player, tr("Toggled <primary><chat-type></primary> chat <success>on</success>.", unparsed("chat-type", chatType)));
-                    send(player, tr("<muted>Repeat <cmd><command></cmd> to toggle it off.</muted>",
-                        unparsed("command", "/" + alias)));
+                    sendTr(player, "Toggled <primary><chat-type></primary> chat <success>on</success>.", unparsed("chat-type", chatType));
+                    sendTr(player, "Repeat <cmd><command></cmd> to toggle it off.",
+                        MUTED, unparsed("command", "/" + alias));
                 } else {
-                    send(player, tr("Toggled <primary><chat-type></primary> chat off.", unparsed("chat-type", chatType)));
+                    sendTr(player, "Toggled <primary><chat-type></primary> chat off.", unparsed("chat-type", chatType));
                 }
                 return true;
             } else if (args != null && args.length == 1 && (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help"))) {

@@ -14,7 +14,7 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Allows transfer of leadership to another player.
@@ -36,19 +36,17 @@ public class MakeLeaderCommand extends AbstractCommand {
             PlayerInfo newLeader = plugin.getPlayerInfo(playerName);
 
             if (currentLeader == null || !currentLeader.getHasIsland()) {
-                send(sender, tr("<error>Player <player> has no island to transfer!",
-                    unparsed("player", islandPlayerName)));
+                sendErrorTr(sender, "Player <player> has no island to transfer!", unparsed("player", islandPlayerName));
                 return true;
             }
             IslandInfo islandInfo = plugin.getIslandInfo(currentLeader);
             if (islandInfo == null) {
-                send(sender, tr("<error>Player <player> has no island to transfer!",
-                    unparsed("player", islandPlayerName)));
+                sendErrorTr(sender, "Player <player> has no island to transfer!", unparsed("player", islandPlayerName));
                 return true;
             }
             if (newLeader != null && newLeader.getHasIsland() && !newLeader.locationForParty().equals(islandInfo.getName())) {
-                send(sender, tr("<error>Player <primary><player></primary> already has an island.</error> <muted>Use <cmd>/usb island remove [name]</cmd> first.",
-                    unparsed("player", playerName)));
+                sendErrorTr(sender, "Player <primary><player></primary> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first.",
+                    unparsed("player", playerName));
                 return true;
             }
             newLeader.setJoinParty(islandInfo.getIslandLocation());
@@ -61,7 +59,7 @@ public class MakeLeaderCommand extends AbstractCommand {
             newLeader.save();
             WorldGuardHandler.updateRegion(islandInfo);
             plugin.getEventLogic().fireIslandLeaderChangedEvent(islandInfo, currentLeader, newLeader);
-            islandInfo.sendMessageToIslandGroup(tr("<primary>Leadership transferred by <from><primary> to <to>",
+            islandInfo.sendMessageToIslandGroup(tr("Leadership transferred by <from> to <to>",
                 unparsed("from", sender.getName()),
                 unparsed("to", playerName)));
             return true;

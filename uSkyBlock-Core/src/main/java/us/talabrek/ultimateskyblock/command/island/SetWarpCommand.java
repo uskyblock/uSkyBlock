@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 public class SetWarpCommand extends RequireIslandCommand {
 
@@ -24,9 +24,9 @@ public class SetWarpCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (!island.hasPerm(player, "canChangeWarp")) {
-            send(player, I18nUtil.tr("<error>You do not have permission to set your island's warp point!"));
+            sendErrorTr(player, "You do not have permission to set your island's warp point!");
         } else if (!plugin.playerIsOnOwnIsland(player)) {
-            send(player, I18nUtil.tr("<error>You need to be on your own island to set the warp!"));
+            sendErrorTr(player, "You need to be on your own island to set the warp!");
         } else {
             island.setWarpLocation(player.getLocation());
             island.sendMessageToIslandGroup(I18nUtil.tr("<primary><player></primary> changed the island warp location.",

@@ -12,9 +12,6 @@ import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -23,6 +20,8 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * An incremental (synchroneous) task for protecting all islands.
@@ -89,14 +88,14 @@ public class ProtectAllTask extends BukkitRunnable {
             }
         } finally {
             if (!active) {
-                send(sender, tr("<error>Aborted:</error> <muted>Protect-all was aborted."));
+                sendErrorTr(sender, "Aborted: <muted>Protect-all was aborted.");
             }
             active = false;
         }
         if (sender instanceof Player && ((Player) sender).isOnline()) {
-            send(sender, tr("Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
+            sendTr(sender, "Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
                 unparsed("elapsed", getElapsed(tStart)),
-                unparsed("count", String.valueOf(success))));
+                unparsed("count", String.valueOf(success)));
         }
         LogUtil.log(Level.INFO, trLegacy("Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
             unparsed("elapsed", getElapsed(tStart)),
