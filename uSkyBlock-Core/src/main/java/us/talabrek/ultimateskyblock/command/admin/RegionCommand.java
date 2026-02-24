@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -179,7 +180,7 @@ public class RegionCommand extends CompositeCommand {
                 if (args.length == 1 && args[0].matches("[0-9]+")) {
                     int animTick = Integer.parseInt(args[0]);
                     RegionCommand.this.animationHandler.setAnimTick(animTick);
-                    sendTr(sender, "Animation tick changed to <primary><ticks></primary>.", unparsed("ticks", String.valueOf(animTick)));
+                    sendTr(sender, "Animation tick changed to <ticks>.", unparsed("ticks", String.valueOf(animTick), PRIMARY));
                     RegionCommand.this.animationHandler.stop();
                     RegionCommand.this.animationHandler.start();
                     return true;

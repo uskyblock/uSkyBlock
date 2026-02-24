@@ -40,6 +40,7 @@ import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -56,10 +57,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -362,8 +363,8 @@ public class PlayerEvents implements Listener {
             final String key = "usb.block-limits";
             if (!PatienceTester.isRunning(player, key)) {
                 PatienceTester.startRunning(player, key);
-                sendErrorTr(player, "<primary><item></primary> is limited. Scanning your island to check if you can place more. Please be patient.",
-                    legacyArg("item", ItemStackUtil.getItemName(new ItemStack(type))));
+                sendErrorTr(player, "<item> is limited. Scanning your island to check if you can place more. Please be patient.",
+                    Placeholder.legacy("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY));
                 plugin.fireAsyncEvent(new IslandInfoEvent(player, islandInfo.getIslandLocation(), new Callback<>() {
                     @Override
                     public void run() {
@@ -376,9 +377,9 @@ public class PlayerEvents implements Listener {
         }
         if (canPlace == BlockLimitLogic.CanPlace.NO) {
             event.setCancelled(true);
-            sendErrorTr(player, "You've hit the <primary><item></primary> limit. <muted>You can't have more of that type on your island. Max: <primary><max></primary>.",
-                legacyArg("item", ItemStackUtil.getItemName(new ItemStack(type))),
-                unparsed("max", String.valueOf(plugin.getBlockLimitLogic().getLimit(type))));
+            sendErrorTr(player, "You've hit the <item> limit. <muted>You can't have more of that type on your island. Max: <max>.</muted>",
+                Placeholder.legacy("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY),
+                unparsed("max", String.valueOf(plugin.getBlockLimitLogic().getLimit(type)), PRIMARY));
             return;
         }
         plugin.getBlockLimitLogic().incBlockCount(islandInfo.getIslandLocation(), type);

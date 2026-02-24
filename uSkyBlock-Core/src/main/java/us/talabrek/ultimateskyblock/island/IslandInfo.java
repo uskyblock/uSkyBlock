@@ -22,6 +22,7 @@ import us.talabrek.ultimateskyblock.api.event.island.IslandUnbanPlayerEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandUnlockEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandUntrustPlayerEvent;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -58,7 +59,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.plainText;
@@ -615,13 +616,13 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
         WorldGuardHandler.islandLock(player, name);
         config.set("general.locked", true);
-        sendMessageToIslandGroup(tr("<primary><player></primary> locked the island.",
-            unparsed("player", player.getName())));
+        sendMessageToIslandGroup(tr("<player> locked the island.",
+            unparsed("player", player.getName(), PRIMARY)));
         if (hasWarp()) {
             config.set("general.warpActive", false);
             sendErrorTr(player, "Since your island is locked, your incoming warp has been deactivated.");
-            sendMessageToIslandGroup(tr("<primary><player></primary> deactivated the island warp.",
-                unparsed("player", player.getName())));
+            sendMessageToIslandGroup(tr("<player> deactivated the island warp.",
+                unparsed("player", player.getName(), PRIMARY)));
         }
         save();
         return true;
@@ -644,8 +645,8 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
         WorldGuardHandler.islandUnlock(player, name);
         config.set("general.locked", false);
-        sendMessageToIslandGroup(tr("<primary><player></primary> unlocked the island.",
-            unparsed("player", player.getName())));
+        sendMessageToIslandGroup(tr("<player> unlocked the island.",
+            unparsed("player", player.getName(), PRIMARY)));
         save();
         return true;
     }
@@ -911,8 +912,8 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         config.set("party.members." + UUIDUtil.asString(member.getUniqueId()), null);
         config.set("party.currentSize", getPartySize() - 1);
 
-        sendMessageToIslandGroup(tr("<primary><player></primary> has been removed from the island group.",
-            unparsed("player", member.getPlayerName())));
+        sendMessageToIslandGroup(tr("<player> has been removed from the island group.",
+            unparsed("player", member.getPlayerName(), PRIMARY)));
         WorldGuardHandler.updateRegion(this);
         plugin.getEventLogic().fireMemberLeftEvent(this, member);
         save();
@@ -1032,53 +1033,53 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         // I18N: Header line for the admin island info debug output.
         lines.add(tr("Island Info:", PRIMARY));
         // I18N: Label for island level value in admin island info debug output.
-        lines.add(tr("  - level: <primary><level></primary>", MUTED, unparsed("level", String.format("%5.2f", getLevel()))));
+        lines.add(tr("  - level: <level>", MUTED, unparsed("level", String.format("%5.2f", getLevel()), PRIMARY)));
         // I18N: Label for island location identifier in admin island info debug output.
-        lines.add(tr("  - location: <primary><location></primary>", MUTED, unparsed("location", name)));
+        lines.add(tr("  - location: <location>", MUTED, unparsed("location", name, PRIMARY)));
         // I18N: Label for island biome name in admin island info debug output.
-        lines.add(tr("  - biome: <primary><biome></primary>", MUTED, unparsed("biome", getBiomeName())));
+        lines.add(tr("  - biome: <biome>", MUTED, unparsed("biome", getBiomeName(), PRIMARY)));
         // I18N: Label for island schematic name in admin island info debug output.
-        lines.add(tr("  - schematic: <primary><schematic></primary>", MUTED, unparsed("schematic", getSchematicName())));
+        lines.add(tr("  - schematic: <schematic>", MUTED, unparsed("schematic", getSchematicName(), PRIMARY)));
         // I18N: Label showing whether island warp is configured in admin island info debug output.
-        lines.add(tr("  - warp: <primary><warp></primary>", MUTED, unparsed("warp", String.valueOf(hasWarp()))));
+        lines.add(tr("  - warp: <warp>", MUTED, unparsed("warp", String.valueOf(hasWarp()), PRIMARY)));
         if (hasWarp()) {
             // I18N: Label for detailed warp location in admin island info debug output.
-            lines.add(tr("     loc: <primary><warp-location></primary>",
+            lines.add(tr("     loc: <warp-location>",
                 MUTED,
-                unparsed("warp-location", String.valueOf(LocationUtil.asString(getWarpLocation())))));
+                unparsed("warp-location", String.valueOf(LocationUtil.asString(getWarpLocation())), PRIMARY)));
         }
         // I18N: Label showing whether island is locked in admin island info debug output.
-        lines.add(tr("  - locked: <primary><locked></primary>", MUTED, unparsed("locked", String.valueOf(isLocked()))));
+        lines.add(tr("  - locked: <locked>", MUTED, unparsed("locked", String.valueOf(isLocked()), PRIMARY)));
         // I18N: Label showing whether island protection checks are ignored in admin island info debug output.
-        lines.add(tr("  - ignore: <primary><ignore></primary>", MUTED, unparsed("ignore", String.valueOf(ignore()))));
+        lines.add(tr("  - ignore: <ignore>", MUTED, unparsed("ignore", String.valueOf(ignore()), PRIMARY)));
         // I18N: Section header for party-related fields in admin island info debug output.
         lines.add(tr("Party:", PRIMARY));
         // I18N: Label for party leader in admin island info debug output.
-        lines.add(tr("  - leader: <primary><leader></primary>", MUTED, legacyArg("leader", getLeader())));
+        lines.add(tr("  - leader: <leader>", MUTED, Placeholder.legacy("leader", getLeader(), PRIMARY)));
         // I18N: Label for party member list in admin island info debug output.
-        lines.add(tr("  - members: <primary><members></primary>", MUTED, legacyArg("members", String.valueOf(getMembers()))));
+        lines.add(tr("  - members: <members>", MUTED, Placeholder.legacy("members", String.valueOf(getMembers()), PRIMARY)));
         // I18N: Label for party size in admin island info debug output.
-        lines.add(tr("  - size: <primary><size></primary>", MUTED, unparsed("size", String.valueOf(getPartySize()))));
+        lines.add(tr("  - size: <size>", MUTED, unparsed("size", String.valueOf(getPartySize()), PRIMARY)));
         // I18N: Section header for configured island limits in admin island info debug output.
         lines.add(tr("Limits:", PRIMARY));
         // I18N: Label for maximum party size limit in admin island info debug output.
-        lines.add(tr("  - maxParty: <primary><max-party></primary>", MUTED, unparsed("max-party", String.valueOf(getMaxPartySize()))));
+        lines.add(tr("  - maxParty: <max-party>", MUTED, unparsed("max-party", String.valueOf(getMaxPartySize()), PRIMARY)));
         // I18N: Label for max passive-animal count in admin island info debug output.
-        lines.add(tr("  - animals: <primary><animals></primary>", MUTED, unparsed("animals", String.valueOf(getMaxAnimals()))));
+        lines.add(tr("  - animals: <animals>", MUTED, unparsed("animals", String.valueOf(getMaxAnimals()), PRIMARY)));
         // I18N: Label for max monster count in admin island info debug output.
-        lines.add(tr("  - monsters: <primary><monsters></primary>", MUTED, unparsed("monsters", String.valueOf(getMaxMonsters()))));
+        lines.add(tr("  - monsters: <monsters>", MUTED, unparsed("monsters", String.valueOf(getMaxMonsters()), PRIMARY)));
         // I18N: Label for max villager count in admin island info debug output.
-        lines.add(tr("  - villagers: <primary><villagers></primary>", MUTED, unparsed("villagers", String.valueOf(getMaxVillagers()))));
+        lines.add(tr("  - villagers: <villagers>", MUTED, unparsed("villagers", String.valueOf(getMaxVillagers()), PRIMARY)));
         // I18N: Label for max iron golem count in admin island info debug output.
-        lines.add(tr("  - golems: <primary><golems></primary>", MUTED, unparsed("golems", String.valueOf(getMaxGolems()))));
+        lines.add(tr("  - golems: <golems>", MUTED, unparsed("golems", String.valueOf(getMaxGolems()), PRIMARY)));
         // I18N: Label for max copper golem count in admin island info debug output.
-        lines.add(tr("  - copper-golems: <primary><copper-golems></primary>",
+        lines.add(tr("  - copper-golems: <copper-golems>",
             MUTED,
-            unparsed("copper-golems", String.valueOf(getMaxCopperGolems()))));
+            unparsed("copper-golems", String.valueOf(getMaxCopperGolems()), PRIMARY)));
         // I18N: Section header for banned player list in admin island info debug output.
         lines.add(tr("Bans:", PRIMARY));
         for (String ban : getBans()) {
-            lines.add(parseMini("<muted>  - <primary><ban></primary>", unparsed("ban", ban)));
+            lines.add(parseMini("<muted>  - <ban>", unparsed("ban", ban, PRIMARY)));
         }
         // I18N: Section header for island activity log in admin island info debug output.
         lines.add(tr("Log:", PRIMARY));

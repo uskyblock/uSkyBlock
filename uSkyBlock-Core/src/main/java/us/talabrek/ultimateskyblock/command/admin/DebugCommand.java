@@ -23,7 +23,8 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -88,7 +89,7 @@ public class DebugCommand extends CompositeCommand {
             Level level = Level.parse(arg.toUpperCase());
             log.setLevel(level);
             uSkyBlock.getInstance().getLogger().setLevel(level);
-            sendTr(sender, "Set debug level to <primary><loglevel></primary>.", unparsed("loglevel", level.getName()));
+            sendTr(sender, "Set debug level to <loglevel>.", unparsed("loglevel", level.getName(), PRIMARY));
             enableLogging(sender, uSkyBlock.getInstance());
         } catch (Exception e) {
             sendErrorTr(sender, "Invalid argument, try INFO, FINE, FINER, FINEST");
@@ -122,7 +123,7 @@ public class DebugCommand extends CompositeCommand {
             plugin.getLogger().addHandler(logHandler);
             Level level = log.getLevel() != null ? log.getLevel() : Level.FINER;
             log.log(level, FormatUtil.stripFormatting(pluginInfo.getVersionInfo(true)));
-            sendTr(sender, "Logging to <primary><logfile></primary>.", unparsed("logfile", logFile));
+            sendTr(sender, "Logging to <logfile>.", unparsed("logfile", logFile, PRIMARY));
         } catch (IOException e) {
             log.log(Level.WARNING, "Unable to enable logging", e);
             sendErrorTr(sender, "Unable to enable logging: <reason>", unparsed("reason", e.getMessage()));

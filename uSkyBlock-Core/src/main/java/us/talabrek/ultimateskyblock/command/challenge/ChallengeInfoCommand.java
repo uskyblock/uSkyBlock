@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 
@@ -16,8 +17,9 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
@@ -52,9 +54,9 @@ public class ChallengeInfoCommand extends AbstractCommand {
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
         if (result.getStatus() == ChallengeLogic.ChallengeLookupResult.Status.FOUND && result.getChallenge().getRank().isAvailable(playerInfo)) {
             Challenge challenge = result.getChallenge();
-            sendTr(player, "Challenge name: <primary><challenge></primary>", legacyArg("challenge", challenge.getDisplayName()));
+            sendTr(player, "Challenge name: <challenge>", Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
             if (challengeLogic.getRanks().size() > 1) {
-                sendTr(player, "Rank: <primary><rank></primary>", unparsed("rank", challenge.getRank().getName()));
+                sendTr(player, "Rank: <rank>", unparsed("rank", challenge.getRank().getName(), PRIMARY));
             }
             ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
             if (completion.getTimesCompleted() > 0 && !challenge.isRepeatable()) {

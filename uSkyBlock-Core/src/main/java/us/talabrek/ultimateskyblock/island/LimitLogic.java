@@ -20,6 +20,7 @@ import org.bukkit.entity.WaterMob;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.HashMap;
@@ -33,8 +34,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 
 @Singleton
 public class LimitLogic {
@@ -153,10 +155,10 @@ public class LimitLogic {
             Component creatureCount = cnt >= max
                 ? parseMini("<error><count>", unparsed("count", String.valueOf(cnt)))
                 : Component.text(cnt);
-            sb.append(trLegacy("<type>: <secondary><count></secondary> (max. <max>)",
+            sb.append(trLegacy("<type>: <count> (max. <max>)",
                 MUTED,
                 component("type", getCreatureTypeLabel(key)),
-                component("count", creatureCount),
+                component("count", creatureCount.applyFallbackStyle(SECONDARY)),
                 unparsed("max", String.valueOf(max)))).append("\n");
         }
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
@@ -166,16 +168,16 @@ public class LimitLogic {
                 String current = blockCount >= entry.getValue()
                     ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(blockCount)))
                     : String.valueOf(blockCount);
-                sb.append(trLegacy("<block>: <secondary><count></secondary> (max. <max>)",
+                sb.append(trLegacy("<block>: <count> (max. <max>)",
                     MUTED,
                     legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    legacyArg("count", current),
+                    Placeholder.legacy("count", current, SECONDARY),
                     unparsed("max", String.valueOf(entry.getValue())))).append("\n");
             } else {
-                sb.append(trLegacy("<block>: <secondary><count></secondary> (max. <max>)",
+                sb.append(trLegacy("<block>: <count> (max. <max>)",
                     MUTED,
                     legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    legacyArg("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?"))),
+                    Placeholder.legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
                     unparsed("max", String.valueOf(entry.getValue())))).append("\n");
             }
         }

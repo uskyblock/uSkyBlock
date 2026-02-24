@@ -9,7 +9,8 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
@@ -40,7 +41,7 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
                     doExecute(sender, playerInfo, islandInfo, subArgs);
                     return true;
                 } else {
-                    sendErrorTr(sender, "Player <primary><player></primary> has no island.", unparsed("player", playerInfo.getPlayerName()));
+                    sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
                 }
             }
         } else if (sender instanceof Player && WorldGuardHandler.getIslandNameAt(((Player) sender).getLocation()) != null) {

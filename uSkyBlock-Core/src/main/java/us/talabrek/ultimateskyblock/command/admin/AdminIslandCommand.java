@@ -11,15 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
@@ -92,8 +92,8 @@ public class AdminIslandCommand extends CompositeCommand {
                     if (playerInfo != null) {
                         islandInfo.addMember(playerInfo);
                         playerInfo.save();
-                        islandInfo.sendMessageToIslandGroup(tr("<primary><player></primary> has joined your island group.",
-                            legacyArg("player", playerInfo.getDisplayName())));
+                        islandInfo.sendMessageToIslandGroup(tr("<player> has joined your island group.",
+                            Placeholder.legacy("player", playerInfo.getDisplayName(), PRIMARY)));
                         return true;
                     } else {
                         sendErrorTr(sender, "No player named <player> was found!", unparsed("player", args[0]));
@@ -205,9 +205,9 @@ public class AdminIslandCommand extends CompositeCommand {
     private void setBiome(CommandSender sender, IslandInfo islandInfo, Biome biome) {
         uSkyBlock.getInstance().setBiome(islandInfo.getIslandLocation(), biome);
         islandInfo.setBiome(biome);
-        sendTr(sender, "Changed biome of <primary><leader></primary>'s island to <primary><biome></primary>.",
-            unparsed("leader", islandInfo.getLeader()),
-            unparsed("biome", biome.name()));
+        sendTr(sender, "Changed biome of <leader>'s island to <biome>.",
+            unparsed("leader", islandInfo.getLeader(), PRIMARY),
+            unparsed("biome", biome.name(), PRIMARY));
         sendTr(sender, "You may need to go to spawn, or relog, to see the changes.", SECONDARY);
     }
 
@@ -218,15 +218,15 @@ public class AdminIslandCommand extends CompositeCommand {
         }
         uSkyBlock.getInstance().setBiome(playerInfo.getIslandLocation(), biome);
         islandInfo.setBiome(biome);
-        sendTr(sender, "Changed <primary><player></primary>'s biome to <primary><biome></primary>.",
-            unparsed("player", playerInfo.getPlayerName()),
-            unparsed("biome", biome.name()));
+        sendTr(sender, "Changed <player>'s biome to <biome>.",
+            unparsed("player", playerInfo.getPlayerName(), PRIMARY),
+            unparsed("biome", biome.name(), PRIMARY));
         sendTr(sender, "You may need to go to spawn, or relog, to see the changes.", SECONDARY);
     }
 
     private void deleteIsland(CommandSender sender, PlayerInfo playerInfo) {
         if (playerInfo != null && playerInfo.getIslandLocation() != null) {
-            sendTr(sender, "Removing <primary><player></primary>'s island.", unparsed("player", playerInfo.getPlayerName()));
+            sendTr(sender, "Removing <player>'s island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
             uSkyBlock.getInstance().deletePlayerIsland(playerInfo.getPlayerName(), null);
         } else {
             sendErrorTr(sender, "That player does not have an island!");
@@ -235,9 +235,9 @@ public class AdminIslandCommand extends CompositeCommand {
 
     private void protectIsland(CommandSender sender, IslandInfo islandInfo) {
         if (WorldGuardHandler.protectIsland(plugin, sender, islandInfo)) {
-            sendTr(sender, "<primary><leader></primary>'s island at <primary><island></primary> has been protected.",
-                unparsed("leader", islandInfo.getLeader()),
-                unparsed("island", islandInfo.getName()));
+            sendTr(sender, "<leader>'s island at <island> has been protected.",
+                unparsed("leader", islandInfo.getLeader(), PRIMARY),
+                unparsed("island", islandInfo.getName(), PRIMARY));
         } else {
             sendErrorTr(sender, "<leader>'s island at <island> was already protected",
                 unparsed("leader", islandInfo.getLeader()),

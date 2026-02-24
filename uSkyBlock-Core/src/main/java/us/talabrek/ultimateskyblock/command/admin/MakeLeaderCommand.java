@@ -13,7 +13,8 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
@@ -45,8 +46,8 @@ public class MakeLeaderCommand extends AbstractCommand {
                 return true;
             }
             if (newLeader != null && newLeader.getHasIsland() && !newLeader.locationForParty().equals(islandInfo.getName())) {
-                sendErrorTr(sender, "Player <primary><player></primary> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first.",
-                    unparsed("player", playerName));
+                sendErrorTr(sender, "Player <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first.",
+                    unparsed("player", playerName, PRIMARY));
                 return true;
             }
             newLeader.setJoinParty(islandInfo.getIslandLocation());

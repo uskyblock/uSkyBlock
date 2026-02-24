@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.time.Duration;
@@ -22,7 +23,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -77,10 +80,10 @@ public class CooldownCommand extends CompositeCommand {
                 if ("restart|biome".contains(args[1])) {
                     Duration cooldown = getCooldown(args[1]);
                     plugin.getCooldownHandler().resetCooldown(player, args[1], cooldown);
-                    sendTr(sender, "Reset cooldown on <primary><command></primary> for <primary><player></primary> to <primary><seconds></primary> seconds.",
-                        unparsed("command", args[1]),
-                        legacyArg("player", player.getDisplayName()),
-                        unparsed("seconds", String.valueOf(cooldown.toSeconds())));
+                    sendTr(sender, "Reset cooldown on <command> for <player> to <seconds> seconds.",
+                        unparsed("command", args[1], PRIMARY),
+                        Placeholder.legacy("player", player.getDisplayName(), PRIMARY),
+                        unparsed("seconds", String.valueOf(cooldown.toSeconds()), PRIMARY));
                     return true;
                 } else {
                     sendTr(sender, "Invalid command supplied, only restart and biome supported!");
@@ -107,13 +110,13 @@ public class CooldownCommand extends CompositeCommand {
                     for (var entry : map.entrySet()) {
                         String cmd = entry.getKey();
                         Duration remainingCooldown = Duration.between(now, entry.getValue());
-                        sb.append(miniToLegacy("<primary><command></primary> <error><duration></error>",
-                            unparsed("command", cmd),
-                            unparsed("duration", TimeUtil.durationAsString(remainingCooldown)))).append("\n");
+                        sb.append(miniToLegacy("<command> <duration>",
+                            unparsed("command", cmd, PRIMARY),
+                            unparsed("duration", TimeUtil.durationAsString(remainingCooldown), ERROR))).append("\n");
                     }
                 } else {
-                    sb.append(trLegacy("No active cooldowns found for <primary><player></primary>.",
-                        legacyArg("player", player.getDisplayName())));
+                    sb.append(trLegacy("No active cooldowns found for <player>.",
+                        Placeholder.legacy("player", player.getDisplayName(), PRIMARY)));
                 }
                 sendLegacy(sender, sb.toString().split("\n"));
                 return true;

@@ -13,7 +13,8 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
@@ -27,8 +28,8 @@ public class OrphanCommand extends CompositeCommand {
         add(new AbstractCommand("count", marktr("count orphans")) {
                 @Override
                 public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-                    sendTr(sender, "<primary><count></primary> old island locations will be used before new ones.",
-                        unparsed("count", String.valueOf(plugin.getOrphanLogic().getOrphans().size())));
+                    sendTr(sender, "<count> old island locations will be used before new ones.",
+                        unparsed("count", String.valueOf(plugin.getOrphanLogic().getOrphans().size()), PRIMARY));
                     return true;
                 }
             });
@@ -54,9 +55,9 @@ public class OrphanCommand extends CompositeCommand {
                         if (page > pages) page = pages;
                         int from = pageSize*(page-1);
                         int to = Math.min(orphans.size(), pageSize*page);
-                        sendTr(sender, "Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>",
-                            unparsed("page", String.valueOf(page)),
-                            unparsed("pages", String.valueOf(pages)),
+                        sendTr(sender, "Orphans (<page>/<pages>): <orphan-list>",
+                            unparsed("page", String.valueOf(page), PRIMARY),
+                            unparsed("pages", String.valueOf(pages), PRIMARY),
                             parsed("orphan-list", orphans.subList(from, to).toString()
                                 .replaceAll(", ", "<muted>; <primary>")
                                 .replaceAll("\\[", "<primary>")

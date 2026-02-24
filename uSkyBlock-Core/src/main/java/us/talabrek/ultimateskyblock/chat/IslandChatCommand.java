@@ -10,8 +10,10 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.CMD;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -45,11 +47,11 @@ public abstract class IslandChatCommand extends BaseCommandExecutor {
                     ? trLegacy("party")
                     : trLegacy("island");
                 if (chatLogic.toggle(player, type)) {
-                    sendTr(player, "Toggled <primary><chat-type></primary> chat <success>on</success>.", unparsed("chat-type", chatType));
-                    sendTr(player, "Repeat <cmd><command></cmd> to toggle it off.",
-                        MUTED, unparsed("command", "/" + alias));
+                    sendTr(player, "Toggled <chat-type> chat <success>on</success>.", unparsed("chat-type", chatType, PRIMARY));
+                    sendTr(player, "Repeat <command> to toggle it off.",
+                        MUTED, unparsed("command", "/" + alias, CMD));
                 } else {
-                    sendTr(player, "Toggled <primary><chat-type></primary> chat off.", unparsed("chat-type", chatType));
+                    sendTr(player, "Toggled <chat-type> chat off.", unparsed("chat-type", chatType, PRIMARY));
                 }
                 return true;
             } else if (args != null && args.length == 1 && (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help"))) {

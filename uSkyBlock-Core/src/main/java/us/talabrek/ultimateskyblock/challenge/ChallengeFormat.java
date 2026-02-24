@@ -7,7 +7,8 @@ import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 
 public final class ChallengeFormat {
     public static String getMissingRequirement(PlayerInfo playerInfo, List<String> requiredChallenges, ChallengeLogic challengeLogic) {
@@ -39,8 +40,8 @@ public final class ChallengeFormat {
             displayName = challenge.getDisplayName();
         }
         if (count > 1) {
-            return miniToLegacy("<secondary><count></secondary>x <muted><challenge>",
-                unparsed("count", String.valueOf(count)),
+            return miniToLegacy("<count>x <muted><challenge>",
+                unparsed("count", String.valueOf(count), SECONDARY),
                 legacyArg("challenge", displayName));
         }
         return miniToLegacy("<muted><challenge>", legacyArg("challenge", displayName));

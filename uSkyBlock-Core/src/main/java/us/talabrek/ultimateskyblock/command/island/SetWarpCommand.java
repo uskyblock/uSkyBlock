@@ -11,7 +11,8 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 public class SetWarpCommand extends RequireIslandCommand {
@@ -29,8 +30,8 @@ public class SetWarpCommand extends RequireIslandCommand {
             sendErrorTr(player, "You need to be on your own island to set the warp!");
         } else {
             island.setWarpLocation(player.getLocation());
-            island.sendMessageToIslandGroup(I18nUtil.tr("<primary><player></primary> changed the island warp location.",
-                unparsed("player", player.getName())));
+            island.sendMessageToIslandGroup(I18nUtil.tr("<player> changed the island warp location.",
+                unparsed("player", player.getName(), PRIMARY)));
         }
         return true;
     }

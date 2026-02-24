@@ -16,7 +16,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
@@ -47,7 +48,7 @@ public class PartyCommand extends CompositeCommand {
                     sendTr(sender, "No pending invites.");
                 } else {
                     String invites = String.join(", ", pendingInvitesAsNames);
-                    sendTr(sender, "Pending invites: <primary><invites></primary>", unparsed("invites", invites));
+                    sendTr(sender, "Pending invites: <invites>", unparsed("invites", invites, PRIMARY));
                 }
                 return true;
             }
@@ -64,7 +65,7 @@ public class PartyCommand extends CompositeCommand {
                         }
                         String playerName = args[0];
                         if (inviteHandler.uninvite(islandInfo, playerName)) {
-                            sendTr(sender, "Successfully withdrew invite for <primary><player></primary>.", unparsed("player", playerName));
+                            sendTr(sender, "Successfully withdrew invite for <player>.", unparsed("player", playerName, PRIMARY));
                         } else {
                             sendErrorTr(sender, "No pending invite found for <player>", unparsed("player", playerName));
                         }

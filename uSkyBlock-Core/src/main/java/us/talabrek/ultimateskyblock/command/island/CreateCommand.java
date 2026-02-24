@@ -14,7 +14,8 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -43,8 +44,8 @@ public class CreateCommand extends RequirePlayerCommand {
                 sendErrorTr(player, "You are already a member of an island. <muted>To start your own, first use <cmd>/is leave</cmd>.");
             }
         } else {
-            sendTr(player, "You can create a new island in <primary><seconds></primary> seconds.",
-                unparsed("seconds", String.valueOf(cooldown.toSeconds())));
+            sendTr(player, "You can create a new island in <seconds> seconds.",
+                unparsed("seconds", String.valueOf(cooldown.toSeconds()), PRIMARY));
         }
         return true;
     }

@@ -13,7 +13,8 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -41,9 +42,9 @@ public class ChunkCommand extends CompositeCommand {
                         unparsed("x", String.valueOf(chunk.getX())),
                         unparsed("z", String.valueOf(chunk.getZ())));
                 } else {
-                    sendErrorTr(player, "Failed to unload chunk at <primary><x></primary>,<primary><z></primary>.",
-                        unparsed("x", String.valueOf(chunk.getX())),
-                        unparsed("z", String.valueOf(chunk.getZ())));
+                    sendErrorTr(player, "Failed to unload chunk at <x>,<z>.",
+                        unparsed("x", String.valueOf(chunk.getX()), PRIMARY),
+                        unparsed("z", String.valueOf(chunk.getZ()), PRIMARY));
                 }
             }
         });

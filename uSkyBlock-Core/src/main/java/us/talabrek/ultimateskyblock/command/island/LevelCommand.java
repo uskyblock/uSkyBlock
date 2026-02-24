@@ -16,7 +16,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
@@ -74,7 +74,7 @@ public class LevelCommand extends RequireIslandCommand {
         final boolean shouldRecalculate = player.getName().equals(info.getPlayerName()) || player.hasPermission("usb.admin.island");
         final Runnable showInfo = () -> {
             if (player != null && player.isOnline() && info != null) {
-                sendTr(player, "Information about <primary><player></primary>'s island:", unparsed("player", islandPlayer));
+                sendTr(player, "Information about <player>'s island:", unparsed("player", islandPlayer, PRIMARY));
                 if (cmd.equalsIgnoreCase("level")) {
                     IslandRank rank = plugin.getIslandLogic().getRank(info.locationForParty());
                     if (rank != null) {

@@ -113,8 +113,8 @@ public class IslandLocatorLogic {
             Vector v = player.getLocation().getDirection().normalize();
             location = LocationUtil.alignToDistance(location.add(v.multiply(Settings.island_distance)), Settings.island_distance);
             if (isAvailableLocation(location)) {
-                sendTr(player, "Creating an island <primary><direction></primary> of you",
-                    component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw()))));
+                sendTr(player, "Creating an island <direction> of you",
+                    component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw()), PRIMARY)));
                 return location;
             }
         }

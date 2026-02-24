@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.CMD;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
@@ -63,12 +65,12 @@ public class ConfirmHandler {
         scheduler.async(() -> {
             ConfirmCommand confirmCommand = confirmMap.remove(uuid);
             if (confirmCommand != null && player.isOnline()) {
-                sendTr(player, "<cmd><command></cmd> timed out.", unparsed("command", command));
+                sendTr(player, "<command> timed out.", unparsed("command", command, CMD));
             }
         }, timeout);
-        sendTr(player, "Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>",
-            unparsed("command", command),
-            unparsed("timeout", String.valueOf(timeout.toSeconds())));
+        sendTr(player, "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>",
+            unparsed("command", command, CMD),
+            unparsed("timeout", String.valueOf(timeout.toSeconds()), PRIMARY));
         return false;
     }
 

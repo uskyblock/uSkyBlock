@@ -18,9 +18,10 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SUCCESS;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
@@ -38,13 +39,13 @@ public class PermCommand extends RequireIslandCommand {
         String playerName = args.length > 0 ? args[0] : null;
         String perm = args.length > 1 ? args[1] : null;
         if (playerName != null && island.getMembers().contains(playerName) && perm == null) {
-            String msg = trLegacy("Permissions for <primary><player></primary>:<newline>",
+            String msg = trLegacy("Permissions for <player>:<newline>",
                 MUTED,
-                unparsed("player", playerName));
+                unparsed("player", playerName, PRIMARY));
             for (String validPerm : getValidPermissions()) {
                 boolean permValue = island.hasPerm(playerName, validPerm);
-                msg += miniToLegacy("<muted> - <primary><permission></primary>: <state><newline>",
-                    unparsed("permission", validPerm),
+                msg += miniToLegacy("<muted> - <permission>: <state><newline>",
+                    unparsed("permission", validPerm, PRIMARY),
                     legacyArg("state", permValue ? trLegacy("ON", SUCCESS) : trLegacy("OFF", ERROR)));
             }
             sendLegacy(player, msg.trim().split("\n"));
@@ -61,14 +62,14 @@ public class PermCommand extends RequireIslandCommand {
         }
         if (island.togglePerm(playerName, perm)) {
             boolean permValue = island.hasPerm(playerName, perm);
-            sendTr(player, "Toggled permission <primary><permission></primary> for <primary><player></primary> to <state>.",
-                unparsed("permission", perm),
-                unparsed("player", playerName),
+            sendTr(player, "Toggled permission <permission> for <player> to <state>.",
+                unparsed("permission", perm, PRIMARY),
+                unparsed("player", playerName, PRIMARY),
                 component("state", permValue ? tr("ON", SUCCESS) : tr("OFF", ERROR)));
         } else {
-            sendErrorTr(player, "Unable to toggle permission <primary><permission></primary> for <primary><player></primary>.",
-                unparsed("permission", perm),
-                unparsed("player", playerName));
+            sendErrorTr(player, "Unable to toggle permission <permission> for <player>.",
+                unparsed("permission", perm, PRIMARY),
+                unparsed("player", playerName, PRIMARY));
         }
         return true;
     }

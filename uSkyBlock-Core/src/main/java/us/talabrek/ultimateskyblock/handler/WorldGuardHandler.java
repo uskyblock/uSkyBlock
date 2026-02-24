@@ -36,9 +36,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -150,8 +151,8 @@ public class WorldGuardHandler {
             if (owners.size() == 0) {
                 region.setFlag(Flags.GREET_MESSAGE, trLegacy("** You are entering a protected - but abandoned - island area.", ERROR));
             } else {
-                region.setFlag(Flags.GREET_MESSAGE, trLegacy("** You are entering <primary><leader></primary>'s island.",
-                    MUTED, unparsed("leader", islandConfig.getLeader())));
+                region.setFlag(Flags.GREET_MESSAGE, trLegacy("** You are entering <leader>'s island.",
+                    MUTED, unparsed("leader", islandConfig.getLeader(), PRIMARY)));
             }
         } else {
             region.setFlag(Flags.GREET_MESSAGE, null);
@@ -160,8 +161,8 @@ public class WorldGuardHandler {
             if (owners.size() == 0) {
                 region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("** You are leaving an abandoned island.", ERROR));
             } else {
-                region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("** You are leaving <primary><leader></primary>'s island.",
-                    MUTED, unparsed("leader", islandConfig.getLeader())));
+                region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("** You are leaving <leader>'s island.",
+                    MUTED, unparsed("leader", islandConfig.getLeader(), PRIMARY)));
             }
         } else {
             region.setFlag(Flags.FAREWELL_MESSAGE, null);

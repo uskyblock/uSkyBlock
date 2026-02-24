@@ -7,12 +7,13 @@ import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -34,8 +35,8 @@ public class ItemInfoCommand extends CompositeCommand {
                         sendErrorTr(player, "No item in hand!");
                         return true;
                     }
-                    sendTr(player, "Info for <primary><item></primary>", unparsed("item", ItemStackUtil.asString(itemStack)));
-                    sendTr(player, " - name: <primary><name>", legacyArg("name", ItemStackUtil.getItemName(itemStack)));
+                    sendTr(player, "Info for <item>", unparsed("item", ItemStackUtil.asString(itemStack), PRIMARY));
+                    sendTr(player, " - name: <item-name>", Placeholder.legacy("item-name", ItemStackUtil.getItemName(itemStack), PRIMARY));
                     return true;
                 }
                 sendPlayerOnly(sender);
