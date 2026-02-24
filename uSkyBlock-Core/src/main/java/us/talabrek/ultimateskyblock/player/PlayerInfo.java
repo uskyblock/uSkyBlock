@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.LogUtil;
@@ -36,10 +37,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.plainText;
@@ -188,9 +188,9 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         }
         IslandInfo island = getIslandInfo();
         if (island != null) {
-            island.sendMessageToOnlineMembers(trLegacy("<primary><player></primary> has completed the <primary><challenge></primary> challenge!",
-                unparsed("player", getPlayerName()),
-                legacyArg("challenge", challenge.getDisplayName())));
+            island.sendMessageToOnlineMembers(trLegacy("<player> has completed the <challenge> challenge!",
+                unparsed("player", getPlayerName(), PRIMARY),
+                Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
         }
     }
 
@@ -323,19 +323,19 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
             // I18N: Header line for the admin player info debug output.
             tr("Player Info:", PRIMARY),
             // I18N: Label for the account name in admin player info debug output.
-            tr("  - name: <primary><name></primary>", MUTED, unparsed("name", getPlayerName())),
+            tr("  - name: <name>", MUTED, unparsed("name", getPlayerName(), PRIMARY)),
             // I18N: Label for the display name / nickname in admin player info debug output.
-            tr("  - nick: <primary><nick></primary>", MUTED, legacyArg("nick", getDisplayName())),
+            tr("  - nick: <nick>", MUTED, Placeholder.legacy("nick", getDisplayName(), PRIMARY)),
             // I18N: Label showing whether the player currently owns an island in admin player info output.
-            tr("  - hasIsland: <primary><has-island></primary>", MUTED, unparsed("has-island", String.valueOf(getHasIsland()))),
+            tr("  - hasIsland: <has-island>", MUTED, unparsed("has-island", String.valueOf(getHasIsland()), PRIMARY)),
             // I18N: Label for the stored home location in admin player info debug output.
-            tr("  - home: <primary><home></primary>", MUTED, unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())))),
+            tr("  - home: <home>", MUTED, unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())), PRIMARY)),
             // I18N: Label for the player's island center location in admin player info debug output.
-            tr("  - island: <primary><island></primary>", MUTED, unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())))),
+            tr("  - island: <island>", MUTED, unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())), PRIMARY)),
             // I18N: Label for the list of island names this player is banned from in admin player info output.
-            tr("  - banned from: <primary><banned-islands></primary>", MUTED, unparsed("banned-islands", bannedFrom)),
+            tr("  - banned from: <banned-islands>", MUTED, unparsed("banned-islands", bannedFrom, PRIMARY)),
             // I18N: Label for the list of islands where this player is trusted in admin player info output.
-            tr("  - trusted on: <primary><trusted-islands></primary>", MUTED, unparsed("trusted-islands", trustedOn))
+            tr("  - trusted on: <trusted-islands>", MUTED, unparsed("trusted-islands", trustedOn, PRIMARY))
         };
     }
 

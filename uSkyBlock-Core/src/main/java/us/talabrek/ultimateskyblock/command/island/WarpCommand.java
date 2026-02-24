@@ -4,15 +4,16 @@ import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -72,8 +73,8 @@ public class WarpCommand extends RequirePlayerCommand {
                 }
                 if (!island.isBanned(player)) {
                     if (plugin.getConfig().getBoolean("options.protection.visitors.warn-on-warp", true)) {
-                        island.sendMessageToOnlineMembers(trLegacy("<error>Warning:</error> <primary><player></primary> is warping to your island.",
-                            legacyArg("player", player.getDisplayName())));
+                        island.sendMessageToOnlineMembers(trLegacy("<error>Warning:</error> <player> is warping to your island.",
+                            Placeholder.legacy("player", player.getDisplayName(), PRIMARY)));
                     }
                     plugin.getTeleportLogic().warpTeleport(player, targetPlayerInfo, false);
                 } else {

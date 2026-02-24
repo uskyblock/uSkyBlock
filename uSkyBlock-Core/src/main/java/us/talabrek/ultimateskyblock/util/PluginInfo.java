@@ -19,8 +19,9 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.uSkyBlock.depends;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 
 public class PluginInfo {
 
@@ -100,10 +101,10 @@ public class PluginInfo {
         msg.append(miniToLegacy("<muted>------------------------------<newline>"));
 
         if (config.getYamlConfig().getBoolean("plugin-updates.check", true) && updateChecker.isUpdateAvailable()) {
-            msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <primary><version></primary><newline>",
-                unparsed("version", updateChecker.getLatestVersion())));
-            msg.append(miniToLegacy("<muted>Visit <primary><url></primary> to download.<newline>",
-                unparsed("url", "https://www.uskyblock.ovh/get")));
+            msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
+                unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
+            msg.append(miniToLegacy("<muted>Visit <url> to download.<newline>",
+                unparsed("url", "https://www.uskyblock.ovh/get", PRIMARY)));
         }
 
         return msg.toString();

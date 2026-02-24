@@ -22,7 +22,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
@@ -94,10 +95,10 @@ public class InfoCommand extends RequireIslandCommand {
                     if (currentPage > maxPage) {
                         currentPage = maxPage;
                     }
-                    sendTr(player, "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):",
-                        unparsed("player", islandPlayer),
-                        unparsed("page", String.valueOf(currentPage)),
-                        unparsed("max-page", String.valueOf(maxPage)));
+                    sendTr(player, "Blocks on <player>'s island (page <page> of <max-page>):",
+                        unparsed("player", islandPlayer, PRIMARY),
+                        unparsed("page", String.valueOf(currentPage), PRIMARY),
+                        unparsed("max-page", String.valueOf(maxPage), PRIMARY));
                     if (cmd.equalsIgnoreCase("info") && getState() != null) {
                         sendTr(player, "Score Count Block");
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {

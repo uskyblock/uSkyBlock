@@ -7,17 +7,20 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.SUCCESS;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -51,7 +54,7 @@ public class BanCommand extends RequireIslandCommand {
                 //noinspection deprecation
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
                 if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-                    sendErrorTr(player, "Unable to unban unknown player <primary><player></primary>.", unparsed("player", name));
+                    sendErrorTr(player, "Unable to unban unknown player <player>.", unparsed("player", name, PRIMARY));
                     return true;
                 }
                 if (offlinePlayer.isOnline() && hasPermission(offlinePlayer.getPlayer(), "usb.exempt.ban")) {
@@ -61,11 +64,11 @@ public class BanCommand extends RequireIslandCommand {
                     return true;
                 }
                 island.banPlayer(offlinePlayer, player);
-                sendTr(player, "You banned <error><player></error> from warping to your island.",
-                    unparsed("player", name));
+                sendTr(player, "You banned <player> from warping to your island.",
+                    unparsed("player", name, ERROR));
                 if (offlinePlayer.isOnline()) {
-                    sendTr(offlinePlayer.getPlayer(), "You have been <error>banned</error> from <primary><leader></primary>'s island.",
-                        legacyArg("leader", player.getDisplayName()));
+                    sendTr(offlinePlayer.getPlayer(), "You have been <error>banned</error> from <leader>'s island.",
+                        Placeholder.legacy("leader", player.getDisplayName(), PRIMARY));
                     if (plugin.locationIsOnIsland(player, offlinePlayer.getPlayer().getLocation())) {
                         plugin.getTeleportLogic().spawnTeleport(offlinePlayer.getPlayer(), true);
                     }
@@ -74,15 +77,15 @@ public class BanCommand extends RequireIslandCommand {
                 //noinspection deprecation
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
                 if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-                    sendErrorTr(player, "Unable to unban unknown player <primary><player></primary>.", unparsed("player", name));
+                    sendErrorTr(player, "Unable to unban unknown player <player>.", unparsed("player", name, PRIMARY));
                     return true;
                 }
                 island.unbanPlayer(offlinePlayer, player);
-                sendTr(player, "You unbanned <success><player></success> from warping to your island.",
-                    unparsed("player", name));
+                sendTr(player, "You unbanned <player> from warping to your island.",
+                    unparsed("player", name, SUCCESS));
                 if (offlinePlayer.isOnline()) {
-                    sendTr(offlinePlayer.getPlayer(), "You have been <success>unbanned</success> from <primary><leader></primary>'s island.",
-                        legacyArg("leader", player.getDisplayName()));
+                    sendTr(offlinePlayer.getPlayer(), "You have been <success>unbanned</success> from <leader>'s island.",
+                        Placeholder.legacy("leader", player.getDisplayName(), PRIMARY));
                 }
             }
             WorldGuardHandler.updateRegion(island);

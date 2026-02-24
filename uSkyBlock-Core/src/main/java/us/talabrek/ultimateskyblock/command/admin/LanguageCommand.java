@@ -16,8 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -49,18 +50,18 @@ public class LanguageCommand extends AbstractCommand {
         if (resolvedLocale.isEmpty()) {
             sendErrorTr(sender, "Unsupported locale: <locale>", unparsed("locale", args[0]));
             sendTr(sender, "Use <cmd>/usb lang</cmd> to list all supported locales.", MUTED);
-            sendTr(sender, "Help improve translations: <primary><url></primary>",
-                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
+            sendTr(sender, "Help improve translations: <url>",
+                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
             return true;
         }
 
         String localeKey = resolvedLocale.get();
         String current = plugin.getConfig().getString("language", DEFAULT_LOCALE_KEY);
         if (I18nUtil.findSupportedLocaleKey(current).orElse(current).equalsIgnoreCase(localeKey)) {
-            sendTr(sender, "Language is already set to <primary><locale></primary>.",
-                MUTED, unparsed("locale", localeKey));
-            sendTr(sender, "Help improve translations: <primary><url></primary>",
-                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
+            sendTr(sender, "Language is already set to <locale>.",
+                MUTED, unparsed("locale", localeKey, PRIMARY));
+            sendTr(sender, "Help improve translations: <url>",
+                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
             return true;
         }
 
@@ -68,11 +69,11 @@ public class LanguageCommand extends AbstractCommand {
         plugin.saveConfig();
         Settings.locale = I18nUtil.getLocale(localeKey);
         I18nUtil.setLocale(Settings.locale);
-        sendTr(sender, "Language updated to <primary><locale></primary>.</secondary>",
-            MUTED, unparsed("locale", localeKey));
+        sendTr(sender, "Language updated to <locale>.",
+            MUTED, unparsed("locale", localeKey, PRIMARY));
         sendTr(sender, "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.", MUTED);
-        sendTr(sender, "Help improve translations: <primary><url></primary>",
-            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
+        sendTr(sender, "Help improve translations: <url>",
+            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
         return true;
     }
 
@@ -100,13 +101,13 @@ public class LanguageCommand extends AbstractCommand {
             }
             send(sender, line);
         }
-        sendTr(sender, "Current language: <primary><locale></primary>", MUTED, unparsed("locale", current));
+        sendTr(sender, "Current language: <locale>", MUTED, unparsed("locale", current, PRIMARY));
         if (systemSupported.isPresent()) {
-            sendTr(sender, "System locale suggestion: <primary><locale></primary>",
-                MUTED, unparsed("locale", systemSupported.get()));
+            sendTr(sender, "System locale suggestion: <locale>",
+                MUTED, unparsed("locale", systemSupported.get(), PRIMARY));
         }
         sendTr(sender, "Set language with <cmd>/usb lang [locale]</cmd>.", MUTED);
-        sendTr(sender, "Help improve translations: <primary><url></primary>",
-            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
+        sendTr(sender, "Help improve translations: <url>",
+            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
     }
 }

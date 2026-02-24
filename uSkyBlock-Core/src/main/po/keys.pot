@@ -16,11 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
-msgid " - name: <primary><name>"
+msgid " - name: <item-name>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
-msgid "** You are entering <primary><leader></primary>'s island."
+msgid "** You are entering <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
@@ -28,7 +28,7 @@ msgid "** You are entering a protected - but abandoned - island area."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
-msgid "** You are leaving <primary><leader></primary>'s island."
+msgid "** You are leaving <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
@@ -48,11 +48,15 @@ msgid "- Scanning: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ 
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
-msgid "<block>: <secondary><count></secondary> (max. <max>)"
+msgid "<block>: <count> (max. <max>)"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
-msgid "<cmd><command></cmd> timed out."
+msgid "<command> timed out."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "<count> old island locations will be used before new ones."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -60,11 +64,23 @@ msgid "<error>Cannot</error> <permission>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
-msgid "<error>Warning:</error> <primary><player></primary> is warping to your island."
+msgid "<error>Warning:</error> <player> is warping to your island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/GriefEvents.java
 msgid "<error>Wither despawned!</error> It wandered too far from your island."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
+msgid "<field> was set to '<value>'."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "<inviter> invited <invitee>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
+msgid "<item> is limited. Scanning your island to check if you can place more. Please be patient."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WitherTagEvents.java
@@ -72,23 +88,57 @@ msgid "<leader>'s Wither"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "<leader>'s island at <island> has been protected."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> was already protected"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
+msgid "<player> activated the island warp."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "<player> changed the island biome to <biome>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
+msgid "<player> changed the island warp location."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "<player> created an area with a <biome> biome"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
+msgid "<player> deactivated the island warp."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has been kicked from the island!"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
+msgid "<player> has been removed from the island group."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has been removed from the island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
+msgid "<player> has completed the <challenge> challenge!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "<player> has had all challenges reset."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "<player> has joined your island group."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
@@ -99,6 +149,14 @@ msgstr ""
 msgid "<player> has removed you from their island!"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "<player> invited you to join their island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
+msgid "<player> is already the leader of your island."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "<player> is exempt from being banned."
 msgstr ""
@@ -107,8 +165,28 @@ msgstr ""
 msgid "<player> is exempt from being kicked."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "<player> joined your island group."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
+msgid "<player> locked the island."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "<player> rejected the invitation."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
+msgid "<player> revoked trust for <target> on the island."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "<player> tried to ban you from their island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
+msgid "<player> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
@@ -119,94 +197,16 @@ msgstr ""
 msgid "<player> tried to take over the island!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
-msgid "<primary><count></primary> old island locations will be used before new ones."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
-msgid "<primary><field></primary> was set to '<primary><value></primary>'."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "<primary><inviter></primary> invited <primary><invitee></primary>."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
-msgid "<primary><item></primary> is limited. Scanning your island to check if you can place more. Please be patient."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
-msgid "<primary><leader></primary>'s island at <primary><island></primary> has been protected."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
-msgid "<primary><player></primary> activated the island warp."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
-msgid "<primary><player></primary> changed the island warp location."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
-msgid "<primary><player></primary> deactivated the island warp."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
-msgid "<primary><player></primary> has been removed from the island group."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
-msgid "<primary><player></primary> has completed the <primary><challenge></primary> challenge!"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
-msgid "<primary><player></primary> has had all challenges reset."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
-msgid "<primary><player></primary> has joined your island group."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "<primary><player></primary> invited you to join their island!"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
-msgid "<primary><player></primary> is already the leader of your island."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "<primary><player></primary> joined your island group."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
-msgid "<primary><player></primary> locked the island."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "<primary><player></primary> rejected the invitation."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
-msgid "<primary><player></primary> revoked trust for <primary><target></primary> on the island."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "<primary><player></primary> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
-msgid "<primary><player></primary> trusted <primary><target></primary> on the island."
+msgid "<player> trusted <target> on the island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
-msgid "<primary><player></primary> unlocked the island."
+msgid "<player> unlocked the island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "<primary><player></primary>'s permissions"
+msgid "<player>'s permissions"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
@@ -214,15 +214,15 @@ msgid "<primary>SKY</primary><muted> ></muted> <message>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
-msgid "<primary>Wall of Fame</primary> (page <primary><page></primary> of <primary><max-page></primary>):"
+msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
-msgid "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary>"
+msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
-msgid "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
+msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -234,7 +234,7 @@ msgid "<success>Congratulations!</success> Your island is ready."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
-msgid "<type>: <secondary><count></secondary> (max. <max>)"
+msgid "<type>: <count> (max. <max>)"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
@@ -265,7 +265,7 @@ msgid "Animals"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
-msgid "Animation tick changed to <primary><ticks></primary>."
+msgid "Animation tick changed to <ticks>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
@@ -298,7 +298,7 @@ msgid "Biome: <biome>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
-msgid "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
+msgid "Blocks on <player>'s island (page <page> of <max-page>):"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
@@ -322,11 +322,11 @@ msgid "Challenge <challenge-id> has already been completed"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
-msgid "Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>."
+msgid "Challenge <challenge-id> has been completed for <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
-msgid "Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>."
+msgid "Challenge <challenge-id> has been reset for <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -334,7 +334,7 @@ msgid "Challenge Menu"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
-msgid "Challenge name: <primary><challenge></primary>"
+msgid "Challenge name: <challenge>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -366,11 +366,11 @@ msgid "Change Warp Location"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
-msgid "Changed <primary><player></primary>'s biome to <primary><biome></primary>."
+msgid "Changed <player>'s biome to <biome>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
-msgid "Changed biome of <primary><leader></primary>'s island to <primary><biome></primary>."
+msgid "Changed biome of <leader>'s island to <biome>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
@@ -470,11 +470,11 @@ msgid "Click to warp to the island!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Click within <primary><duration></primary> to leave!"
+msgid "Click within <duration> to leave!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Click within <primary><duration></primary> to restart!"
+msgid "Click within <duration> to restart!"
 msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
@@ -502,7 +502,7 @@ msgid "Complete most challenges in<newline>this rank to unlock the next rank."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
-msgid "Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created."
+msgid "Completed protect-all in <elapsed>. <count> new regions were created."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
@@ -510,7 +510,7 @@ msgid "Configuration reloaded from file."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
-msgid "Converted <primary><converted></primary>/<primary><total></primary> files in <primary><elapsed></primary>."
+msgid "Converted <converted>/<total> files in <elapsed>."
 msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
@@ -531,7 +531,7 @@ msgid "Could not locate rank of <player>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
-msgid "Creating an island <primary><direction></primary> of you"
+msgid "Creating an island <direction> of you"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
@@ -542,20 +542,20 @@ msgstr ""
 msgid "Creating island: <primary><progress:'###'>%</primary>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
+msgid "Currency reward: <currency>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Currency reward: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Currency reward: <primary><currency></primary>"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Current biome: <secondary><biome></secondary>"
+msgid "Current biome: <biome>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Current language: <primary><locale></primary>"
+msgid "Current language: <locale>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -572,7 +572,7 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
-msgid "Current value for <primary><field></primary> is '<primary><value></primary>'."
+msgid "Current value for <field> is '<value>'."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
@@ -608,11 +608,11 @@ msgid "Error: <error>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
-msgid "Failed to unload chunk at <primary><x></primary>,<primary><z></primary>."
+msgid "Failed to unload chunk at <x>,<z>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
-msgid "Finding all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>."
+msgid "Finding all islands abandoned for more than <days> days below level <level>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
@@ -624,7 +624,7 @@ msgid "First Page"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
-msgid "Flushed <secondary><islands></secondary> islands, <primary><players></primary> players, and <primary><challenges></primary> challenge completions."
+msgid "Flushed <islands> islands, <players> players, and <challenges> challenge completions."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -645,11 +645,11 @@ msgid "Golems"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Group members: <secondary><current></secondary>/<primary><max></primary>"
+msgid "Group members: <current>/<max>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Help improve translations: <primary><url></primary>"
+msgid "Help improve translations: <url>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
@@ -673,11 +673,11 @@ msgid "Increase radius of biome change"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
-msgid "Info for <primary><item></primary>"
+msgid "Info for <item>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
-msgid "Information about <primary><player></primary>'s island:"
+msgid "Information about <player>'s island:"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
@@ -710,15 +710,15 @@ msgid "Invalid permission <permission>. Must be one of <permissions>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
-msgid "Invalid player <primary><player></primary> supplied."
+msgid "Invalid player <player> supplied."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "Invitation for <primary><leader></primary>'s island timed out or was cancelled."
+msgid "Invitation for <leader>'s island timed out or was cancelled."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "Invitation for <primary><player></primary> timed out or was cancelled."
+msgid "Invitation for <player> timed out or was cancelled."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -726,7 +726,7 @@ msgid "Invite Players"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
-msgid "Invite sent to <primary><player></primary>."
+msgid "Invite sent to <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
@@ -775,7 +775,7 @@ msgid "Island Warp"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
-msgid "Island WorldGuard regions updated for <primary><island></primary>."
+msgid "Island WorldGuard regions updated for <island>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
@@ -805,11 +805,11 @@ msgid "It's a bad idea to replace your lava!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Item reward: <primary><reward-line></primary>"
+msgid "Item reward: <reward-line>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Item rewards: <primary><items></primary>"
+msgid "Item rewards: <items>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
@@ -829,11 +829,11 @@ msgid "Kick Players"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Language is already set to <primary><locale></primary>."
+msgid "Language is already set to <locale>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Language updated to <primary><locale></primary>.</secondary>"
+msgid "Language updated to <locale>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -849,7 +849,7 @@ msgid "Leadership transferred by <from> to <to>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
-msgid "Leadership transferred by <primary><from></primary> to <primary><to></primary>."
+msgid "Leadership transferred by <from> to <to>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -874,7 +874,7 @@ msgid "Loaded chunk at <x>,<z>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
-msgid "Loading chunks at <primary><location></primary>."
+msgid "Loading chunks at <location>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -913,7 +913,7 @@ msgid "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
-msgid "Logging to <primary><logfile></primary>."
+msgid "Logging to <logfile>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
@@ -949,7 +949,7 @@ msgid "Members are already trusted!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Members: <secondary><current></secondary>/<primary><max></primary>"
+msgid "Members: <current>/<max>"
 msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
@@ -962,7 +962,7 @@ msgid "More players can be invited to this island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Must be within <primary><radius></primary> meters."
+msgid "Must be within <radius> meters."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -974,7 +974,7 @@ msgid "No active cooldown on <command> for <player> detected!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
-msgid "No active cooldowns found for <primary><player></primary>."
+msgid "No active cooldowns found for <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
@@ -990,7 +990,7 @@ msgid "No challenge with id <challenge-id> found"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
-msgid "No importer named <primary><importer></primary> found."
+msgid "No importer named <importer> found."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
@@ -1088,7 +1088,7 @@ msgid "Only the owner may restart this island. Leave this island first to start 
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
-msgid "Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>"
+msgid "Orphans (<page>/<pages>): <orphan-list>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
@@ -1096,7 +1096,7 @@ msgid "Owner: <player>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
-msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm."
+msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
@@ -1133,7 +1133,7 @@ msgid "Patience you MUST have, young padawan"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
-msgid "Pending invites: <primary><invites></primary>"
+msgid "Pending invites: <invites>"
 msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
@@ -1145,19 +1145,19 @@ msgid "Permissions"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
-msgid "Permissions for <primary><player></primary>:<newline>"
+msgid "Permissions for <player>:<newline>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+msgid "Player <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "Player <player> has no island to transfer!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
-msgid "Player <primary><player></primary> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
-msgid "Player <primary><player></primary> has no island."
+msgid "Player <player> has no island."
 msgstr ""
 
 #. I18N: Header line for the admin player info debug output.
@@ -1189,11 +1189,8 @@ msgstr ""
 msgid "Rank is <rank>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
-msgid "Rank: <primary><rank></primary>"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Rank: <rank>"
 msgstr ""
 
@@ -1211,23 +1208,23 @@ msgid "Removing <player> from the island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
-msgid "Removing <primary><player></primary>'s island."
+msgid "Removing <player>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
-msgid "Repeat <cmd><command></cmd> to toggle it off."
+msgid "Repeat <command> to toggle it off."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <primary><days></primary> days."
+msgid "Requirements will reset in <days> days."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <primary><hours></primary> hours."
+msgid "Requirements will reset in <hours> hours."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <primary><minutes></primary> minutes."
+msgid "Requirements will reset in <minutes> minutes."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
@@ -1239,7 +1236,7 @@ msgid "Resending chunks to the client."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
-msgid "Reset cooldown on <primary><command></primary> for <primary><player></primary> to <primary><seconds></primary> seconds."
+msgid "Reset cooldown on <command> for <player> to <seconds> seconds."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -1271,7 +1268,7 @@ msgid "Riding is only allowed on your own island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
-msgid "Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>"
+msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
@@ -1295,7 +1292,7 @@ msgid "Set Island Warp"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
-msgid "Set debug level to <primary><loglevel></primary>."
+msgid "Set debug level to <loglevel>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
@@ -1311,7 +1308,7 @@ msgid "Since your island is locked, your incoming warp has been deactivated."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
-msgid "Sorry! <primary><reason></primary>"
+msgid "Sorry! <reason>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
@@ -1331,7 +1328,7 @@ msgid "Start an Island"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary><bold>Click here to start!"
+msgid "Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary>Click here to start!</primary>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
@@ -1367,11 +1364,11 @@ msgid "Successfully unloaded chunk at <x>,<z>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
-msgid "Successfully withdrew invite for <primary><player></primary>."
+msgid "Successfully withdrew invite for <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "System locale suggestion: <primary><locale></primary>"
+msgid "System locale suggestion: <locale>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
@@ -1493,15 +1490,15 @@ msgid "The level must be a valid number"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
-msgid "The pixies are busy changing the biome in your current chunk to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome in your current chunk to <biome>, be patient."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
-msgid "The pixies are busy changing the biome near you to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome near you to <biome>, be patient."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
-msgid "The pixies are busy changing the biome of your island to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome of your island to <biome>, be patient."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
@@ -1573,15 +1570,15 @@ msgid "Toggle your warp on or off using <cmd>/is togglewarp</cmd>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
-msgid "Toggled <primary><chat-type></primary> chat <success>on</success>."
+msgid "Toggled <chat-type> chat <success>on</success>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
-msgid "Toggled <primary><chat-type></primary> chat off."
+msgid "Toggled <chat-type> chat off."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
-msgid "Toggled permission <primary><permission></primary> for <primary><player></primary> to <state>."
+msgid "Toggled permission <permission> for <player> to <state>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
@@ -1589,7 +1586,7 @@ msgid "Top ten list is empty! <muted>Only islands above level <level> are consid
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Total completions: <primary><times></primary>"
+msgid "Total completions: <times>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
@@ -1605,7 +1602,7 @@ msgid "Trying to abort purge"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Trying to complete challenge <primary><challenge></primary>."
+msgid "Trying to complete challenge <challenge>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/AdminCommand.java
@@ -1638,11 +1635,11 @@ msgid "Unable to set field <field> to '<value>', a number was expected"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
-msgid "Unable to toggle permission <primary><permission></primary> for <primary><player></primary>."
+msgid "Unable to toggle permission <permission> for <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
-msgid "Unable to unban unknown player <primary><player></primary>."
+msgid "Unable to unban unknown player <player>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
@@ -1659,7 +1656,7 @@ msgid "Unknown player <player>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
-msgid "Unloading chunks at <primary><location></primary>."
+msgid "Unloading chunks at <location>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
@@ -1704,7 +1701,7 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
-msgid "Valid fields: <primary><fields></primary>"
+msgid "Valid fields: <fields>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -1788,12 +1785,12 @@ msgstr ""
 msgid "Wrote documentation to <file>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "XP reward: <primary><experience:'#.#'></primary>"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
+msgid "XP reward: <experience>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "XP reward: <primary><experience></primary>"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+msgid "XP reward: <primary><experience:'#.#'></primary>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
@@ -1809,11 +1806,11 @@ msgid "You are already a member of an island. <muted>To start your own, first us
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
-msgid "You are no longer trusted on <primary><leader></primary>'s island."
+msgid "You are no longer trusted on <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
-msgid "You are now trusted on <primary><leader></primary>'s island."
+msgid "You are now trusted on <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
@@ -1821,31 +1818,31 @@ msgid "You are still missing the following items:<items>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
-msgid "You banned <error><player></error> from warping to your island."
+msgid "You banned <player> from warping to your island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
-msgid "You can change your biome again in <primary><seconds></primary> seconds."
+msgid "You can change your biome again in <seconds> seconds."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this <primary><remaining></primary> more time(s)."
+msgid "You can complete this <remaining> more time(s)."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <primary><days></primary> days."
+msgid "You can complete this again in <days> days."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <primary><hours></primary> hours."
+msgid "You can complete this again in <hours> hours."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <primary><minutes></primary> minutes."
+msgid "You can complete this again in <minutes> minutes."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
-msgid "You can create a new island in <primary><seconds></primary> seconds."
+msgid "You can create a new island in <seconds> seconds."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
@@ -1941,7 +1938,7 @@ msgid "You cannot use another island's portals."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "You completed the <primary><challenge></primary> challenge!"
+msgid "You completed the <challenge> challenge!"
 msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
@@ -2021,15 +2018,15 @@ msgid "You don't have permission to uninvite players."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
-msgid "You have been <error>banned</error> from <primary><leader></primary>'s island."
+msgid "You have been <error>banned</error> from <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
-msgid "You have been <success>unbanned</success> from <primary><leader></primary>'s island."
+msgid "You have been <success>unbanned</success> from <leader>'s island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
-msgid "You have been banned from <primary><leader></primary>'s island. <muted>Sending you to spawn."
+msgid "You have been banned from <leader>'s island. <muted>Sending you to spawn."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
@@ -2118,7 +2115,7 @@ msgid "You rejected the invitation to join an island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
-msgid "You unbanned <success><player></success> from warping to your island."
+msgid "You unbanned <player> from warping to your island."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
@@ -2130,7 +2127,7 @@ msgid "You will lose all required items when you complete this challenge!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
-msgid "You've hit the <primary><item></primary> limit. <muted>You can't have more of that type on your island. Max: <primary><max></primary>."
+msgid "You've hit the <item> limit. <muted>You can't have more of that type on your island. Max: <max>.</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
@@ -2191,7 +2188,7 @@ msgid "Your island must be level <level> to complete this challenge!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
-msgid "Your rank is: <primary><rank></primary>."
+msgid "Your rank is: <rank>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java

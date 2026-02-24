@@ -7,7 +7,8 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
@@ -28,7 +29,7 @@ public abstract class AbstractPlayerInfoCommand extends AbstractCommand {
                 doExecute(sender, playerInfo);
                 return true;
             }
-            sendErrorTr(sender, "Invalid player <primary><player></primary> supplied.", unparsed("player", args[0]));
+            sendErrorTr(sender, "Invalid player <player> supplied.", unparsed("player", args[0], PRIMARY));
         }
         return false;
     }

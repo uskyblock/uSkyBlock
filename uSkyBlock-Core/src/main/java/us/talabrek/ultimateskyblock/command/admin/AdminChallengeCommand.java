@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -50,7 +51,9 @@ public class AdminChallengeCommand extends CompositeCommand {
                 } else {
                     challengeLogic.resetChallenge(pi, completion.getId());
                     pi.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>.", unparsed("challenge-id", completion.getId().id()), unparsed("player", playerName));
+                    sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
+                        unparsed("challenge-id", completion.getId().id(), PRIMARY),
+                        unparsed("player", playerName, PRIMARY));
                 }
             }
         });
@@ -61,7 +64,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 if (playerInfo != null) {
                     challengeLogic.resetAllChallenges(playerInfo);
                     playerInfo.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "<primary><player></primary> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName()));
+                    sendTr(sender, "<player> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
                     return true;
                 }
                 return false;
@@ -103,7 +106,9 @@ public class AdminChallengeCommand extends CompositeCommand {
         } else {
             playerInfo.completeChallenge(challenge, true);
             playerInfo.save();
-            sendTr(sender, "Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>.", unparsed("challenge-id", challengeId.id()), unparsed("player", playerInfo.getPlayerName()));
+            sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
+                unparsed("challenge-id", challengeId.id(), PRIMARY),
+                unparsed("player", playerInfo.getPlayerName(), PRIMARY));
         }
     }
 

@@ -25,7 +25,8 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -77,8 +78,8 @@ public class BiomeCommand extends RequireIslandCommand {
             }
             Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "biome");
             if (cooldown.isPositive()) {
-                sendTr(player, "You can change your biome again in <primary><seconds></primary> seconds.",
-                    unparsed("seconds", String.valueOf(cooldown.toSeconds())));
+                sendTr(player, "You can change your biome again in <seconds> seconds.",
+                    unparsed("seconds", String.valueOf(cooldown.toSeconds()), PRIMARY));
                 return true;
             }
             if (!player.hasPermission("usb.biome." + biomeKey.toLowerCase())) {
@@ -103,19 +104,19 @@ public class BiomeCommand extends RequireIslandCommand {
                     Math.min(location.getBlockY() + radius, maxP.getBlockY()),
                     Math.min(location.getBlockZ() + radius, maxP.getBlockZ()));
                 changeEntireIslandBiome = false;
-                sendTr(player, "The pixies are busy changing the biome near you to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey));
+                sendTr(player, "The pixies are busy changing the biome near you to <biome>, be patient.",
+                    unparsed("biome", biomeKey, PRIMARY));
             } else if (args.length == 2 && args[1].equalsIgnoreCase("chunk")) {
                 Chunk chunk = location.clone().getChunk();
                 minP = BlockVector3.at(chunk.getX() << 4, location.getWorld().getMinHeight(), chunk.getZ() << 4);
                 maxP = BlockVector3.at((chunk.getX() << 4) + 15, location.getWorld().getMaxHeight(), (chunk.getZ() << 4) + 15);
                 changeEntireIslandBiome = false;
-                sendTr(player, "The pixies are busy changing the biome in your current chunk to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey));
+                sendTr(player, "The pixies are busy changing the biome in your current chunk to <biome>, be patient.",
+                    unparsed("biome", biomeKey, PRIMARY));
             } else if (args.length < 2 || args[1].equalsIgnoreCase("all")) {
                 changeEntireIslandBiome = true;
-                sendTr(player, "The pixies are busy changing the biome of your island to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey));
+                sendTr(player, "The pixies are busy changing the biome of your island to <biome>, be patient.",
+                    unparsed("biome", biomeKey, PRIMARY));
             } else {
                 sendErrorTr(player, "Invalid arguments. Use /is biome [biome] [radius|chunk|all]");
                 return true;

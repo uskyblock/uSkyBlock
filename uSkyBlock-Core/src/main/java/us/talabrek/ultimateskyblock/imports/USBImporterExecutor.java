@@ -18,8 +18,9 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -83,8 +84,8 @@ public class USBImporterExecutor {
         }
         final USBImporter importer = getImporter(name);
         if (importer == null) {
-            sendErrorTr(sender, "No importer named <primary><importer></primary> found.",
-                unparsed("importer", name));
+            sendErrorTr(sender, "No importer named <importer> found.",
+                unparsed("importer", name, PRIMARY));
             return;
         }
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> doImport(sender, importer));
@@ -140,10 +141,10 @@ public class USBImporterExecutor {
 
     private void complete(CommandSender sender, USBImporter importer) {
         importer.completed(countSuccess, countFailed, countSkip);
-        sendTr(sender, "Converted <primary><converted></primary>/<primary><total></primary> files in <primary><elapsed></primary>.",
-            unparsed("converted", String.valueOf(countSuccess)),
-            unparsed("total", String.valueOf(countSuccess + countFailed)),
-            unparsed("elapsed", timer.elapsedAsString()));
+        sendTr(sender, "Converted <converted>/<total> files in <elapsed>.",
+            unparsed("converted", String.valueOf(countSuccess), PRIMARY),
+            unparsed("total", String.valueOf(countSuccess + countFailed), PRIMARY),
+            unparsed("elapsed", timer.elapsedAsString(), PRIMARY));
         plugin.getConfig().set("importer." + importer.getName() + ".imported", true);
         plugin.saveConfig();
     }

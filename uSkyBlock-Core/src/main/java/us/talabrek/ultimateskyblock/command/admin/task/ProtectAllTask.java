@@ -19,7 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -93,13 +94,13 @@ public class ProtectAllTask extends BukkitRunnable {
             active = false;
         }
         if (sender instanceof Player && ((Player) sender).isOnline()) {
-            sendTr(sender, "Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
-                unparsed("elapsed", getElapsed(tStart)),
-                unparsed("count", String.valueOf(success)));
+            sendTr(sender, "Completed protect-all in <elapsed>. <count> new regions were created.",
+                unparsed("elapsed", getElapsed(tStart), PRIMARY),
+                unparsed("count", String.valueOf(success), PRIMARY));
         }
-        LogUtil.log(Level.INFO, trLegacy("Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created.",
-            unparsed("elapsed", getElapsed(tStart)),
-            unparsed("count", String.valueOf(success))));
+        LogUtil.log(Level.INFO, trLegacy("Completed protect-all in <elapsed>. <count> new regions were created.",
+            unparsed("elapsed", getElapsed(tStart), PRIMARY),
+            unparsed("count", String.valueOf(success), PRIMARY)));
     }
 
     private String getElapsed(Instant tStart) {

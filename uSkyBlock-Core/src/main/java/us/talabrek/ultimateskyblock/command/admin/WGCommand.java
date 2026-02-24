@@ -15,7 +15,8 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -41,8 +42,8 @@ public class WGCommand extends CompositeCommand {
             @Override
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 WorldEditHandler.loadRegion(player.getLocation());
-                sendTr(player, "Loading chunks at <primary><location></primary>.",
-                    unparsed("location", LocationUtil.asString(player.getLocation())));
+                sendTr(player, "Loading chunks at <location>.",
+                    unparsed("location", LocationUtil.asString(player.getLocation()), PRIMARY));
                 return true;
             }
         });
@@ -50,8 +51,8 @@ public class WGCommand extends CompositeCommand {
             @Override
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 LocationUtil.loadChunkAt(player.getLocation());
-                sendTr(player, "Unloading chunks at <primary><location></primary>.",
-                    unparsed("location", LocationUtil.asString(player.getLocation())));
+                sendTr(player, "Unloading chunks at <location>.",
+                    unparsed("location", LocationUtil.asString(player.getLocation()), PRIMARY));
                 return true;
             }
         });
@@ -63,8 +64,8 @@ public class WGCommand extends CompositeCommand {
                     IslandInfo islandInfo = plugin.getIslandInfo(island);
                     if (islandInfo != null) {
                         WorldGuardHandler.updateRegion(islandInfo);
-                        sendTr(player, "Island WorldGuard regions updated for <primary><island></primary>.",
-                            unparsed("island", island));
+                        sendTr(player, "Island WorldGuard regions updated for <island>.",
+                            unparsed("island", island, PRIMARY));
                     } else {
                         sendErrorTr(player, "No island found at your location.");
                     }

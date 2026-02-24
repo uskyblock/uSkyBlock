@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -55,21 +56,21 @@ public class TrustCommand extends RequireIslandCommand {
             if (alias.equals("trust")) {
                 island.trustPlayer(offlinePlayer, player);
                 if (offlinePlayer.isOnline()) {
-                    sendTr(offlinePlayer.getPlayer(), "You are now trusted on <primary><leader></primary>'s island.",
-                        legacyArg("leader", pi.getDisplayName()));
+                    sendTr(offlinePlayer.getPlayer(), "You are now trusted on <leader>'s island.",
+                        Placeholder.legacy("leader", pi.getDisplayName(), PRIMARY));
                 }
-                island.sendMessageToIslandGroup(tr("<primary><player></primary> trusted <primary><target></primary> on the island.",
-                    unparsed("player", player.getName()),
-                    unparsed("target", name)));
+                island.sendMessageToIslandGroup(tr("<player> trusted <target> on the island.",
+                    unparsed("player", player.getName(), PRIMARY),
+                    unparsed("target", name, PRIMARY)));
             } else {
                 island.untrustPlayer(offlinePlayer, player);
                 if (offlinePlayer.isOnline()) {
-                    sendTr(offlinePlayer.getPlayer(), "You are no longer trusted on <primary><leader></primary>'s island.",
-                        legacyArg("leader", pi.getDisplayName()));
+                    sendTr(offlinePlayer.getPlayer(), "You are no longer trusted on <leader>'s island.",
+                        Placeholder.legacy("leader", pi.getDisplayName(), PRIMARY));
                 }
-                island.sendMessageToIslandGroup(tr("<primary><player></primary> revoked trust for <primary><target></primary> on the island.",
-                    unparsed("player", player.getName()),
-                    unparsed("target", name)));
+                island.sendMessageToIslandGroup(tr("<player> revoked trust for <target> on the island.",
+                    unparsed("player", player.getName(), PRIMARY),
+                    unparsed("target", name, PRIMARY)));
             }
             WorldGuardHandler.updateRegion(island);
             return true;

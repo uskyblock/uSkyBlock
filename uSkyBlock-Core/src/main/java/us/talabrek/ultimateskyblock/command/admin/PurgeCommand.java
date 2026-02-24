@@ -15,7 +15,8 @@ import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -61,16 +62,16 @@ public class PurgeCommand extends AbstractCommand {
         final boolean force = args[args.length - 1].equalsIgnoreCase("force");
 
         Duration time = Duration.ofDays(Integer.parseInt(days, 10));
-        sendTr(sender, "Finding all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>.",
-            unparsed("days", args[0]),
-            unparsed("level", String.valueOf(purgeLevel)));
+        sendTr(sender, "Finding all islands abandoned for more than <days> days below level <level>.",
+            unparsed("days", args[0], PRIMARY),
+            unparsed("level", String.valueOf(purgeLevel), PRIMARY));
         scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {
                 Duration timeout = Duration.ofMillis(plugin.getConfig().getLong("options.advanced.purgeTimeout", 600000)); // TODO: this option does not have an entry in plugin.yml
-                sendErrorTr(sender, "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm.",
-                    unparsed("timeout", TimeUtil.durationAsString(timeout)));
+                sendErrorTr(sender, "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm.",
+                    unparsed("timeout", TimeUtil.durationAsString(timeout), PRIMARY));
                 scheduler.async(() -> {
                     if (scanTask.isActive()) {
                         sendErrorTr(sender, "Purge timed out.");

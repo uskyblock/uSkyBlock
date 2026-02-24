@@ -52,8 +52,10 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -206,10 +208,10 @@ public class IslandLogic {
             if (page < 1) {
                 page = 1;
             }
-            sendTr(sender, "<primary>Wall of Fame</primary> (page <primary><page></primary> of <primary><max-page></primary>):",
+            sendTr(sender, "<primary>Wall of Fame</primary> (page <page> of <max-page>):",
                 MUTED,
-                unparsed("page", String.valueOf(page)),
-                unparsed("max-page", String.valueOf(maxpage)));
+                unparsed("page", String.valueOf(page), PRIMARY),
+                unparsed("max-page", String.valueOf(maxpage), PRIMARY));
             if (ranks.isEmpty()) {
                 if (Settings.island_useTopTen) {
                     sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level> are considered.",
@@ -231,11 +233,11 @@ public class IslandLogic {
                 if (showMembers && !level.getMembers().isEmpty()) {
                     members = Arrays.toString(level.getMembers().toArray(new String[0]));
                 }
-                String message = miniToLegacy("<secondary>#<rank></secondary> <muted>(<score>):</muted> <primary><leader></primary> <muted><members></muted>",
-                    unparsed("rank", String.valueOf(place)),
+                String message = miniToLegacy("<rank> <muted>(<score>):</muted> <leader> <members>",
+                    unparsed("rank", "#" + place, SECONDARY),
                     unparsed("score", String.format("%.2f", level.getScore())),
-                    unparsed("leader", level.getLeaderName()),
-                    unparsed("members", members));
+                    unparsed("leader", level.getLeaderName(), PRIMARY),
+                    unparsed("members", members, MUTED));
                 if (sender instanceof Player target) {
                     String warpString = getJsonWarpString(
                         message,
@@ -252,7 +254,7 @@ public class IslandLogic {
                 place++;
             }
             if (rank != null) {
-                sendTr(sender, "Your rank is: <primary><rank></primary>.", unparsed("rank", String.valueOf(rank.getRank())));
+                sendTr(sender, "Your rank is: <rank>.", unparsed("rank", String.valueOf(rank.getRank()), PRIMARY));
             }
         }
 

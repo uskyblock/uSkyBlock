@@ -15,17 +15,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-msgid " - name: <primary><name>"
-msgstr " - name: <primary><name>"
+msgid " - name: <item-name>"
+msgstr " - name: <item-name>"
 
-msgid "** You are entering <primary><leader></primary>'s island."
-msgstr "** Ye be enterin' <primary><leader></primary>'s island."
+msgid "** You are entering <leader>'s island."
+msgstr "** Ye be enterin' <leader>'s island."
 
 msgid "** You are entering a protected - but abandoned - island area."
 msgstr "** Ye be enterin' a protected - but abandoned - island area."
 
-msgid "** You are leaving <primary><leader></primary>'s island."
-msgstr "** Ye be leavin' <primary><leader></primary>'s island."
+msgid "** You are leaving <leader>'s island."
+msgstr "** Ye be leavin' <leader>'s island."
 
 msgid "** You are leaving an abandoned island."
 msgstr "** Ye be leavin' an abandoned island."
@@ -39,38 +39,74 @@ msgstr "- Purgin': <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>,
 msgid "- Scanning: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"
 msgstr "- Scannin': <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"
 
-msgid "<block>: <secondary><count></secondary> (max. <max>)"
-msgstr "<block>: <secondary><count></secondary> (max. <max>)"
+msgid "<block>: <count> (max. <max>)"
+msgstr "<block>: <count> (max. <max>)"
 
-msgid "<cmd><command></cmd> timed out."
-msgstr "<cmd><command></cmd> timed out."
+msgid "<command> timed out."
+msgstr "<command> timed out."
+
+msgid "<count> old island locations will be used before new ones."
+msgstr "<count> old island locations will be used before new ones."
 
 msgid "<error>Cannot</error> <permission>"
 msgstr "<error>Cannot</error> <permission>"
 
-msgid "<error>Warning:</error> <primary><player></primary> is warping to your island."
-msgstr "<error>Avast:</error> <primary><player></primary> is warpin' to yer island."
+msgid "<error>Warning:</error> <player> is warping to your island."
+msgstr "<error>Avast:</error> <player> is warpin' to yer island."
 
 msgid "<error>Wither despawned!</error> It wandered too far from your island."
 msgstr "<error>Wither despawned!</error> It wandered too far from yer island."
 
+msgid "<field> was set to '<value>'."
+msgstr "<field> was set to '<value>'."
+
+msgid "<inviter> invited <invitee>."
+msgstr "<inviter> invited <invitee>."
+
+msgid "<item> is limited. Scanning your island to check if you can place more. Please be patient."
+msgstr "<item> is limited. Scannin' yer island to check if ye can place more. Please be patient."
+
 msgid "<leader>'s Wither"
 msgstr "<leader>'s Wither"
+
+msgid "<leader>'s island at <island> has been protected."
+msgstr "<leader>'s island at <island> has been protected."
 
 msgid "<leader>'s island at <island> was already protected"
 msgstr "<leader>'s island at <island> was already protected"
 
+msgid "<player> activated the island warp."
+msgstr "<player> activated the island warp."
+
 msgid "<player> changed the island biome to <biome>"
 msgstr "<player> changed the island biome to <biome>"
+
+msgid "<player> changed the island warp location."
+msgstr "<player> changed the island warp location."
 
 msgid "<player> created an area with a <biome> biome"
 msgstr "<player> created an area with a <biome> biome"
 
+msgid "<player> deactivated the island warp."
+msgstr "<player> deactivated the island warp."
+
 msgid "<player> has been kicked from the island!"
 msgstr "<player> has been kicked from the island!"
 
+msgid "<player> has been removed from the island group."
+msgstr "<player> has been removed from the island group."
+
 msgid "<player> has been removed from the island!"
 msgstr "<player> has been removed from the island!"
+
+msgid "<player> has completed the <challenge> challenge!"
+msgstr "<player> has completed the <challenge> challenge!"
+
+msgid "<player> has had all challenges reset."
+msgstr "<player> has had all challenges reset."
+
+msgid "<player> has joined your island group."
+msgstr "<player> has joined yer island group."
 
 msgid "<player> has kicked you from their island!"
 msgstr "<player> has kicked ye from their island!"
@@ -78,14 +114,35 @@ msgstr "<player> has kicked ye from their island!"
 msgid "<player> has removed you from their island!"
 msgstr "<player> has removed ye from their island!"
 
+msgid "<player> invited you to join their island!"
+msgstr "<player> invited ye to join their island!"
+
+msgid "<player> is already the leader of your island."
+msgstr "<player> is already the captain of yer island."
+
 msgid "<player> is exempt from being banned."
 msgstr "<player> is exempt from bein' banned."
 
 msgid "<player> is exempt from being kicked."
 msgstr "<player> is exempt from bein' kicked."
 
+msgid "<player> joined your island group."
+msgstr "<player> joined yer island group."
+
+msgid "<player> locked the island."
+msgstr "<player> locked the island."
+
+msgid "<player> rejected the invitation."
+msgstr "<player> rejected the invitation."
+
+msgid "<player> revoked trust for <target> on the island."
+msgstr "<player> revoked trust for <target> on the island."
+
 msgid "<player> tried to ban you from their island!"
 msgstr "<player> tried to ban ye from their island!"
+
+msgid "<player> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>"
+msgstr "<player> tried to invite ye, but ye be already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave yer current party.</muted>"
 
 msgid "<player> tried to kick you from their island!"
 msgstr "<player> tried to kick ye from their island!"
@@ -93,83 +150,26 @@ msgstr "<player> tried to kick ye from their island!"
 msgid "<player> tried to take over the island!"
 msgstr "<player> tried to take over the island!"
 
-msgid "<primary><count></primary> old island locations will be used before new ones."
-msgstr "<primary><count></primary> old island locations will be used before new ones."
+msgid "<player> trusted <target> on the island."
+msgstr "<player> trusted <target> on the island."
 
-msgid "<primary><field></primary> was set to '<primary><value></primary>'."
-msgstr "<primary><field></primary> was set to '<primary><value></primary>'."
+msgid "<player> unlocked the island."
+msgstr "<player> unlocked the island."
 
-msgid "<primary><inviter></primary> invited <primary><invitee></primary>."
-msgstr "<primary><inviter></primary> invited <primary><invitee></primary>."
-
-msgid "<primary><item></primary> is limited. Scanning your island to check if you can place more. Please be patient."
-msgstr "<primary><item></primary> is limited. Scannin' yer island to check if ye can place more. Please be patient."
-
-msgid "<primary><leader></primary>'s island at <primary><island></primary> has been protected."
-msgstr "<primary><leader></primary>'s island at <primary><island></primary> has been protected."
-
-msgid "<primary><player></primary> activated the island warp."
-msgstr "<primary><player></primary> activated the island warp."
-
-msgid "<primary><player></primary> changed the island warp location."
-msgstr "<primary><player></primary> changed the island warp location."
-
-msgid "<primary><player></primary> deactivated the island warp."
-msgstr "<primary><player></primary> deactivated the island warp."
-
-msgid "<primary><player></primary> has been removed from the island group."
-msgstr "<primary><player></primary> has been removed from the island group."
-
-msgid "<primary><player></primary> has completed the <primary><challenge></primary> challenge!"
-msgstr "<primary><player></primary> has completed the <primary><challenge></primary> challenge!"
-
-msgid "<primary><player></primary> has had all challenges reset."
-msgstr "<primary><player></primary> has had all challenges reset."
-
-msgid "<primary><player></primary> has joined your island group."
-msgstr "<primary><player></primary> has joined yer island group."
-
-msgid "<primary><player></primary> invited you to join their island!"
-msgstr "<primary><player></primary> invited ye to join their island!"
-
-msgid "<primary><player></primary> is already the leader of your island."
-msgstr "<primary><player></primary> is already the captain of yer island."
-
-msgid "<primary><player></primary> joined your island group."
-msgstr "<primary><player></primary> joined yer island group."
-
-msgid "<primary><player></primary> locked the island."
-msgstr "<primary><player></primary> locked the island."
-
-msgid "<primary><player></primary> rejected the invitation."
-msgstr "<primary><player></primary> rejected the invitation."
-
-msgid "<primary><player></primary> revoked trust for <primary><target></primary> on the island."
-msgstr "<primary><player></primary> revoked trust for <primary><target></primary> on the island."
-
-msgid "<primary><player></primary> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>"
-msgstr "<primary><player></primary> tried to invite ye, but ye be already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave yer current party.</muted>"
-
-msgid "<primary><player></primary> trusted <primary><target></primary> on the island."
-msgstr "<primary><player></primary> trusted <primary><target></primary> on the island."
-
-msgid "<primary><player></primary> unlocked the island."
-msgstr "<primary><player></primary> unlocked the island."
-
-msgid "<primary><player></primary>'s permissions"
-msgstr "<primary><player></primary>'s permissions"
+msgid "<player>'s permissions"
+msgstr "<player>'s permissions"
 
 msgid "<primary>SKY</primary><muted> ></muted> <message>"
 msgstr "<primary>SKY</primary><muted> ></muted> <message>"
 
-msgid "<primary>Wall of Fame</primary> (page <primary><page></primary> of <primary><max-page></primary>):"
-msgstr "<primary>Wall of Fame</primary> (page <primary><page></primary> of <primary><max-page></primary>):"
+msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
+msgstr "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 
-msgid "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary>"
-msgstr "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary>"
+msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary>"
+msgstr "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary>"
 
-msgid "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
-msgstr "<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
+msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
+msgstr "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
 
 msgid "<success>Can</success> <permission>"
 msgstr "<success>Can</success> <permission>"
@@ -177,8 +177,8 @@ msgstr "<success>Can</success> <permission>"
 msgid "<success>Congratulations!</success> Your island is ready."
 msgstr "<success>Congratulations!</success> Yer island is ready."
 
-msgid "<type>: <secondary><count></secondary> (max. <max>)"
-msgstr "<type>: <secondary><count></secondary> (max. <max>)"
+msgid "<type>: <count> (max. <max>)"
+msgstr "<type>: <count> (max. <max>)"
 
 msgid "A protect-all task is already running. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
 msgstr "A protect-all task is already runnin'. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
@@ -199,8 +199,8 @@ msgstr "Ambiguous challenge name: <input>. Did ye mean:<suggestions>"
 msgid "Animals"
 msgstr "Animals"
 
-msgid "Animation tick changed to <primary><ticks></primary>."
-msgstr "Animation tick changed to <primary><ticks></primary>."
+msgid "Animation tick changed to <ticks>."
+msgstr "Animation tick changed to <ticks>."
 
 msgid "Animation tick must be a valid integer."
 msgstr "Animation tick must be a valid integer."
@@ -224,8 +224,8 @@ msgstr "Be patient, young padawan"
 msgid "Biome: <biome>"
 msgstr "Biome: <biome>"
 
-msgid "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
-msgstr "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
+msgid "Blocks on <player>'s island (page <page> of <max-page>):"
+msgstr "Blocks on <player>'s island (page <page> of <max-page>):"
 
 msgid "But you are ALLLLLLL ALOOOOONE!"
 msgstr "But ye be ALLLLLLL ALOOOOONE!"
@@ -242,17 +242,17 @@ msgstr "But yer fantasy friends be gone!"
 msgid "Challenge <challenge-id> has already been completed"
 msgstr "Challenge <challenge-id> has already been completed"
 
-msgid "Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>."
-msgstr "Challenge <primary><challenge-id></primary> has been completed for <primary><player></primary>."
+msgid "Challenge <challenge-id> has been completed for <player>."
+msgstr "Challenge <challenge-id> has been completed for <player>."
 
-msgid "Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>."
-msgstr "Challenge <primary><challenge-id></primary> has been reset for <primary><player></primary>."
+msgid "Challenge <challenge-id> has been reset for <player>."
+msgstr "Challenge <challenge-id> has been reset for <player>."
 
 msgid "Challenge Menu"
 msgstr "Challenge Menu"
 
-msgid "Challenge name: <primary><challenge></primary>"
-msgstr "Challenge name: <primary><challenge></primary>"
+msgid "Challenge name: <challenge>"
+msgstr "Challenge name: <challenge>"
 
 msgid "Challenges"
 msgstr "Challenges"
@@ -275,11 +275,11 @@ msgstr "Change Island Biome"
 msgid "Change Warp Location"
 msgstr "Change Warp Location"
 
-msgid "Changed <primary><player></primary>'s biome to <primary><biome></primary>."
-msgstr "Changed <primary><player></primary>'s biome to <primary><biome></primary>."
+msgid "Changed <player>'s biome to <biome>."
+msgstr "Changed <player>'s biome to <biome>."
 
-msgid "Changed biome of <primary><leader></primary>'s island to <primary><biome></primary>."
-msgstr "Changed biome of <primary><leader></primary>'s island to <primary><biome></primary>."
+msgid "Changed biome of <leader>'s island to <biome>."
+msgstr "Changed biome of <leader>'s island to <biome>."
 
 msgid "Changing your obsidian back into lava. Be careful."
 msgstr "Changin' yer obsidian back into lava. Be careful."
@@ -353,11 +353,11 @@ msgstr "Click to restart!"
 msgid "Click to warp to the island!"
 msgstr "Click to warp to the island!"
 
-msgid "Click within <primary><duration></primary> to leave!"
-msgstr "Click within <primary><duration></primary> to leave!"
+msgid "Click within <duration> to leave!"
+msgstr "Click within <duration> to leave!"
 
-msgid "Click within <primary><duration></primary> to restart!"
-msgstr "Click within <primary><duration></primary> to restart!"
+msgid "Click within <duration> to restart!"
+msgstr "Click within <duration> to restart!"
 
 msgid "Command"
 msgstr "Command"
@@ -377,14 +377,14 @@ msgstr "Complete <requirements>"
 msgid "Complete most challenges in<newline>this rank to unlock the next rank."
 msgstr "Complete most challenges in<newline>this rank to unlock the next rank."
 
-msgid "Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created."
-msgstr "Completed protect-all in <primary><elapsed></primary>. <primary><count></primary> new regions were created."
+msgid "Completed protect-all in <elapsed>. <count> new regions were created."
+msgstr "Completed protect-all in <elapsed>. <count> new regions were created."
 
 msgid "Configuration reloaded from file."
 msgstr "Configuration reloaded from file."
 
-msgid "Converted <primary><converted></primary>/<primary><total></primary> files in <primary><elapsed></primary>."
-msgstr "Converted <primary><converted></primary>/<primary><total></primary> files in <primary><elapsed></primary>."
+msgid "Converted <converted>/<total> files in <elapsed>."
+msgstr "Converted <converted>/<total> files in <elapsed>."
 
 #. I18N: Creature category label shown in island mob-limit summary.
 msgid "Copper Golems"
@@ -399,8 +399,8 @@ msgstr "Could not locate an island for pirate <player>!"
 msgid "Could not locate rank of <player>"
 msgstr "Could not locate rank of <player>"
 
-msgid "Creating an island <primary><direction></primary> of you"
-msgstr "Creatin' an island <primary><direction></primary> of ye"
+msgid "Creating an island <direction> of you"
+msgstr "Creatin' an island <direction> of ye"
 
 msgid "Creating an island at your location"
 msgstr "Creatin' an island at yer location"
@@ -408,17 +408,17 @@ msgstr "Creatin' an island at yer location"
 msgid "Creating island: <primary><progress:'###'>%</primary>"
 msgstr "Creatin' island: <primary><progress:'###'>%</primary>"
 
+msgid "Currency reward: <currency>"
+msgstr "Currency bounty: <currency>"
+
 msgid "Currency reward: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>"
 msgstr "Currency bounty: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>"
 
-msgid "Currency reward: <primary><currency></primary>"
-msgstr "Currency bounty: <primary><currency></primary>"
+msgid "Current biome: <biome>"
+msgstr "Current biome: <biome>"
 
-msgid "Current biome: <secondary><biome></secondary>"
-msgstr "Current biome: <secondary><biome></secondary>"
-
-msgid "Current language: <primary><locale></primary>"
-msgstr "Current language: <primary><locale></primary>"
+msgid "Current language: <locale>"
+msgstr "Current language: <locale>"
 
 msgid "Current level: <secondary><level:'#.0'></secondary>"
 msgstr "Current level: <secondary><level:'#.0'></secondary>"
@@ -429,8 +429,8 @@ msgstr "Current page"
 msgid "Current radius: <radius>"
 msgstr "Current radius: <radius>"
 
-msgid "Current value for <primary><field></primary> is '<primary><value></primary>'."
-msgstr "Current value for <primary><field></primary> is '<primary><value></primary>'."
+msgid "Current value for <field> is '<value>'."
+msgstr "Current value for <field> is '<value>'."
 
 msgid "Decrease radius of biome change"
 msgstr "Decrease radius of biome change"
@@ -456,11 +456,11 @@ msgstr "Blimey! <primary>Nay valid island found for purgin'."
 msgid "Error: <error>"
 msgstr "Blimey: <error>"
 
-msgid "Failed to unload chunk at <primary><x></primary>,<primary><z></primary>."
-msgstr "Failed to unload chunk at <primary><x></primary>,<primary><z></primary>."
+msgid "Failed to unload chunk at <x>,<z>."
+msgstr "Failed to unload chunk at <x>,<z>."
 
-msgid "Finding all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>."
-msgstr "Findin' all islands abandoned for more than <primary><days></primary> days below level <primary><level></primary>."
+msgid "Finding all islands abandoned for more than <days> days below level <level>."
+msgstr "Findin' all islands abandoned for more than <days> days below level <level>."
 
 msgid "Finished generating the top ten list."
 msgstr "Finished generatin' the top ten list."
@@ -468,8 +468,8 @@ msgstr "Finished generatin' the top ten list."
 msgid "First Page"
 msgstr "First Page"
 
-msgid "Flushed <secondary><islands></secondary> islands, <primary><players></primary> players, and <primary><challenges></primary> challenge completions."
-msgstr "Flushed <secondary><islands></secondary> islands, <primary><players></primary> pirates, an' <primary><challenges></primary> challenge completions."
+msgid "Flushed <islands> islands, <players> players, and <challenges> challenge completions."
+msgstr "Flushed <islands> islands, <players> pirates, an' <challenges> challenge completions."
 
 msgid "Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"
 msgstr "Gain island levels by expandin'<newline>yer skyblock an' completin'<newline>certain challenges. Rarer blocks<newline>will add more to yer level.<newline><primary>Click here to refresh.</primary><newline>(must be on yer island)"
@@ -484,11 +484,11 @@ msgstr "Gettin' yer island ready. Please be patient, this can take a while."
 msgid "Golems"
 msgstr "Golems"
 
-msgid "Group members: <secondary><current></secondary>/<primary><max></primary>"
-msgstr "Group members: <secondary><current></secondary>/<primary><max></primary>"
+msgid "Group members: <current>/<max>"
+msgstr "Group members: <current>/<max>"
 
-msgid "Help improve translations: <primary><url></primary>"
-msgstr "Help improve translations: <primary><url></primary>"
+msgid "Help improve translations: <url>"
+msgstr "Help improve translations: <url>"
 
 msgid "Hold your horses! <muted>You have to be patient."
 msgstr "Hold yer horses! <muted>Ye have to be patient."
@@ -505,11 +505,11 @@ msgstr "Hover over an icon to view<newline>a permission. Change the<newline>perm
 msgid "Increase radius of biome change"
 msgstr "Increase radius of biome change"
 
-msgid "Info for <primary><item></primary>"
-msgstr "Info for <primary><item></primary>"
+msgid "Info for <item>"
+msgstr "Info for <item>"
 
-msgid "Information about <primary><player></primary>'s island:"
-msgstr "Information about <primary><player></primary>'s island:"
+msgid "Information about <player>'s island:"
+msgstr "Information about <player>'s island:"
 
 msgid "Invalid argument, try INFO, FINE, FINER, FINEST"
 msgstr "Invalid argument, try INFO, FINE, FINER, FINEST"
@@ -532,20 +532,20 @@ msgstr "Invalid field <field>"
 msgid "Invalid permission <permission>. Must be one of <permissions>"
 msgstr "Invalid permission <permission>. Must be one of <permissions>"
 
-msgid "Invalid player <primary><player></primary> supplied."
-msgstr "Invalid pirate <primary><player></primary> supplied."
+msgid "Invalid player <player> supplied."
+msgstr "Invalid pirate <player> supplied."
 
-msgid "Invitation for <primary><leader></primary>'s island timed out or was cancelled."
-msgstr "Invitation for <primary><leader></primary>'s island timed out or was cancelled."
+msgid "Invitation for <leader>'s island timed out or was cancelled."
+msgstr "Invitation for <leader>'s island timed out or was cancelled."
 
-msgid "Invitation for <primary><player></primary> timed out or was cancelled."
-msgstr "Invitation for <primary><player></primary> timed out or was cancelled."
+msgid "Invitation for <player> timed out or was cancelled."
+msgstr "Invitation for <player> timed out or was cancelled."
 
 msgid "Invite Players"
 msgstr "Invite Pirates"
 
-msgid "Invite sent to <primary><player></primary>."
-msgstr "Invite sent to <primary><player></primary>."
+msgid "Invite sent to <player>."
+msgstr "Invite sent to <player>."
 
 msgid "Island Biome"
 msgstr "Island Biome"
@@ -581,8 +581,8 @@ msgstr "Island Restart Menu"
 msgid "Island Warp"
 msgstr "Island Warp"
 
-msgid "Island WorldGuard regions updated for <primary><island></primary>."
-msgstr "Island WorldGuard regions updated for <primary><island></primary>."
+msgid "Island WorldGuard regions updated for <island>."
+msgstr "Island WorldGuard regions updated for <island>."
 
 msgid "Island at this location has members.<newline><muted>Use <cmd>/usb island delete [name]</cmd> to delete it."
 msgstr "Island at this location has members.<newline><muted>Use <cmd>/usb island delete [name]</cmd> to delete it."
@@ -602,11 +602,11 @@ msgstr "Island not found: unable to set the island!"
 msgid "It's a bad idea to replace your lava!"
 msgstr "It's a bad idea to replace yer lava!"
 
-msgid "Item reward: <primary><reward-line></primary>"
-msgstr "Item bounty: <primary><reward-line></primary>"
+msgid "Item reward: <reward-line>"
+msgstr "Item bounty: <reward-line>"
 
-msgid "Item rewards: <primary><items></primary>"
-msgstr "Item rewards: <primary><items></primary>"
+msgid "Item rewards: <items>"
+msgstr "Item rewards: <items>"
 
 msgid "Items will be traded for the reward."
 msgstr "Items will be traded for the bounty."
@@ -620,11 +620,11 @@ msgstr "Join an Island"
 msgid "Kick Players"
 msgstr "Kick Pirates"
 
-msgid "Language is already set to <primary><locale></primary>."
-msgstr "Language is already set to <primary><locale></primary>."
+msgid "Language is already set to <locale>."
+msgstr "Language is already set to <locale>."
 
-msgid "Language updated to <primary><locale></primary>.</secondary>"
-msgstr "Language updated to <primary><locale></primary>.</secondary>"
+msgid "Language updated to <locale>."
+msgstr "Language updated to <locale>."
 
 msgid "Last Page"
 msgstr "Last Page"
@@ -635,8 +635,8 @@ msgstr "Captain"
 msgid "Leadership transferred by <from> to <to>"
 msgstr "Leadership transferred by <from> to <to>"
 
-msgid "Leadership transferred by <primary><from></primary> to <primary><to></primary>."
-msgstr "Leadership transferred by <primary><from></primary> to <primary><to></primary>."
+msgid "Leadership transferred by <from> to <to>."
+msgstr "Leadership transferred by <from> to <to>."
 
 msgid "Leave Island"
 msgstr "Leave Island"
@@ -654,8 +654,8 @@ msgstr "Limits:"
 msgid "Loaded chunk at <x>,<z>."
 msgstr "Loaded chunk at <x>,<z>."
 
-msgid "Loading chunks at <primary><location></primary>."
-msgstr "Loadin' chunks at <primary><location></primary>."
+msgid "Loading chunks at <location>."
+msgstr "Loadin' chunks at <location>."
 
 msgid "Lock status: <secondary>Active</secondary><newline>Your island is currently <error>locked</error>.<newline>Players outside your group<newline>cannot enter your island."
 msgstr "Lock status: <secondary>Active</secondary><newline>Yer island is currently <error>locked</error>.<newline>Pirates outside yer group<newline>cannot enter yer island."
@@ -682,8 +682,8 @@ msgstr "Loggin' disabled."
 msgid "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
 msgstr "Loggin' is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
 
-msgid "Logging to <primary><logfile></primary>."
-msgstr "Loggin' to <primary><logfile></primary>."
+msgid "Logging to <logfile>."
+msgstr "Loggin' to <logfile>."
 
 msgid "Logging wasn't active, so you can't disable it!"
 msgstr "Loggin' wasn't active, so ye can't disable it!"
@@ -709,8 +709,8 @@ msgstr "Mates"
 msgid "Members are already trusted!"
 msgstr "Members be already trusted!"
 
-msgid "Members: <secondary><current></secondary>/<primary><max></primary>"
-msgstr "Members: <secondary><current></secondary>/<primary><max></primary>"
+msgid "Members: <current>/<max>"
+msgstr "Members: <current>/<max>"
 
 #. I18N: Creature category label shown in island mob-limit summary.
 msgid "Monsters"
@@ -719,8 +719,8 @@ msgstr "Monsters"
 msgid "More players can be invited to this island."
 msgstr "More pirates can be invited to this island."
 
-msgid "Must be within <primary><radius></primary> meters."
-msgstr "Must be within <primary><radius></primary> meters."
+msgid "Must be within <radius> meters."
+msgstr "Must be within <radius> meters."
 
 msgid "No access!<newline><muted>(<permission>)</muted>"
 msgstr "Nay access!<newline><muted>(<permission>)</muted>"
@@ -728,8 +728,8 @@ msgstr "Nay access!<newline><muted>(<permission>)</muted>"
 msgid "No active cooldown on <command> for <player> detected!"
 msgstr "Nay active cooldown on <command> for <player> detected!"
 
-msgid "No active cooldowns found for <primary><player></primary>."
-msgstr "Nay active cooldowns found for <primary><player></primary>."
+msgid "No active cooldowns found for <player>."
+msgstr "Nay active cooldowns found for <player>."
 
 msgid "No challenge matched: <input>"
 msgstr "Nay challenge matched: <input>"
@@ -740,8 +740,8 @@ msgstr "Nay challenge named <challenge> was found!"
 msgid "No challenge with id <challenge-id> found"
 msgstr "Nay challenge with id <challenge-id> found"
 
-msgid "No importer named <primary><importer></primary> found."
-msgstr "Nay importer named <primary><importer></primary> found."
+msgid "No importer named <importer> found."
+msgstr "Nay importer named <importer> found."
 
 msgid "No island found at your current location."
 msgstr "Nay island found at yer current location."
@@ -812,14 +812,14 @@ msgstr "Only the island's owner can invite!"
 msgid "Only the owner may restart this island. Leave this island first to start your own (/is leave)."
 msgstr "Only the owner may restart this island. Leave this island first to start yer own (/is leave)."
 
-msgid "Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>"
-msgstr "Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>"
+msgid "Orphans (<page>/<pages>): <orphan-list>"
+msgstr "Orphans (<page>/<pages>): <orphan-list>"
 
 msgid "Owner: <player>"
 msgstr "Owner: <player>"
 
-msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm."
-msgstr "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <primary><timeout></primary> to confirm."
+msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm."
+msgstr "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm."
 
 msgid "PURGE: <primary>Purged island at <island>"
 msgstr "PURGE: <primary>Purged island at <island>"
@@ -846,8 +846,8 @@ msgstr "Party:"
 msgid "Patience you MUST have, young padawan"
 msgstr "Patience ye MUST have, young padawan"
 
-msgid "Pending invites: <primary><invites></primary>"
-msgstr "Pendin' invites: <primary><invites></primary>"
+msgid "Pending invites: <invites>"
+msgstr "Pendin' invites: <invites>"
 
 msgid "Permission"
 msgstr "Permission"
@@ -855,17 +855,17 @@ msgstr "Permission"
 msgid "Permissions"
 msgstr "Permissions"
 
-msgid "Permissions for <primary><player></primary>:<newline>"
-msgstr "Permissions for <primary><player></primary>:<newline>"
+msgid "Permissions for <player>:<newline>"
+msgstr "Permissions for <player>:<newline>"
+
+msgid "Player <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
+msgstr "Pirate <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
 
 msgid "Player <player> has no island to transfer!"
 msgstr "Pirate <player> has nay island to transfer!"
 
-msgid "Player <primary><player></primary> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
-msgstr "Pirate <primary><player></primary> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
-
-msgid "Player <primary><player></primary> has no island."
-msgstr "Pirate <primary><player></primary> has nay island."
+msgid "Player <player> has no island."
+msgstr "Pirate <player> has nay island."
 
 #. I18N: Header line for the admin player info debug output.
 msgid "Player Info:"
@@ -889,9 +889,6 @@ msgstr "Purge timed out."
 msgid "Rank is <rank>"
 msgstr "Rank is <rank>"
 
-msgid "Rank: <primary><rank></primary>"
-msgstr "Rank: <primary><rank></primary>"
-
 msgid "Rank: <rank>"
 msgstr "Rank: <rank>"
 
@@ -905,20 +902,20 @@ msgstr "Removed ignore-flag of <leader>'s island, it will now show up on top-ten
 msgid "Removing <player> from the island."
 msgstr "Removin' <player> from the island."
 
-msgid "Removing <primary><player></primary>'s island."
-msgstr "Removin' <primary><player></primary>'s island."
+msgid "Removing <player>'s island."
+msgstr "Removin' <player>'s island."
 
-msgid "Repeat <cmd><command></cmd> to toggle it off."
-msgstr "Repeat <cmd><command></cmd> to toggle it off."
+msgid "Repeat <command> to toggle it off."
+msgstr "Repeat <command> to toggle it off."
 
-msgid "Requirements will reset in <primary><days></primary> days."
-msgstr "Requirements will reset in <primary><days></primary> days."
+msgid "Requirements will reset in <days> days."
+msgstr "Requirements will reset in <days> days."
 
-msgid "Requirements will reset in <primary><hours></primary> hours."
-msgstr "Requirements will reset in <primary><hours></primary> hours."
+msgid "Requirements will reset in <hours> hours."
+msgstr "Requirements will reset in <hours> hours."
 
-msgid "Requirements will reset in <primary><minutes></primary> minutes."
-msgstr "Requirements will reset in <primary><minutes></primary> minutes."
+msgid "Requirements will reset in <minutes> minutes."
+msgstr "Requirements will reset in <minutes> minutes."
 
 msgid "Requires <requirement>"
 msgstr "Requires <requirement>"
@@ -926,8 +923,8 @@ msgstr "Requires <requirement>"
 msgid "Resending chunks to the client."
 msgstr "Resendin' chunks to the client."
 
-msgid "Reset cooldown on <primary><command></primary> for <primary><player></primary> to <primary><seconds></primary> seconds."
-msgstr "Reset cooldown on <primary><command></primary> for <primary><player></primary> to <primary><seconds></primary> seconds."
+msgid "Reset cooldown on <command> for <player> to <seconds> seconds."
+msgstr "Reset cooldown on <command> for <player> to <seconds> seconds."
 
 msgid "Restart Island"
 msgstr "Restart Island"
@@ -950,8 +947,8 @@ msgstr "Return to yer island's home<newline>point. Ye can change yer home<newlin
 msgid "Riding is only allowed on your own island."
 msgstr "Ridin' is only allowed on yer own island."
 
-msgid "Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>"
-msgstr "Runnin' <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>"
+msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
+msgstr "Runnin' <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
 
 msgid "Scanning complete. You can try again."
 msgstr "Scannin' complete. Ye can try again."
@@ -968,8 +965,8 @@ msgstr "Set <player>'s island to the current island."
 msgid "Set Island Warp"
 msgstr "Set Island Warp"
 
-msgid "Set debug level to <primary><loglevel></primary>."
-msgstr "Set debug level to <primary><loglevel></primary>."
+msgid "Set debug level to <loglevel>."
+msgstr "Set debug level to <loglevel>."
 
 msgid "Set incoming warp to your current location using <cmd>/is setwarp</cmd>."
 msgstr "Set incomin' warp to yer current location usin' <cmd>/is setwarp</cmd>."
@@ -980,8 +977,8 @@ msgstr "Set language with <cmd>/usb lang [locale]</cmd>."
 msgid "Since your island is locked, your incoming warp has been deactivated."
 msgstr "Since yer island is locked, yer incomin' warp has been deactivated."
 
-msgid "Sorry! <primary><reason></primary>"
-msgstr "Sorry! <primary><reason></primary>"
+msgid "Sorry! <reason>"
+msgstr "Sorry! <reason>"
 
 msgid "South"
 msgstr "South"
@@ -995,8 +992,8 @@ msgstr "South-West"
 msgid "Start an Island"
 msgstr "Start an Island"
 
-msgid "Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary><bold>Click here to start!"
-msgstr "Start yer skyblock journey<newline>by startin' yer own island.<newline>Complete challenges to earn<newline>items an' skybucks to help<newline>expand yer skyblock. Ye can<newline>invite others to join in<newline>buildin' yer island empire!<newline><primary><bold>Click here to start!"
+msgid "Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary>Click here to start!</primary>"
+msgstr "Start yer skyblock journey<newline>by startin' yer own island.<newline>Complete challenges to earn<newline>items an' skybucks to help<newline>expand yer skyblock. Ye can<newline>invite others to join in<newline>buildin' yer island empire!<newline><primary>Click here to start!</primary>"
 
 msgid "Starting a protect-all task. It may take a while."
 msgstr "Startin' a protect-all task. It may take a while."
@@ -1022,11 +1019,11 @@ msgstr "Successfully regenerated chunk at <x>,<z>."
 msgid "Successfully unloaded chunk at <x>,<z>."
 msgstr "Successfully unloaded chunk at <x>,<z>."
 
-msgid "Successfully withdrew invite for <primary><player></primary>."
-msgstr "Successfully withdrew invite for <primary><player></primary>."
+msgid "Successfully withdrew invite for <player>."
+msgstr "Successfully withdrew invite for <player>."
 
-msgid "System locale suggestion: <primary><locale></primary>"
-msgstr "System locale suggestion: <primary><locale></primary>"
+msgid "System locale suggestion: <locale>"
+msgstr "System locale suggestion: <locale>"
 
 msgid "Teleport cancelled"
 msgstr "Teleport cancelled"
@@ -1112,14 +1109,14 @@ msgstr "The island ye be on is bein' deleted! Sendin' ye to spawn."
 msgid "The level must be a valid number"
 msgstr "The level must be a valid number"
 
-msgid "The pixies are busy changing the biome in your current chunk to <primary><biome></primary>, be patient."
-msgstr "The pixies be busy changin' the biome in yer current chunk to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome in your current chunk to <biome>, be patient."
+msgstr "The pixies be busy changin' the biome in yer current chunk to <biome>, be patient."
 
-msgid "The pixies are busy changing the biome near you to <primary><biome></primary>, be patient."
-msgstr "The pixies be busy changin' the biome near ye to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome near you to <biome>, be patient."
+msgstr "The pixies be busy changin' the biome near ye to <biome>, be patient."
 
-msgid "The pixies are busy changing the biome of your island to <primary><biome></primary>, be patient."
-msgstr "The pixies be busy changin' the biome of yer island to <primary><biome></primary>, be patient."
+msgid "The pixies are busy changing the biome of your island to <biome>, be patient."
+msgstr "The pixies be busy changin' the biome of yer island to <biome>, be patient."
 
 msgid "The two most powerful warriors are patience and time."
 msgstr "The two most powerful warriors be patience an' time."
@@ -1172,20 +1169,20 @@ msgstr "Toggle Island Warp"
 msgid "Toggle your warp on or off using <cmd>/is togglewarp</cmd>."
 msgstr "Toggle yer warp on or off usin' <cmd>/is togglewarp</cmd>."
 
-msgid "Toggled <primary><chat-type></primary> chat <success>on</success>."
-msgstr "Toggled <primary><chat-type></primary> chat <success>on</success>."
+msgid "Toggled <chat-type> chat <success>on</success>."
+msgstr "Toggled <chat-type> chat <success>on</success>."
 
-msgid "Toggled <primary><chat-type></primary> chat off."
-msgstr "Toggled <primary><chat-type></primary> chat off."
+msgid "Toggled <chat-type> chat off."
+msgstr "Toggled <chat-type> chat off."
 
-msgid "Toggled permission <primary><permission></primary> for <primary><player></primary> to <state>."
-msgstr "Toggled permission <primary><permission></primary> for <primary><player></primary> to <state>."
+msgid "Toggled permission <permission> for <player> to <state>."
+msgstr "Toggled permission <permission> for <player> to <state>."
 
 msgid "Top ten list is empty! <muted>Only islands above level <level> are considered."
 msgstr "Top ten list is empty! <muted>Only islands above level <level> be considered."
 
-msgid "Total completions: <primary><times></primary>"
-msgstr "Total completions: <primary><times></primary>"
+msgid "Total completions: <times>"
+msgstr "Total completions: <times>"
 
 msgid "Trading isn't allowed on other islands. <muted>Use spawn instead."
 msgstr "Tradin' isn't allowed on other islands. <muted>Use spawn instead."
@@ -1196,8 +1193,8 @@ msgstr "Tryin' to abort protect-all task."
 msgid "Trying to abort purge"
 msgstr "Tryin' to abort purge"
 
-msgid "Trying to complete challenge <primary><challenge></primary>."
-msgstr "Tryin' to complete challenge <primary><challenge></primary>."
+msgid "Trying to complete challenge <challenge>."
+msgstr "Tryin' to complete challenge <challenge>."
 
 msgid "Ultimate SkyBlock Admin"
 msgstr "Ultimate SkyBlock Admin"
@@ -1220,11 +1217,11 @@ msgstr "Unable to set field <field> to '<value>'"
 msgid "Unable to set field <field> to '<value>', a number was expected"
 msgstr "Unable to set field <field> to '<value>', a number was expected"
 
-msgid "Unable to toggle permission <primary><permission></primary> for <primary><player></primary>."
-msgstr "Unable to toggle permission <primary><permission></primary> for <primary><player></primary>."
+msgid "Unable to toggle permission <permission> for <player>."
+msgstr "Unable to toggle permission <permission> for <player>."
 
-msgid "Unable to unban unknown player <primary><player></primary>."
-msgstr "Unable to unban unknown pirate <primary><player></primary>."
+msgid "Unable to unban unknown player <player>."
+msgstr "Unable to unban unknown pirate <player>."
 
 msgid "Unable to warp you to that player's island!"
 msgstr "Unable to warp ye to that pirate's island!"
@@ -1236,8 +1233,8 @@ msgstr "Unknown"
 msgid "Unknown player <player>"
 msgstr "Unknown pirate <player>"
 
-msgid "Unloading chunks at <primary><location></primary>."
-msgstr "Unloadin' chunks at <primary><location></primary>."
+msgid "Unloading chunks at <location>."
+msgstr "Unloadin' chunks at <location>."
 
 msgid "Unsupported locale: <locale>"
 msgstr "Unsupported locale: <locale>"
@@ -1269,8 +1266,8 @@ msgstr "Use <cmd>/usb lang</cmd> to list all supported locales."
 msgid "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources."
 msgstr "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources."
 
-msgid "Valid fields: <primary><fields></primary>"
-msgstr "Valid fields: <primary><fields></primary>"
+msgid "Valid fields: <fields>"
+msgstr "Valid fields: <fields>"
 
 msgid "View a list of <primary>challenges</primary> that<newline>you can complete on your island<newline>to earn skybucks, items, perks,<newline>and titles."
 msgstr "View a list of <primary>challenges</primary> that<newline>ye can complete on yer island<newline>to earn skybucks, items, perks,<newline>an' titles."
@@ -1333,11 +1330,11 @@ msgstr "When yer warp is activated,<newline>other pirates will be taken to<newli
 msgid "Wrote documentation to <file>"
 msgstr "Wrote documentation to <file>"
 
+msgid "XP reward: <experience>"
+msgstr "XP bounty: <experience>"
+
 msgid "XP reward: <primary><experience:'#.#'></primary>"
 msgstr "XP bounty: <primary><experience:'#.#'></primary>"
-
-msgid "XP reward: <primary><experience></primary>"
-msgstr "XP bounty: <primary><experience></primary>"
 
 msgid "You <success>accepted</success> the invitation to join an island."
 msgstr "Ye <success>accepted</success> the invitation to join an island."
@@ -1348,35 +1345,35 @@ msgstr "Ye already have an island. <muted>If ye want a fresh island, use <cmd>/i
 msgid "You are already a member of an island. <muted>To start your own, first use <cmd>/is leave</cmd>."
 msgstr "Ye be already a mates of an island. <muted>To start yer own, first use <cmd>/is leave</cmd>."
 
-msgid "You are no longer trusted on <primary><leader></primary>'s island."
-msgstr "Ye be nay longer trusted on <primary><leader></primary>'s island."
+msgid "You are no longer trusted on <leader>'s island."
+msgstr "Ye be nay longer trusted on <leader>'s island."
 
-msgid "You are now trusted on <primary><leader></primary>'s island."
-msgstr "Ye be now trusted on <primary><leader></primary>'s island."
+msgid "You are now trusted on <leader>'s island."
+msgstr "Ye be now trusted on <leader>'s island."
 
 msgid "You are still missing the following items:<items>"
 msgstr "Ye be still missin' the followin' items:<items>"
 
-msgid "You banned <error><player></error> from warping to your island."
-msgstr "Ye banned <error><player></error> from warpin' to yer island."
+msgid "You banned <player> from warping to your island."
+msgstr "Ye banned <player> from warpin' to yer island."
 
-msgid "You can change your biome again in <primary><seconds></primary> seconds."
-msgstr "Ye can change yer biome again in <primary><seconds></primary> seconds."
+msgid "You can change your biome again in <seconds> seconds."
+msgstr "Ye can change yer biome again in <seconds> seconds."
 
-msgid "You can complete this <primary><remaining></primary> more time(s)."
-msgstr "Ye can complete this <primary><remaining></primary> more time(s)."
+msgid "You can complete this <remaining> more time(s)."
+msgstr "Ye can complete this <remaining> more time(s)."
 
-msgid "You can complete this again in <primary><days></primary> days."
-msgstr "Ye can complete this again in <primary><days></primary> days."
+msgid "You can complete this again in <days> days."
+msgstr "Ye can complete this again in <days> days."
 
-msgid "You can complete this again in <primary><hours></primary> hours."
-msgstr "Ye can complete this again in <primary><hours></primary> hours."
+msgid "You can complete this again in <hours> hours."
+msgstr "Ye can complete this again in <hours> hours."
 
-msgid "You can complete this again in <primary><minutes></primary> minutes."
-msgstr "Ye can complete this again in <primary><minutes></primary> minutes."
+msgid "You can complete this again in <minutes> minutes."
+msgstr "Ye can complete this again in <minutes> minutes."
 
-msgid "You can create a new island in <primary><seconds></primary> seconds."
-msgstr "Ye can create a new island in <primary><seconds></primary> seconds."
+msgid "You can create a new island in <seconds> seconds."
+msgstr "Ye can create a new island in <seconds> seconds."
 
 msgid "You can invite <count> more players."
 msgstr "Ye can invite <count> more pirates."
@@ -1447,8 +1444,8 @@ msgstr "Ye cannot pick up other pirates' loot when ye be a visitor!"
 msgid "You cannot use another island's portals."
 msgstr "Ye cannot use another island's portals."
 
-msgid "You completed the <primary><challenge></primary> challenge!"
-msgstr "Ye completed the <primary><challenge></primary> challenge!"
+msgid "You completed the <challenge> challenge!"
+msgstr "Ye completed the <challenge> challenge!"
 
 msgid "You do not have access (<primary><permission></primary>)"
 msgstr "Ye do not have access (<primary><permission></primary>)"
@@ -1504,14 +1501,14 @@ msgstr "Ye do not have permission to warp to other islands!"
 msgid "You don't have permission to uninvite players."
 msgstr "Ye don't have permission to uninvite pirates."
 
-msgid "You have been <error>banned</error> from <primary><leader></primary>'s island."
-msgstr "Ye have been <error>banned</error> from <primary><leader></primary>'s island."
+msgid "You have been <error>banned</error> from <leader>'s island."
+msgstr "Ye have been <error>banned</error> from <leader>'s island."
 
-msgid "You have been <success>unbanned</success> from <primary><leader></primary>'s island."
-msgstr "Ye have been <success>unbanned</success> from <primary><leader></primary>'s island."
+msgid "You have been <success>unbanned</success> from <leader>'s island."
+msgstr "Ye have been <success>unbanned</success> from <leader>'s island."
 
-msgid "You have been banned from <primary><leader></primary>'s island. <muted>Sending you to spawn."
-msgstr "Ye have been banned from <primary><leader></primary>'s island. <muted>Sendin' ye to spawn."
+msgid "You have been banned from <leader>'s island. <muted>Sending you to spawn."
+msgstr "Ye have been banned from <leader>'s island. <muted>Sendin' ye to spawn."
 
 msgid "You have changed <blocks> blocks around you to the <biome> biome"
 msgstr "Ye have changed <blocks> blocks around ye to the <biome> biome"
@@ -1576,8 +1573,8 @@ msgstr "Ye own this island. <muted>Use <cmd>/is remove [pirate]</cmd> instead.</
 msgid "You rejected the invitation to join an island."
 msgstr "Ye rejected the invitation to join an island."
 
-msgid "You unbanned <success><player></success> from warping to your island."
-msgstr "Ye unbanned <success><player></success> from warpin' to yer island."
+msgid "You unbanned <player> from warping to your island."
+msgstr "Ye unbanned <player> from warpin' to yer island."
 
 msgid "You will be teleported in <seconds> seconds."
 msgstr "Ye will be teleported in <seconds> seconds."
@@ -1585,8 +1582,8 @@ msgstr "Ye will be teleported in <seconds> seconds."
 msgid "You will lose all required items when you complete this challenge!"
 msgstr "Ye will lose all required items when ye complete this challenge!"
 
-msgid "You've hit the <primary><item></primary> limit. <muted>You can't have more of that type on your island. Max: <primary><max></primary>."
-msgstr "Ye've hit the <primary><item></primary> limit. <muted>Ye can't have more of that type on yer island. Max: <primary><max></primary>."
+msgid "You've hit the <item> limit. <muted>You can't have more of that type on your island. Max: <max>.</muted>"
+msgstr "Ye've hit the <item> limit. <muted>Ye can't have more of that type on yer island. Max: <max>.</muted>"
 
 msgid "Your current location is not a safe home location."
 msgstr "Yer current location is not a safe home location."
@@ -1631,8 +1628,8 @@ msgstr "Yer island is now <secondary>unlocked</secondary>. Anyone may enter, but
 msgid "Your island must be level <level> to complete this challenge!"
 msgstr "Yer island must be level <level> to complete this challenge!"
 
-msgid "Your rank is: <primary><rank></primary>."
-msgstr "Yer rank is: <primary><rank></primary>."
+msgid "Your rank is: <rank>."
+msgstr "Yer rank is: <rank>."
 
 msgid "Your skyblock home has been set to your current location."
 msgstr "Yer skyblock home has been set to yer current location."

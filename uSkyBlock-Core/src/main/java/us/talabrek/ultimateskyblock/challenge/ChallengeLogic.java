@@ -27,6 +27,7 @@ import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -52,7 +53,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
@@ -60,7 +60,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
@@ -340,13 +340,13 @@ public class ChallengeLogic implements Listener {
                 legacyArg("challenge", challenge.getDisplayName()));
             return;
         }
-        sendTr(player, "Trying to complete challenge <primary><challenge></primary>.",
-            legacyArg("challenge", challenge.getDisplayName()));
+        sendTr(player, "Trying to complete challenge <challenge>.",
+            Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
         if (challenge.getType() == Challenge.Type.PLAYER) {
             tryCompleteOnPlayer(player, challenge);
         } else if (challenge.getType() == Challenge.Type.ISLAND) {
             if (!tryCompleteOnIsland(player, challenge)) {
-                sendError(player, fromLegacy(challenge.getDescription()));
+                sendError(player, dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy(challenge.getDescription()));
                 sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
                     unparsed("radius", String.valueOf(challenge.getRadius())));
             }
@@ -447,9 +447,9 @@ public class ChallengeLogic implements Listener {
             sendTr(player, "Still missing the following entities:");
             for (Map.Entry<EntityMatch, Integer> entry : countMap.entrySet()) {
                 send(player, parseMini(
-                    "<muted> - <error><count></error> x <primary><entity></primary>",
-                    number("count", entry.getValue()),
-                    component("entity", entry.getKey().getDisplayName())
+                    "<muted> - <count> x <entity>",
+                    unparsed("count", String.valueOf(entry.getValue()), ERROR),
+                    component("entity", entry.getKey().getDisplayName().applyFallbackStyle(PRIMARY))
                 ));
             }
         }
@@ -469,9 +469,9 @@ public class ChallengeLogic implements Listener {
                 int requiredAmount = required.getValue();
                 String name = ItemStackUtil.getItemName(requiredType);
                 if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                    sb.append(miniToLegacy(" <error><count></error> <primary><item></primary>",
-                        number("count", requiredAmount - getCountOf(player.getInventory(), requiredType)),
-                        legacyArg("item", name)));
+                    sb.append(miniToLegacy(" <count> <item>",
+                        unparsed("count", String.valueOf(requiredAmount - getCountOf(player.getInventory(), requiredType)), ERROR),
+                        Placeholder.legacy("item", name, PRIMARY)));
                     hasAll = false;
                 }
             }
@@ -499,8 +499,8 @@ public class ChallengeLogic implements Listener {
     }
 
     private boolean giveReward(Player player, Challenge challenge) {
-        sendTr(player, "You completed the <primary><challenge></primary> challenge!",
-            legacyArg("challenge", challenge.getDisplayName()));
+        sendTr(player, "You completed the <challenge> challenge!",
+            Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         Reward reward;
         boolean isFirstCompletion = checkChallenge(playerInfo, challenge.getId()) == 0;
@@ -513,12 +513,12 @@ public class ChallengeLogic implements Listener {
         boolean wasBroadcast = false;
         if (defaults.broadcastCompletion && isFirstCompletion) {
             Bukkit.getServer().broadcastMessage(FormatUtil.normalize(config.getString("broadcastText")) +
-                trLegacy("<primary><player></primary> has completed the <primary><challenge></primary> challenge!",
-                    unparsed("player", player.getName()),
-                    legacyArg("challenge", challenge.getDisplayName())));
+                trLegacy("<player> has completed the <challenge> challenge!",
+                    unparsed("player", player.getName(), PRIMARY),
+                    Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
             wasBroadcast = true;
         }
-        sendTr(player, "Item rewards: <primary><items></primary>", legacyArg("items", reward.getRewardText()));
+        sendTr(player, "Item rewards: <items>", Placeholder.legacy("items", reward.getRewardText(), PRIMARY));
         sendTr(player, "XP reward: <primary><experience:'#.#'></primary>", number("experience", reward.getXpReward()));
         if (defaults.enableEconomyPlugin) {
             double rewBonus = 1;

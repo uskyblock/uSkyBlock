@@ -91,8 +91,9 @@ import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
@@ -242,14 +243,14 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
                 if (pluginManager.isPluginEnabled(pluginReq[0])) {
                     PluginDescriptionFile desc = requireNonNull(pluginManager.getPlugin(pluginReq[0])).getDescription();
                     if (VersionUtil.getVersion(desc.getVersion()).isLT(pluginReq[1])) {
-                        missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>",
-                            unparsed("plugin", pluginReq[0]),
+                        missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>",
+                            unparsed("plugin", pluginReq[0], PRIMARY),
                             unparsed("required-version", pluginReq[1]),
                             unparsed("actual-version", desc.getVersion()));
                     }
                 } else {
-                    missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <primary><plugin></primary> >= <secondary>v<required-version></secondary>",
-                        unparsed("plugin", pluginReq[0]),
+                    missingRequirements += trLegacy("<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary>",
+                        unparsed("plugin", pluginReq[0], PRIMARY),
                         unparsed("required-version", pluginReq[1]));
                 }
             }

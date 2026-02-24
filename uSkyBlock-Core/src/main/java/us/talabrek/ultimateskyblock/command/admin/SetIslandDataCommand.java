@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
@@ -53,9 +54,9 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
                 try {
                     Object value = getValue(m.getParameterTypes()[0], stringValue);
                     m.invoke(islandInfo, value);
-                    sendTr(sender, "<primary><field></primary> was set to '<primary><value></primary>'.",
-                        unparsed("field", args[0]),
-                        unparsed("value", String.valueOf(value)));
+                    sendTr(sender, "<field> was set to '<value>'.",
+                        unparsed("field", args[0], PRIMARY),
+                        unparsed("value", String.valueOf(value), PRIMARY));
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     sendErrorTr(sender, "Unable to set field <field> to '<value>'",
                         unparsed("field", args[0]),
@@ -74,9 +75,9 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
             if (m != null && m.getParameterTypes().length == 0) {
                 try {
                     Object value = m.invoke(islandInfo);
-                    sendTr(sender, "Current value for <primary><field></primary> is '<primary><value></primary>'.",
-                        unparsed("field", args[0]),
-                        unparsed("value", String.valueOf(value)));
+                    sendTr(sender, "Current value for <field> is '<value>'.",
+                        unparsed("field", args[0], PRIMARY),
+                        unparsed("value", String.valueOf(value), PRIMARY));
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     sendErrorTr(sender, "Unable to get state for <field>", unparsed("field", args[0]));
                 }
@@ -84,7 +85,7 @@ public class SetIslandDataCommand extends AbstractIslandInfoCommand {
                 sendErrorTr(sender, "Unable to get state for <field>", unparsed("field", args[0]));
             }
         } else {
-            sendTr(sender, "Valid fields: <primary><fields></primary>", unparsed("fields", String.join(", ", methodNames)));
+            sendTr(sender, "Valid fields: <fields>", unparsed("fields", String.join(", ", methodNames), PRIMARY));
         }
     }
 

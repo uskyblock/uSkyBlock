@@ -15,7 +15,7 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.plainText;
@@ -29,7 +29,7 @@ public class JobsCommand extends CompositeCommand {
     // I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
     private static final String JOBS_HEADER = marktr("jobs   ms/job   ms/tick  ticks    active   time     name");
     // Not translatable: formatting template with placeholders only.
-    private static final String JOBS_ROW = "<jobs> <ms-per-job> <ms-per-tick> <ticks> <primary><active></primary> <elapsed> <primary><name>";
+    private static final String JOBS_ROW = "<jobs> <ms-per-job> <ms-per-tick> <ticks> <active> <elapsed> <name>";
 
     @Inject
     public JobsCommand() {
@@ -53,9 +53,9 @@ public class JobsCommand extends CompositeCommand {
                         unparsed("ms-per-job", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgRunningTimePerJob()))),
                         unparsed("ms-per-tick", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgRunningTimePerTick()))),
                         unparsed("ticks", String.format("%8d", stat.getTicks())),
-                        unparsed("active", String.format("%8d", stat.getRunningJobs())),
+                        unparsed("active", String.format("%8d", stat.getRunningJobs()), PRIMARY),
                         unparsed("elapsed", String.format("%8s", TimeUtil.durationAsShort(stat.getAvgTimeElapsedPerJob()))),
-                        unparsed("name", String.format("%-20s", plainText(tr(jobName))))
+                        unparsed("name", String.format("%-20s", plainText(tr(jobName))), PRIMARY)
                     ));
                 }
                 return true;

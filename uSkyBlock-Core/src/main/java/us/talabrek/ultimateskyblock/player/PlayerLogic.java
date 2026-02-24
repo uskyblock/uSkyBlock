@@ -28,7 +28,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
@@ -148,8 +149,8 @@ public class PlayerLogic {
                         String islandName = WorldGuardHandler.getIslandNameAt(onlinePlayer.getLocation());
                         IslandInfo islandInfo = plugin.getIslandInfo(islandName);
                         if (islandInfo != null && islandInfo.isBanned(onlinePlayer)) {
-                            sendErrorTr(onlinePlayer, "You have been banned from <primary><leader></primary>'s island. <muted>Sending you to spawn.",
-                                unparsed("leader", islandInfo.getLeader()));
+                            sendErrorTr(onlinePlayer, "You have been banned from <leader>'s island. <muted>Sending you to spawn.",
+                                unparsed("leader", islandInfo.getLeader(), PRIMARY));
                             teleportLogic.spawnTeleport(onlinePlayer, true);
                         } else if (islandInfo != null && islandInfo.isLocked()) {
                             if (!onlinePlayer.hasPermission("usb.mod.bypassprotection")) {
