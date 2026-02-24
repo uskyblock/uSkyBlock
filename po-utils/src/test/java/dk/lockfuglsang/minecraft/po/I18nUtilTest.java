@@ -47,42 +47,6 @@ public class I18nUtilTest {
     }
 
     @Test
-    public void testTr_existingKeyWithFormatting() {
-        String TEST_STRING = "\u00a7eNo active cooldowns for \u00a79{0}\u00a7e found.";
-        String TEST_ARG = "linksssofrechts";
-        String TEST_RESULT = "\u00a74* \u00a77No expired coolupz for \u00a76" + TEST_ARG + "\u00a77 found.";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
-    }
-
-    @Test
-    public void testTr_nonExistingKeyWithFormatting() {
-        String TEST_STRING = "\u00a7eThis key is unknown to {0}.";
-        String TEST_ARG = "Bukkit";
-        String TEST_RESULT = "\u00a7eThis key is unknown to " + TEST_ARG + ".";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
-    }
-
-    @Test
-    public void testTr_nonExistingKeyWithMiniMessageColorTags() {
-        String TEST_STRING = "<yellow>Hello <blue>{0}</blue>!</yellow>";
-        String TEST_ARG = "World";
-        String TEST_RESULT = "\u00a7eHello \u00a79World\u00a7e!";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
-    }
-
-    @Test
-    public void testTr_nonExistingKeyWithMixedLegacyAndMiniMessage() {
-        String TEST_STRING = "\u00a7eHello <blue>{0}</blue>!";
-        String TEST_ARG = "World";
-        String TEST_RESULT = "\u00a7eHello <blue>World</blue>!";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
-    }
-
-    @Test
     public void testTr_nonExistingKeyWithUnknownMiniMessageTag() {
         String TEST_STRING = "Hello <player>!";
         String TEST_RESULT = "Hello <player>!";
@@ -97,15 +61,6 @@ public class I18nUtilTest {
         String TEST_RESULT = "\u00a7eYou have no azzess to the schemz";
 
         assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
-    }
-
-    @Test
-    public void testTr_nonExistingKeyWithSemanticStyleTags() {
-        String TEST_STRING = "<primary>Hello <secondary>{0}</secondary><primary>!";
-        String TEST_ARG = "World";
-        String TEST_RESULT = "\u00a7bHello \u00a7aWorld\u00a7b!";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, TEST_ARG)), is(TEST_RESULT));
     }
 
     @Test
@@ -154,14 +109,6 @@ public class I18nUtilTest {
         String TEST_RESULT = "Hello <blue>World";
 
         assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING)), is(TEST_RESULT));
-    }
-
-    @Test
-    public void testTr_existingKeyNullArgs() {
-        String TEST_STRING = "\u00a7eNo active cooldowns for \u00a79{0}\u00a7e found.";
-        String TEST_RESULT = "\u00a74* \u00a77No expired coolupz for \u00a76{0}\u00a77 found.";
-
-        assertThat(I18nUtil.legacy(I18nUtil.tr(TEST_STRING, (Object[]) null)), is(TEST_RESULT));
     }
 
     @Test

@@ -105,9 +105,6 @@ msgstr "<error>Ambiguous challenge name: <input>. Did you mean:<suggestions>"
 msgid "<error>Animation tick must be a valid integer."
 msgstr "<error>Animation tick must be a valid integer."
 
-msgid "<error>Back to Main Menu"
-msgstr "<error>Back to Main Menu"
-
 msgid "<error>Banned: You are banned from this island."
 msgstr "<error>Banned: You be banned from this cathouz."
 
@@ -657,9 +654,6 @@ msgstr "<error>Yoor cathouz iz locked. You must unlock it before enabling yoor w
 msgid "<error>Your island must be level <level> to complete this challenge!"
 msgstr "<error>Yoor cathouz must be level <level> to complete this challenge!"
 
-msgid "<error>all"
-msgstr "<error>all"
-
 msgid "<leader>'s Wither"
 msgstr "<leader>'s Wither"
 
@@ -1078,12 +1072,18 @@ msgstr "<primary><player></primary>'s permissions"
 msgid "<primary>Available locales (<count>):</primary>"
 msgstr "<primary>Available locales (<count>):</primary>"
 
+msgid "<primary>Back to Main Menu"
+msgstr "<primary>Back to Main Menu"
+
 #. I18N: Section header for banned player list in admin island info debug output.
 msgid "<primary>Bans:"
 msgstr "<primary>Bans:"
 
 msgid "<primary>Be patient, young padawan"
 msgstr "<primary>Be patient, young padawan"
+
+msgid "<primary>Biome: <biome>"
+msgstr "<primary>Baium: <biome>"
 
 msgid "<primary>Click here to return to<newline>the main island screen."
 msgstr "<primary>Click here to return to<newline>teh main cathouz screen."
@@ -1108,6 +1108,9 @@ msgstr "<primary>Deleted abandoned cathouz at yoor current location."
 
 msgid "<primary>Hold your horses! You have to be patient..."
 msgstr "<primary>Hold yoor horses! You have to be patient..."
+
+msgid "<primary>Island Biome"
+msgstr "<primary>Cathouz Baium"
 
 #. I18N: Header line for the admin island info debug output.
 msgid "<primary>Island Info:"
@@ -1258,8 +1261,13 @@ msgstr "<secondary>Yoor incoming warp iz active, kittehs may warp to yoor cathou
 msgid "<secondary>Your skyblock home has been set to your current location."
 msgstr "<secondary>Yoor skyblock home haz been set to yoor current location."
 
+#. I18N: Used in biome radius display to indicate that a single chunk is affected
 msgid "<secondary>chunk"
 msgstr "<secondary>chunk"
+
+#. I18N: Used in biome radius display to indicate that the entire island is affected
+msgid "<secondary>island"
+msgstr "<secondary>cathouz"
 
 msgid "<success>Congratulations!</success> Your island is ready."
 msgstr "<success>Congratulations!</success> Yoor cathouz iz ready."
@@ -1270,9 +1278,6 @@ msgstr "Animals"
 
 msgid "Animation tick changed to <primary><ticks></primary>."
 msgstr "Animation tick changed to <primary><ticks></primary>."
-
-msgid "Biome: <biome>"
-msgstr "Baium: <biome>"
 
 msgid "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
 msgstr "Bloks on <primary><player></primary>'s cathouz (page <primary><page></primary> of <primary><max-page></primary>):"
@@ -1422,9 +1427,6 @@ msgstr "Invite Kittehs"
 
 msgid "Invite sent to <primary><player></primary>."
 msgstr "Invite sent to <primary><player></primary>."
-
-msgid "Island Biome"
-msgstr "Cathouz Baium"
 
 msgid "Island Create Menu"
 msgstr "Cathouz Create Menu"
@@ -1845,6 +1847,7 @@ msgstr "count orfanz"
 msgid "create an island"
 msgstr "create a cathouz"
 
+#. I18N: Short form of 'day', used as a suffix in duration strings
 msgid "d"
 msgstr "d"
 
@@ -1887,6 +1890,7 @@ msgstr "flushes all caches to files"
 msgid "general island command"
 msgstr "general cathouz command"
 
+#. I18N: Short form of 'hour', used as a suffix in duration strings
 msgid "h"
 msgstr "h"
 
@@ -1932,6 +1936,7 @@ msgstr "load teh region chunks"
 msgid "lock your island to non-party members."
 msgstr "lock yoor cathouz to non-party members."
 
+#. I18N: Short form of 'minute', used as a suffix in duration strings
 msgid "m"
 msgstr "m"
 
@@ -1995,6 +2000,7 @@ msgstr "resets teh challenge for teh kitteh"
 msgid "restarts the cooldown on the command"
 msgstr "restarts teh cooldown on teh command"
 
+#. I18N: Short form of 'second', used as a suffix in duration strings
 msgid "s"
 msgstr "s"
 

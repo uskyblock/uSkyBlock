@@ -105,9 +105,6 @@ msgstr "<error>Ambiguous challenge name: <input>. Did ye mean:<suggestions>"
 msgid "<error>Animation tick must be a valid integer."
 msgstr "<error>Animation tick must be a valid integer."
 
-msgid "<error>Back to Main Menu"
-msgstr "<error>Back to Main Menu"
-
 msgid "<error>Banned: You are banned from this island."
 msgstr "<error>Banned: Ye be banned from this island."
 
@@ -657,9 +654,6 @@ msgstr "<error>Yer island is locked. Ye must unlock it before enablin' yer warp.
 msgid "<error>Your island must be level <level> to complete this challenge!"
 msgstr "<error>Yer island must be level <level> to complete this challenge!"
 
-msgid "<error>all"
-msgstr "<error>all"
-
 msgid "<leader>'s Wither"
 msgstr "<leader>'s Wither"
 
@@ -1078,12 +1072,18 @@ msgstr "<primary><player></primary>'s permissions"
 msgid "<primary>Available locales (<count>):</primary>"
 msgstr "<primary>Available locales (<count>):</primary>"
 
+msgid "<primary>Back to Main Menu"
+msgstr "<primary>Back to Main Menu"
+
 #. I18N: Section header for banned player list in admin island info debug output.
 msgid "<primary>Bans:"
 msgstr "<primary>Bans:"
 
 msgid "<primary>Be patient, young padawan"
 msgstr "<primary>Be patient, young padawan"
+
+msgid "<primary>Biome: <biome>"
+msgstr "<primary>Biome: <biome>"
 
 msgid "<primary>Click here to return to<newline>the main island screen."
 msgstr "<primary>Click here to return to<newline>the main island screen."
@@ -1108,6 +1108,9 @@ msgstr "<primary>Deleted abandoned island at yer current location."
 
 msgid "<primary>Hold your horses! You have to be patient..."
 msgstr "<primary>Hold yer horses! Ye have to be patient..."
+
+msgid "<primary>Island Biome"
+msgstr "<primary>Island Biome"
 
 #. I18N: Header line for the admin island info debug output.
 msgid "<primary>Island Info:"
@@ -1258,8 +1261,13 @@ msgstr "<secondary>Yer incomin' warp is active, pirates may warp to yer island."
 msgid "<secondary>Your skyblock home has been set to your current location."
 msgstr "<secondary>Yer skyblock home has been set to yer current location."
 
+#. I18N: Used in biome radius display to indicate that a single chunk is affected
 msgid "<secondary>chunk"
 msgstr "<secondary>chunk"
+
+#. I18N: Used in biome radius display to indicate that the entire island is affected
+msgid "<secondary>island"
+msgstr "<secondary>island"
 
 msgid "<success>Congratulations!</success> Your island is ready."
 msgstr "<success>Congratulations!</success> Yer island is ready."
@@ -1270,9 +1278,6 @@ msgstr "Animals"
 
 msgid "Animation tick changed to <primary><ticks></primary>."
 msgstr "Animation tick changed to <primary><ticks></primary>."
-
-msgid "Biome: <biome>"
-msgstr "Biome: <biome>"
 
 msgid "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
 msgstr "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):"
@@ -1422,9 +1427,6 @@ msgstr "Invite Pirates"
 
 msgid "Invite sent to <primary><player></primary>."
 msgstr "Invite sent to <primary><player></primary>."
-
-msgid "Island Biome"
-msgstr "Island Biome"
 
 msgid "Island Create Menu"
 msgstr "Island Create Menu"
@@ -1845,6 +1847,7 @@ msgstr "count orphans"
 msgid "create an island"
 msgstr "create an island"
 
+#. I18N: Short form of 'day', used as a suffix in duration strings
 msgid "d"
 msgstr "d"
 
@@ -1887,6 +1890,7 @@ msgstr "flushes all caches to files"
 msgid "general island command"
 msgstr "general island command"
 
+#. I18N: Short form of 'hour', used as a suffix in duration strings
 msgid "h"
 msgstr "h"
 
@@ -1932,6 +1936,7 @@ msgstr "load the region chunks"
 msgid "lock your island to non-party members."
 msgstr "lock yer island to non-party members."
 
+#. I18N: Short form of 'minute', used as a suffix in duration strings
 msgid "m"
 msgstr "m"
 
@@ -1995,6 +2000,7 @@ msgstr "resets the challenge for the pirate"
 msgid "restarts the cooldown on the command"
 msgstr "restarts the cooldown on the command"
 
+#. I18N: Short form of 'second', used as a suffix in duration strings
 msgid "s"
 msgstr "s"
 
