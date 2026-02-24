@@ -14,6 +14,7 @@ import java.util.List;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 
 public class Rank {
     private final Rank previousRank;
@@ -73,29 +74,31 @@ public class Rank {
                 int leeway = previousRank.getLeeway(playerInfo);
                 int rankLeeway = requires.getInt("rankLeeway", defaults.rankLeeway);
                 if (leeway > rankLeeway) {
-                    missing.add(trLegacy("<muted>Complete <remaining> more <rank> <muted>challenges",
+                    missing.add(trLegacy("Complete <remaining> more <rank> challenges",
+                        MUTED,
                         unparsed("remaining", String.valueOf(leeway - rankLeeway)),
                         legacyArg("rank", previousRank.getName())));
                 }
             }
             String missingChallenges = ChallengeFormat.getMissingRequirement(playerInfo, requires.getStringList("challenges"), uSkyBlock.getInstance().getChallengeLogic());
             if (missingChallenges != null) {
-                missing.add(trLegacy("<muted>Complete <requirements>", legacyArg("requirements", missingChallenges)));
+                missing.add(trLegacy("Complete <requirements>", MUTED, legacyArg("requirements", missingChallenges)));
             }
             if (!missing.isEmpty()) {
-                missing.add(0, trLegacy("<muted>To unlock this rank, complete:"));
+                missing.add(0, trLegacy("To unlock this rank, complete:", MUTED));
             }
         } else if (defaults.requiresPreviousRank) {
             if (previousRank != null) {
                 int leeway = previousRank.getLeeway(playerInfo);
                 if (leeway > defaults.rankLeeway) {
-                    missing.add(trLegacy("<muted>Complete <remaining> more <rank> <muted>challenges",
+                    missing.add(trLegacy("Complete <remaining> more <rank> challenges",
+                        MUTED,
                         unparsed("remaining", String.valueOf(leeway - defaults.rankLeeway)),
                         legacyArg("rank", previousRank.getName())));
                 }
             }
             if (!missing.isEmpty()) {
-                missing.add(0, trLegacy("<muted>To unlock this rank, complete:"));
+                missing.add(0, trLegacy("To unlock this rank, complete:", MUTED));
             }
         }
         return missing;

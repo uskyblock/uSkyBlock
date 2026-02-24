@@ -34,6 +34,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 
 @Singleton
 public class LimitLogic {
@@ -152,7 +153,8 @@ public class LimitLogic {
             Component creatureCount = cnt >= max
                 ? parseMini("<error><count>", unparsed("count", String.valueOf(cnt)))
                 : Component.text(cnt);
-            sb.append(trLegacy("<muted><type>: <secondary><count></secondary> (max. <max>)",
+            sb.append(trLegacy("<type>: <secondary><count></secondary> (max. <max>)",
+                MUTED,
                 component("type", getCreatureTypeLabel(key)),
                 component("count", creatureCount),
                 unparsed("max", String.valueOf(max)))).append("\n");
@@ -164,12 +166,14 @@ public class LimitLogic {
                 String current = blockCount >= entry.getValue()
                     ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(blockCount)))
                     : String.valueOf(blockCount);
-                sb.append(trLegacy("<muted><block>: <secondary><count></secondary> (max. <max>)",
+                sb.append(trLegacy("<block>: <secondary><count></secondary> (max. <max>)",
+                    MUTED,
                     legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacyArg("count", current),
                     unparsed("max", String.valueOf(entry.getValue())))).append("\n");
             } else {
-                sb.append(trLegacy("<muted><block>: <secondary><count></secondary> (max. <max>)",
+                sb.append(trLegacy("<block>: <secondary><count></secondary> (max. <max>)",
+                    MUTED,
                     legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacyArg("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?"))),
                     unparsed("max", String.valueOf(entry.getValue())))).append("\n");

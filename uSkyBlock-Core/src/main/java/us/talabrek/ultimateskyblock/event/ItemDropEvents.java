@@ -22,6 +22,7 @@ import java.util.List;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
 
 /**
  * Handles the internal item-drop protection.
@@ -46,12 +47,12 @@ public class ItemDropEvents implements Listener {
         }
         if (!visitorsCanDrop && !plugin.playerIsOnIsland(player) && !plugin.playerIsInSpawn(player)) {
             event.setCancelled(true);
-            plugin.notifyPlayer(player, tr("<error>Visitors can't drop items."));
+            plugin.notifyPlayer(player, tr("Visitors can't drop items.", ERROR));
             return;
         }
         if (plugin.playerIsInSpawn(player)) {
             event.setCancelled(true);
-            plugin.notifyPlayer(player, tr("<error>You cannot drop items at spawn."));
+            plugin.notifyPlayer(player, tr("You cannot drop items at spawn.", ERROR));
             return;
         }
         addDropInfo(player, event.getItemDrop().getItemStack());
@@ -117,10 +118,9 @@ public class ItemDropEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPickupEvent(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        Player player = (Player) event.getEntity();
         if (event.isCancelled() || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
             clearDropInfo(event.getItem());
             return;

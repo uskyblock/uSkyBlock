@@ -12,10 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Handles Orphans.
@@ -28,15 +27,15 @@ public class OrphanCommand extends CompositeCommand {
         add(new AbstractCommand("count", marktr("count orphans")) {
                 @Override
                 public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-                    send(sender, tr("<primary><count></primary> old island locations will be used before new ones.",
-                        unparsed("count", String.valueOf(plugin.getOrphanLogic().getOrphans().size()))));
+                    sendTr(sender, "<primary><count></primary> old island locations will be used before new ones.",
+                        unparsed("count", String.valueOf(plugin.getOrphanLogic().getOrphans().size())));
                     return true;
                 }
             });
         add(new AbstractCommand("clear", marktr("clear orphans")) {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
-                send(sender, tr("Clearing all old unused island locations."));
+                sendTr(sender, "Clearing all old unused island locations.");
                 plugin.getOrphanLogic().clear();
                 return true;
             }
@@ -46,7 +45,7 @@ public class OrphanCommand extends CompositeCommand {
                 public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                     List<OrphanLogic.Orphan> orphans = plugin.getOrphanLogic().getOrphans();
                     if (orphans.isEmpty()) {
-                        send(sender, tr("No orphans are currently registered."));
+                        sendTr(sender, "No orphans are currently registered.");
                     } else {
                         int pageSize = 50;
                         int pages = (int) Math.ceil((double) orphans.size() / pageSize);
@@ -55,14 +54,14 @@ public class OrphanCommand extends CompositeCommand {
                         if (page > pages) page = pages;
                         int from = pageSize*(page-1);
                         int to = Math.min(orphans.size(), pageSize*page);
-                        send(sender, tr("Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>",
+                        sendTr(sender, "Orphans (<primary><page></primary>/<primary><pages></primary>): <orphan-list>",
                             unparsed("page", String.valueOf(page)),
                             unparsed("pages", String.valueOf(pages)),
                             parsed("orphan-list", orphans.subList(from, to).toString()
                                 .replaceAll(", ", "<muted>; <primary>")
                                 .replaceAll("\\[", "<primary>")
                                 .replaceAll("\\]", ""))
-                        ));
+                        );
                     }
                     return true;
                 }

@@ -201,7 +201,7 @@ public class GriefEvents implements Listener {
             shooter.remove();
             IslandInfo islandInfo = plugin.getIslandInfo(withersIsland);
             if (islandInfo != null) {
-                islandInfo.sendMessageToOnlineMembers(trLegacy("<error>Wither despawned!</error> <muted>It wandered too far from your island."));
+                islandInfo.sendMessageToOnlineMembers(trLegacy("<error>Wither despawned!</error> It wandered too far from your island."));
             }
         }
     }

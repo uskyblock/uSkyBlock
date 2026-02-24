@@ -26,7 +26,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class BiomeCommand extends RequireIslandCommand {
     private final Biomes biomes;
@@ -50,7 +52,7 @@ public class BiomeCommand extends RequireIslandCommand {
     protected boolean doExecute(String alias, final Player player, PlayerInfo pi, final IslandInfo island, Map<String, Object> data, final String... args) {
         if (args.length == 0) {
             if (!island.hasPerm(player, "canChangeBiome")) {
-                send(player, tr("<error>You do not have permission to change the biome of your current island."));
+                sendErrorTr(player, "You do not have permission to change the biome of your current island.");
             } else {
                 biomes.openBiomeGui(player, island);
             }
@@ -58,29 +60,29 @@ public class BiomeCommand extends RequireIslandCommand {
         if (args.length >= 1) {
             final String biomeKey = args[0].toLowerCase();
             if (!island.hasPerm(player, "canChangeBiome")) {
-                send(player, tr("<error>You do not have permission to change the biome of this island!"));
+                sendErrorTr(player, "You do not have permission to change the biome of this island!");
                 return true;
             }
             Location location = player.getLocation();
             ProtectedRegion region = WorldGuardHandler.getIslandRegionAt(location);
             if (!plugin.playerIsOnOwnIsland(player) || region == null) {
-                send(player, tr("<error>You must be on your island to change the biome."));
+                sendErrorTr(player, "You must be on your island to change the biome.");
                 return true;
             }
             Biome biome = Registry.BIOME.match(biomeKey);
             if (biome == null) {
-                send(player, tr("<error>You have misspelled the biome name. Must be one of <biomes>",
-                    unparsed("biomes", String.join(", ", biomeConfig.getConfiguredBiomeKeys()))));
+                sendErrorTr(player, "You have misspelled the biome name. Must be one of <biomes>",
+                    unparsed("biomes", String.join(", ", biomeConfig.getConfiguredBiomeKeys())));
                 return true;
             }
             Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "biome");
             if (cooldown.isPositive()) {
-                send(player, tr("You can change your biome again in <primary><seconds></primary> seconds.",
-                    unparsed("seconds", String.valueOf(cooldown.toSeconds()))));
+                sendTr(player, "You can change your biome again in <primary><seconds></primary> seconds.",
+                    unparsed("seconds", String.valueOf(cooldown.toSeconds())));
                 return true;
             }
             if (!player.hasPermission("usb.biome." + biomeKey.toLowerCase())) {
-                send(player, tr("<error>You do not have permission to change your biome to that type."));
+                sendErrorTr(player, "You do not have permission to change your biome to that type.");
                 return true;
             }
             BlockVector3 minP = region.getMinimumPoint();
@@ -101,21 +103,21 @@ public class BiomeCommand extends RequireIslandCommand {
                     Math.min(location.getBlockY() + radius, maxP.getBlockY()),
                     Math.min(location.getBlockZ() + radius, maxP.getBlockZ()));
                 changeEntireIslandBiome = false;
-                send(player, tr("The pixies are busy changing the biome near you to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey)));
+                sendTr(player, "The pixies are busy changing the biome near you to <primary><biome></primary>, be patient.",
+                    unparsed("biome", biomeKey));
             } else if (args.length == 2 && args[1].equalsIgnoreCase("chunk")) {
                 Chunk chunk = location.clone().getChunk();
                 minP = BlockVector3.at(chunk.getX() << 4, location.getWorld().getMinHeight(), chunk.getZ() << 4);
                 maxP = BlockVector3.at((chunk.getX() << 4) + 15, location.getWorld().getMaxHeight(), (chunk.getZ() << 4) + 15);
                 changeEntireIslandBiome = false;
-                send(player, tr("The pixies are busy changing the biome in your current chunk to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey)));
+                sendTr(player, "The pixies are busy changing the biome in your current chunk to <primary><biome></primary>, be patient.",
+                    unparsed("biome", biomeKey));
             } else if (args.length < 2 || args[1].equalsIgnoreCase("all")) {
                 changeEntireIslandBiome = true;
-                send(player, tr("The pixies are busy changing the biome of your island to <primary><biome></primary>, be patient.",
-                    unparsed("biome", biomeKey)));
+                sendTr(player, "The pixies are busy changing the biome of your island to <primary><biome></primary>, be patient.",
+                    unparsed("biome", biomeKey));
             } else {
-                send(player, tr("<error>Invalid arguments. Use /is biome [biome] [radius|chunk|all]"));
+                sendErrorTr(player, "Invalid arguments. Use /is biome [biome] [radius|chunk|all]");
                 return true;
             }
 
@@ -123,15 +125,16 @@ public class BiomeCommand extends RequireIslandCommand {
                 String biomeName = biome.getKey().getKey();
                 if (changeEntireIslandBiome) {
                     island.setBiome(biome);
-                    send(player, tr("<secondary>You have changed your island's biome to <biome>", unparsed("biome", biomeName)));
+                    sendTr(player, "You have changed your island's biome to <biome>", SECONDARY, unparsed("biome", biomeName));
                     island.sendMessageToIslandGroup(tr("<player> changed the island biome to <biome>",
                         unparsed("player", player.getName()),
                         unparsed("biome", biomeName)));
                     plugin.getCooldownHandler().resetCooldown(player, "biome", Settings.general_biomeChange);
                 } else {
-                    send(player, tr("<secondary>You have changed <blocks> blocks around you to the <biome> biome",
+                    sendTr(player, "You have changed <blocks> blocks around you to the <biome> biome",
+                        SECONDARY,
                         unparsed("blocks", args[1]),
-                        unparsed("biome", biomeName)));
+                        unparsed("biome", biomeName));
                     island.sendMessageToIslandGroup(tr("<player> created an area with a <biome> biome",
                         unparsed("player", player.getName()),
                         unparsed("biome", biomeName)));

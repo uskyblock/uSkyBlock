@@ -2,6 +2,7 @@ package dk.lockfuglsang.minecraft.po;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -59,14 +60,16 @@ public enum I18nUtil {
     );
 
     /**
-     * Translates the given {@link String} to the configured language. Returns the given string if no translation is
-     * available. Returns an empty component if the given key is null or empty.
+     * Translates the given {@link String} to the configured language and resolves MiniMessage placeholders using the
+     * provided {@link TagResolver}s. Returns the given string if no translation is available. Returns an empty
+     * component if the given key is null or empty.
      *
-     * @param text String to translate.
+     * @param text      String to translate.
+     * @param resolvers MiniMessage tag resolvers.
      * @return Translated Component.
      */
-    public static @NotNull Component tr(@Nullable String text) {
-        return getI18n().tr(text);
+    public static @NotNull Component tr(@Nullable String text, @NotNull TagResolver... resolvers) {
+        return tr(text, null, resolvers);
     }
 
     /**
@@ -78,8 +81,8 @@ public enum I18nUtil {
      * @param resolvers MiniMessage tag resolvers.
      * @return Translated Component.
      */
-    public static @NotNull Component tr(@Nullable String text, @NotNull TagResolver... resolvers) {
-        return getI18n().tr(text, resolvers);
+    public static @NotNull Component tr(@Nullable String text, @Nullable Style style, @NotNull TagResolver... resolvers) {
+        return getI18n().tr(text, style, resolvers);
     }
 
     /**
@@ -118,6 +121,19 @@ public enum I18nUtil {
     @NotNull
     public static String trLegacy(@Nullable String text, @NotNull TagResolver... resolvers) {
         return legacy(tr(text, resolvers));
+    }
+
+    /**
+     * Translates the given {@link String}, resolves MiniMessage placeholders using {@link TagResolver}s, and
+     * serializes to legacy-format text using § color/style codes.
+     *
+     * @param text      String to translate.
+     * @param resolvers MiniMessage tag resolvers.
+     * @return Translated legacy-formatted String.
+     */
+    @NotNull
+    public static String trLegacy(@Nullable String text, @Nullable Style style, @NotNull TagResolver... resolvers) {
+        return legacy(tr(text, style, resolvers));
     }
 
     /**
@@ -649,15 +665,21 @@ public enum I18nUtil {
             return format(text, args);
         }
 
-        public @NotNull Component tr(@Nullable String text, @NotNull TagResolver... resolvers) {
+        public @NotNull Component tr(@Nullable String text, @Nullable Style style, @NotNull TagResolver... resolvers) {
             if (text == null || text.trim().isEmpty()) {
                 return Component.empty();
             }
             String translated = translations.getProperty(text);
+            Component result;
             if (translated != null && !translated.trim().isEmpty()) {
-                return deserializeMiniMessage(translated, resolvers);
+                result = deserializeMiniMessage(translated, resolvers);
+            } else {
+                result = deserializeMiniMessage(text, resolvers);
             }
-            return deserializeMiniMessage(text, resolvers);
+            if (style != null) {
+                result = result.applyFallbackStyle(style);
+            }
+            return result;
         }
 
         @Deprecated

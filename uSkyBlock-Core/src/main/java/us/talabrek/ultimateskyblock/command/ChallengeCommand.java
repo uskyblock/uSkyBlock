@@ -16,11 +16,10 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
  * Primary challenges command
@@ -65,16 +64,16 @@ public class ChallengeCommand extends BaseCommandExecutor {
             return false;
         }
         if (!challengeLogic.isEnabled()) {
-            send(sender, tr("<error>Challenges have been disabled. Contact an administrator."));
+            sendErrorTr(sender, "Challenges have been disabled. Contact an administrator.");
             return false;
         }
         if (!worldManager.isSkyAssociatedWorld(player.getWorld())) {
-            send(player, tr("<error>You can only submit challenges in the skyblock world!"));
+            sendErrorTr(player, "You can only submit challenges in the skyblock world!");
             return true;
         }
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
         if (!playerInfo.getHasIsland()) {
-            send(player, tr("<error>You can only submit challenges when you have an island!"));
+            sendErrorTr(player, "You can only submit challenges when you have an island!");
             return true;
         }
         if (args.length == 0) {

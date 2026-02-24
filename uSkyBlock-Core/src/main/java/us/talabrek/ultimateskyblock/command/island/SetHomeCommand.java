@@ -6,12 +6,12 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class SetHomeCommand extends RequireIslandCommand {
 
@@ -23,21 +23,21 @@ public class SetHomeCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (!player.getWorld().getName().equalsIgnoreCase(plugin.getWorldManager().getWorld().getName())) {
-            send(player, tr("<error>You must be closer to your island to set your skyblock home!"));
+            sendErrorTr(player, "You must be closer to your island to set your skyblock home!");
             return true;
         }
         if (!plugin.playerIsOnOwnIsland(player)) {
-            send(player, tr("<error>You must be closer to your island to set your skyblock home!"));
+            sendErrorTr(player, "You must be closer to your island to set your skyblock home!");
             return true;
         }
         if (pi == null || !LocationUtil.isSafeLocation(player.getLocation())) {
-            send(player, tr("<error>Your current location is not a safe home location."));
+            sendErrorTr(player, "Your current location is not a safe home location.");
             return true;
         }
 
         pi.setHomeLocation(player.getLocation());
         pi.save();
-        send(player, tr("<secondary>Your skyblock home has been set to your current location."));
+        sendTr(player, "Your skyblock home has been set to your current location.");
         return true;
     }
 }

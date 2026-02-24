@@ -2,14 +2,14 @@ package us.talabrek.ultimateskyblock.util;
 
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.CommandSender;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.time.Instant;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * General progress tracker using throttling
@@ -45,7 +45,7 @@ public class ProgressTracker {
             if (extra > 0) {
                 System.arraycopy(resolvers, 0, progressResolvers, 3, extra);
             }
-            send(sender, tr(format, progressResolvers));
+            sendTr(sender, format, MUTED, progressResolvers);
         }
     }
 }

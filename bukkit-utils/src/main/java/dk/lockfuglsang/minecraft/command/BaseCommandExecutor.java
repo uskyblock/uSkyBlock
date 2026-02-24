@@ -1,5 +1,7 @@
 package dk.lockfuglsang.minecraft.command;
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +24,7 @@ public class BaseCommandExecutor extends CompositeCommand implements CommandExec
     public BaseCommandExecutor(String name, String permission, String params, String description) {
         super(name, permission, params, description);
     }
+
     public BaseCommandExecutor(String name, String permission, String params, String description, UUID... permissionOverrides) {
         super(name, permission, params, description, permissionOverrides);
     }
@@ -34,10 +37,12 @@ public class BaseCommandExecutor extends CompositeCommand implements CommandExec
         dk.lockfuglsang.minecraft.command.Command cmd = this;
         if (!hasAccess(cmd, sender)) {
             if (cmd != null) {
-                sender.sendMessage(trLegacy("<error>You do not have access (<primary><permission></primary>)",
+                sender.sendMessage(trLegacy("You do not have access (<primary><permission></primary>)",
+                    Style.style(NamedTextColor.RED),
                     unparsed("permission", cmd.getPermission())));
             } else {
-                sender.sendMessage(trLegacy("<error>Invalid command: <cmd><command></cmd>",
+                sender.sendMessage(trLegacy("Invalid command: <cmd><command></cmd>",
+                    Style.style(NamedTextColor.RED),
                     unparsed("command", alias)));
             }
             showUsage(sender, 1);

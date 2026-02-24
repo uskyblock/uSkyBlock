@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -45,11 +46,6 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -60,7 +56,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 @Singleton
 public class PlayerEvents implements Listener {
@@ -125,7 +126,8 @@ public class PlayerEvents implements Listener {
             Instant now = Instant.now();
             Instant lastClick = obsidianClick.get(player.getUniqueId());
             if (lastClick != null && lastClick.plus(OBSIDIAN_SPAM).isAfter(now)) {
-                plugin.notifyPlayer(player, tr("<error>You can only convert obsidian once every 10 seconds"));
+                plugin.notifyPlayer(player, tr("You can only convert obsidian once every <cooldown> seconds",
+                    ERROR, Formatter.number("cooldown", OBSIDIAN_SPAM.toSeconds())));
                 return;
             }
             PlayerInventory inventory = player.getInventory();
@@ -133,7 +135,7 @@ public class PlayerEvents implements Listener {
                 HashMap<Integer, ItemStack> leftover = inventory.removeItem(new ItemStack(Material.BUCKET));
                 if (leftover.isEmpty()) {
                     obsidianClick.put(player.getUniqueId(), now);
-                    send(player, tr("Changing your obsidian back into lava. Be careful."));
+                    sendTr(player, "Changing your obsidian back into lava. Be careful.");
                     leftover = inventory.addItem(new ItemStack(Material.LAVA_BUCKET));
                     // Just in case, drop the item if their inventory somehow filled before we could add it
                     if (!leftover.isEmpty()) {
@@ -143,7 +145,7 @@ public class PlayerEvents implements Listener {
                     event.setCancelled(true);
                 }
             } else {
-                send(player, tr("<error>Your inventory must have another empty slot."));
+                sendErrorTr(player, "Your inventory must have another empty slot.");
             }
         }
     }
@@ -183,7 +185,7 @@ public class PlayerEvents implements Listener {
             return;
         }
         if (isLavaSource(event.getBlockReplacedState().getBlockData())) {
-            plugin.notifyPlayer(event.getPlayer(), tr("<error>It's a bad idea to replace your lava!"));
+            plugin.notifyPlayer(event.getPlayer(), tr("It's a bad idea to replace your lava!", ERROR));
             event.setCancelled(true);
         }
     }
@@ -270,7 +272,7 @@ public class PlayerEvents implements Listener {
         IslandInfo is1 = plugin.getIslandInfo(attacker);
         IslandInfo is2 = plugin.getIslandInfo(victim);
         if (is1 != null && is2 != null && is1.getName().equals(is2.getName())) {
-            plugin.notifyPlayer(attacker, tr("<error>You cannot hurt island members."));
+            plugin.notifyPlayer(attacker, tr("You cannot hurt island members.", ERROR));
             event.setCancelled(true);
         }
     }
@@ -312,11 +314,11 @@ public class PlayerEvents implements Listener {
         IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(WorldGuardHandler.getIslandNameAt(event.getTo()));
         if (!isAdmin && islandInfo != null && islandInfo.isBanned(player.getUniqueId())) {
             event.setCancelled(true);
-            send(player, tr("<error>That player has forbidden you from teleporting to their island."));
+            sendErrorTr(player, "That player has forbidden you from teleporting to their island.");
         }
         if (!isAdmin && islandInfo != null && islandInfo.isLocked() && !islandInfo.getMembers().contains(player.getName()) && !islandInfo.isTrusted(player)) {
             event.setCancelled(true);
-            send(player, tr("<error>That island is locked.</error> <muted>Teleporting there is not allowed."));
+            sendErrorTr(player, "That island is locked. <muted>Teleporting there is not allowed.");
         }
         if (!event.isCancelled()) {
             final PlayerInfo playerInfo = plugin.getPlayerInfo(player);
@@ -360,12 +362,12 @@ public class PlayerEvents implements Listener {
             final String key = "usb.block-limits";
             if (!PatienceTester.isRunning(player, key)) {
                 PatienceTester.startRunning(player, key);
-                send(player, tr("<error><item></error> <muted>is limited. Scanning your island to check if you can place more. Please be patient.",
-                    legacyArg("item", ItemStackUtil.getItemName(new ItemStack(type)))));
+                sendErrorTr(player, "<primary><item></primary> is limited. Scanning your island to check if you can place more. Please be patient.",
+                    legacyArg("item", ItemStackUtil.getItemName(new ItemStack(type))));
                 plugin.fireAsyncEvent(new IslandInfoEvent(player, islandInfo.getIslandLocation(), new Callback<>() {
                     @Override
                     public void run() {
-                        send(player, tr("Scanning complete. You can try again."));
+                        sendTr(player, "Scanning complete. You can try again.");
                         PatienceTester.stopRunning(player, key);
                     }
                 }));
@@ -374,9 +376,9 @@ public class PlayerEvents implements Listener {
         }
         if (canPlace == BlockLimitLogic.CanPlace.NO) {
             event.setCancelled(true);
-            send(player, tr("<error>You've hit the <primary><item></primary> limit.</error> <muted>You can't have more of that type on your island. Max: <primary><max></primary>.",
+            sendErrorTr(player, "You've hit the <primary><item></primary> limit. <muted>You can't have more of that type on your island. Max: <primary><max></primary>.",
                 legacyArg("item", ItemStackUtil.getItemName(new ItemStack(type))),
-                unparsed("max", String.valueOf(plugin.getBlockLimitLogic().getLimit(type)))));
+                unparsed("max", String.valueOf(plugin.getBlockLimitLogic().getLimit(type))));
             return;
         }
         plugin.getBlockLimitLogic().incBlockCount(islandInfo.getIslandLocation(), type);

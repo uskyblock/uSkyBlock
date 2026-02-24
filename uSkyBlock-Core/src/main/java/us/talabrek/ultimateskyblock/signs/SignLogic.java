@@ -29,9 +29,6 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,6 +40,8 @@ import java.util.logging.Logger;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Responsible for keeping track of signs.
@@ -255,7 +254,7 @@ public class SignLogic {
             }
             List<String> lines = wordWrap(challenge.getDisplayName(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
             if (challengeLocked) {
-                lines.add(trLegacy("<error><bold>Locked Challenge"));
+                lines.add(trLegacy("Locked Challenge", ERROR));
             } else {
                 lines.addAll(wordWrap(challenge.getDescription(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
             }
@@ -323,8 +322,8 @@ public class SignLogic {
                     return;
                 }
                 if (!challenge.getRank().isAvailable(playerInfo)) {
-                    send(player, tr("<error>The <challenge> challenge is not available yet!",
-                        legacyArg("challenge", challenge.getDisplayName())));
+                    sendErrorTr(player, "The <challenge> challenge is not available yet!",
+                        legacyArg("challenge", challenge.getDisplayName()));
                     return;
                 }
                 scheduler.sync(() -> tryComplete(player, chestLoc, challenge));
@@ -367,11 +366,11 @@ public class SignLogic {
             if (successfulItemTransfer) {
                 challengeLogic.completeChallenge(player, challenge.getId());
             } else {
-                send(player, tr("<error>Warning:</error> <muted>Could not transfer all required items to your inventory."));
+                sendErrorTr(player, "Warning: <muted>Could not transfer all required items to your inventory.");
             }
             updateSignsOnContainer(chest.getLocation());
         } else {
-            send(player, tr("<error>Not enough items in chest to complete challenge!"));
+            sendErrorTr(player, "Not enough items in chest to complete challenge!");
         }
     }
 

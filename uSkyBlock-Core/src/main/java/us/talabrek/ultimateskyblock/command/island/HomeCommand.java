@@ -1,17 +1,16 @@
 package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 public class HomeCommand extends RequireIslandCommand {
 
@@ -23,7 +22,7 @@ public class HomeCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (pi.isIslandGenerating()) {
-            send(player, I18nUtil.tr("<error>Your island is in the process of generating, you cannot teleport home right now."));
+            sendErrorTr(player, "Your island is in the process of generating, you cannot teleport home right now.");
             return true;
         }
         if (pi.getHomeLocation() == null) {

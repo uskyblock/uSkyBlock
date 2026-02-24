@@ -3,15 +3,11 @@ package us.talabrek.ultimateskyblock.command.admin;
 import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.command.CompositeCommand;
+import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
 import us.talabrek.ultimateskyblock.util.PluginInfo;
-
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +23,9 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Debug control.
@@ -61,7 +60,7 @@ public class DebugCommand extends CompositeCommand {
                 } else if (alias.equals("enable")) {
                     enableLogging(sender, plugin);
                 } else {
-                    send(sender, tr("<error>Logging wasn't active, so you can't disable it!"));
+                    sendErrorTr(sender, "Logging wasn't active, so you can't disable it!");
                 }
                 return true;
             }
@@ -71,9 +70,9 @@ public class DebugCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 if (logHandler != null) {
                     logHandler.flush();
-                    send(sender, tr("Log file has been flushed."));
+                    sendTr(sender, "Log file has been flushed.");
                 } else {
-                    send(sender, tr("<error>Logging is not enabled.</error> <muted>Use <cmd>/usb debug enable</cmd>."));
+                    sendErrorTr(sender, "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>.");
                 }
                 return true;
             }
@@ -89,10 +88,10 @@ public class DebugCommand extends CompositeCommand {
             Level level = Level.parse(arg.toUpperCase());
             log.setLevel(level);
             uSkyBlock.getInstance().getLogger().setLevel(level);
-            send(sender, tr("Set debug level to <primary><loglevel></primary>.", unparsed("loglevel", level.getName())));
+            sendTr(sender, "Set debug level to <primary><loglevel></primary>.", unparsed("loglevel", level.getName()));
             enableLogging(sender, uSkyBlock.getInstance());
         } catch (Exception e) {
-            send(sender, tr("<error>Invalid argument, try INFO, FINE, FINER, FINEST"));
+            sendErrorTr(sender, "Invalid argument, try INFO, FINE, FINER, FINEST");
         }
     }
 
@@ -102,7 +101,7 @@ public class DebugCommand extends CompositeCommand {
             uSkyBlock.getInstance().getLogger().removeHandler(logHandler);
             logHandler.close();
             if (sender != null) {
-                send(sender, tr("Logging disabled."));
+                sendTr(sender, "Logging disabled.");
             }
         }
         logHandler = null;
@@ -123,10 +122,10 @@ public class DebugCommand extends CompositeCommand {
             plugin.getLogger().addHandler(logHandler);
             Level level = log.getLevel() != null ? log.getLevel() : Level.FINER;
             log.log(level, FormatUtil.stripFormatting(pluginInfo.getVersionInfo(true)));
-            send(sender, tr("Logging to <primary><logfile></primary>.", unparsed("logfile", logFile)));
+            sendTr(sender, "Logging to <primary><logfile></primary>.", unparsed("logfile", logFile));
         } catch (IOException e) {
             log.log(Level.WARNING, "Unable to enable logging", e);
-            send(sender, tr("<error>Unable to enable logging: <reason>", unparsed("reason", e.getMessage())));
+            sendErrorTr(sender, "Unable to enable logging: <reason>", unparsed("reason", e.getMessage()));
         }
     }
 

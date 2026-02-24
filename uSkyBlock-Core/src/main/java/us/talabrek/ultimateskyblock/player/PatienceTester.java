@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 public class PatienceTester {
@@ -37,11 +38,11 @@ public class PatienceTester {
     private static Component getMessage() {
         int index = (new Random()).nextInt(5);
         return switch (index) {
-            case 0 -> tr("<primary>Hold your horses! You have to be patient...");
-            case 1 -> tr("<primary>Not really patient, are you?");
-            case 2 -> tr("<primary>Be patient, young padawan");
-            case 3 -> tr("<primary>Patience you MUST have, young padawan");
-            case 4 -> tr("<primary>The two most powerful warriors are patience and time.");
+            case 0 -> tr("Hold your horses! You have to be patient...", MUTED);
+            case 1 -> tr("Not really patient, are you?", MUTED);
+            case 2 -> tr("Be patient, young padawan", MUTED);
+            case 3 -> tr("Patience you MUST have, young padawan", MUTED);
+            case 4 -> tr("The two most powerful warriors are patience and time.", MUTED);
             default -> throw new IllegalStateException("Unexpected value: " + index);
         };
     }

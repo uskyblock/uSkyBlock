@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,15 +33,10 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.GuiItemUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -49,13 +45,20 @@ import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGE_SIZE;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 // TODO: Move all the texts to resource-files (translatable).
 
@@ -136,15 +139,15 @@ public class SkyBlockMenu {
         final ItemStack pHead = new ItemStack(Material.PLAYER_HEAD, 1);
         final SkullMeta meta3 = requireNonNull((SkullMeta) requireNonNull(pHead.getItemMeta()));
         ItemMeta meta2 = requireNonNull(requireNonNull(sign.getItemMeta()));
-        meta2.setDisplayName(trLegacy("<primary>Player Permissions"));
-        addLore(lores, trLegacy("<primary>Click here to return to<newline>your island group's info."));
+        meta2.setDisplayName(trLegacy("Player Permissions", PRIMARY));
+        addLore(lores, trLegacy("Click here to return to<newline>your island group's info.", MUTED));
         meta2.setLore(lores);
         sign.setItemMeta(meta2);
         menu.addItem(sign);
         lores.clear();
         meta3.setOwnerProfile(partyMember);
         meta3.setDisplayName(trLegacy("<primary><player></primary>'s permissions", unparsed("player", name)));
-        addLore(lores, trLegacy("<muted>Hover over an icon to view<newline>a permission. Change the<newline>permission by clicking it."));
+        addLore(lores, trLegacy("Hover over an icon to view<newline>a permission. Change the<newline>permission by clicking it.", MUTED));
         meta3.setLore(lores);
         pHead.setItemMeta(meta3);
         menu.addItem(pHead);
@@ -156,14 +159,14 @@ public class SkyBlockMenu {
             meta2 = requireNonNull(requireNonNull(itemStack.getItemMeta()));
             if (islandInfo.hasPerm(partyMember.getUniqueId(), menuItem.getPerm())) {
                 meta2.setDisplayName("\u00a7a" + menuItem.getTitle());
-                lores.add(trLegacy("<muted>This player <secondary>can</secondary>"));
+                lores.add(trLegacy("This player <success>can</success>", MUTED));
                 addLore(lores, "\u00a7f", menuItem.getDescription());
                 if (isLeader) {
                     addLore(lores, "\u00a7f", trLegacy("Click here to remove this permission."));
                 }
             } else {
                 meta2.setDisplayName("\u00a7c" + menuItem.getTitle());
-                lores.add(trLegacy("<muted>This player <error>cannot</error>"));
+                lores.add(trLegacy("This player <error>cannot</error>", MUTED));
                 addLore(lores, "\u00a7f", menuItem.getDescription());
                 if (isLeader) {
                     addLore(lores, "\u00a7f", trLegacy("Click here to grant this permission."));
@@ -195,15 +198,16 @@ public class SkyBlockMenu {
         final Set<UUID> memberList = islandInfo.getMemberUUIDs();
         final ItemMeta meta2 = requireNonNull(requireNonNull(sign.getItemMeta()));
         meta2.setDisplayName("\u00a7a" + trLegacy("Island Group Members"));
-        lores.add(trLegacy("<muted>Group members: <secondary><current></secondary>/<primary><max></primary>",
+        lores.add(trLegacy("Group members: <secondary><current></secondary>/<primary><max></primary>",
+            MUTED,
             unparsed("current", String.valueOf(islandInfo.getPartySize())),
             unparsed("max", String.valueOf(islandInfo.getMaxPartySize()))));
         if (islandInfo.getPartySize() < islandInfo.getMaxPartySize()) {
-            addLore(lores, trLegacy("<secondary>More players can be invited to this island."));
+            addLore(lores, trLegacy("More players can be invited to this island.", SECONDARY));
         } else {
-            addLore(lores, trLegacy("<error>This island is full."));
+            addLore(lores, trLegacy("This island is full.", ERROR));
         }
-        addLore(lores, trLegacy("<muted>Hover over a player's icon to<newline>view their permissions. The<newline>leader can change permissions<newline>by clicking a player's icon."));
+        addLore(lores, trLegacy("Hover over a player's icon to<newline>view their permissions. The<newline>leader can change permissions<newline>by clicking a player's icon.", MUTED));
         meta2.setLore(lores);
         sign.setItemMeta(meta2);
         menu.addItem(sign.clone());
@@ -221,13 +225,13 @@ public class SkyBlockMenu {
             }
             for (PartyPermissionMenuItem perm : permissionMenuItems) {
                 if (isLeader || islandInfo.hasPerm(memberId, perm.getPerm())) {
-                    lores.add(trLegacy("<secondary>Can</secondary> <muted><permission>", unparsed("permission", perm.getShortDescription())));
+                    lores.add(trLegacy("<success>Can</success> <permission>", MUTED, unparsed("permission", perm.getShortDescription())));
                 } else {
-                    lores.add(trLegacy("<error>Cannot</error> <muted><permission>", unparsed("permission", perm.getShortDescription())));
+                    lores.add(trLegacy("<error>Cannot</error> <permission>", MUTED, unparsed("permission", perm.getShortDescription())));
                 }
             }
             if (islandInfo.isLeader(player.getName())) {
-                addLore(lores, trLegacy("<primary>Click to change this player's permissions."));
+                addLore(lores, trLegacy("Click to change this player's permissions.", PRIMARY));
             }
             meta3.setLore(lores);
             headItem.setItemMeta(meta3);
@@ -242,15 +246,15 @@ public class SkyBlockMenu {
         String title = "\u00a79" + trLegacy("Island Log");
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 9, title);
         ItemMeta meta4 = requireNonNull(requireNonNull(sign.getItemMeta()));
-        meta4.setDisplayName("\u00a79\u00a7l" + trLegacy("Island Log"));
-        addLore(lores, trLegacy("<primary>Click here to return to<newline>the main island screen."));
+        meta4.setDisplayName(trLegacy("Island Log", PRIMARY));
+        addLore(lores, trLegacy("Click here to return to<newline>the main island screen.", PRIMARY));
         meta4.setLore(lores);
         sign.setItemMeta(meta4);
         menu.addItem(sign);
         lores.clear();
         ItemStack menuItem = new ItemStack(Material.WRITABLE_BOOK, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName(trLegacy("<primary><bold>Island Log"));
+        meta4.setDisplayName(trLegacy("Island Log", PRIMARY));
         lores.addAll(plugin.getIslandInfo(player).getLog());
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
@@ -373,19 +377,19 @@ public class SkyBlockMenu {
             if (p >= 1 && p <= total) {
                 ItemStack pageItem;
                 if (p == page) {
-                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, trLegacy("<muted>Current page"));
+                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, trLegacy("Current page", MUTED));
                 } else {
-                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, trLegacy("<muted>Page <page>", unparsed("page", String.valueOf(p))));
+                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, trLegacy("Page <page>", MUTED, unparsed("page", String.valueOf(p))));
                 }
                 if (i == 0) {
                     ItemStackUtil.Builder pageItemBuilder = ItemStackUtil.builder(pageItem)
-                        .displayName(trLegacy("<muted>First Page"));
+                        .displayName(trLegacy("First Page", MUTED));
                     if (playerName != null && !playerName.trim().isEmpty()) {
                         pageItemBuilder.lore(playerName);
                     }
                     pageItem = pageItemBuilder.build();
                 } else if (i == 8) {
-                    pageItem = ItemStackUtil.builder(pageItem).displayName(trLegacy("<muted>Last Page")).build();
+                    pageItem = ItemStackUtil.builder(pageItem).displayName(trLegacy("Last Page", MUTED)).build();
                 }
                 pageItem.setAmount(p);
                 menu.setItem(i + CHALLENGE_PAGE_SIZE, pageItem);
@@ -405,12 +409,12 @@ public class SkyBlockMenu {
     private Inventory createInitMenu(Player player) {
         List<String> schemeNames = schematicHandler.getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d) * 9;
-        String title = "\u00a79" + trLegacy("Island Create Menu");
+        String title = trLegacy("Island Create Menu", PRIMARY);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);
         List<String> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_SAPLING, 1);
         ItemMeta meta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta.setDisplayName(trLegacy("<secondary><bold>Start an Island"));
+        meta.setDisplayName(trLegacy("Start an Island", SECONDARY));
         addLore(lores, "\u00a7f", trLegacy("Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary><bold>Click here to start!"));
         meta.setLore(lores);
         menuItem.setItemMeta(meta);
@@ -433,9 +437,10 @@ public class SkyBlockMenu {
                     lores = new ArrayList<>();
                 }
                 if (player.hasPermission(islandPerk.getPermission())) {
-                    addLore(lores, trLegacy("<secondary>Click to create!"));
+                    addLore(lores, trLegacy("Click to create!", SECONDARY));
                 } else {
-                    addLore(lores, trLegacy("<error>No access!<newline><muted>(<permission>)",
+                    addLore(lores, trLegacy("No access!<newline><muted>(<permission>)</muted>",
+                        ERROR,
                         unparsed("permission", islandPerk.getPermission())));
                 }
                 meta.setLore(lores);
@@ -447,7 +452,7 @@ public class SkyBlockMenu {
         lores.clear();
         menuItem = new ItemStack(Material.SHORT_GRASS, 1);
         meta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta.setDisplayName(trLegacy("<secondary><bold>Return to Spawn"));
+        meta.setDisplayName(trLegacy("Return to Spawn", SECONDARY));
         addLore(lores, "\u00a7f", trLegacy("Teleport to the spawn area."));
         meta.setLore(lores);
         menuItem.setItemMeta(meta);
@@ -456,8 +461,8 @@ public class SkyBlockMenu {
         lores.clear();
         menuItem = new ItemStack(Material.PLAYER_HEAD, 1);
         final SkullMeta meta2 = requireNonNull((SkullMeta) requireNonNull(menuItem.getItemMeta()));
-        meta2.setDisplayName(trLegacy("<secondary><bold>Join an Island"));
-        addLore(lores, "\u00a7f", trLegacy("Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary><bold>Click here to accept an invite!<newline><primary><bold>(You must be invited first)"));
+        meta2.setDisplayName(trLegacy("Join an Island", SECONDARY));
+        addLore(lores, "\u00a7f", trLegacy("Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"));
         meta2.setLore(lores);
         menuItem.setItemMeta(meta2);
         menu.setItem(menuSize - 1, menuItem);
@@ -478,13 +483,13 @@ public class SkyBlockMenu {
     }
 
     private Inventory createMainMenu(Player player) {
-        String title = "\u00a79" + trLegacy("Island Menu");
+        String title = trLegacy("Island Menu", PRIMARY);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 18, title);
         List<String> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_DOOR, 1);
         ItemMeta meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName(trLegacy("<secondary><bold>Return Home"));
-        addLore(lores, "\u00a7f", trLegacy("Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary><bold>Click here to return home."));
+        meta4.setDisplayName(trLegacy("Return Home", SECONDARY));
+        addLore(lores, "\u00a7f", trLegacy("Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary>Click here to return home.</primary>"));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
         menu.addItem(menuItem);
@@ -494,12 +499,12 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.DIAMOND_ORE, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName(trLegacy("<secondary><bold>Challenges"));
-        addLore(lores, "\u00a7f", trLegacy("View a list of <primary>challenges that<newline>you can complete on your island<newline>to earn skybucks, items, perks,<newline>and titles."));
+        meta4.setDisplayName(trLegacy("Challenges", SECONDARY));
+        addLore(lores, "\u00a7f", trLegacy("View a list of <primary>challenges</primary> that<newline>you can complete on your island<newline>to earn skybucks, items, perks,<newline>and titles."));
         if (challengeLogic.isEnabled()) {
-            addLore(lores, trLegacy("<primary><bold>Click here to view challenges."));
+            addLore(lores, trLegacy("Click here to view challenges.", PRIMARY));
         } else {
-            addLore(lores, trLegacy("<error><bold>Challenges disabled."));
+            addLore(lores, trLegacy("Challenges disabled.", ERROR));
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
@@ -508,11 +513,12 @@ public class SkyBlockMenu {
         lores.clear();
         menuItem = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName(trLegacy("<secondary><bold>Island Level"));
-        addLore(lores, trLegacy("<muted>Current level: <secondary><level></secondary>",
-            unparsed("level", String.format(Locale.ROOT, "%.1f", islandInfo.getLevel()))));
+        meta4.setDisplayName(trLegacy("Island Level", SECONDARY));
+        addLore(lores, trLegacy("Current level: <secondary><level:'#.0'></secondary>",
+            MUTED,
+            Formatter.number("level", islandInfo.getLevel())));
         addLore(lores, limitLogic.getSummary(islandInfo));
-        addLore(lores, "\u00a7f", trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary><bold>Click here to refresh.<newline><primary><bold>(must be on your island)"));
+        addLore(lores, "\u00a7f", trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
         menu.addItem(menuItem);
@@ -520,11 +526,12 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.PLAYER_HEAD, 1);
         final SkullMeta meta2 = requireNonNull((SkullMeta) requireNonNull(menuItem.getItemMeta()));
-        meta2.setDisplayName("\u00a7a\u00a7l" + trLegacy("Island Group"));
-        lores.add(trLegacy("<muted>Members: <secondary><current></secondary>/<primary><max></primary>",
+        meta2.setDisplayName(trLegacy("Island Group", PRIMARY));
+        lores.add(trLegacy("Members: <secondary><current></secondary>/<primary><max></primary>",
+            MUTED,
             unparsed("current", String.valueOf(islandInfo.getPartySize())),
             unparsed("max", String.valueOf(islandInfo.getMaxPartySize()))));
-        addLore(lores, "\u00a7f", trLegacy("View the members of your island<newline>group and their permissions. If<newline>you are the island leader, you<newline>can change member permissions.<newline><primary><bold>Click here to view or change."));
+        addLore(lores, "\u00a7f", trLegacy("View the members of your island<newline>group and their permissions. If<newline>you are the island leader, you<newline>can change member permissions.<newline><primary>Click here to view or change.</primary>"));
         meta2.setLore(lores);
         menuItem.setItemMeta(meta2);
         menu.addItem(menuItem);
@@ -532,13 +539,13 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.JUNGLE_SAPLING, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName("\u00a7a\u00a7l" + trLegacy("Change Island Biome"));
-        lores.add(trLegacy("<muted>Current biome: <primary><biome></primary>", legacyArg("biome", islandInfo.getBiomeName())));
+        meta4.setDisplayName(trLegacy("Change Island Biome", SECONDARY));
+        lores.add(trLegacy("Current biome: <secondary><biome></secondary>", MUTED, legacyArg("biome", islandInfo.getBiomeName())));
         addLore(lores, "\u00a7f", trLegacy("The island biome affects things<newline>like grass color and spawning<newline>of both animals and monsters."));
         if (islandInfo.hasPerm(player, "canChangeBiome")) {
-            addLore(lores, trLegacy("<primary><bold>Click here to change biomes."));
+            addLore(lores, trLegacy("Click here to change biomes.", PRIMARY));
         } else {
-            addLore(lores, trLegacy("<error><bold>You can't change the biome."));
+            addLore(lores, trLegacy("You can't change the biome.", ERROR));
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
@@ -547,20 +554,20 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.IRON_BARS, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-        meta4.setDisplayName(trLegacy("<secondary><bold>Island Lock"));
+        meta4.setDisplayName(trLegacy("Island Lock", SECONDARY));
         if (plugin.getIslandInfo(player).isLocked()) {
-            addLore(lores, trLegacy("<muted>Lock status: <secondary>Active</secondary><newline>Your island is currently <error>locked</error>.<newline>Players outside your group<newline>cannot enter your island."));
+            addLore(lores, trLegacy("Lock status: <secondary>Active</secondary><newline>Your island is currently <error>locked</error>.<newline>Players outside your group<newline>cannot enter your island.", MUTED));
             if (islandInfo.hasPerm(player, "canToggleLock") && player.hasPermission("usb.island.lock")) {
-                addLore(lores, trLegacy("<primary><bold>Click here to unlock your island."));
+                addLore(lores, trLegacy("Click here to unlock your island.", PRIMARY));
             } else {
-                addLore(lores, trLegacy("<error><bold>You can't change the lock."));
+                addLore(lores, trLegacy("You can't change the lock.", ERROR));
             }
         } else {
-            addLore(lores, trLegacy("<muted>Lock status: Inactive<newline>Your island is currently <secondary>unlocked</secondary>.<newline>All players can enter your island,<newline>but only you and your group<newline>members may build there."));
+            addLore(lores, trLegacy("Lock status: Inactive<newline>Your island is currently <secondary>unlocked</secondary>.<newline>All players can enter your island,<newline>but only you and your group<newline>members may build there.", MUTED));
             if (islandInfo.hasPerm(player, "canToggleLock") && player.hasPermission("usb.island.lock")) {
-                addLore(lores, trLegacy("<primary><bold>Click here to lock your island."));
+                addLore(lores, trLegacy("Click here to lock your island.", PRIMARY));
             } else {
-                addLore(lores, trLegacy("<error><bold>You can't change the lock."));
+                addLore(lores, trLegacy("You can't change the lock.", ERROR));
             }
         }
         meta4.setLore(lores);
@@ -571,22 +578,22 @@ public class SkyBlockMenu {
         if (plugin.getIslandInfo(player).hasWarp()) {
             menuItem = new ItemStack(Material.END_PORTAL_FRAME, 1);
             meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
-            meta4.setDisplayName(trLegacy("<secondary><bold>Island Warp"));
-            addLore(lores, trLegacy("<muted>Warp status: <secondary>Active</secondary><newline>Other players may warp to your<newline>island at any time to the point<newline>you set with <cmd>/is setwarp</cmd>."));
+            meta4.setDisplayName(trLegacy("Island Warp", SECONDARY));
+            addLore(lores, trLegacy("Warp status: <secondary>Active</secondary><newline>Other players may warp to your<newline>island at any time to the point<newline>you set with <cmd>/is setwarp</cmd>.", MUTED));
             if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
-                addLore(lores, trLegacy("<primary><bold>Click here to deactivate."));
+                addLore(lores, trLegacy("Click here to deactivate.", PRIMARY));
             } else {
-                addLore(lores, trLegacy("<error><bold>You can't change the warp."));
+                addLore(lores, trLegacy("You can't change the warp.", ERROR));
             }
         } else {
             menuItem = new ItemStack(Material.END_STONE, 1);
             meta4 = requireNonNull(menuItem.getItemMeta());
-            meta4.setDisplayName(trLegacy("<secondary><bold>Island Warp"));
-            addLore(lores, trLegacy("<muted>Warp status: Inactive<newline>Other players can't warp to your<newline>island. Set a warp point with<newline><cmd>/is setwarp</cmd> before activating."));
+            meta4.setDisplayName(trLegacy("Island Warp", SECONDARY));
+            addLore(lores, trLegacy("Warp status: Inactive<newline>Other players can't warp to your<newline>island. Set a warp point with<newline><cmd>/is setwarp</cmd> before activating.", MUTED));
             if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
-                addLore(lores, trLegacy("<primary><bold>Click here to activate."));
+                addLore(lores, trLegacy("Click here to activate.", PRIMARY));
             } else {
-                addLore(lores, trLegacy("<error><bold>You can't change the warp."));
+                addLore(lores, trLegacy("You can't change the warp.", ERROR));
             }
         }
         meta4.setLore(lores);
@@ -596,7 +603,7 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.SHORT_GRASS, 1);
         meta4 = requireNonNull(menuItem.getItemMeta());
-        meta4.setDisplayName(trLegacy("<secondary><bold>Return to Spawn"));
+        meta4.setDisplayName(trLegacy("Return to Spawn", SECONDARY));
         addLore(lores, "\u00a7f", trLegacy("Teleport to the spawn area."));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
@@ -605,8 +612,8 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.WRITABLE_BOOK, 1);
         meta4 = requireNonNull(menuItem.getItemMeta());
-        meta4.setDisplayName(trLegacy("<secondary><bold>Island Log"));
-        addLore(lores, "\u00a7f", trLegacy("View a log of events from<newline>your island such as member,<newline>biome, and warp changes.<newline><primary><bold>Click to view the log."));
+        meta4.setDisplayName(trLegacy("Island Log", SECONDARY));
+        addLore(lores, "\u00a7f", trLegacy("View a log of events from<newline>your island such as member,<newline>biome, and warp changes.<newline><primary>Click to view the log.</primary>"));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
         menu.setItem(8, menuItem); // Last item, first line
@@ -614,8 +621,8 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.RED_BED, 1); // red bed
         meta4 = requireNonNull(menuItem.getItemMeta());
-        meta4.setDisplayName(trLegacy("<secondary><bold>Change Home Location"));
-        addLore(lores, "\u00a7f", trLegacy("When you teleport to your<newline>island you will be taken to<newline>this location.<newline><primary><bold>Click here to change."));
+        meta4.setDisplayName(trLegacy("Change Home Location", SECONDARY));
+        addLore(lores, "\u00a7f", trLegacy("When you teleport to your<newline>island you will be taken to<newline>this location.<newline><primary>Click here to change.</primary>"));
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
         menu.setItem(9, menuItem); // First item, 2nd line
@@ -623,12 +630,12 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.HOPPER, 1);
         meta4 = requireNonNull(menuItem.getItemMeta());
-        meta4.setDisplayName(trLegacy("<secondary><bold>Change Warp Location"));
+        meta4.setDisplayName(trLegacy("Change Warp Location", SECONDARY));
         addLore(lores, "\u00a7f", trLegacy("When your warp is activated,<newline>other players will be taken to<newline>this point when they teleport<newline>to your island."));
         if (islandInfo.hasPerm(player, "canChangeWarp") && player.hasPermission("usb.island.setwarp")) {
-            addLore(lores, trLegacy("<primary><bold>Click here to change."));
+            addLore(lores, trLegacy("Click here to change.", PRIMARY));
         } else {
-            addLore(lores, trLegacy("<error><bold>You can't change the warp."));
+            addLore(lores, trLegacy("You can't change the warp.", ERROR));
         }
         meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
@@ -638,8 +645,8 @@ public class SkyBlockMenu {
             if (config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
                 menuItem = new ItemStack(Material.PODZOL, 1);
                 meta4 = requireNonNull(menuItem.getItemMeta());
-                meta4.setDisplayName(trLegacy("<error><bold>Restart Island"));
-                addLore(lores, "\u00a7f", trLegacy("Restarts your island.<newline><error>WARNING! <error>will remove your items and island!"));
+                meta4.setDisplayName(trLegacy("Restart Island", ERROR));
+                addLore(lores, "\u00a7f", trLegacy("Restarts your island.<newline><error>Warning! will remove your items and island!</error>"));
                 meta4.setLore(lores);
                 menuItem.setItemMeta(meta4);
                 menu.setItem(17, menuItem);
@@ -648,9 +655,9 @@ public class SkyBlockMenu {
         } else {
             menuItem = new ItemStack(Material.IRON_DOOR, 1);
             meta4 = requireNonNull(menuItem.getItemMeta());
-            meta4.setDisplayName(trLegacy("<error><bold>Leave Island"));
-            addLore(lores, "\u00a7f", trLegacy("Leaves your island.<newline><error>WARNING! <error>This will remove all your items!"));
-            addLore(lores, trLegacy("<error>Click to leave"));
+            meta4.setDisplayName(trLegacy("Leave Island", ERROR));
+            addLore(lores, "\u00a7f", trLegacy("Leaves your island.<newline><error>Warning! This will remove all your items!</error>"));
+            addLore(lores, trLegacy("Click to leave", ERROR));
             meta4.setLore(lores);
             menuItem.setItemMeta(meta4);
             menu.setItem(17, menuItem);
@@ -739,7 +746,7 @@ public class SkyBlockMenu {
             if (perkLogic.getSchemes(p).contains(schemeName)) {
                 p.performCommand("island create " + schemeName);
             } else {
-                send(p, tr("<error>You do not have access to that island schematic."));
+                sendErrorTr(p, "You do not have access to that island schematic.");
             }
         }
     }
@@ -820,10 +827,11 @@ public class SkyBlockMenu {
         ItemMeta meta = requireNonNull(currentItem.getItemMeta());
         List<String> lore = meta.getLore();
         if (!durationLeft.isNegative()) {
-            lore.set(lore.size() - 1, trLegacy("<error>Click within <primary><duration><error> to leave!",
+            lore.set(lore.size() - 1, trLegacy("Click within <primary><duration></primary> to leave!",
+                ERROR,
                 unparsed("duration", TimeUtil.durationAsString(durationLeft))));
         } else {
-            lore.set(lore.size() - 1, trLegacy("<error>Click to leave"));
+            lore.set(lore.size() - 1, trLegacy("Click to leave", ERROR));
         }
         meta.setLore(lore);
         currentItem.setItemMeta(meta);
@@ -838,7 +846,7 @@ public class SkyBlockMenu {
         List<String> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_SIGN, 1);
         ItemMeta meta = requireNonNull(menuItem.getItemMeta());
-        meta.setDisplayName(trLegacy("<secondary><bold>Return to the main menu"));
+        meta.setDisplayName(trLegacy("Return to the main menu", SECONDARY));
         meta.setLore(lores);
         menuItem.setItemMeta(meta);
         menu.addItem(menuItem);
@@ -872,13 +880,15 @@ public class SkyBlockMenu {
             if (player.hasPermission(islandPerk.getPermission())) {
                 Duration durationLeft = confirmHandler.durationLeft(player, "/is restart");
                 if (durationLeft.isPositive()) {
-                    addLore(lores, trLegacy("<error>Click within <primary><duration><error> to restart!",
+                    addLore(lores, trLegacy("Click within <primary><duration></primary> to restart!",
+                        ERROR,
                         unparsed("duration", TimeUtil.durationAsString(durationLeft))));
                 } else {
-                    addLore(lores, trLegacy("<secondary>Click to restart!"));
+                    addLore(lores, trLegacy("Click to restart!", SECONDARY));
                 }
             } else {
-                addLore(lores, trLegacy("<error>No access!<newline><muted>(<permission>)",
+                addLore(lores, trLegacy("No access!<newline><muted>(<permission>)</muted>",
+                    ERROR,
                     unparsed("permission", islandPerk.getPermission())));
             }
             meta.setLore(lores);
@@ -948,7 +958,7 @@ public class SkyBlockMenu {
 
     private boolean isAirOrLocked(ItemStack currentItem) {
         return currentItem != null && currentItem.getType() == Material.AIR ||
-            currentItem != null && currentItem.getItemMeta() != null && currentItem.getItemMeta().getDisplayName().equals(trLegacy("<error><bold>Locked Challenge"));
+            currentItem != null && currentItem.getItemMeta() != null && currentItem.getItemMeta().getDisplayName().equals(trLegacy("Locked Challenge", ERROR));
     }
 
     private void onClickPermissionMenu(InventoryClickEvent event, ItemStack currentItem, Player p, String inventoryName, int slotIndex) {

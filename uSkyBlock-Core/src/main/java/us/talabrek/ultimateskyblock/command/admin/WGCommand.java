@@ -15,9 +15,9 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Some hooks into the WG Handler
@@ -33,7 +33,7 @@ public class WGCommand extends CompositeCommand {
             @Override
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 WorldEditHandler.refreshRegion(player.getLocation());
-                send(player, tr("Resending chunks to the client."));
+                sendTr(player, "Resending chunks to the client.");
                 return true;
             }
         });
@@ -41,8 +41,8 @@ public class WGCommand extends CompositeCommand {
             @Override
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 WorldEditHandler.loadRegion(player.getLocation());
-                send(player, tr("Loading chunks at <primary><location></primary>.",
-                    unparsed("location", LocationUtil.asString(player.getLocation()))));
+                sendTr(player, "Loading chunks at <primary><location></primary>.",
+                    unparsed("location", LocationUtil.asString(player.getLocation())));
                 return true;
             }
         });
@@ -50,8 +50,8 @@ public class WGCommand extends CompositeCommand {
             @Override
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 LocationUtil.loadChunkAt(player.getLocation());
-                send(player, tr("Unloading chunks at <primary><location></primary>.",
-                    unparsed("location", LocationUtil.asString(player.getLocation()))));
+                sendTr(player, "Unloading chunks at <primary><location></primary>.",
+                    unparsed("location", LocationUtil.asString(player.getLocation())));
                 return true;
             }
         });
@@ -63,10 +63,10 @@ public class WGCommand extends CompositeCommand {
                     IslandInfo islandInfo = plugin.getIslandInfo(island);
                     if (islandInfo != null) {
                         WorldGuardHandler.updateRegion(islandInfo);
-                        send(player, tr("Island WorldGuard regions updated for <primary><island></primary>.",
-                            unparsed("island", island)));
+                        sendTr(player, "Island WorldGuard regions updated for <primary><island></primary>.",
+                            unparsed("island", island));
                     } else {
-                        send(player, tr("<error>No island found at your location."));
+                        sendErrorTr(player, "No island found at your location.");
                     }
                 }
                 return true;
@@ -77,7 +77,7 @@ public class WGCommand extends CompositeCommand {
             protected boolean doExecute(String alias, Player player, Map<String, Object> data, String... args) {
                 World world = player.getWorld();
                 world.refreshChunk(player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
-                send(player, tr("Resending chunks to the client."));
+                sendTr(player, "Resending chunks to the client.");
                 return true;
             }
         });

@@ -27,7 +27,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.Type;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 /**
@@ -102,8 +102,8 @@ public class ChatLogic {
         List<Player> onlineMembers = getRecipients(sender, type);
         if (onlineMembers.size() <= 1) {
             int randomIndex = ThreadLocalRandom.current().nextInt(ALONE_MESSAGE_KEYS.size());
-            send(sender, tr("<error>Sorry!</error> <primary><reason></primary>",
-                component("reason", tr(ALONE_MESSAGE_KEYS.get(randomIndex)))));
+            sendErrorTr(sender, "Sorry! <primary><reason></primary>",
+                component("reason", tr(ALONE_MESSAGE_KEYS.get(randomIndex))));
         } else {
             for (Player member : onlineMembers) {
                 sendLegacy(member, msg);

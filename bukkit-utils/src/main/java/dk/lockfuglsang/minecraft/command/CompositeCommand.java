@@ -1,6 +1,8 @@
 package dk.lockfuglsang.minecraft.command;
 
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
@@ -125,10 +127,12 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             }
             if (!hasAccess(cmd, sender)) {
                 if (cmd != null) {
-                    sender.sendMessage(trLegacy("<error>You do not have access (<primary><permission></primary>)",
+                    sender.sendMessage(trLegacy("You do not have access (<primary><permission></primary>)",
+                        Style.style(NamedTextColor.RED),
                         unparsed("permission", cmd.getPermission())));
                 } else {
-                    sender.sendMessage(trLegacy("<error>Invalid command: <cmd><command></cmd>",
+                    sender.sendMessage(trLegacy("Invalid command: <cmd><command></cmd>",
+                        Style.style(NamedTextColor.RED),
                         unparsed("command", cmdName)));
                 }
                 showUsage(sender, args[0]);
@@ -142,7 +146,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
     }
 
     public void showUsage(CommandSender sender, int page) {
-        String msg = trLegacy("<muted>Usage: <usage>", legacyArg("usage", getShortDescription(sender, this)));
+        String msg = trLegacy("Usage: <usage>", Style.style(NamedTextColor.GRAY), legacyArg("usage", getShortDescription(sender, this)));
         if (!hasAccess(this, sender)) {
             sender.sendMessage(msg.split("\n"));
             return;
@@ -171,11 +175,13 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             }
         }
         if (realPage > 0 && maxPage > realPage) {
-            msg += trLegacy("<muted>Use <cmd>/<command> ? <page></cmd> to display the next page<newline>",
+            msg += trLegacy("Use <cmd>/<command> ? <page></cmd> to display the next page<newline>",
+                Style.style(NamedTextColor.GRAY),
                 unparsed("command", getName()),
                 unparsed("page", String.valueOf(realPage + 1)));
         } else if (realPage > 0 && maxPage == realPage) {
-            msg += trLegacy("<muted>Use <cmd>/<command> ? <page></cmd> to display the previous page<newline>",
+            msg += trLegacy("Use <cmd>/<command> ? <page></cmd> to display the previous page<newline>",
+                Style.style(NamedTextColor.GRAY),
                 unparsed("command", getName()),
                 unparsed("page", String.valueOf(realPage - 1)));
         }
@@ -186,7 +192,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
         String cmdName = arg.toLowerCase();
         Command cmd = cmdName.isEmpty() ? this : aliasMap.get(cmdName);
         if (cmd != null && hasAccess(cmd, sender)) {
-            String msg = trLegacy("<muted>Usage: <cmd><command></cmd> ", unparsed("command", name));
+            String msg = trLegacy("Usage: <cmd><command></cmd> ", Style.style(NamedTextColor.GRAY), unparsed("command", name));
             msg += getShortDescription(sender, cmd);
             if (cmd.getUsage() != null && !cmd.getUsage().isEmpty()) {
                 msg += "\u00a77" + cmd.getUsage();
@@ -199,7 +205,7 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             if (cmds.isEmpty()) {
                 showUsage(sender, 1);
             } else {
-                String msg = trLegacy("<muted>Usage: <usage>", legacyArg("usage", getShortDescription(sender, this)));
+                String msg = trLegacy("Usage: <usage>", Style.style(NamedTextColor.GRAY), legacyArg("usage", getShortDescription(sender, this)));
                 if (hasAccess(this, sender)) {
                     for (String key : cmds) {
                         Command scmd = commandMap.get(key);

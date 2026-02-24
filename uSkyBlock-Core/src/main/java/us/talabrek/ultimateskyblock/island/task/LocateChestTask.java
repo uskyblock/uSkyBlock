@@ -11,9 +11,8 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import java.time.Duration;
 import java.time.Instant;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * A task that looks for a chest at an island location.
@@ -47,8 +46,8 @@ public class LocateChestTask extends BukkitRunnable {
         } else {
             cancel();
             if (chestLocation == null && player != null && player.isOnline()) {
-                send(player, tr("<error>Watchdog!<primary> Unable to locate a chest within <timeout>, bailing out.",
-                    unparsed("timeout", TimeUtil.durationAsString(Duration.between(start, timeout)))));
+                sendErrorTr(player, "Watchdog!<primary> Unable to locate a chest within <timeout>, bailing out.",
+                    unparsed("timeout", TimeUtil.durationAsString(Duration.between(start, timeout))));
             }
             if (onCompletion != null) {
                 onCompletion.setChestLocation(chestLocation);

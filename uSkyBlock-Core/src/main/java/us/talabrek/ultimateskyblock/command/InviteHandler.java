@@ -28,7 +28,9 @@ import java.util.UUID;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Responsible for holding out-standing invites, and carrying out a transfer of invitation.
@@ -53,25 +55,25 @@ public class InviteHandler implements Listener {
             invites = new HashMap<>();
         }
         if (island.getPartySize() + invites.size() >= island.getMaxPartySize()) {
-            send(player, tr("<error>Your island is full, or you have too many pending invites. You can't invite anyone else."));
+            sendErrorTr(player, "Your island is full, or you have too many pending invites. You can't invite anyone else.");
             return;
         }
         if (oPi.getHasIsland()) {
             us.talabrek.ultimateskyblock.api.IslandInfo oIsland = plugin.getIslandInfo(oPi);
             if (oIsland.isParty() && !oIsland.isLeader(otherPlayer)) {
-                send(player, tr("<error>That player is already a member on another island."));
-                send(otherPlayer, tr("<primary><player></primary> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>",
-                    legacyArg("player", player.getDisplayName())));
+                sendErrorTr(player, "That player is already a member on another island.");
+                sendTr(otherPlayer, "<primary><player></primary> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>",
+                    legacyArg("player", player.getDisplayName()));
                 return;
             }
         }
         final UUID uniqueId = otherPlayer.getUniqueId();
         invites.put(uniqueId, otherPlayer.getName());
-        send(player, tr("Invite sent to <primary><player></primary>.", legacyArg("player", otherPlayer.getDisplayName())));
-        send(otherPlayer, tr("<primary><player></primary> invited you to join their island!",
-                legacyArg("player", player.getDisplayName())),
-            tr("<muted>Use <cmd>/is accept</cmd> or <cmd>/is reject</cmd> to respond."),
-            tr("<error>Warning: Accepting will replace your current island."));
+        sendTr(player, "Invite sent to <primary><player></primary>.", legacyArg("player", otherPlayer.getDisplayName()));
+        sendTr(otherPlayer, "<primary><player></primary> invited you to join their island!",
+            legacyArg("player", player.getDisplayName()));
+        sendTr(otherPlayer, "Use <cmd>/is accept</cmd> or <cmd>/is reject</cmd> to respond.", MUTED);
+        sendErrorTr(otherPlayer, "Warning: Accepting will replace your current island.");
         Duration timeout = Duration.ofSeconds(plugin.getConfig().getInt("options.party.invite-timeout", 30));
         BukkitTask timeoutTask = scheduler.async(() -> uninvite(island, uniqueId), timeout);
         final Invite invite = new Invite(island.getName(), player.getDisplayName(), timeoutTask);
@@ -103,7 +105,7 @@ public class InviteHandler implements Listener {
         UUID uuid = player.getUniqueId();
         us.talabrek.ultimateskyblock.api.IslandInfo oldIsland = plugin.getIslandInfo(player);
         if (oldIsland != null && oldIsland.isParty()) {
-            send(player, tr("<error>You can't use that command right now. Leave your current party first."));
+            sendErrorTr(player, "You can't use that command right now. Leave your current party first.");
             return false;
         }
         Invite invite = inviteMap.remove(uuid);
@@ -121,7 +123,7 @@ public class InviteHandler implements Listener {
                 uuids.remove(uuid);
             }
             Runnable joinIsland = () -> {
-                send(player, tr("You joined an island. <muted>Use <cmd>/is party</cmd> to see the other members.</muted>"));
+                sendTr(player, "You joined an island. <muted>Use <cmd>/is party</cmd> to see the other members.</muted>");
                 addPlayerToParty(player, island);
                 plugin.getTeleportLogic().homeTeleport(player, true);
                 plugin.clearPlayerInventory(player);
@@ -178,8 +180,8 @@ public class InviteHandler implements Listener {
                 legacyArg("player", invite.displayName())));
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {
-                send(player, tr("Invitation for <primary><leader></primary>'s island timed out or was cancelled.",
-                    legacyArg("leader", islandInfo.getLeader())));
+                sendTr(player, "Invitation for <primary><leader></primary>'s island timed out or was cancelled.",
+                    legacyArg("leader", islandInfo.getLeader()));
             }
             return true;
         }
@@ -197,9 +199,9 @@ public class InviteHandler implements Listener {
     public void onAcceptEvent(AcceptEvent e) {
         if (!e.isCancelled()) {
             if (accept(e.getPlayer())) {
-                send(e.getPlayer(), tr("You <success>accepted</success> the invitation to join an island."));
+                sendTr(e.getPlayer(), "You <success>accepted</success> the invitation to join an island.");
             } else {
-                send(e.getPlayer(), tr("<error>You haven't been invited."));
+                sendErrorTr(e.getPlayer(), "You haven't been invited.");
             }
         }
     }
@@ -208,9 +210,9 @@ public class InviteHandler implements Listener {
     public void onRejectEvent(RejectEvent e) {
         if (!e.isCancelled()) {
             if (reject(e.getPlayer())) {
-                send(e.getPlayer(), tr("You rejected the invitation to join an island."));
+                sendTr(e.getPlayer(), "You rejected the invitation to join an island.");
             } else {
-                send(e.getPlayer(), tr("<error>You haven't been invited."));
+                sendErrorTr(e.getPlayer(), "You haven't been invited.");
             }
         }
     }

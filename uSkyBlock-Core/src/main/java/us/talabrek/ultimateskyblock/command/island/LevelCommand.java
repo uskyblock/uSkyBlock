@@ -10,16 +10,19 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendNoCommandAccess;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class LevelCommand extends RequireIslandCommand {
 
@@ -32,16 +35,16 @@ public class LevelCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (!Settings.island_useIslandLevel) {
-            send(player, tr("<error>Island level has been disabled, contact an administrator."));
+            sendErrorTr(player, "Island level has been disabled, contact an administrator.");
             return true;
         }
         if (args.length == 0) {
             if (!plugin.playerIsOnIsland(player)) {
-                send(player, tr("<error>You must be on your island to use this command."));
+                sendErrorTr(player, "You must be on your island to use this command.");
                 return true;
             }
             if (!island.isParty() && !pi.getHasIsland()) {
-                send(player, tr("<error>You do not have an island!"));
+                sendErrorTr(player, "You do not have an island!");
             } else {
                 getIslandLevel(player, player.getName(), alias);
             }
@@ -60,26 +63,26 @@ public class LevelCommand extends RequireIslandCommand {
     public boolean getIslandLevel(final Player player, final String islandPlayer, final String cmd) {
         final PlayerInfo info = plugin.getPlayerInfo(islandPlayer);
         if (info == null || !info.getHasIsland()) {
-            send(player, tr("<error>That player is invalid or does not have an island!"));
+            sendErrorTr(player, "That player is invalid or does not have an island!");
             return false;
         }
         final us.talabrek.ultimateskyblock.api.IslandInfo islandInfo = plugin.getIslandInfo(info);
         if (islandInfo == null || islandInfo.getIslandLocation() == null) {
-            send(player, tr("<error>That player is invalid or does not have an island!"));
+            sendErrorTr(player, "That player is invalid or does not have an island!");
             return false;
         }
         final boolean shouldRecalculate = player.getName().equals(info.getPlayerName()) || player.hasPermission("usb.admin.island");
         final Runnable showInfo = () -> {
             if (player != null && player.isOnline() && info != null) {
-                send(player, tr("Information about <primary><player></primary>'s island:", unparsed("player", islandPlayer)));
+                sendTr(player, "Information about <primary><player></primary>'s island:", unparsed("player", islandPlayer));
                 if (cmd.equalsIgnoreCase("level")) {
                     IslandRank rank = plugin.getIslandLogic().getRank(info.locationForParty());
                     if (rank != null) {
                         send(player,
-                            tr("<secondary>Island level is <score:'###.##'>", number("score", rank.getScore())),
-                            tr("<primary>Rank is <rank>", unparsed("rank", String.valueOf(rank.getRank()))));
+                            tr("Island level is <score:'###.##'>", SECONDARY, number("score", rank.getScore())),
+                            tr("Rank is <rank>", PRIMARY, unparsed("rank", String.valueOf(rank.getRank()))));
                     } else {
-                        send(player, tr("<error>Could not locate rank of <player>", unparsed("player", islandPlayer)));
+                        sendErrorTr(player, "Could not locate rank of <player>", unparsed("player", islandPlayer));
                     }
                 }
             }

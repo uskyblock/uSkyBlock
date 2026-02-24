@@ -40,6 +40,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.util.Msg.plainText;
 
 public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.api.PlayerInfo {
@@ -319,21 +321,21 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         String trustedOn = String.join(", ", playerData.getStringList("trustedOn"));
         return new Component[] {
             // I18N: Header line for the admin player info debug output.
-            tr("<primary>Player Info:"),
+            tr("Player Info:", PRIMARY),
             // I18N: Label for the account name in admin player info debug output.
-            tr("<muted>  - name: <primary><name></primary>", unparsed("name", getPlayerName())),
+            tr("  - name: <primary><name></primary>", MUTED, unparsed("name", getPlayerName())),
             // I18N: Label for the display name / nickname in admin player info debug output.
-            tr("<muted>  - nick: <primary><nick></primary>", legacyArg("nick", getDisplayName())),
+            tr("  - nick: <primary><nick></primary>", MUTED, legacyArg("nick", getDisplayName())),
             // I18N: Label showing whether the player currently owns an island in admin player info output.
-            tr("<muted>  - hasIsland: <primary><has-island></primary>", unparsed("has-island", String.valueOf(getHasIsland()))),
+            tr("  - hasIsland: <primary><has-island></primary>", MUTED, unparsed("has-island", String.valueOf(getHasIsland()))),
             // I18N: Label for the stored home location in admin player info debug output.
-            tr("<muted>  - home: <primary><home></primary>", unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())))),
+            tr("  - home: <primary><home></primary>", MUTED, unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())))),
             // I18N: Label for the player's island center location in admin player info debug output.
-            tr("<muted>  - island: <primary><island></primary>", unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())))),
+            tr("  - island: <primary><island></primary>", MUTED, unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())))),
             // I18N: Label for the list of island names this player is banned from in admin player info output.
-            tr("<muted>  - banned from: <primary><banned-islands></primary>", unparsed("banned-islands", bannedFrom)),
+            tr("  - banned from: <primary><banned-islands></primary>", MUTED, unparsed("banned-islands", bannedFrom)),
             // I18N: Label for the list of islands where this player is trusted in admin player info output.
-            tr("<muted>  - trusted on: <primary><trusted-islands></primary>", unparsed("trusted-islands", trustedOn))
+            tr("  - trusted on: <primary><trusted-islands></primary>", MUTED, unparsed("trusted-islands", trustedOn))
         };
     }
 

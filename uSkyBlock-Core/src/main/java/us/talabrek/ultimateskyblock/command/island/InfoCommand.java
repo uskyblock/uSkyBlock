@@ -13,9 +13,6 @@ import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,11 +20,14 @@ import java.util.logging.Logger;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.util.Msg.sendNoCommandAccess;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class InfoCommand extends RequireIslandCommand {
 
@@ -43,23 +43,23 @@ public class InfoCommand extends RequireIslandCommand {
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
         if (!Settings.island_useIslandLevel) {
-            send(player, tr("<error>Island level has been disabled, contact an administrator."));
+            sendErrorTr(player, "Island level has been disabled, contact an administrator.");
             return true;
         }
         if (PatienceTester.isRunning(player, "usb.island.info.active")) {
             return true;
         }
         if (player.hasMetadata("usb.island.info.active")) {
-            send(player, tr("<error>Hold your horses!</error> <muted>You have to be patient."));
+            sendErrorTr(player, "Hold your horses! <muted>You have to be patient.");
             return true;
         }
         if (args.length == 0 || (args.length == 1 && args[0].matches("\\d*"))) {
             if (!plugin.playerIsOnIsland(player)) {
-                send(player, tr("<error>You must be on your island to use this command."));
+                sendErrorTr(player, "You must be on your island to use this command.");
                 return true;
             }
             if (!island.isParty() && !pi.getHasIsland()) {
-                send(player, tr("<error>You do not have an island!"));
+                sendErrorTr(player, "You do not have an island!");
             } else {
                 getIslandInfo(player, player.getName(), alias, args.length == 1 ? Integer.parseInt(args[0], 10) : 1);
             }
@@ -78,7 +78,7 @@ public class InfoCommand extends RequireIslandCommand {
     public boolean getIslandInfo(final Player player, final String islandPlayer, final String cmd, final int page) {
         PlayerInfo info = plugin.getPlayerInfo(islandPlayer);
         if (info == null || !info.getHasIsland()) {
-            send(player, tr("<error>That player is invalid or does not have an island!"));
+            sendErrorTr(player, "That player is invalid or does not have an island!");
             return false;
         }
         final PlayerInfo playerInfo = islandPlayer.equals(player.getName()) ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(islandPlayer);
@@ -94,19 +94,19 @@ public class InfoCommand extends RequireIslandCommand {
                     if (currentPage > maxPage) {
                         currentPage = maxPage;
                     }
-                    send(player, tr("Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):",
+                    sendTr(player, "Blocks on <primary><player></primary>'s island (page <primary><page></primary> of <primary><max-page></primary>):",
                         unparsed("player", islandPlayer),
                         unparsed("page", String.valueOf(currentPage)),
-                        unparsed("max-page", String.valueOf(maxPage))));
+                        unparsed("max-page", String.valueOf(maxPage)));
                     if (cmd.equalsIgnoreCase("info") && getState() != null) {
-                        send(player, tr("Score Count Block"));
+                        sendTr(player, "Score Count Block");
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {
                             sendLegacy(player, score.getState().getColor() + miniToLegacy("<score:'00.00'>  <count:'#'> <block>",
                                 number("score", score.getScore()),
                                 number("count", score.getCount()),
                                 legacyArg("block", ItemStackUtil.getBlockName(score.getBlockData()))));
                         }
-                        send(player, tr("<secondary>Island level is <level:'###.##'>", number("level", getState().getScore())));
+                        sendTr(player, "Island level is <level:'#.##'>", SECONDARY, number("level", getState().getScore()));
                     }
                 }
                 PatienceTester.stopRunning(player, "usb.island.info.active");

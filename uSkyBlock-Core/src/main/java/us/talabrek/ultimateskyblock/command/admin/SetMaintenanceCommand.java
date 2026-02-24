@@ -6,12 +6,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Enables the user to toggle maintenance mode on and off.
@@ -32,15 +31,15 @@ public class SetMaintenanceCommand extends AbstractCommand {
                 boolean maintenanceMode = Boolean.parseBoolean(args[0]);
                 plugin.setMaintenanceMode(maintenanceMode);
                 if (maintenanceMode) {
-                    send(sender, tr("<error>MAINTENANCE:</error> <muted>Enabled. All uSkyBlock gameplay features are now disabled."));
+                    sendErrorTr(sender, "MAINTENANCE: <muted>Enabled. All uSkyBlock gameplay features are now disabled.");
                 } else {
-                    send(sender, tr("<error>MAINTENANCE:</error> <muted>Disabled. All uSkyBlock gameplay features are now operational."));
+                    sendErrorTr(sender, "MAINTENANCE: <muted>Disabled. All uSkyBlock gameplay features are now operational.");
                 }
             } else {
                 return false;
             }
         } else {
-            send(sender, tr("<error>Maintenance mode can only be changed from console!"));
+            sendErrorTr(sender, "Maintenance mode can only be changed from console!");
         }
         return true;
     }

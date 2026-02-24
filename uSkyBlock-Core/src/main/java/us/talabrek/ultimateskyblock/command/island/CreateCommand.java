@@ -9,15 +9,14 @@ import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.time.Duration;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 public class CreateCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
@@ -39,13 +38,13 @@ public class CreateCommand extends RequirePlayerCommand {
         } else if (pi.getHasIsland()) {
             IslandInfo island = plugin.getIslandInfo(pi);
             if (island.isLeader(player)) {
-                send(player, tr("<error>Island found.</error> <muted>You already have an island. If you want a fresh island, use <cmd>/is restart</cmd>."));
+                sendErrorTr(player, "You already have an island. <muted>If you want a fresh island, use <cmd>/is restart</cmd>.");
             } else {
-                send(player, tr("<error>Island found.</error> <muted>You are already a member of an island. To start your own, first use <cmd>/is leave</cmd>."));
+                sendErrorTr(player, "You are already a member of an island. <muted>To start your own, first use <cmd>/is leave</cmd>.");
             }
         } else {
-            send(player, tr("You can create a new island in <primary><seconds></primary> seconds.",
-                unparsed("seconds", String.valueOf(cooldown.toSeconds()))));
+            sendTr(player, "You can create a new island in <primary><seconds></primary> seconds.",
+                unparsed("seconds", String.valueOf(cooldown.toSeconds())));
         }
         return true;
     }

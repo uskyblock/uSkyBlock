@@ -9,7 +9,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Logger;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 
 /**
  * Internal state of a job
@@ -59,14 +61,16 @@ class PlayerJob {
 
     public int progress(int blocksPlaced) {
         if (blocksPlaced < startOffset) {
-            showProgress(I18nUtil.tr("<muted>Waiting for our turn: <primary><progress:'###'>%</primary>",
+            showProgress(tr("Waiting for our turn: <primary><progress:'###'>%</primary>",
+                MUTED,
                 number("progress", 100d * blocksPlaced / startOffset)));
             log.finer("waiting: " + this);
             return blocksPlaced;
         }
         this.placedBlocks = Math.min(blocksPlaced - startOffset, (maxQueuedBlocks - offset));
         this.percentage = Math.floor(Math.min((100d * getPlacedBlocks() / maxQueuedBlocks), 100));
-        showProgress(I18nUtil.tr("<muted>Creating island: <primary><progress:'###'>%</primary>", number("progress", percentage)));
+        showProgress(tr("Creating island: <primary><progress:'###'>%</primary>",
+            MUTED, number("progress", percentage)));
         log.finer("progress: " + this);
         return blocksPlaced - placedBlocks;
     }

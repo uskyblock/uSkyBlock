@@ -1,6 +1,8 @@
 package dk.lockfuglsang.minecraft.command;
 
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -68,7 +70,8 @@ public class DocumentCommand extends AbstractCommand {
             sender.sendMessage(trLegacy("Wrote documentation to <file>", unparsed("file", docFile.getAbsolutePath())));
             return true;
         } catch (IOException e) {
-            sender.sendMessage(trLegacy("<error>Error writing documentation: <reason>",
+            sender.sendMessage(trLegacy("Error writing documentation: <reason>",
+                Style.style(NamedTextColor.RED),
                 unparsed("reason", e.getMessage() != null ? e.getMessage() : "")));
         }
         return false;

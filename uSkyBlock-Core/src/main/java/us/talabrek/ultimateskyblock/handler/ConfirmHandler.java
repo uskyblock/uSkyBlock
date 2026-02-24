@@ -2,12 +2,10 @@ package us.talabrek.ultimateskyblock.handler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.util.Scheduler;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,6 +14,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Handles confirms.
@@ -64,12 +63,12 @@ public class ConfirmHandler {
         scheduler.async(() -> {
             ConfirmCommand confirmCommand = confirmMap.remove(uuid);
             if (confirmCommand != null && player.isOnline()) {
-                send(player, I18nUtil.tr("<cmd><command></cmd> timed out.", unparsed("command", command)));
+                sendTr(player, "<cmd><command></cmd> timed out.", unparsed("command", command));
             }
         }, timeout);
-        send(player, I18nUtil.tr("Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>",
+        sendTr(player, "Running <cmd><command></cmd> is <error>risky</error>. <muted>Repeat it within <primary><timeout></primary> seconds to confirm.</muted>",
             unparsed("command", command),
-            unparsed("timeout", String.valueOf(timeout.toSeconds()))));
+            unparsed("timeout", String.valueOf(timeout.toSeconds())));
         return false;
     }
 

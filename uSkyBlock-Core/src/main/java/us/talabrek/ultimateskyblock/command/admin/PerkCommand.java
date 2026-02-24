@@ -12,11 +12,10 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
 
 public class PerkCommand extends CompositeCommand {
@@ -51,7 +50,7 @@ public class PerkCommand extends CompositeCommand {
                         sendLegacy(sender, sb.toString().split("\n"));
                         return true;
                     } else {
-                        send(sender, tr("<error>No player named <player> was found!", unparsed("player", args[0])));
+                        sendErrorTr(sender, "No player named <player> was found!", unparsed("player", args[0]));
                     }
                 }
                 return false;

@@ -21,6 +21,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
 
 public class BiomeGui extends InventoryGui {
 
@@ -52,7 +55,7 @@ public class BiomeGui extends InventoryGui {
     }
 
     private static Inventory createInventory(int size) {
-        return Bukkit.createInventory(null, size, trLegacy("<primary>Island Biome"));
+        return Bukkit.createInventory(null, size, trLegacy("Island Biome", PRIMARY));
     }
 
     @Override
@@ -74,7 +77,7 @@ public class BiomeGui extends InventoryGui {
     private InventoryButton createBiomeButton(BiomeEntry biomeEntry, Biome currentBiome) {
         ItemStack displayItem = biomeEntry.displayItem().clone();
         ItemMeta itemMeta = Objects.requireNonNull(displayItem.getItemMeta());
-        itemMeta.setDisplayName(trLegacy("<primary>Biome: <biome>", unparsed("biome", biomeEntry.name())));
+        itemMeta.setDisplayName(trLegacy("Biome: <biome>", PRIMARY, unparsed("biome", biomeEntry.name())));
         List<String> lore = new ArrayList<>(
             Arrays.stream(biomeEntry.description().split("\\R"))
                 .filter(line -> !line.isBlank())
@@ -82,10 +85,10 @@ public class BiomeGui extends InventoryGui {
                 .toList()
         );
         if (biomeEntry.biome().equals(currentBiome)) {
-            lore.add(trLegacy("<secondary><bold>This is your current biome."));
+            lore.add(trLegacy("This is your current biome.", SECONDARY));
             itemMeta.addEnchant(Enchantment.LOYALTY, 1, true);
         } else {
-            lore.add(trLegacy("<primary><bold>Click to change to this biome."));
+            lore.add(trLegacy("Click to change to this biome.", PRIMARY));
         }
         itemMeta.setLore(lore);
         displayItem.setItemMeta(itemMeta);
@@ -164,9 +167,9 @@ public class BiomeGui extends InventoryGui {
     private static String formatRadius(String radius) {
         return switch (radius) {
             // I18N: Used in biome radius display to indicate that a single chunk is affected
-            case "chunk" -> trLegacy("<secondary>chunk");
+            case "chunk" -> trLegacy("chunk", SECONDARY);
             // I18N: Used in biome radius display to indicate that the entire island is affected
-            case "all" -> trLegacy("<secondary>island");
+            case "all" -> trLegacy("island", SECONDARY);
             default -> miniToLegacy("<secondary><radius>", unparsed("radius", radius));
         };
     }
@@ -176,8 +179,8 @@ public class BiomeGui extends InventoryGui {
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.OAK_SIGN);
                 ItemMeta itemMeta = requireNonNull(displayItem.getItemMeta());
-                itemMeta.setDisplayName(trLegacy("<primary>Back to Main Menu"));
-                itemMeta.setLore(List.of(trLegacy("<muted>Click here to return to the main island screen.")));
+                itemMeta.setDisplayName(trLegacy("Back to Main Menu", PRIMARY));
+                itemMeta.setLore(List.of(trLegacy("Click here to return to the main island screen.", MUTED)));
                 displayItem.setItemMeta(itemMeta);
                 return displayItem;
             })

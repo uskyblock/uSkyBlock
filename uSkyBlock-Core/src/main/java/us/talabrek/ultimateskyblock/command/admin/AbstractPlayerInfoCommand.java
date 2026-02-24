@@ -4,12 +4,11 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Command that has <code>player</code> as first argument, and uses playerInfo.
@@ -29,7 +28,7 @@ public abstract class AbstractPlayerInfoCommand extends AbstractCommand {
                 doExecute(sender, playerInfo);
                 return true;
             }
-            send(sender, tr("<error>Invalid player <primary><player></primary> supplied.", unparsed("player", args[0])));
+            sendErrorTr(sender, "Invalid player <primary><player></primary> supplied.", unparsed("player", args[0]));
         }
         return false;
     }

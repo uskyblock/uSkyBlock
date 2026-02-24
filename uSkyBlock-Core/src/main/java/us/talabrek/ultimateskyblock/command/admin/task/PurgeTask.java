@@ -1,13 +1,11 @@
 package us.talabrek.ultimateskyblock.command.admin.task;
 
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.time.Duration;
 import java.util.List;
@@ -16,6 +14,7 @@ import java.util.logging.Level;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Scans for all players on a list of islands.
@@ -35,7 +34,7 @@ public class PurgeTask extends BukkitRunnable {
         this.timer = Timer.start();
         Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
         tracker = new ProgressTracker(sender,
-            marktr("- PURGING: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
+            marktr("- Purging: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
             25,
             feedbackEvery);
         active = true;
@@ -77,9 +76,9 @@ public class PurgeTask extends BukkitRunnable {
             doPurge();
             log(Level.INFO, "Finished purging marked inactive islands.");
             if (active) {
-                send(sender, I18nUtil.tr("<error>PURGE:<primary> Finished purging abandoned islands."));
+                sendErrorTr(sender, "PURGE:<primary> Finished purging abandoned islands.");
             } else {
-                send(sender, I18nUtil.tr("<error>PURGE:<primary> Aborted purging abandoned islands."));
+                sendErrorTr(sender, "PURGE:<primary> Aborted purging abandoned islands.");
             }
         } finally {
             active = false;

@@ -10,7 +10,6 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.io.File;
 import java.time.Duration;
@@ -23,9 +22,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Scans for all players on a list of islands.
@@ -57,7 +56,7 @@ public class PurgeScanTask extends BukkitRunnable {
         Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
         timer = Timer.start();
         tracker = new ProgressTracker(sender,
-            marktr("<muted>- SCANNING: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"),
+            marktr("- Scanning: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"),
             25,
             feedbackEvery);
         active = true;
@@ -125,13 +124,13 @@ public class PurgeScanTask extends BukkitRunnable {
     public void run() {
         generatePurgeList();
         if (!active) {
-            send(sender, tr("<error>PURGE:<primary> Scanning aborted."));
+            sendErrorTr(sender, "PURGE:<primary> Scanning aborted.");
             return;
         }
         log(Level.INFO, "Done scanning - found " + purgeList.size() + " candidates for purging.");
-        send(sender, tr("<error>PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging.",
+        sendErrorTr(sender, "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging.",
             unparsed("count", String.valueOf(purgeList.size())),
-            unparsed("level", String.valueOf(purgeLevel))));
+            unparsed("level", String.valueOf(purgeLevel)));
         done = true;
         if (!purgeList.isEmpty()) {
             callback.run();

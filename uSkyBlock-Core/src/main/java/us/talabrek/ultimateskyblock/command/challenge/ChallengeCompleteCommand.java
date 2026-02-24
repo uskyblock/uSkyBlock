@@ -5,16 +5,13 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
 
 /**
@@ -44,12 +41,12 @@ public class ChallengeCompleteCommand extends AbstractCommand {
             case FOUND -> challengeLogic.completeChallenge(player, result.getChallenge().getId());
             case AMBIGUOUS -> {
                 String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
-                send(player, tr("<error>Ambiguous challenge name: <input>. Did you mean:<suggestions>",
+                sendErrorTr(player, "Ambiguous challenge name: <input>. Did you mean:<suggestions>",
                     unparsed("input", result.getNormalizedInput()),
-                    unparsed("suggestions", hint)));
+                    unparsed("suggestions", hint));
             }
-            case NOT_FOUND -> send(player, tr("<error>No challenge matched: <input>",
-                unparsed("input", result.getNormalizedInput())));
+            case NOT_FOUND -> sendErrorTr(player, "No challenge matched: <input>",
+                unparsed("input", result.getNormalizedInput()));
         }
         return true;
     }

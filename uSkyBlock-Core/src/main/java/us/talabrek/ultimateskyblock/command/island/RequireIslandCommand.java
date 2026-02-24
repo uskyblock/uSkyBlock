@@ -4,11 +4,10 @@ import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
 
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
 
 /**
  * Common command for all the /is commands that require an island.
@@ -44,7 +43,7 @@ public abstract class RequireIslandCommand extends RequirePlayerCommand {
                 return doExecute(alias, player, playerInfo, islandInfo, data, args);
             }
         }
-        send(player, tr("<error>You do not have an island.</error> <muted>Use <cmd>/is create</cmd> to get one."));
+        sendErrorTr(player, "You do not have an island. <muted>Use <cmd>/is create</cmd> to get one.");
         return false;
     }
 }

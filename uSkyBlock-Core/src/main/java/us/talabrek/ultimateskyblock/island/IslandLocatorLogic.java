@@ -16,9 +16,6 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Responsible for keeping track of and locating island locations for new islands.
@@ -107,14 +107,14 @@ public class IslandLocatorLogic {
         if (worldManager.isSkyWorld(player.getWorld()) && !plugin.islandInSpawn(player.getLocation())) {
             Location location = LocationUtil.alignToDistance(player.getLocation(), Settings.island_distance);
             if (isAvailableLocation(location)) {
-                send(player, tr("<primary>Creating an island at your location"));
+                sendTr(player, "Creating an island at your location", PRIMARY);
                 return location;
             }
             Vector v = player.getLocation().getDirection().normalize();
             location = LocationUtil.alignToDistance(location.add(v.multiply(Settings.island_distance)), Settings.island_distance);
             if (isAvailableLocation(location)) {
-                send(player, tr("Creating an island <primary><direction></primary> of you",
-                    component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw())))));
+                sendTr(player, "Creating an island <primary><direction></primary> of you",
+                    component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw()))));
                 return location;
             }
         }

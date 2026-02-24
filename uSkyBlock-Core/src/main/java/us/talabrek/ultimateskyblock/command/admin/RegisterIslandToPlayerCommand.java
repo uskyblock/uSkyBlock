@@ -9,9 +9,10 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Registers an island to a player.
@@ -33,9 +34,9 @@ public class RegisterIslandToPlayerCommand extends AbstractCommand {
         }
         String playerName = args[0];
         if (uSkyBlock.getInstance().devSetPlayerIsland(player, player.getLocation(), playerName)) {
-            send(sender, tr("<secondary>Set <player>'s island to the current island.", unparsed("player", playerName)));
+            sendTr(sender, "Set <player>'s island to the current island.", SECONDARY, unparsed("player", playerName));
         } else {
-            send(sender, tr("<error>Island not found: unable to set the island!"));
+            sendErrorTr(sender, "Island not found: unable to set the island!");
         }
         return true;
     }

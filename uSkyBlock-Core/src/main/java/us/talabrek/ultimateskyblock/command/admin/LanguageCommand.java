@@ -16,9 +16,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
 
 /**
  * Lists and configures plugin locale.
@@ -45,20 +47,20 @@ public class LanguageCommand extends AbstractCommand {
 
         Optional<String> resolvedLocale = I18nUtil.resolveSupportedLocaleKey(args[0]);
         if (resolvedLocale.isEmpty()) {
-            send(sender, tr("<error>Unsupported locale: <locale>", unparsed("locale", args[0])));
-            send(sender, tr("<muted>Use <cmd>/usb lang</cmd> to list all supported locales.</muted>"));
-            send(sender, tr("<muted>Help improve translations: <primary><url></primary></muted>",
-                unparsed("url", I18nUtil.getTranslationSupportUrl())));
+            sendErrorTr(sender, "Unsupported locale: <locale>", unparsed("locale", args[0]));
+            sendTr(sender, "Use <cmd>/usb lang</cmd> to list all supported locales.", MUTED);
+            sendTr(sender, "Help improve translations: <primary><url></primary>",
+                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
             return true;
         }
 
         String localeKey = resolvedLocale.get();
         String current = plugin.getConfig().getString("language", DEFAULT_LOCALE_KEY);
         if (I18nUtil.findSupportedLocaleKey(current).orElse(current).equalsIgnoreCase(localeKey)) {
-            send(sender, tr("<muted>Language is already set to <primary><locale></primary>.</muted>",
-                unparsed("locale", localeKey)));
-            send(sender, tr("<muted>Help improve translations: <primary><url></primary></muted>",
-                unparsed("url", I18nUtil.getTranslationSupportUrl())));
+            sendTr(sender, "Language is already set to <primary><locale></primary>.",
+                MUTED, unparsed("locale", localeKey));
+            sendTr(sender, "Help improve translations: <primary><url></primary>",
+                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
             return true;
         }
 
@@ -66,11 +68,11 @@ public class LanguageCommand extends AbstractCommand {
         plugin.saveConfig();
         Settings.locale = I18nUtil.getLocale(localeKey);
         I18nUtil.setLocale(Settings.locale);
-        send(sender, tr("<secondary>Language updated to <primary><locale></primary>.</secondary>",
-            unparsed("locale", localeKey)));
-        send(sender, tr("<muted>Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.</muted>"));
-        send(sender, tr("<muted>Help improve translations: <primary><url></primary></muted>",
-            unparsed("url", I18nUtil.getTranslationSupportUrl())));
+        sendTr(sender, "Language updated to <primary><locale></primary>.</secondary>",
+            MUTED, unparsed("locale", localeKey));
+        sendTr(sender, "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.", MUTED);
+        sendTr(sender, "Help improve translations: <primary><url></primary>",
+            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
         return true;
     }
 
@@ -80,8 +82,8 @@ public class LanguageCommand extends AbstractCommand {
         Optional<String> systemSupported = I18nUtil.resolveSupportedLocaleKey(Locale.getDefault());
         String currentSupported = I18nUtil.findSupportedLocaleKey(current).orElse(current);
 
-        send(sender, tr("<primary>Available locales (<count>):</primary>",
-            unparsed("count", String.valueOf(supported.size()))));
+        sendTr(sender, "Available locales (<count>):",
+            MUTED, unparsed("count", String.valueOf(supported.size())));
 
         for (int i = 0; i < supported.size(); i += LOCALES_PER_LINE) {
             int end = Math.min(i + LOCALES_PER_LINE, supported.size());
@@ -98,13 +100,13 @@ public class LanguageCommand extends AbstractCommand {
             }
             send(sender, line);
         }
-        send(sender, tr("<muted>Current language: <primary><locale></primary></muted>", unparsed("locale", current)));
+        sendTr(sender, "Current language: <primary><locale></primary>", MUTED, unparsed("locale", current));
         if (systemSupported.isPresent()) {
-            send(sender, tr("<muted>System locale suggestion: <primary><locale></primary></muted>",
-                unparsed("locale", systemSupported.get())));
+            sendTr(sender, "System locale suggestion: <primary><locale></primary>",
+                MUTED, unparsed("locale", systemSupported.get()));
         }
-        send(sender, tr("<muted>Set language with <cmd>/usb lang [locale]</cmd>.</muted>"));
-        send(sender, tr("<muted>Help improve translations: <primary><url></primary></muted>",
-            unparsed("url", I18nUtil.getTranslationSupportUrl())));
+        sendTr(sender, "Set language with <cmd>/usb lang [locale]</cmd>.", MUTED);
+        sendTr(sender, "Help improve translations: <primary><url></primary>",
+            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl()));
     }
 }
