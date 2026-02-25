@@ -3,7 +3,7 @@ package us.talabrek.ultimateskyblock.command.island;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import static us.talabrek.ultimateskyblock.util.Msg.sendPlayerOnly;
+import static us.talabrek.ultimateskyblock.message.Msg.sendPlayerOnly;
 
 import java.util.Map;
 

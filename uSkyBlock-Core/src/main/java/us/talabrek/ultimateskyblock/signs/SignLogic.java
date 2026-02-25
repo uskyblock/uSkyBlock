@@ -40,8 +40,8 @@ import java.util.logging.Logger;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
-import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
  * Responsible for keeping track of signs.

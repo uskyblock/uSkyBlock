@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.handler.asyncworldedit;
 
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -11,7 +10,7 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 
 /**
  * Internal state of a job

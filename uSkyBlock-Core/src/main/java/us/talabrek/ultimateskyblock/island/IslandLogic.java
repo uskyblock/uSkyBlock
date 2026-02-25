@@ -53,12 +53,12 @@ import java.util.logging.Logger;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Responsible for island creation, locating locations, purging, clearing etc.

@@ -21,9 +21,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 
 public class BiomeGui extends InventoryGui {
 

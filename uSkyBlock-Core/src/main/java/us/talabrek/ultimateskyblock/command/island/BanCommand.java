@@ -17,13 +17,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.util.Msg.SUCCESS;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.SUCCESS;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 public class BanCommand extends RequireIslandCommand {
 

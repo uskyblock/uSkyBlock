@@ -35,8 +35,8 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 
 @Singleton
 public class LimitLogic {

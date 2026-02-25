@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Responsible for teleporting (and cancelling teleporting) of players.

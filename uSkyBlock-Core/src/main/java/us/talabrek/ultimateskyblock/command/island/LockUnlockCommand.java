@@ -11,8 +11,8 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendNoCommandAccess;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendNoCommandAccess;
 
 public class LockUnlockCommand extends RequireIslandCommand {
 

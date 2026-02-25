@@ -15,8 +15,8 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.time.Duration;
 
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Task for generating player-info-data after island has been formed.
@@ -79,7 +79,7 @@ public class GenerateTask extends BukkitRunnable {
                         plugin.getTeleportLogic().homeTeleport(player, true);
                     } else {
                         sendTr(player, "<success>Congratulations!</success> Your island is ready.");
-                        sendTr(player, "Use <cmd>/is h</cmd> or the <cmd>/is</cmd> menu to go there.", MUTED);
+                        sendTr(player, "Use <cmd>/is home</cmd> or the <cmd>/is</cmd> menu to go there.", MUTED);
                         sendTr(player, "Note: Construction may still be in progress.", MUTED);
                     }
                 }

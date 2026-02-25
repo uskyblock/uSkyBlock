@@ -14,9 +14,9 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.CMD;
-import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.CMD;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Handles confirms.

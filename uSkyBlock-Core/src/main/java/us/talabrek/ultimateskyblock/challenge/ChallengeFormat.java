@@ -8,7 +8,7 @@ import java.util.List;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 
 public final class ChallengeFormat {
     public static String getMissingRequirement(PlayerInfo playerInfo, List<String> requiredChallenges, ChallengeLogic challengeLogic) {

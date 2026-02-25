@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 
 /**
  * Displays detailed version information.

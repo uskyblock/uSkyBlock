@@ -9,7 +9,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.util.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 
 public class MobLimitCommand extends AbstractIslandInfoCommand {
     private final uSkyBlock plugin;

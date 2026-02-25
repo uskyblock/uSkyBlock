@@ -10,7 +10,7 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import java.time.Duration;
 
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Task instead of anonymous runnable - so we get some info on /timings paste

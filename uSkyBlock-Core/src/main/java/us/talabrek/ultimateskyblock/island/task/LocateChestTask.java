@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
  * A task that looks for a chest at an island location.

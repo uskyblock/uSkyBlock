@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 
 /**
  * Responsible for controlling spawns on uSkyBlock islands.
