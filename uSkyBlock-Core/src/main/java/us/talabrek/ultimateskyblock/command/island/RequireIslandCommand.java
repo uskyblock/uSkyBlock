@@ -7,7 +7,7 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Map;
 
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
  * Common command for all the /is commands that require an island.

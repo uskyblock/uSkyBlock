@@ -16,8 +16,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static us.talabrek.ultimateskyblock.util.Msg.plainText;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.message.Msg.plainText;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
 
 /**
  * Notifier that tries to minimize spam.

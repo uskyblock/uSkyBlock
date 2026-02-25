@@ -1,4 +1,4 @@
-package us.talabrek.ultimateskyblock.util;
+package us.talabrek.ultimateskyblock.message;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import net.kyori.adventure.text.Component;
@@ -19,8 +19,9 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  * through this helper so delivery internals can evolve without another
  * codebase-wide refactor.</p>
  */
-public enum Msg {
-    ;
+public class Msg {
+    private Msg() {
+    }
 
     private static final Delivery DEFAULT_DELIVERY = (sender, message) -> sender.sendMessage(I18nUtil.legacy(message));
     private static volatile Delivery delivery = DEFAULT_DELIVERY;

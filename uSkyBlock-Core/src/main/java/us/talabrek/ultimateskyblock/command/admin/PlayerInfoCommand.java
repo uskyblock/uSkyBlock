@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.util.Msg.send;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
 
 public class PlayerInfoCommand extends AbstractPlayerInfoCommand {
 

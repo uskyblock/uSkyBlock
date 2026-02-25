@@ -55,11 +55,11 @@ import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PA
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
-import static us.talabrek.ultimateskyblock.util.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.util.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.util.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.util.Msg.SECONDARY;
-import static us.talabrek.ultimateskyblock.util.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 // TODO: Move all the texts to resource-files (translatable).
 
@@ -647,7 +647,7 @@ public class SkyBlockMenu {
                 menuItem = new ItemStack(Material.PODZOL, 1);
                 meta4 = requireNonNull(menuItem.getItemMeta());
                 meta4.setDisplayName(trLegacy("Restart Island", ERROR));
-                addLore(lores, "\u00a7f", trLegacy("Restarts your island.<newline><error>Warning! will remove your items and island!</error>"));
+                addLore(lores, "\u00a7f", trLegacy("Restarts your island.<newline><error>Warning! This will remove your items and island!</error>"));
                 meta4.setLore(lores);
                 menuItem.setItemMeta(meta4);
                 menu.setItem(17, menuItem);
