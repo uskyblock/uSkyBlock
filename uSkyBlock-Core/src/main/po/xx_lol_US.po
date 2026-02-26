@@ -39,8 +39,9 @@ msgstr "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, 
 msgid "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
 msgstr "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
 
-msgid "<block>: <count> (max. <max>)"
-msgstr "<block>: <count> (max. <max>)"
+#. I18N: A summary of block limits on an island
+msgid "<block-type>: <count> (max. <max>)"
+msgstr "<block-type>: <count> (max. <max>)"
 
 msgid "<command> timed out."
 msgstr "<command> timed out."
@@ -48,6 +49,11 @@ msgstr "<command> timed out."
 msgid "<count> old island locations will be used before new ones."
 msgstr "<count> old cathouz locations will be used before new ones."
 
+#. I18N: A summary of entity group limits on an island
+msgid "<entity-group>: <count> (max. <max>)"
+msgstr "<entity-group>: <count> (max. <max>)"
+
+#. I18N: A UI string indicating a player does not have a particular permission
 msgid "<error>Cannot</error> <permission>"
 msgstr "<error>Cannot</error> <permission>"
 
@@ -172,14 +178,12 @@ msgstr "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<require
 msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
 msgstr "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> wuz found.<newline>"
 
+#. I18N: A UI string indicating a player has a particular permission
 msgid "<success>Can</success> <permission>"
 msgstr "<success>Can</success> <permission>"
 
 msgid "<success>Congratulations!</success> Your island is ready."
 msgstr "<success>Congratulations!</success> Yoor cathouz iz ready."
-
-msgid "<type>: <count> (max. <max>)"
-msgstr "<type>: <count> (max. <max>)"
 
 msgid "A protect-all task is already running. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
 msgstr "A protect-all task iz already running. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
