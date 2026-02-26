@@ -14,10 +14,10 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class CreateCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
@@ -44,8 +44,9 @@ public class CreateCommand extends RequirePlayerCommand {
                 sendErrorTr(player, "You are already a member of an island. <muted>To start your own, first use <cmd>/is leave</cmd>.");
             }
         } else {
+            // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
             sendTr(player, "You can create a new island in <seconds> seconds.",
-                unparsed("seconds", String.valueOf(cooldown.toSeconds()), PRIMARY));
+                number("seconds", cooldown.toSeconds(), PRIMARY));
         }
         return true;
     }

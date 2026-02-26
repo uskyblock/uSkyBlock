@@ -39,10 +39,10 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.plainText;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.api.PlayerInfo {
     private static final String CN = PlayerInfo.class.getName();
@@ -329,9 +329,9 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
             // I18N: Label showing whether the player currently owns an island in admin player info output.
             tr("  - hasIsland: <has-island>", MUTED, unparsed("has-island", String.valueOf(getHasIsland()), PRIMARY)),
             // I18N: Label for the stored home location in admin player info debug output.
-            tr("  - home: <home>", MUTED, unparsed("home", String.valueOf(LocationUtil.asString(getHomeLocation())), PRIMARY)),
+            tr("  - home: <home>", MUTED, unparsed("home", LocationUtil.asString(getHomeLocation()), PRIMARY)),
             // I18N: Label for the player's island center location in admin player info debug output.
-            tr("  - island: <island>", MUTED, unparsed("island", String.valueOf(LocationUtil.asString(getIslandLocation())), PRIMARY)),
+            tr("  - island: <island>", MUTED, unparsed("island", LocationUtil.asString(getIslandLocation()), PRIMARY)),
             // I18N: Label for the list of island names this player is banned from in admin player info output.
             tr("  - banned from: <banned-islands>", MUTED, unparsed("banned-islands", bannedFrom, PRIMARY)),
             // I18N: Label for the list of islands where this player is trusted in admin player info output.

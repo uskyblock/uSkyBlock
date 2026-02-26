@@ -58,9 +58,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
@@ -69,6 +67,8 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendError;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * The home of challenge business logic.
@@ -348,7 +348,7 @@ public class ChallengeLogic implements Listener {
             if (!tryCompleteOnIsland(player, challenge)) {
                 sendError(player, dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy(challenge.getDescription()));
                 sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
-                    unparsed("radius", String.valueOf(challenge.getRadius())));
+                    number("radius", challenge.getRadius()));
             }
         } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
             if (!tryCompleteIslandLevel(player, challenge)) {
@@ -448,7 +448,7 @@ public class ChallengeLogic implements Listener {
             for (Map.Entry<EntityMatch, Integer> entry : countMap.entrySet()) {
                 send(player, parseMini(
                     "<muted> - <count> x <entity>",
-                    unparsed("count", String.valueOf(entry.getValue()), ERROR),
+                    number("count", entry.getValue(), ERROR),
                     component("entity", entry.getKey().getDisplayName().applyFallbackStyle(PRIMARY))
                 ));
             }
@@ -470,7 +470,7 @@ public class ChallengeLogic implements Listener {
                 String name = ItemStackUtil.getItemName(requiredType);
                 if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
                     sb.append(miniToLegacy(" <count> <item>",
-                        unparsed("count", String.valueOf(requiredAmount - getCountOf(player.getInventory(), requiredType)), ERROR),
+                        number("count", requiredAmount - getCountOf(player.getInventory(), requiredType), ERROR),
                         Placeholder.legacy("item", name, PRIMARY)));
                     hasAll = false;
                 }
@@ -519,18 +519,18 @@ public class ChallengeLogic implements Listener {
             wasBroadcast = true;
         }
         sendTr(player, "Item rewards: <items>", Placeholder.legacy("items", reward.getRewardText(), PRIMARY));
-        sendTr(player, "XP reward: <primary><experience:'#.#'></primary>", number("experience", reward.getXpReward()));
+        sendTr(player, "XP reward: <experience:'0'>", number("experience", reward.getXpReward(), PRIMARY));
         if (defaults.enableEconomyPlugin) {
             double rewBonus = 1;
             Perk perk = perkLogic.getPerk(player);
             rewBonus += perk.getRewBonus();
             double currencyReward = reward.getCurrencyReward() * rewBonus;
-            double percentage = (rewBonus - 1.0) * 100.0;
+            double percentage = (rewBonus - 1.0);
 
             hookManager.getEconomyHook().ifPresent((hook) -> {
                 hook.depositPlayer(player, currencyReward);
 
-                sendTr(player, "Currency reward: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>",
+                sendTr(player, "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>",
                     number("amount", currencyReward),
                     unparsed("currency", hook.getCurrenyName()),
                     number("bonus", percentage));

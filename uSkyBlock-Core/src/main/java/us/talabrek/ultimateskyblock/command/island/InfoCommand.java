@@ -21,14 +21,14 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendNoCommandAccess;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class InfoCommand extends RequireIslandCommand {
 
@@ -102,12 +102,12 @@ public class InfoCommand extends RequireIslandCommand {
                     if (cmd.equalsIgnoreCase("info") && getState() != null) {
                         sendTr(player, "Score Count Block");
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {
-                            sendLegacy(player, score.getState().getColor() + miniToLegacy("<score:'00.00'>  <count:'#'> <block>",
+                            sendLegacy(player, score.getState().getColor() + miniToLegacy("<score:'#,##0.00'>  <count:'#,##0'> <block>",
                                 number("score", score.getScore()),
                                 number("count", score.getCount()),
                                 legacyArg("block", ItemStackUtil.getBlockName(score.getBlockData()))));
                         }
-                        sendTr(player, "Island level is <level:'#.##'>", SECONDARY, number("level", getState().getScore()));
+                        sendTr(player, "Island level is <level:'#,##0'>", SECONDARY, number("level", getState().getScore()));
                     }
                 }
                 PatienceTester.stopRunning(player, "usb.island.info.active");

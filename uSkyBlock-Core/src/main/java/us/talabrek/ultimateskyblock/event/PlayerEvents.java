@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
-import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -58,11 +57,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 @Singleton
 public class PlayerEvents implements Listener {
@@ -128,7 +128,7 @@ public class PlayerEvents implements Listener {
             Instant lastClick = obsidianClick.get(player.getUniqueId());
             if (lastClick != null && lastClick.plus(OBSIDIAN_SPAM).isAfter(now)) {
                 plugin.notifyPlayer(player, tr("You can only convert obsidian once every <cooldown> seconds",
-                    ERROR, Formatter.number("cooldown", OBSIDIAN_SPAM.toSeconds())));
+                    ERROR, number("cooldown", OBSIDIAN_SPAM.toSeconds())));
                 return;
             }
             PlayerInventory inventory = player.getInventory();

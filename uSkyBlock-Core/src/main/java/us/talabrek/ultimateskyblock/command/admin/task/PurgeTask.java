@@ -13,8 +13,8 @@ import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
  * Scans for all players on a list of islands.
@@ -34,7 +34,7 @@ public class PurgeTask extends BukkitRunnable {
         this.timer = Timer.start();
         Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
         tracker = new ProgressTracker(sender,
-            marktr("- Purging: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
+            marktr("- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
             25,
             feedbackEvery);
         active = true;

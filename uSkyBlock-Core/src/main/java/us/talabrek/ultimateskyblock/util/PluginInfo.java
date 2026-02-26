@@ -19,9 +19,10 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.uSkyBlock.depends;
-import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 
 public class PluginInfo {
 
@@ -59,15 +60,15 @@ public class PluginInfo {
         msg.append(miniToLegacy("<muted>Version: <primary><version><newline>",
             unparsed("version", description.getVersion())));
         msg.append(miniToLegacy("<muted>Description: <primary><description><newline>",
-            unparsed("description", String.valueOf(description.getDescription()))));
+            unparsed("description", description.getDescription())));
         msg.append(miniToLegacy("<muted>Language: <primary><language> (<locale>)<newline>",
-            unparsed("language", String.valueOf(config.getYamlConfig().get("language", "en"))),
+            unparsed("language", config.getYamlConfig().getString("language", "en")),
             unparsed("locale", String.valueOf(I18nUtil.getI18n().getLocale()))));
         msg.append(miniToLegacy("<primary>  State: d=<distance>, r=<radius>, i=<islands>, p=<players>, n=<nether>, awe=<awe><newline>",
-            unparsed("distance", String.valueOf(Settings.island_distance)),
-            unparsed("radius", String.valueOf(Settings.island_radius)),
-            unparsed("islands", String.valueOf(islandLogic.getSize())),
-            unparsed("players", String.valueOf(playerLogic.getSize())),
+            number("distance", Settings.island_distance),
+            number("radius", Settings.island_radius),
+            number("islands", islandLogic.getSize()),
+            number("players", playerLogic.getSize()),
             unparsed("nether", String.valueOf(Settings.nether_enabled)),
             unparsed("awe", String.valueOf(AsyncWorldEditHandler.isAWE()))));
         msg.append(miniToLegacy("<muted>Server: <primary><name> <version></primary><newline>",

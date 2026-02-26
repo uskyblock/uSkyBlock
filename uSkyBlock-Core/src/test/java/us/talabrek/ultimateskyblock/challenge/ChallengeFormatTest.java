@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 public class ChallengeFormatTest {
@@ -51,7 +51,7 @@ public class ChallengeFormatTest {
         when(pumpkinfarmer.getTimesCompleted()).thenReturn(0);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
-        assertThat(missingRequirement, is("§9Cobble Stone Generator, §a2§rx §aPumpkin §9Farmer"));
+        assertThat(missingRequirement, is("§9Cobble Stone Generator, §a2§7x §aPumpkin §9Farmer"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ChallengeFormatTest {
         when(cobblestonegenerator.getTimesCompleted()).thenReturn(1);
 
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, Arrays.asList("cobblestonegenerator", "pumpkinfarmer:2"), challengeLogic);
-        assertThat(missingRequirement, is("§a2§rx §aPumpkin §9Farmer"));
+        assertThat(missingRequirement, is("§a2§7x §aPumpkin §9Farmer"));
     }
 
     @Test

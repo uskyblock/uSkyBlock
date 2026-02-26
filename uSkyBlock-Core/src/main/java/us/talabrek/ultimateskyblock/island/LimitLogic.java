@@ -20,7 +20,6 @@ import org.bukkit.entity.WaterMob;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.HashMap;
@@ -28,15 +27,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Placeholder.legacy;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 @Singleton
 public class LimitLogic {
@@ -166,19 +166,19 @@ public class LimitLogic {
             int blockCount = blockLimitLogic.getCount(entry.getKey(), islandInfo.getIslandLocation());
             if (blockCount >= 0) {
                 String current = blockCount >= entry.getValue()
-                    ? miniToLegacy("<error><count>", unparsed("count", String.valueOf(blockCount)))
+                    ? miniToLegacy("<error><count>", number("count", blockCount))
                     : String.valueOf(blockCount);
                 sb.append(trLegacy("<block>: <count> (max. <max>)",
                     MUTED,
-                    legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    Placeholder.legacy("count", current, SECONDARY),
-                    unparsed("max", String.valueOf(entry.getValue())))).append("\n");
+                    legacy("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacy("count", current, SECONDARY),
+                    number("max", entry.getValue()))).append("\n");
             } else {
                 sb.append(trLegacy("<block>: <count> (max. <max>)",
                     MUTED,
-                    legacyArg("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    Placeholder.legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
-                    unparsed("max", String.valueOf(entry.getValue())))).append("\n");
+                    legacy("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
+                    number("max", entry.getValue()))).append("\n");
             }
         }
         return sb.toString().trim();

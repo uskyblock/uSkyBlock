@@ -30,14 +30,14 @@ msgstr "** You be leaving <leader>'s cathouz."
 msgid "** You are leaving an abandoned island."
 msgstr "** You be leaving an abandoned cathouz."
 
-msgid "- Protect-All <progress_pct:'##'>% (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr "- Protect-All <progress_pct:'##'>% (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
+msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
+msgstr "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
 
-msgid "- Purging: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
-msgstr "- Purging: <progress_pct:'##'>% (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
+msgid "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
+msgstr "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
 
-msgid "- Scanning: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"
-msgstr "- Scanning: <progress_pct:'##'>% (<progress>/<total> failed: <failed>) ~ <elapsed>"
+msgid "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
+msgstr "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
 
 msgid "<block>: <count> (max. <max>)"
 msgstr "<block>: <count> (max. <max>)"
@@ -162,6 +162,7 @@ msgstr "<player>'s permissions"
 msgid "<primary>SKY</primary><muted> ></muted> <message>"
 msgstr "<primary>SKY</primary><muted> ></muted> <message>"
 
+#. I18N: <page> and <max-page> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names unchanged.
 msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 msgstr "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 
@@ -405,14 +406,11 @@ msgstr "Creating a cathouz <direction> of you"
 msgid "Creating an island at your location"
 msgstr "Creating a cathouz at yoor location"
 
-msgid "Creating island: <primary><progress:'###'>%</primary>"
-msgstr "Creating cathouz: <primary><progress:'###'>%</primary>"
+msgid "Currency reward: <currency:'#,##0'>"
+msgstr "Moniez kitteh treet: <currency:'#,##0'>"
 
-msgid "Currency reward: <currency>"
-msgstr "Moniez kitteh treet: <currency>"
-
-msgid "Currency reward: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>"
-msgstr "Moniez kitteh treet: <primary><amount:'###.##'> <currency></primary> <secondary>(<bonus:'##.##'>)%</secondary>"
+msgid "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
+msgstr "Moniez kitteh treet: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
 
 msgid "Current biome: <biome>"
 msgstr "Current baium: <biome>"
@@ -420,8 +418,9 @@ msgstr "Current baium: <biome>"
 msgid "Current language: <locale>"
 msgstr "Current language: <locale>"
 
-msgid "Current level: <secondary><level:'#.0'></secondary>"
-msgstr "Current level: <secondary><level:'#.0'></secondary>"
+#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
+msgid "Current level: <level:'#,##0'>"
+msgstr "Current level: <level:'#,##0'>"
 
 msgid "Current page"
 msgstr "Current page"
@@ -484,6 +483,7 @@ msgstr "Getting yoor cathouz ready. Please be patient, this can take a while."
 msgid "Golems"
 msgstr "Golems"
 
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 msgid "Group members: <current>/<max>"
 msgstr "Group members: <current>/<max>"
 
@@ -590,11 +590,8 @@ msgstr "Cathouz at this location haz members.<newline><muted>Use <cmd>/usb catho
 msgid "Island level has been disabled, contact an administrator."
 msgstr "Cathouz level haz been disabled, contact an administrator."
 
-msgid "Island level is <level:'#.##'>"
-msgstr "Cathouz level iz <level:'#.##'>"
-
-msgid "Island level is <score:'###.##'>"
-msgstr "Cathouz level iz <score:'###.##'>"
+msgid "Island level is <level:'#,##0'>"
+msgstr "Cathouz level iz <level:'#,##0'>"
 
 msgid "Island not found: unable to set the island!"
 msgstr "Cathouz not found: unable to set teh cathouz!"
@@ -709,6 +706,7 @@ msgstr "Cats"
 msgid "Members are already trusted!"
 msgstr "Members be already trusted!"
 
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 msgid "Members: <current>/<max>"
 msgstr "Members: <current>/<max>"
 
@@ -836,6 +834,7 @@ msgstr "PURGE:<primary> Scanning aborted."
 msgid "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
 msgstr "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
 
+#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
 msgid "Page <page>"
 msgstr "Page <page>"
 
@@ -877,8 +876,8 @@ msgstr "Kitteh Permissions"
 msgid "Player is already assigned to this island!"
 msgstr "Kitteh iz already assigned to this cathouz!"
 
-msgid "Progress: <progress_pct:'##'>% (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr "Progress: <progress_pct:'##'>% (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
+msgid "Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
+msgstr "Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
 
 msgid "Purge aborted!"
 msgstr "Purrrge aborted!"
@@ -947,6 +946,7 @@ msgstr "Return to yoor cathouz's home<newline>point. You can change yoor home<ne
 msgid "Riding is only allowed on your own island."
 msgstr "Riding iz only allowed on yoor own cathouz."
 
+#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
 msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
 msgstr "Running <command> iz <error>risky</error>. <muted>Repeat it wiffin <timeout> seconds to confirm.</muted>"
 
@@ -1178,8 +1178,9 @@ msgstr "Toggled <chat-type> chat off."
 msgid "Toggled permission <permission> for <player> to <state>."
 msgstr "Toggled permission <permission> for <player> to <state>."
 
-msgid "Top ten list is empty! <muted>Only islands above level <level> are considered."
-msgstr "Top ten list iz empty! <muted>Only cathouzez above level <level> be considered."
+#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
+msgid "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered."
+msgstr "Top ten list iz empty! <muted>Only cathouzez above level <level:'#,##0'> be considered."
 
 msgid "Total completions: <times>"
 msgstr "Total completions: <times>"
@@ -1288,9 +1289,6 @@ msgstr "Villagers"
 msgid "Visitors can't drop items."
 msgstr "Visitors can't drop items."
 
-msgid "Waiting for our turn: <primary><progress:'###'>%</primary>"
-msgstr "Waiting for our turn: <primary><progress:'###'>%</primary>"
-
 msgid "Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
 msgstr "Want to join another kitteh's<newline>cathouz instead of starting<newline>yoor own? If another kitteh<newline>invites you to their cathouz<newline>you can click here or use<newline><cmd>/is accept</cmd> to join 'dem.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
 
@@ -1330,11 +1328,8 @@ msgstr "When yoor warp iz activated,<newline>other kittehs will be taken to<newl
 msgid "Wrote documentation to <file>"
 msgstr "Wrote documentation to <file>"
 
-msgid "XP reward: <experience>"
-msgstr "XP kitteh treet: <experience>"
-
-msgid "XP reward: <primary><experience:'#.#'></primary>"
-msgstr "XP kitteh treet: <primary><experience:'#.#'></primary>"
+msgid "XP reward: <experience:'0'>"
+msgstr "XP kitteh treet: <experience:'0'>"
 
 msgid "You <success>accepted</success> the invitation to join an island."
 msgstr "You <success>accepted</success> teh invitashun to join a cathouz."
@@ -1357,6 +1352,7 @@ msgstr "You be still missing teh following items:<items>"
 msgid "You banned <player> from warping to your island."
 msgstr "You banned <player> from warping to yoor cathouz."
 
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 msgid "You can change your biome again in <seconds> seconds."
 msgstr "You can change yoor baium again in <seconds> seconds."
 
@@ -1372,6 +1368,7 @@ msgstr "You can complete this again in <hours> hours."
 msgid "You can complete this again in <minutes> minutes."
 msgstr "You can complete this again in <minutes> minutes."
 
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 msgid "You can create a new island in <seconds> seconds."
 msgstr "You can create a new cathouz in <seconds> seconds."
 
@@ -1393,6 +1390,7 @@ msgstr "You can only transfer ownership to party members!"
 msgid "You can only use spawn eggs on your own island."
 msgstr "You can only use spawn eggs on yoor own cathouz."
 
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 msgid "You can restart your island in <seconds> seconds."
 msgstr "You can restart yoor cathouz in <seconds> seconds."
 
@@ -1576,6 +1574,7 @@ msgstr "You rejected teh invitashun to join a cathouz."
 msgid "You unbanned <player> from warping to your island."
 msgstr "You unbanned <player> from warping to yoor cathouz."
 
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 msgid "You will be teleported in <seconds> seconds."
 msgstr "You will be teleported in <seconds> seconds."
 
@@ -1628,6 +1627,7 @@ msgstr "Yoor cathouz iz now <secondary>unlocked</secondary>. Anyone may enter, b
 msgid "Your island must be level <level> to complete this challenge!"
 msgstr "Yoor cathouz must be level <level> to complete this challenge!"
 
+#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
 msgid "Your rank is: <rank>."
 msgstr "Yoor rank iz: <rank>."
 

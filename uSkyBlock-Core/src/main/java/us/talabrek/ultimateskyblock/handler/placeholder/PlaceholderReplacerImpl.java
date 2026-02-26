@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 /**
  * The actual replacer for placeholders

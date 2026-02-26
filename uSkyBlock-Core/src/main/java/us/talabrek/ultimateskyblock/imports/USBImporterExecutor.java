@@ -18,11 +18,11 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
  * Delegates and batches the import.
@@ -43,7 +43,7 @@ public class USBImporterExecutor {
         double progressEveryPct = plugin.getConfig().getDouble("importer.progressEveryPct", 10);
         Duration progressInterval = Duration.ofMillis(plugin.getConfig().getLong("importer.progressEveryMs", 10000));
         progressTracker = new ProgressTracker(Bukkit.getConsoleSender(),
-            marktr("Progress: <progress_pct:'##'>% (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
+            marktr("Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             progressEveryPct,
             progressInterval);
     }

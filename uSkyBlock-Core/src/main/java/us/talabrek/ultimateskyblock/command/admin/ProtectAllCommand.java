@@ -51,7 +51,7 @@ public class ProtectAllCommand extends AbstractCommand {
         sendTr(sender, "Starting a protect-all task. It may take a while.");
         Duration feedbackFrequency = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
         ProgressTracker tracker = new ProgressTracker(sender,
-            marktr("- Protect-All <progress_pct:'##'>% (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
+            marktr("- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             10,
             feedbackFrequency);
         task = new ProtectAllTask(plugin, sender, islandLogic.getIslandDirectory(), tracker);

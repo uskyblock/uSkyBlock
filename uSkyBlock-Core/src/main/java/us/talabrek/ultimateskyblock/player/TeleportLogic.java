@@ -27,10 +27,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 /**
  * Responsible for teleporting (and cancelling teleporting) of players.
@@ -108,8 +108,9 @@ public class TeleportLogic implements Listener {
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             PaperLib.teleportAsync(player, targetLoc);
         } else {
+            // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
             sendTr(player, "You will be teleported in <seconds> seconds.",
-                SECONDARY, unparsed("seconds", String.valueOf(teleportDelay.toSeconds())));
+                SECONDARY, number("seconds", teleportDelay.toSeconds()));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 PaperLib.teleportAsync(player, targetLoc);
@@ -136,8 +137,9 @@ public class TeleportLogic implements Listener {
                 PaperLib.teleportAsync(player, spawnLocation);
             }
         } else {
+            // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
             sendTr(player, "You will be teleported in <seconds> seconds.",
-                SECONDARY, unparsed("seconds", String.valueOf(teleportDelay.toSeconds())));
+                SECONDARY, number("seconds", teleportDelay.toSeconds()));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
                 if (Settings.extras_sendToSpawn) {
