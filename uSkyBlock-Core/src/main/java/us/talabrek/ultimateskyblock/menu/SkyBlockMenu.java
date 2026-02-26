@@ -128,13 +128,14 @@ public class SkyBlockMenu {
     }
 
     public Inventory displayPartyPlayerGUI(final Player inventoryViewer, final PlayerProfile partyMember) {
-        Preconditions.checkNotNull(partyMember.getName(), "Player name must not be null");
-        Preconditions.checkNotNull(partyMember.getUniqueId(), "Player UUID must not be null");
+        Preconditions.checkNotNull(partyMember, "Player profile must not be null");
+        UUID partyMemberId = Preconditions.checkNotNull(partyMember.getUniqueId(), "Player UUID must not be null");
         List<String> lores = new ArrayList<>();
         String emptyTitle = miniToLegacy("<player> [<menu>]", unparsed("player", ""), component("menu", tr("Permissions")));
-        String name = partyMember.getName();
+        String name = resolvePartyMemberName(partyMember, partyMemberId);
+        int maxNameLength = Math.max(0, 32 - emptyTitle.length());
         String title = miniToLegacy("<player> [<menu>]",
-            unparsed("player", name.substring(0, Math.min(32 - emptyTitle.length(), name.length()))),
+            unparsed("player", name.substring(0, Math.min(maxNameLength, name.length()))),
             component("menu", tr("Permissions")));
         Inventory menu = Bukkit.createInventory(new UltimateHolder(inventoryViewer, title, MenuType.DEFAULT), 9, title);
         final ItemStack pHead = new ItemStack(Material.PLAYER_HEAD, 1);
@@ -158,7 +159,7 @@ public class SkyBlockMenu {
         for (PartyPermissionMenuItem menuItem : permissionMenuItems) {
             ItemStack itemStack = menuItem.getIcon();
             meta2 = requireNonNull(requireNonNull(itemStack.getItemMeta()));
-            if (islandInfo.hasPerm(partyMember.getUniqueId(), menuItem.getPerm())) {
+            if (islandInfo.hasPerm(partyMemberId, menuItem.getPerm())) {
                 meta2.setDisplayName("\u00a7a" + menuItem.getTitle());
                 lores.add(trLegacy("This player <success>can</success>", MUTED));
                 addLore(lores, "\u00a7f", menuItem.getDescription());
@@ -974,13 +975,17 @@ public class SkyBlockMenu {
         String[] playerPerm = inventoryName.split(" ");
         String name = playerPerm[0];
         UUID uuid = plugin.getPlayerDB().getUUIDFromName(name);
-        PlayerProfile profile = Bukkit.createPlayerProfile(uuid, name);
+        PlayerProfile profile = uuid != null ? Bukkit.createPlayerProfile(uuid, name) : null;
         ItemStack skullItem = event.getInventory().getItem(1);
         if (skullItem != null && skullItem.getType().equals(Material.PLAYER_HEAD)) {
             ItemMeta meta = requireNonNull(skullItem.getItemMeta());
             if (meta instanceof SkullMeta) {
                 profile = ((SkullMeta) meta).getOwnerProfile();
             }
+        }
+        if (profile == null || profile.getUniqueId() == null) {
+            p.openInventory(displayPartyGUI(p));
+            return;
         }
         for (PartyPermissionMenuItem item : permissionMenuItems) {
             if (currentItem.getType() == item.getIcon().getType()) {
@@ -1010,5 +1015,17 @@ public class SkyBlockMenu {
 
     public List<PartyPermissionMenuItem> getPermissionMenuItems() {
         return permissionMenuItems;
+    }
+
+    private String resolvePartyMemberName(@NotNull PlayerProfile profile, @NotNull UUID memberId) {
+        String profileName = profile.getName();
+        if (profileName != null && !profileName.trim().isEmpty()) {
+            return profileName;
+        }
+        String resolvedName = plugin.getPlayerDB().getName(memberId);
+        if (resolvedName != null && !resolvedName.trim().isEmpty()) {
+            return resolvedName;
+        }
+        return memberId.toString();
     }
 }

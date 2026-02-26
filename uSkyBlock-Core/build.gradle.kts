@@ -22,6 +22,7 @@ dependencies {
     testImplementation(libs.net.kyori.adventure.api)
     testImplementation(libs.net.kyori.adventure.text.minimessage)
     testImplementation(libs.net.kyori.adventure.text.serializer.legacy)
+    testImplementation(libs.org.apache.commons.commons.lang3)
     implementation(libs.net.kyori.adventure.text.serializer.plain)
     compileOnly(libs.net.milkbowl.vault.vaultapi)
     compileOnly(libs.org.spigotmc.spigot.api)
