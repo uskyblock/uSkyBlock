@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -52,20 +54,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.file.FileUtil.readConfig;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.plainText;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * Data object for an island
@@ -73,6 +74,7 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private static final Logger log = Logger.getLogger(IslandInfo.class.getName());
     private static final Pattern OLD_LOG_PATTERN = Pattern.compile("\u00a7d\\[(?<date>[^\\]]+)\\]\u00a77 (?<msg>.*)");
+    private static final String LOG_ENTRY_V2 = "v2";
     private static final int YML_VERSION = 3;
 
     private final uSkyBlock plugin;
@@ -147,7 +149,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         config.set("general.scoreOffset", null);
         config.set("blocks.hopperCount", 0);
         setupPartyLeader(leader);
-        log(trLegacy("The island has been created."), null);
+        log(tr("The island has been created."));
     }
 
     public void setupPartyLeader(@NotNull final String leader) {
@@ -535,19 +537,17 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         return getMemberUUIDs().contains(target.getUniqueId());
     }
 
-    public void log(@NotNull String message, @Nullable Object[] args) {
+    public void log(@NotNull Component message) {
         Validate.notNull(message, "Message cannot be null");
-        Validate.notEmpty(message, "Message cannot be empty");
+        Validate.notEmpty(plainText(message), "Message cannot be empty");
+        writeLog(plainText(message));
+    }
 
+    private void writeLog(@NotNull String plainMessage) {
         List<String> log = config.getStringList("log");
         StringBuilder sb = new StringBuilder();
         sb.append(System.currentTimeMillis());
-        sb.append(";").append(message);
-        if (args != null) {
-            for (Object arg : args) {
-                sb.append(";").append(arg);
-            }
-        }
+        sb.append(";").append(LOG_ENTRY_V2).append(";").append(plainMessage);
         log.addFirst(sb.toString());
         int logSize = plugin.getConfig().getInt("options.island.log-size", 10);
         if (log.size() > logSize) {
@@ -660,7 +660,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 sendTr(player, "<primary>SKY</primary><muted> ></muted> <message>", component("message", message));
             }
         }
-        log(legacy(message), null);
+        log(message);
     }
 
     @Override
@@ -956,17 +956,30 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         List<String> convertedList = new ArrayList<>();
         Instant now = Instant.now();
         for (String logEntry : log) {
-            String[] split = logEntry.split(";");
+            String[] split = logEntry.split(";", 3);
             if (split.length >= 2) {
                 Instant then = Instant.ofEpochMilli(Long.parseLong(split[0]));
-                String msg = split[1];
-                Object[] args = new Object[split.length - 2];
-                System.arraycopy(split, 2, args, 0, args.length);
-                //noinspection deprecation
-                convertedList.add(miniToLegacy("<primary><age> <muted>- <message>",
-                    legacyArg("age", TimeUtil.durationAsString(Duration.between(then, now))),
-                    legacyArg("message", trLegacy(msg, args))));
+                String message;
+                if (split.length == 3 && LOG_ENTRY_V2.equals(split[1])) {
+                    // V2 message logs - plain text message rendered to default server locale at time of recording.
+                    message = split[2];
+                } else {
+                    // Legacy logs with English translation key and MessageFormat placeholders. Convert to plain text.
+                    String[] legacySplit = logEntry.split(";");
+                    if (legacySplit.length > 2) {
+                        String key = legacySplit[1];
+                        Object[] args = new Object[legacySplit.length - 2];
+                        System.arraycopy(legacySplit, 2, args, 0, args.length);
+                        message = plainText(fromLegacy(formatLegacyMessage(key, args)));
+                    } else {
+                        message = plainText(fromLegacy(legacySplit[1]));
+                    }
+                }
+                convertedList.add(miniToLegacy("<primary><age></primary> <muted>- <message>",
+                    unparsed("age", TimeUtil.durationAsString(Duration.between(then, now))),
+                    unparsed("message", message)));
             } else {
+                // Very old legacy logs - keep pattern-based parsing.
                 Matcher m = OLD_LOG_PATTERN.matcher(logEntry);
                 if (m.matches()) {
                     String date = m.group("date");
@@ -978,18 +991,28 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                     }
                     String msg = m.group("msg");
                     if (parsedDate != null) {
-                        convertedList.add(miniToLegacy("<primary><age> <muted>- <message>",
-                            legacyArg("age", TimeUtil.durationAsString(Duration.between(parsedDate, now))),
-                            legacyArg("message", msg)));
+                        String message = plainText(fromLegacy(msg));
+                        convertedList.add(miniToLegacy("<primary><age></primary> <muted>- <message>",
+                            unparsed("age", TimeUtil.durationAsString(Duration.between(parsedDate, now))),
+                            unparsed("message", message)));
                     } else {
                         convertedList.add(logEntry);
                     }
                 } else {
+                    // unparsed fallback
                     convertedList.add(logEntry);
                 }
             }
         }
         return convertedList;
+    }
+
+    private static String formatLegacyMessage(@NotNull String key, @NotNull Object[] args) {
+        try {
+            return new MessageFormat(key, Locale.ENGLISH).format(args);
+        } catch (IllegalArgumentException ignored) {
+            return key;
+        }
     }
 
     @Override
