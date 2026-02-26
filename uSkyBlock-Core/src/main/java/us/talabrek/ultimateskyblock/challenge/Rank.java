@@ -15,6 +15,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class Rank {
     private final Rank previousRank;
@@ -76,7 +77,7 @@ public class Rank {
                 if (leeway > rankLeeway) {
                     missing.add(trLegacy("Complete <remaining> more <rank> challenges",
                         MUTED,
-                        unparsed("remaining", String.valueOf(leeway - rankLeeway)),
+                        number("remaining", leeway - rankLeeway),
                         legacyArg("rank", previousRank.getName())));
                 }
             }

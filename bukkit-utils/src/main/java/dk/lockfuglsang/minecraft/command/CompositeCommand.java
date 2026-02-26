@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 /**
@@ -164,8 +165,8 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             maxPage = (int) Math.round(Math.ceil(cmds.size() * 1f / MAX_PER_PAGE));
             realPage = Math.max(1, Math.min(maxPage, page));
             msg += miniToLegacy("<muted> [<page>/<max-page>]<newline>",
-                unparsed("page", String.valueOf(realPage)),
-                unparsed("max-page", String.valueOf(maxPage)));
+                number("page", realPage),
+                number("max-page", maxPage));
             cmds = cmds.subList((realPage - 1) * MAX_PER_PAGE, Math.min(realPage * MAX_PER_PAGE, cmds.size()));
         }
         for (String key : cmds) {
@@ -178,12 +179,12 @@ public class CompositeCommand extends AbstractTabCompleter implements Command, T
             msg += trLegacy("Use <cmd>/<command> ? <page></cmd> to display the next page<newline>",
                 Style.style(NamedTextColor.GRAY),
                 unparsed("command", getName()),
-                unparsed("page", String.valueOf(realPage + 1)));
+                number("page", realPage + 1));
         } else if (realPage > 0 && maxPage == realPage) {
             msg += trLegacy("Use <cmd>/<command> ? <page></cmd> to display the previous page<newline>",
                 Style.style(NamedTextColor.GRAY),
                 unparsed("command", getName()),
-                unparsed("page", String.valueOf(realPage - 1)));
+                number("page", realPage - 1));
         }
         sender.sendMessage(msg.split("\n"));
     }

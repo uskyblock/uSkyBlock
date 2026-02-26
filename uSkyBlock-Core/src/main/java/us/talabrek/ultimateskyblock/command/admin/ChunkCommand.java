@@ -13,11 +13,12 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendPlayerOnly;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class ChunkCommand extends CompositeCommand {
 
@@ -30,8 +31,8 @@ public class ChunkCommand extends CompositeCommand {
             void doChunkCommand(Player player, Chunk chunk) {
                 plugin.getWorldManager().getChunkRegenerator(chunk.getWorld()).regenerateChunk(chunk);
                 sendTr(player, "Successfully regenerated chunk at <x>,<z>.",
-                    unparsed("x", String.valueOf(chunk.getX())),
-                    unparsed("z", String.valueOf(chunk.getZ())));
+                    number("x", chunk.getX()),
+                    number("z", chunk.getZ()));
             }
         });
         add(new RequireChunkCommand("unload", marktr("unload current chunk")) {
@@ -39,12 +40,12 @@ public class ChunkCommand extends CompositeCommand {
             void doChunkCommand(Player player, Chunk chunk) {
                 if (chunk.getWorld().unloadChunk(chunk.getX(), chunk.getZ(), false)) {
                     sendTr(player, "Successfully unloaded chunk at <x>,<z>.",
-                        unparsed("x", String.valueOf(chunk.getX())),
-                        unparsed("z", String.valueOf(chunk.getZ())));
+                        number("x", chunk.getX()),
+                        number("z", chunk.getZ()));
                 } else {
                     sendErrorTr(player, "Failed to unload chunk at <x>,<z>.",
-                        unparsed("x", String.valueOf(chunk.getX()), PRIMARY),
-                        unparsed("z", String.valueOf(chunk.getZ()), PRIMARY));
+                        number("x", chunk.getX(), PRIMARY),
+                        number("z", chunk.getZ(), PRIMARY));
                 }
             }
         });
@@ -53,8 +54,8 @@ public class ChunkCommand extends CompositeCommand {
             void doChunkCommand(Player player, Chunk chunk) {
                 chunk.getWorld().loadChunk(chunk.getX(), chunk.getZ(), true);
                 sendTr(player, "Loaded chunk at <x>,<z>.",
-                    unparsed("x", String.valueOf(chunk.getX())),
-                    unparsed("z", String.valueOf(chunk.getZ())));
+                    number("x", chunk.getX()),
+                    number("z", chunk.getZ()));
             }
         });
     }

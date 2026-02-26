@@ -15,14 +15,14 @@ import java.util.Map;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendNoCommandAccess;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class LevelCommand extends RequireIslandCommand {
 
@@ -78,9 +78,10 @@ public class LevelCommand extends RequireIslandCommand {
                 if (cmd.equalsIgnoreCase("level")) {
                     IslandRank rank = plugin.getIslandLogic().getRank(info.locationForParty());
                     if (rank != null) {
+                        // I18N: <level:'#,##0'> and <rank> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names "score" and "rank".
                         send(player,
-                            tr("Island level is <score:'###.##'>", SECONDARY, number("score", rank.getScore())),
-                            tr("Rank is <rank>", PRIMARY, unparsed("rank", String.valueOf(rank.getRank()))));
+                            tr("Island level is <level:'#,##0'>", SECONDARY, number("level", rank.getScore())),
+                            tr("Rank is <rank>", PRIMARY, number("rank", rank.getRank())));
                     } else {
                         sendErrorTr(player, "Could not locate rank of <player>", unparsed("player", islandPlayer));
                     }

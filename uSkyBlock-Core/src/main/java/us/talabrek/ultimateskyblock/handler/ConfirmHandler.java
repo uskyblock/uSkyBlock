@@ -13,10 +13,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.CMD;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * Handles confirms.
@@ -68,9 +69,10 @@ public class ConfirmHandler {
                 sendTr(player, "<command> timed out.", unparsed("command", command, CMD));
             }
         }, timeout);
+        // I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
         sendTr(player, "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>",
             unparsed("command", command, CMD),
-            unparsed("timeout", String.valueOf(timeout.toSeconds()), PRIMARY));
+            number("timeout", timeout.toSeconds(), PRIMARY));
         return false;
     }
 

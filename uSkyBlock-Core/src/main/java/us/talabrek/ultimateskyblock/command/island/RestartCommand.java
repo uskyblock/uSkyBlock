@@ -14,8 +14,8 @@ import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class RestartCommand extends RequireIslandCommand {
 
@@ -37,8 +37,9 @@ public class RestartCommand extends RequireIslandCommand {
         }
         Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "restart");
         if (cooldown.isPositive()) {
+            // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
             sendErrorTr(player, "You can restart your island in <seconds> seconds.",
-                unparsed("seconds", String.valueOf(cooldown.toSeconds())));
+                number("seconds", cooldown.toSeconds()));
             return true;
         } else {
             if (pi.isIslandGenerating()) {

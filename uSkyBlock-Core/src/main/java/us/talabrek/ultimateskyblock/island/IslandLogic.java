@@ -52,13 +52,14 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * Responsible for island creation, locating locations, purging, clearing etc.
@@ -208,14 +209,16 @@ public class IslandLogic {
             if (page < 1) {
                 page = 1;
             }
+            // I18N: <page> and <max-page> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names unchanged.
             sendTr(sender, "<primary>Wall of Fame</primary> (page <page> of <max-page>):",
                 MUTED,
-                unparsed("page", String.valueOf(page), PRIMARY),
-                unparsed("max-page", String.valueOf(maxpage), PRIMARY));
+                number("page", page, PRIMARY),
+                number("max-page", maxpage, PRIMARY));
             if (ranks.isEmpty()) {
                 if (Settings.island_useTopTen) {
-                    sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level> are considered.",
-                        unparsed("level", String.valueOf(topTenCutoff)));
+                    // I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
+                    sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered.",
+                        number("level", topTenCutoff));
                 } else {
                     sendErrorTr(sender, "Island level has been disabled, contact an administrator.");
                 }
@@ -233,9 +236,9 @@ public class IslandLogic {
                 if (showMembers && !level.getMembers().isEmpty()) {
                     members = Arrays.toString(level.getMembers().toArray(new String[0]));
                 }
-                String message = miniToLegacy("<rank> <muted>(<score>):</muted> <leader> <members>",
+                String message = miniToLegacy("<rank> <muted>(<score:'0.00'>):</muted> <leader> <members>",
                     unparsed("rank", "#" + place, SECONDARY),
-                    unparsed("score", String.format("%.2f", level.getScore())),
+                    number("score", level.getScore()),
                     unparsed("leader", level.getLeaderName(), PRIMARY),
                     unparsed("members", members, MUTED));
                 if (sender instanceof Player target) {
@@ -254,7 +257,8 @@ public class IslandLogic {
                 place++;
             }
             if (rank != null) {
-                sendTr(sender, "Your rank is: <rank>.", unparsed("rank", String.valueOf(rank.getRank()), PRIMARY));
+                // I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
+                sendTr(sender, "Your rank is: <rank>.", number("rank", rank.getRank(), PRIMARY));
             }
         }
 

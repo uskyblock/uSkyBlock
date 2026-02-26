@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
-import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -53,13 +52,14 @@ import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGE_SIZE;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 // TODO: Move all the texts to resource-files (translatable).
 
@@ -200,10 +200,11 @@ public class SkyBlockMenu {
         final Set<UUID> memberList = islandInfo.getMemberUUIDs();
         final ItemMeta meta2 = requireNonNull(requireNonNull(sign.getItemMeta()));
         meta2.setDisplayName("\u00a7a" + trLegacy("Island Group Members"));
+        // I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
         lores.add(trLegacy("Group members: <current>/<max>",
             MUTED,
-            unparsed("current", String.valueOf(islandInfo.getPartySize()), SECONDARY),
-            unparsed("max", String.valueOf(islandInfo.getMaxPartySize()), PRIMARY)));
+            number("current", islandInfo.getPartySize(), SECONDARY),
+            number("max", islandInfo.getMaxPartySize(), PRIMARY)));
         if (islandInfo.getPartySize() < islandInfo.getMaxPartySize()) {
             addLore(lores, trLegacy("More players can be invited to this island.", SECONDARY));
         } else {
@@ -356,8 +357,8 @@ public class SkyBlockMenu {
         int total = challengeLogic.getTotalPages();
         String title = "\u00a79" + miniToLegacy("<title> (<page>/<total>)",
             legacyArg("title", trLegacy("Challenge Menu")),
-            unparsed("page", String.valueOf(page)),
-            unparsed("total", String.valueOf(total)));
+            number("page", page),
+            number("total", total));
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), CHALLENGE_PAGE_SIZE + COLS_PER_ROW, title);
         final PlayerInfo pi = playerName == null ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(playerName);
         challengeLogic.populateChallengeRank(menu, pi, page, playerName != null && player.hasPermission("usb.mod.bypassrestriction"));
@@ -381,7 +382,8 @@ public class SkyBlockMenu {
                 if (p == page) {
                     pageItem = GuiItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, trLegacy("Current page", MUTED));
                 } else {
-                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, trLegacy("Page <page>", MUTED, unparsed("page", String.valueOf(p))));
+                    // I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
+                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, trLegacy("Page <page>", MUTED, number("page", p)));
                 }
                 if (i == 0) {
                     ItemStackUtil.Builder pageItemBuilder = ItemStackUtil.builder(pageItem)
@@ -516,9 +518,9 @@ public class SkyBlockMenu {
         menuItem = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
         meta4.setDisplayName(trLegacy("Island Level", SECONDARY));
-        addLore(lores, trLegacy("Current level: <secondary><level:'#.0'></secondary>",
-            MUTED,
-            Formatter.number("level", islandInfo.getLevel())));
+        // I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
+        addLore(lores, trLegacy("Current level: <level:'#,##0'>", MUTED,
+            number("level", islandInfo.getLevel(), SECONDARY)));
         addLore(lores, limitLogic.getSummary(islandInfo));
         addLore(lores, "\u00a7f", trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"));
         meta4.setLore(lores);
@@ -529,10 +531,11 @@ public class SkyBlockMenu {
         menuItem = new ItemStack(Material.PLAYER_HEAD, 1);
         final SkullMeta meta2 = requireNonNull((SkullMeta) requireNonNull(menuItem.getItemMeta()));
         meta2.setDisplayName(trLegacy("Island Group", PRIMARY));
+        // I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
         lores.add(trLegacy("Members: <current>/<max>",
             MUTED,
-            unparsed("current", String.valueOf(islandInfo.getPartySize()), SECONDARY),
-            unparsed("max", String.valueOf(islandInfo.getMaxPartySize()), PRIMARY)));
+            number("current", islandInfo.getPartySize(), SECONDARY),
+            number("max", islandInfo.getMaxPartySize(), PRIMARY)));
         addLore(lores, "\u00a7f", trLegacy("View the members of your island<newline>group and their permissions. If<newline>you are the island leader, you<newline>can change member permissions.<newline><primary>Click here to view or change.</primary>"));
         meta2.setLore(lores);
         menuItem.setItemMeta(meta2);

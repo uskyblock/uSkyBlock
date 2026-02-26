@@ -11,14 +11,18 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
 
 /**
  * Conversion to ItemStack from strings.
@@ -185,7 +189,7 @@ public enum ItemStackUtil {
         }
         return item.getAmount() > 1
             ? miniToLegacy("<secondary><amount></secondary>x <muted><item>",
-                unparsed("amount", String.valueOf(item.getAmount())),
+                number("amount", item.getAmount()),
                 legacyArg("item", getItemName(item)))
             : miniToLegacy("<muted><item>", legacyArg("item", getItemName(item)));
     }

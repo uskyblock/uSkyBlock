@@ -66,6 +66,7 @@ import static us.talabrek.ultimateskyblock.message.Msg.plainText;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
@@ -1056,7 +1057,8 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         // I18N: Header line for the admin island info debug output.
         lines.add(tr("Island Info:", PRIMARY));
         // I18N: Label for island level value in admin island info debug output.
-        lines.add(tr("  - level: <level>", MUTED, unparsed("level", String.format("%5.2f", getLevel()), PRIMARY)));
+        // I18N: <level:'0.00'> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
+        lines.add(tr("  - level: <level:'0.00'>", MUTED, number("level", getLevel(), PRIMARY)));
         // I18N: Label for island location identifier in admin island info debug output.
         lines.add(tr("  - location: <location>", MUTED, unparsed("location", name, PRIMARY)));
         // I18N: Label for island biome name in admin island info debug output.
