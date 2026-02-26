@@ -155,9 +155,10 @@ public class LimitLogic {
             Component creatureCount = cnt >= max
                 ? parseMini("<error><count>", unparsed("count", String.valueOf(cnt)))
                 : Component.text(cnt);
-            sb.append(trLegacy("<type>: <count> (max. <max>)",
+            // I18N: A summary of entity group limits on an island
+            sb.append(trLegacy("<entity-group>: <count> (max. <max>)",
                 MUTED,
-                component("type", getCreatureTypeLabel(key)),
+                component("entity-group", getCreatureTypeLabel(key)),
                 component("count", creatureCount.applyFallbackStyle(SECONDARY)),
                 unparsed("max", String.valueOf(max)))).append("\n");
         }
@@ -168,15 +169,16 @@ public class LimitLogic {
                 String current = blockCount >= entry.getValue()
                     ? miniToLegacy("<error><count>", number("count", blockCount))
                     : String.valueOf(blockCount);
-                sb.append(trLegacy("<block>: <count> (max. <max>)",
+                // I18N: A summary of block limits on an island
+                sb.append(trLegacy("<block-type>: <count> (max. <max>)",
                     MUTED,
-                    legacy("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacy("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacy("count", current, SECONDARY),
                     number("max", entry.getValue()))).append("\n");
             } else {
-                sb.append(trLegacy("<block>: <count> (max. <max>)",
+                sb.append(trLegacy("<block-type>: <count> (max. <max>)",
                     MUTED,
-                    legacy("block", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    legacy("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
                     number("max", entry.getValue()))).append("\n");
             }

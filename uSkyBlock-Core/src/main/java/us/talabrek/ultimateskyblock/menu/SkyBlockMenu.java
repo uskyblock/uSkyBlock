@@ -228,8 +228,10 @@ public class SkyBlockMenu {
             }
             for (PartyPermissionMenuItem perm : permissionMenuItems) {
                 if (isLeader || islandInfo.hasPerm(memberId, perm.getPerm())) {
+                    // I18N: A UI string indicating a player has a particular permission
                     lores.add(trLegacy("<success>Can</success> <permission>", MUTED, unparsed("permission", perm.getShortDescription())));
                 } else {
+                    // I18N: A UI string indicating a player does not have a particular permission
                     lores.add(trLegacy("<error>Cannot</error> <permission>", MUTED, unparsed("permission", perm.getShortDescription())));
                 }
             }
