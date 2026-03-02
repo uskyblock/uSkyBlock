@@ -67,6 +67,9 @@ To build the plugin, you need Java 21 and the project uses Gradle.
 
 # To update translations
 ./gradlew translation
+
+# To merge domain-specific Crowdin output into locale files
+./gradlew :uSkyBlock-Core:mergeDomainTranslations
 ```
 
 The resulting JAR can be found in `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`.

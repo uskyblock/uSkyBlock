@@ -2,9 +2,10 @@ use warnings;
 use strict;
 use utf8;
 binmode STDOUT, "utf8";
-my $filename = 'keys.pot';
-open my $fp, '<:utf8', $filename or die "Unable to read keys.pot";
-open my $out, '>:encoding(utf8)', 'xx_PIRATE.po' or die "Unable to write to pirate.po";
+my $filename = $ARGV[0] // 'keys.pot';
+my $output_file = $ARGV[1] // 'xx_PIRATE.po';
+open my $fp, '<:utf8', $filename or die "Unable to read $filename";
+open my $out, '>:encoding(utf8)', $output_file or die "Unable to write to $output_file";
 
 my %dict = (
     "you've" => "ye've",
