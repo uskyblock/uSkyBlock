@@ -1,8 +1,8 @@
 commit_message: "[ci skip]"
 files:
-  - source: /uSkyBlock-Core/src/main/po/keys.pot
-    translation: /uSkyBlock-Core/src/main/po/%locale_with_underscore%.po
-    languages_mapping:
+  - source: /uSkyBlock-Core/src/main/i18n/keys.player_facing.pot
+    translation: /uSkyBlock-Core/src/main/i18n/player_facing/%locale_with_underscore%.po
+    languages_mapping: &locale_mapping
       locale_with_underscore:
         ar: ar
         be: be
@@ -58,3 +58,6 @@ files:
         vi: vi
         zh-CN: zh_CN
         zh-TW: zh_TW
+  - source: /uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot
+    translation: /uSkyBlock-Core/src/main/i18n/admin_ops/%locale_with_underscore%.po
+    languages_mapping: *locale_mapping

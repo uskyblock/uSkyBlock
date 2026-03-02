@@ -1,0 +1,602 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: uSkyBlock\n"
+"Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: minoneer <minoneer@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "<count> old island locations will be used before new ones."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "<leader>'s island at <island> has been protected."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "<leader>'s island at <island> was already protected"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "<player> has had all challenges reset."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "<player> has joined your island group."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "A protect-all task is already running. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "A purge is already running. <muted>Either <primary>confirm</primary> or <primary>stop</primary> it."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "Animation tick changed to <ticks>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "Animation tick must be a valid integer."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Available locales (<count>):"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "Challenge <challenge-id> has already been completed"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "Challenge <challenge-id> has been completed for <player>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "Challenge <challenge-id> has been reset for <player>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Changed <player>'s biome to <biome>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Changed biome of <leader>'s island to <biome>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "Cleared cooldown on <command> for <player>"
+msgstr "زمان انتظار <command> برای <player> پاک شد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "Clearing all old unused island locations."
+msgstr "در حال پاک‌سازی همهٔ موقعیت‌های قدیمیِ بلااستفادهٔ جزیره‌ها."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "Command cooldowns"
+msgstr "زمان انتظار دستورها"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
+msgid "Configuration reloaded from file."
+msgstr "پیکربندی از فایل دوباره بارگذاری شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Could not locate an island for player <player>!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Current language: <locale>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Deleted abandoned island at your current location."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Error! <primary>No valid island found for purging."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "Error: <error>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "Failed to unload chunk at <x>,<z>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "Finding all islands abandoned for more than <days> days below level <level>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
+msgid "Finished generating the top ten list."
+msgstr "تولید لیست ده‌تای برتر تمام شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
+msgid "Generating the top ten list."
+msgstr "در حال تولید لیست ده‌تای برتر."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Help improve translations: <url>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "Invalid command supplied, only restart and biome supported!"
+msgstr "دستور نامعتبر است؛ فقط restart و biome پشتیبانی می‌شود!"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
+msgid "Invalid player <player> supplied."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "Island WorldGuard regions updated for <island>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Island at this location has members.<newline><muted>Use <cmd>/usb island delete [name]</cmd> to delete it."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
+msgid "Island not found: unable to set the island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
+msgid "Job Statistics"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Language is already set to <locale>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Language updated to <locale>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+msgid "Leadership transferred by <from> to <to>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "Loaded chunk at <x>,<z>."
+msgstr "چانک در <x>,<z> بارگذاری شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "Loading chunks at <location>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "MAINTENANCE: <muted>Disabled. All uSkyBlock gameplay features are now operational."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "MAINTENANCE: <muted>Enabled. All uSkyBlock gameplay features are now disabled."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "Maintenance mode can only be changed from console!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "Manage challenges for a player"
+msgstr "مدیریت چالش‌های یک بازیکن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "No active cooldown on <command> for <player> detected!"
+msgstr "هیچ زمان انتظار فعالی برای <command> جهت <player> پیدا نشد!"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "No active cooldowns found for <player>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "No challenge named <challenge> was found!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "No island found at your current location."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "No island found at your location."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "No orphans are currently registered."
+msgstr "در حال حاضر هیچ جزیره رهاشده‌ای ثبت نشده است."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+msgid "No player named <player> was found!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "No rank named <rank> was found!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "No regions are currently shown for this player."
+msgstr "در حال حاضر هیچ ریجنی برای این بازیکن نمایش داده نمی‌شود."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "No valid island at your location"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "No valid island provided, either stand within one, or provide an island name"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "No valid player name supplied."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "Orphans (<page>/<pages>): <orphan-list>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "PURGE: <primary>Purged island at <island>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+msgid "Player <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+msgid "Player <player> has no island to transfer!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
+msgid "Player <player> has no island."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "Purge aborted!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "Purge timed out."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Removed ignore-flag of <leader>'s island, it will now show up on top-ten and purge."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Removing <player> from the island."
+msgstr "در حال حذف <player> از جزیره."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Removing <player>'s island."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "Resending chunks to the client."
+msgstr "در حال ارسال دوبارهٔ چانک‌ها به کلاینت."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "Reset cooldown on <command> for <player> to <seconds> seconds."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "Set <leader>'s island to be ignored on top-ten and purge."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
+msgid "Set <player>'s island to the current island."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Set language with <cmd>/usb lang [locale]</cmd>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "Starting a protect-all task. It may take a while."
+msgstr "در حال شروع وظیفهٔ محافظت از همه. ممکنه کمی طول بکشه."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "Starting purge..."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "Stopped displaying regions."
+msgstr "نمایش ناحیه‌ها متوقف شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "Successfully regenerated chunk at <x>,<z>."
+msgstr "چانک در <x>,<z> با موفقیت دوباره تولید شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "Successfully unloaded chunk at <x>,<z>."
+msgstr "چانک در <x>,<z> با موفقیت آنلود شد."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "System locale suggestion: <locale>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
+msgid "That player does not have an island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "That player is not currently online."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "The level must be a valid number"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "This challenge has never been completed"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "Trying to abort protect-all task."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "Trying to abort purge"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "Unloading chunks at <location>."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Unsupported locale: <locale>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Use <cmd>/usb lang</cmd> to list all supported locales."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "You may need to go to spawn, or relog, to see the changes."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "You must provide the age in days to purge!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+msgid "additional perks <perks>"
+msgstr "پرک‌های اضافی <perks>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "adds the player to the island"
+msgstr "بازیکن را به جزیره اضافه می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "clear orphans"
+msgstr "پاک‌سازی جزیره‌های رهاشده"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "clears the cooldown on a command (* = all)"
+msgstr "زمان انتظار یک دستور را پاک می‌کند (* = همه)"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "complete all challenges in the rank"
+msgstr "تکمیل همهٔ چالش‌های رتبه"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
+msgid "controls async jobs"
+msgstr "کنترل کارهای async"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "controls player cooldowns"
+msgstr "کنترل زمان انتظار بازیکن‌ها"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "count orphans"
+msgstr "شمارش جزیره‌های رهاشده"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "delete the island (removes the blocks)"
+msgstr "حذف جزیره (بلاک‌ها را حذف می‌کند)"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/VersionCommand.java
+msgid "displays version information"
+msgstr "اطلاعات نسخه را نمایش می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "hides the regions again"
+msgstr "ناحیه‌ها را دوباره مخفی می‌کند"
+
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
+msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "list orphans"
+msgstr "فهرست جزیره‌های رهاشده"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "lists all the active cooldowns"
+msgstr "تمام زمان‌های انتظار فعال را فهرست می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "load current chunk"
+msgstr "چانک فعلی را بارگذاری کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "load the region chunks"
+msgstr "چانک‌های ناحیه را بارگذاری کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "manage islands"
+msgstr "مدیریت جزیره‌ها"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
+msgid "manage orphans"
+msgstr "مدیریت جزیره‌های رهاشده"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
+msgid "manually update the top 10 list"
+msgstr "جدول ۱۰تایی برتر را دستی به‌روزرسانی کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "print out info about the island"
+msgstr "اطلاعات مربوط به جزیره را چاپ می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
+msgid "protects all islands (time consuming)"
+msgstr "از همه جزیره‌ها محافظت می‌کند (زمان‌بر)"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "protects the island"
+msgstr "از جزیره محافظت می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
+msgid "purges all abandoned islands"
+msgstr "همه جزیره‌های رهاشده را پاکسازی می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "purges the island"
+msgstr "جزیره را پاکسازی می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "refreshes the chunk around the player"
+msgstr "چانک اطراف بازیکن را تازه‌سازی می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "refreshes the chunks around the player"
+msgstr "چانک‌های اطراف بازیکن را تازه‌سازی می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "refreshes the existing animations"
+msgstr "انیمیشن‌های موجود را تازه‌سازی می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "regenerate current chunk"
+msgstr "چانک فعلی را بازتولید کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "region manipulations"
+msgstr "تغییرات ناحیه"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
+msgid "reload configuration from file."
+msgstr "پیکربندی را از فایل دوباره بارگذاری می‌کند."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "removes the player from the island"
+msgstr "بازیکن را از جزیره حذف می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "resets all challenges for the player"
+msgstr "همه چالش‌های بازیکن را ریست می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+msgid "resets the challenge for the player"
+msgstr "چالش بازیکن را ریست می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
+msgid "restarts the cooldown on the command"
+msgstr "زمان انتظار دستور را دوباره شروع می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
+msgid "set a player's island to your location"
+msgstr "جزیرهٔ یک بازیکن را به موقعیت تو تنظیم می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "set the ticks between animations"
+msgstr "تعداد تیک بین انیمیشن‌ها را تنظیم می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "sets the biome of the island"
+msgstr "بایوم جزیره را تنظیم می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PlayerInfoCommand.java
+msgid "show player information"
+msgstr "اطلاعات بازیکن را نشان بده"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+msgid "shows a specific player's perks"
+msgstr "امتیازهای ویژهٔ یک بازیکن مشخص را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "shows or sets the plugin language"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
+msgid "shows perk information"
+msgstr "اطلاعات امتیازهای ویژه را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "shows the borders of the current chunk"
+msgstr "مرزهای چانک فعلی را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "shows the borders of the current island"
+msgstr "مرزهای جزیرهٔ فعلی را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "shows the borders of the inner-chunks"
+msgstr "مرزهای چانک‌های داخلی را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "shows the borders of the outer-chunks"
+msgstr "مرزهای چانک‌های بیرونی را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
+msgid "shows the non-chunk-aligned borders"
+msgstr "مرزهای هم‌راستا نبودن با چانک را نشان می‌دهد"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
+msgid "teleport to another player's island"
+msgstr "به جزیرهٔ بازیکن دیگری تلپورت شو"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
+msgid "toggles maintenance mode"
+msgstr "حالت تعمیر و نگهداری را روشن/خاموش می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
+msgid "toggles the island's ignore status"
+msgstr "وضعیت نادیده‌گرفتن جزیره را روشن/خاموش می‌کند"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
+msgid "transfer leadership to another player"
+msgstr "رهبری را به یک بازیکن دیگر منتقل کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "unload current chunk"
+msgstr "چانک فعلی را تخلیه کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "update the WG regions"
+msgstr "ناحیه‌های WG را به‌روزرسانی کن"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
+msgid "various WorldGuard utilities"
+msgstr "ابزارهای متنوع WorldGuard"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
+msgid "various chunk commands"
+msgstr "دستورهای متنوع چانک"
