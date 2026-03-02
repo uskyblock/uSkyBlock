@@ -7,16 +7,13 @@ import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.talabrek.ultimateskyblock.message.Placeholder;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.message.Msg.*;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendPlayerOnly;
-import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 
 /**
  * Command for querying items reg. NBT stuff
@@ -36,7 +33,7 @@ public class ItemInfoCommand extends CompositeCommand {
                         return true;
                     }
                     sendTr(player, "Info for <item>", unparsed("item", ItemStackUtil.asString(itemStack), PRIMARY));
-                    sendTr(player, " - name: <item-name>", Placeholder.legacy("item-name", ItemStackUtil.getItemName(itemStack), PRIMARY));
+                    sendTr(player, " - name: <item-name>", component("item-name", ItemStackUtil.getItemName(itemStack), PRIMARY));
                     return true;
                 }
                 sendPlayerOnly(sender);

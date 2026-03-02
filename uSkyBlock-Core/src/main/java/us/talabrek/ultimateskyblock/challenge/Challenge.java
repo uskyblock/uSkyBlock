@@ -23,11 +23,11 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.prefix;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 /**
@@ -228,8 +228,8 @@ public class Challenge {
                 details.add(requiredAmount > 1
                     ? miniToLegacy("<count>x <muted><item>",
                     number("count", requiredAmount, SECONDARY),
-                    legacyArg("item", ItemStackUtil.getItemName(requiredType)))
-                    : miniToLegacy("<muted><item>", legacyArg("item", ItemStackUtil.getItemName(requiredType))));
+                    component("item", ItemStackUtil.getItemName(requiredType)))
+                    : miniToLegacy("<muted><item>", component("item", ItemStackUtil.getItemName(requiredType))));
             }
         }
         if (!requiredBlocks.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
@@ -241,8 +241,8 @@ public class Challenge {
                 details.add(blockRequirement.amount() > 1
                     ? miniToLegacy("<count>x <muted><block>",
                     number("count", blockRequirement.amount(), SECONDARY),
-                    legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type())))
-                    : miniToLegacy("<muted><block>", legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type()))));
+                    component("block", ItemStackUtil.getBlockName(blockRequirement.type())))
+                    : miniToLegacy("<muted><block>", component("block", ItemStackUtil.getBlockName(blockRequirement.type()))));
             }
         }
         if (requiredEntities != null && !requiredEntities.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {

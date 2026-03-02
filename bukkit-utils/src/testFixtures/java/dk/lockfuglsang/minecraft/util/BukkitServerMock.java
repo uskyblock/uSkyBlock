@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.UnsafeValues;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -85,6 +86,7 @@ public class BukkitServerMock {
 
         UnsafeValues unsafeMock = mock(UnsafeValues.class);
         when(unsafeMock.fromLegacy(any(Material.class))).thenAnswer(a -> a.getArguments()[0]);
+        when(unsafeMock.getTranslationKey(any(EntityType.class))).thenAnswer(a -> "entity.minecraft." + ((EntityType)a.getArguments()[0]).name().toLowerCase());
         when(serverMock.getUnsafe()).thenReturn(unsafeMock);
         return serverMock;
     }

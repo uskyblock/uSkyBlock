@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.api.model;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -67,8 +68,20 @@ public interface BlockScore {
      *
      * @return User displayable name of the block.
      * @since v2.1.2
+     * @deprecated Use {@link #getComponentName()} instead, which supports color and formatting.
      */
+    @Deprecated
     String getName();
+
+    /**
+     * User displayable name of the block.
+     * <br>
+     * I.e. "Diamond Block".
+     *
+     * @return User displayable name of the block.
+     * @since v3.3.0
+     */
+    Component getComponentName();
 
     /**
      * The possible states of a BlockScore.

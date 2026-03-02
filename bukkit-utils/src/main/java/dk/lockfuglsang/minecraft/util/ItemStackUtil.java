@@ -1,5 +1,6 @@
 package dk.lockfuglsang.minecraft.util;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -11,18 +12,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
+import static java.util.stream.Collectors.*;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 
 /**
  * Conversion to ItemStack from strings.
@@ -189,9 +186,9 @@ public enum ItemStackUtil {
         }
         return item.getAmount() > 1
             ? miniToLegacy("<secondary><amount></secondary>x <muted><item>",
-                number("amount", item.getAmount()),
-                legacyArg("item", getItemName(item)))
-            : miniToLegacy("<muted><item>", legacyArg("item", getItemName(item)));
+            number("amount", item.getAmount()),
+            component("item", getItemName(item)))
+            : miniToLegacy("<muted><item>", component("item", getItemName(item)));
     }
 
     @NotNull
@@ -205,22 +202,39 @@ public enum ItemStackUtil {
         return copy;
     }
 
-    @Contract("null -> null; !null -> !null")
+    @Contract(value = "null -> null; !null -> !null", pure = true)
     @Nullable
-    public static String getItemName(ItemStack stack) {
+    public static Component getItemName(@Nullable ItemStack stack) {
         if (stack == null) {
             return null;
         }
         var itemMeta = stack.getItemMeta();
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
-            return stack.getItemMeta().getDisplayName();
+            return fromLegacy(itemMeta.getDisplayName());
+        } else {
+            String fallback = fallbackName(stack.getType());
+            return Component.translatable(stack.getTranslationKey(), fallback);
         }
-        return trLegacy(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
+    @Contract(pure = true)
     @NotNull
-    public static String getBlockName(@NotNull BlockData block) {
-        return trLegacy(FormatUtil.camelcase(block.getMaterial().name()).replaceAll("([A-Z])", " $1").trim());
+    public static Component getBlockName(@NotNull BlockData block) {
+        String translationKey = block.getMaterial().getBlockTranslationKey();
+        if  (translationKey == null) {
+            translationKey = block.getMaterial().getTranslationKey();
+        }
+
+        return Component.translatable(translationKey, fallbackName(block.getMaterial()));
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    private static String fallbackName(@NotNull Material material) {
+        String key = material.getKey().getKey();
+        return Arrays.stream(key.split("[_-]"))
+                .map(word -> word.isEmpty() ? "" : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
+                .collect(joining(" "));
     }
 
     @Contract(pure = true)

@@ -13,6 +13,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class BlockCollection {
@@ -37,7 +38,7 @@ public class BlockCollection {
             if (diff > 0) {
                 sb.append(miniToLegacy(" <secondary><count>x <muted><block>",
                     number("count", diff),
-                    legacyArg("block", ItemStackUtil.getBlockName(requirement.type()))));
+                    component("block", ItemStackUtil.getBlockName(requirement.type()))));
             }
         }
         if (sb.toString().trim().isEmpty()) {

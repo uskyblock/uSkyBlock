@@ -20,11 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -39,7 +35,6 @@ import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
-import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -48,21 +43,11 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Msg.*;
+import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 
 @Singleton
 public class PlayerEvents implements Listener {
@@ -364,7 +349,7 @@ public class PlayerEvents implements Listener {
             if (!PatienceTester.isRunning(player, key)) {
                 PatienceTester.startRunning(player, key);
                 sendErrorTr(player, "<item> is limited. Scanning your island to check if you can place more. Please be patient.",
-                    Placeholder.legacy("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY));
+                    component("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY));
                 plugin.fireAsyncEvent(new IslandInfoEvent(player, islandInfo.getIslandLocation(), new Callback<>() {
                     @Override
                     public void run() {
@@ -378,7 +363,7 @@ public class PlayerEvents implements Listener {
         if (canPlace == BlockLimitLogic.CanPlace.NO) {
             event.setCancelled(true);
             sendErrorTr(player, "You've hit the <item> limit. <muted>You can't have more of that type on your island. Max: <max>.</muted>",
-                Placeholder.legacy("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY),
+                component("item", ItemStackUtil.getItemName(new ItemStack(type)), PRIMARY),
                 unparsed("max", String.valueOf(plugin.getBlockLimitLogic().getLimit(type)), PRIMARY));
             return;
         }

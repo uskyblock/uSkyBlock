@@ -27,16 +27,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
-import static us.talabrek.ultimateskyblock.message.Placeholder.legacy;
-import static us.talabrek.ultimateskyblock.message.Placeholder.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 
 @Singleton
 public class LimitLogic {
@@ -172,13 +167,13 @@ public class LimitLogic {
                 // I18N: A summary of block limits on an island
                 sb.append(trLegacy("<block-type>: <count> (max. <max>)",
                     MUTED,
-                    legacy("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacy("count", current, SECONDARY),
                     number("max", entry.getValue()))).append("\n");
             } else {
                 sb.append(trLegacy("<block-type>: <count> (max. <max>)",
                     MUTED,
-                    legacy("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                    component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
                     legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
                     number("max", entry.getValue()))).append("\n");
             }
