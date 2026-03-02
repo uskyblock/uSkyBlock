@@ -182,13 +182,19 @@ permissions:
     children:
       usb.biome.deep_ocean: true
       usb.biome.desert: true
+      usb.biome.flower_forest: true
       usb.biome.windswept_hills: true
       usb.biome.forest: true
+      usb.biome.lukewarm_ocean: true
+      usb.biome.lush_caves: true
       usb.biome.nether_wastes: true
       usb.biome.jungle: true
       usb.biome.mushroom_fields: true
-      usb.biome.ocean: false # default: true
+      usb.biome.ocean: true
       usb.biome.plains: true
+      usb.biome.savanna_plateau: true
+      usb.biome.snowy_plains: true
+      usb.biome.snowy_slopes: true
       usb.biome.the_end: true
       usb.biome.swamp: true
       usb.biome.taiga: true
@@ -394,6 +400,10 @@ permissions:
     default: false
     description: 'Let the player change their islands biome to DESERT'
 
+  usb.biome.flower_forest:
+    default: false
+    description: 'Let the player change their islands biome to FLOWER_FOREST'
+
   usb.biome.windswept_hills:
     default: false
     description: 'Let the player change their islands biome to WINDSWEPT_HILLS'
@@ -401,6 +411,14 @@ permissions:
   usb.biome.forest:
     default: false
     description: 'Let the player change their islands biome to FOREST'
+
+  usb.biome.lukewarm_ocean:
+    default: false
+    description: 'Let the player change their islands biome to LUKEWARM_OCEAN'
+
+  usb.biome.lush_caves:
+    default: false
+    description: 'Let the player change their islands biome to LUSH_CAVES'
 
   usb.biome.nether_wastes:
     default: false
@@ -421,6 +439,18 @@ permissions:
   usb.biome.plains:
     default: false
     description: 'Let the player change their islands biome to PLAINS'
+
+  usb.biome.savanna_plateau:
+    default: false
+    description: 'Let the player change their islands biome to SAVANNA_PLATEAU'
+
+  usb.biome.snowy_plains:
+    default: false
+    description: 'Let the player change their islands biome to SNOWY_PLAINS'
+
+  usb.biome.snowy_slopes:
+    default: false
+    description: 'Let the player change their islands biome to SNOWY_SLOPES'
 
   usb.biome.the_end:
     default: false

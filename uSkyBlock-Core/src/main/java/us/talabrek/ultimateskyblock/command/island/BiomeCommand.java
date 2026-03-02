@@ -84,7 +84,7 @@ public class BiomeCommand extends RequireIslandCommand {
                     number("seconds", cooldown.toSeconds(), PRIMARY));
                 return true;
             }
-            if (!player.hasPermission("usb.biome." + biomeKey.toLowerCase())) {
+            if (!player.hasPermission("usb.biome." + biomeKey) && !pi.hasUnlockedBiome(biomeKey)) {
                 sendErrorTr(player, "You do not have permission to change your biome to that type.");
                 return true;
             }

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ public class Settings {
     public static Duration general_cooldownRestart;
     public static Duration general_biomeChange;
     public static Biome general_defaultBiome;
+    public static Set<String> general_defaultUnlockedBiomes;
     public static Biome general_defaultNetherBiome;
     public static boolean extras_sendToSpawn;
     public static boolean extras_respawnAtIsland;
@@ -93,6 +95,13 @@ public class Settings {
         }
         general_defaultBiome = loadBiome(config, "options.general.defaultBiome", Biome.OCEAN);
         general_defaultNetherBiome = loadBiome(config, "options.general.defaultNetherBiome", Biome.NETHER_WASTES);
+        if (!config.contains("options.general.defaultUnlockedBiomes")) {
+            config.set("options.general.defaultUnlockedBiomes", List.of("usb.biome.ocean"));
+            changed = true;
+        }
+        Set<String> configuredDefaultUnlockedBiomes = new HashSet<>(loadDefaultUnlockedBiomes(config.getStringList("options.general.defaultUnlockedBiomes")));
+        configuredDefaultUnlockedBiomes.add(general_defaultBiome.getKey().getKey());
+        general_defaultUnlockedBiomes = Set.copyOf(configuredDefaultUnlockedBiomes);
 
         try {
             general_cooldownRestart = Duration.ofSeconds(config.getInt("options.general.cooldownRestart"));
@@ -171,6 +180,31 @@ public class Settings {
         } catch (Exception e) {
             return defaultBiome;
         }
+    }
+
+    private static Set<String> loadDefaultUnlockedBiomes(List<String> configuredValues) {
+        Set<String> defaultUnlockedBiomes = new HashSet<>();
+        if (configuredValues == null) {
+            configuredValues = new ArrayList<>();
+        }
+        for (String value : configuredValues) {
+            if (value == null || value.isBlank()) {
+                continue;
+            }
+            String biomeKey = value.trim().toLowerCase(Locale.ROOT);
+            if (biomeKey.startsWith("usb.biome.")) {
+                biomeKey = biomeKey.substring("usb.biome.".length());
+            }
+            if (biomeKey.isBlank()) {
+                continue;
+            }
+            if (Registry.BIOME.match(biomeKey) == null) {
+                log.log(Level.WARNING, "Invalid biome entry in 'options.general.defaultUnlockedBiomes': {0}", value);
+                continue;
+            }
+            defaultUnlockedBiomes.add(biomeKey);
+        }
+        return Set.copyOf(defaultUnlockedBiomes);
     }
 
     public static List<ItemStack> getIslandChestItems() {

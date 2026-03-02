@@ -21,6 +21,11 @@ options:
     # [string] The default biome assigned to new islands
     defaultNetherBiome: nether_wastes
 
+    # [list[string]] Biomes unlocked for all players by default.
+    # Entries can be full permission nodes (e.g. usb.biome.ocean) or bare biome keys (e.g. ocean).
+    defaultUnlockedBiomes:
+      - usb.biome.ocean
+
     # [integer] The number of milliseconds between the same notification is sent to the player.
     # This is used when events are triggered heavily - i.e. item-pickup-prevention, damage-prevention etc.
     maxSpam: 2000

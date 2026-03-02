@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.player.PlayerInfo;
+import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +60,12 @@ public class BiomeConfig {
     }
 
     public @NotNull List<BiomeEntry> getAvailableBiomes(@NotNull Player player) {
+        PlayerInfo playerInfo = uSkyBlock.getInstance().getPlayerInfo(player);
         return configuredBiomeEntries.stream()
-            .filter(entry -> player.hasPermission("usb.biome." + entry.biome().getKey().getKey()))
+            .filter(entry -> {
+                String biomeKey = entry.biome().getKey().getKey();
+                return player.hasPermission("usb.biome." + biomeKey) || playerInfo.hasUnlockedBiome(biomeKey);
+            })
             .toList();
     }
 

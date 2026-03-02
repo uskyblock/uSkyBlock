@@ -363,11 +363,15 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
         if (playerInfo != null) {
             playerInfo.setClearInventoryOnNextEntry(false);
+            // Biome unlocks are tracked internally and always reset on create/restart.
+            playerInfo.clearUnlockedBiomes();
+            // Best-effort cleanup of old legacy biome permissions from prior behavior.
+            playerInfo.clearLegacyBiomePermissions(player);
         }
         if (getConfig().getBoolean("options.restart.clearInventory", true)) {
             player.getInventory().clear();
         }
-        if (getConfig().getBoolean("options.restart.clearPerms", true)) {
+        if (getConfig().getBoolean("options.restart.clearPerms", true) && playerInfo != null) {
             playerInfo.clearPerms(player);
         }
         if (getConfig().getBoolean("options.restart.clearArmor", true)) {

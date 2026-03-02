@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.Settings;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -31,8 +32,11 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +54,11 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
     @Serial
     private static final long serialVersionUID = 1L;
     private static final int YML_VERSION = 1;
+    private static final String PLAYER_PERMS_PATH = "player.perms";
+    private static final String PENDING_PERMISSIONS_PATH = "pending-permissions";
+    private static final String PLAYER_UNLOCKED_BIOMES_PATH = "player.unlocked-biomes";
+    private static final String PENDING_BIOME_PERMISSION_REMOVALS_PATH = "pending-biome-permission-removals";
+    private static final String BIOME_PERMISSION_PREFIX = "usb.biome.";
     private final uSkyBlock plugin;
     private final Scheduler scheduler;
     private final String playerName;
@@ -206,6 +215,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         pSection.set("homeYaw", 0);
         pSection.set("homePitch", 0);
         pSection.set("perms", null);
+        pSection.set("unlocked-biomes", null);
     }
 
     private PlayerInfo loadPlayer() {
@@ -224,6 +234,9 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
                 playerData.getInt("player.homeX") + 0.5, playerData.getInt("player.homeY") + 0.2, playerData.getInt("player.homeZ") + 0.5,
                 (float) playerData.getDouble("player.homeYaw", 0.0),
                 (float) playerData.getDouble("player.homePitch", 0.0));
+
+            migrateLegacyBiomePermissions();
+            processPendingBiomePermissionRemovals(getPlayer());
 
             log.exiting(CN, "loadPlayer");
             return this;
@@ -421,6 +434,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         if (isClearInventoryOnNextEntry()) {
             scheduler.sync(() -> plugin.clearPlayerInventory(player), TimeUtil.ticksAsDuration(1));
         }
+        processPendingBiomePermissionRemovals(player);
         List<String> pending = playerData.getStringList("pending-commands");
         if (!pending.isEmpty()) {
             plugin.execCommands(player, pending);
@@ -458,44 +472,234 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
             return true;
         }
 
+        List<String> requestedPermissions = perms.stream()
+            .filter(s -> s != null && !s.isBlank())
+            .map(s -> s.trim().toLowerCase(Locale.ROOT))
+            .toList();
+        if (requestedPermissions.isEmpty()) {
+            return true;
+        }
+
+        Set<String> unlockedBiomes = getUnlockedBiomes();
+        boolean unlockedBiomesChanged = false;
+        List<String> nonBiomePermissions = new ArrayList<>();
+        for (String perm : requestedPermissions) {
+            String biomeKey = biomeKeyFromPermission(perm);
+            if (biomeKey != null) {
+                unlockedBiomesChanged = unlockedBiomes.add(biomeKey) || unlockedBiomesChanged;
+            } else {
+                nonBiomePermissions.add(perm);
+            }
+        }
+        if (unlockedBiomesChanged) {
+            setUnlockedBiomes(unlockedBiomes);
+        }
+        if (nonBiomePermissions.isEmpty()) {
+            if (unlockedBiomesChanged) {
+                save();
+            }
+            return true;
+        }
+
         Player target = getPlayer();
         Optional<PermissionsHook> hook = plugin.getHookManager().getPermissionsHook();
 
         if (target != null && target.isOnline() && hook.isPresent()) {
-            List<String> permList = playerData.getStringList("player.perms");
+            List<String> permList = playerData.getStringList(PLAYER_PERMS_PATH);
             PermissionsHook pHook = hook.get();
 
-            for (String perm : perms) {
+            for (String perm : nonBiomePermissions) {
                 if (!pHook.hasPermission(target, perm)) {
                     permList.add(perm);
                     pHook.addPermission(target, perm);
                 }
             }
-            playerData.set("player.perms", permList);
+            playerData.set(PLAYER_PERMS_PATH, permList);
             save();
             return true;
         } else {
-            List<String> pending = playerData.getStringList("pending-permissions");
-            pending.addAll(perms);
-            playerData.set("pending-permissions", pending);
+            List<String> pending = playerData.getStringList(PENDING_PERMISSIONS_PATH);
+            pending.addAll(nonBiomePermissions);
+            playerData.set(PENDING_PERMISSIONS_PATH, pending);
             save();
             return false;
+        }
+    }
+
+    public boolean hasUnlockedBiome(@NotNull String biomeKey) {
+        String normalized = biomeKey.trim().toLowerCase(Locale.ROOT);
+        if (normalized.isEmpty()) {
+            return false;
+        }
+        if (Settings.general_defaultUnlockedBiomes.contains(normalized)) {
+            return true;
+        }
+        return getUnlockedBiomes().contains(normalized);
+    }
+
+    public void clearUnlockedBiomes() {
+        if (playerData.contains(PLAYER_UNLOCKED_BIOMES_PATH)) {
+            playerData.set(PLAYER_UNLOCKED_BIOMES_PATH, null);
+            save();
+        }
+    }
+
+    public void clearLegacyBiomePermissions(@NotNull Player target) {
+        Validate.notNull(target, "Target cannot be null!");
+
+        Set<String> permissionsToRemove = new LinkedHashSet<>();
+
+        List<String> storedPermissions = new ArrayList<>(playerData.getStringList(PLAYER_PERMS_PATH));
+        List<String> nonBiomeStoredPermissions = new ArrayList<>();
+        for (String permission : storedPermissions) {
+            if (isBiomePermission(permission)) {
+                permissionsToRemove.add(normalizePermission(permission));
+            } else {
+                nonBiomeStoredPermissions.add(permission);
+            }
+        }
+        playerData.set(PLAYER_PERMS_PATH, nonBiomeStoredPermissions.isEmpty() ? null : nonBiomeStoredPermissions);
+
+        List<String> pendingPermissions = new ArrayList<>(playerData.getStringList(PENDING_PERMISSIONS_PATH));
+        List<String> nonBiomePendingPermissions = new ArrayList<>();
+        for (String permission : pendingPermissions) {
+            if (isBiomePermission(permission)) {
+                permissionsToRemove.add(normalizePermission(permission));
+            } else {
+                nonBiomePendingPermissions.add(permission);
+            }
+        }
+        playerData.set(PENDING_PERMISSIONS_PATH, nonBiomePendingPermissions.isEmpty() ? null : nonBiomePendingPermissions);
+
+        permissionsToRemove.addAll(playerData.getStringList(PENDING_BIOME_PERMISSION_REMOVALS_PATH));
+        if (!permissionsToRemove.isEmpty()) {
+            playerData.set(PENDING_BIOME_PERMISSION_REMOVALS_PATH, List.copyOf(permissionsToRemove));
+            save();
+            processPendingBiomePermissionRemovals(target);
+        } else if (playerData.contains(PENDING_BIOME_PERMISSION_REMOVALS_PATH)) {
+            playerData.set(PENDING_BIOME_PERMISSION_REMOVALS_PATH, null);
+            save();
         }
     }
 
     public void clearPerms(@NotNull Player target) {
         Validate.notNull(target, "Target cannot be null!");
 
-        final List<String> perms = playerData.getStringList("player.perms");
+        final List<String> perms = playerData.getStringList(PLAYER_PERMS_PATH);
         if (!perms.isEmpty()) {
             plugin.getHookManager().getPermissionsHook().ifPresent((hook) -> {
                 for (String perm : perms) {
                     hook.removePermission(target, perm);
                 }
             });
-            playerData.set("player.perms", null);
-            playerData.set("pending-permissions", null);
+        }
+        playerData.set(PLAYER_PERMS_PATH, null);
+        playerData.set(PENDING_PERMISSIONS_PATH, null);
+        save();
+    }
+
+    private void migrateLegacyBiomePermissions() {
+        Set<String> biomePermissionNodes = new LinkedHashSet<>();
+        Set<String> unlockedBiomes = getUnlockedBiomes();
+        boolean changed = false;
+
+        List<String> storedPermissions = new ArrayList<>(playerData.getStringList(PLAYER_PERMS_PATH));
+        List<String> filteredStoredPermissions = new ArrayList<>();
+        for (String permission : storedPermissions) {
+            String biomeKey = biomeKeyFromPermission(permission);
+            if (biomeKey != null) {
+                biomePermissionNodes.add(normalizePermission(permission));
+                changed = unlockedBiomes.add(biomeKey) || changed;
+            } else {
+                filteredStoredPermissions.add(permission);
+            }
+        }
+        if (filteredStoredPermissions.size() != storedPermissions.size()) {
+            playerData.set(PLAYER_PERMS_PATH, filteredStoredPermissions.isEmpty() ? null : filteredStoredPermissions);
+            changed = true;
+        }
+
+        List<String> pendingPermissions = new ArrayList<>(playerData.getStringList(PENDING_PERMISSIONS_PATH));
+        List<String> filteredPendingPermissions = new ArrayList<>();
+        for (String permission : pendingPermissions) {
+            String biomeKey = biomeKeyFromPermission(permission);
+            if (biomeKey != null) {
+                biomePermissionNodes.add(normalizePermission(permission));
+                changed = unlockedBiomes.add(biomeKey) || changed;
+            } else {
+                filteredPendingPermissions.add(permission);
+            }
+        }
+        if (filteredPendingPermissions.size() != pendingPermissions.size()) {
+            playerData.set(PENDING_PERMISSIONS_PATH, filteredPendingPermissions.isEmpty() ? null : filteredPendingPermissions);
+            changed = true;
+        }
+
+        if (!biomePermissionNodes.isEmpty()) {
+            Set<String> pendingRemovals = new LinkedHashSet<>(playerData.getStringList(PENDING_BIOME_PERMISSION_REMOVALS_PATH));
+            if (pendingRemovals.addAll(biomePermissionNodes)) {
+                playerData.set(PENDING_BIOME_PERMISSION_REMOVALS_PATH, List.copyOf(pendingRemovals));
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            setUnlockedBiomes(unlockedBiomes);
             save();
         }
+    }
+
+    private void processPendingBiomePermissionRemovals(@Nullable Player target) {
+        if (target == null || !target.isOnline()) {
+            return;
+        }
+        List<String> pendingRemovals = playerData.getStringList(PENDING_BIOME_PERMISSION_REMOVALS_PATH);
+        if (pendingRemovals.isEmpty()) {
+            return;
+        }
+        plugin.getHookManager().getPermissionsHook().ifPresent(hook -> {
+            for (String permission : pendingRemovals) {
+                hook.removePermission(target, normalizePermission(permission));
+            }
+            playerData.set(PENDING_BIOME_PERMISSION_REMOVALS_PATH, null);
+            save();
+        });
+    }
+
+    private @NotNull Set<String> getUnlockedBiomes() {
+        Set<String> unlockedBiomes = new LinkedHashSet<>();
+        for (String biome : playerData.getStringList(PLAYER_UNLOCKED_BIOMES_PATH)) {
+            if (biome == null || biome.isBlank()) {
+                continue;
+            }
+            unlockedBiomes.add(biome.trim().toLowerCase(Locale.ROOT));
+        }
+        return unlockedBiomes;
+    }
+
+    private void setUnlockedBiomes(@NotNull Set<String> unlockedBiomes) {
+        playerData.set(PLAYER_UNLOCKED_BIOMES_PATH, unlockedBiomes.isEmpty() ? null : List.copyOf(unlockedBiomes));
+    }
+
+    private static boolean isBiomePermission(@Nullable String permission) {
+        return biomeKeyFromPermission(permission) != null;
+    }
+
+    private static @Nullable String biomeKeyFromPermission(@Nullable String permission) {
+        if (permission == null || permission.isBlank()) {
+            return null;
+        }
+        String normalizedPermission = normalizePermission(permission);
+        if (!normalizedPermission.startsWith(BIOME_PERMISSION_PREFIX)) {
+            return null;
+        }
+        if (normalizedPermission.length() <= BIOME_PERMISSION_PREFIX.length()) {
+            return null;
+        }
+        return normalizedPermission.substring(BIOME_PERMISSION_PREFIX.length());
+    }
+
+    private static @NotNull String normalizePermission(@NotNull String permission) {
+        return permission.trim().toLowerCase(Locale.ROOT);
     }
 }
