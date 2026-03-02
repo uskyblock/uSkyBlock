@@ -64,12 +64,12 @@ public class TranslationKeysMiniMessageParseTest {
     private List<Path> locatePotFiles() throws IOException {
         List<Path> potFiles = new ArrayList<>();
         for (String fileName : DOMAIN_POT_FILENAMES) {
-            Path moduleLocal = Path.of("src/main/po", fileName);
+            Path moduleLocal = Path.of("src/main/i18n", fileName);
             if (Files.exists(moduleLocal)) {
                 potFiles.add(moduleLocal);
                 continue;
             }
-            Path workspaceRelative = Path.of("uSkyBlock-Core/src/main/po", fileName);
+            Path workspaceRelative = Path.of("uSkyBlock-Core/src/main/i18n", fileName);
             if (Files.exists(workspaceRelative)) {
                 potFiles.add(workspaceRelative);
                 continue;

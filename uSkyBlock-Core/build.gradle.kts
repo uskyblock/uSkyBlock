@@ -51,7 +51,7 @@ java {
     withJavadocJar()
 }
 
-val poDir = file("src/main/po")
+val i18nDir = file("src/main/i18n")
 val generatedI18nDir = layout.buildDirectory.dir("generated/i18n")
 val supportedLocalesFile = generatedI18nDir.map { it.file("supported-locales.txt") }
 
@@ -65,8 +65,8 @@ enum class TranslationDomain(
 }
 
 val translationDomains = TranslationDomain.entries
-val translationDomainPoExcludes = translationDomains.map { "*.${it.id}.po" }
-val domainPotFiles = translationDomains.associateWith { domain -> file("$poDir/keys.${domain.id}.pot") }
+val domainPotFiles = translationDomains.associateWith { domain -> file("$i18nDir/keys.${domain.id}.pot") }
+val domainLocaleDirs = translationDomains.associateWith { domain -> file("$i18nDir/${domain.id}") }
 val mergedPotFile = generatedI18nDir.map { it.file("keys.pot") }
 val combinedExtractionPotFile = generatedI18nDir.map { it.file("keys.all.pot") }
 val mergedLocalesDir = generatedI18nDir.map { it.dir("locales") }
@@ -228,8 +228,8 @@ val mergeDomainTranslations = tasks.register("mergeDomainTranslations") {
     group = "translation"
     description = "Merges domain-specific .po files into locale .po files"
     dependsOn("extractTranslation")
-    val includePatterns = translationDomains.map { "*.${it.id}.po" }
-    inputs.files(fileTree(poDir) { include(*includePatterns.toTypedArray()) })
+    val includePatterns = translationDomains.map { "${it.id}/*.po" }
+    inputs.files(fileTree(i18nDir) { include(*includePatterns.toTypedArray()) })
     inputs.files(domainPotFiles.values)
     outputs.dir(mergedLocalesDir)
 
@@ -246,24 +246,19 @@ val mergeDomainTranslations = tasks.register("mergeDomainTranslations") {
             }
         }
 
-        val domainFiles = fileTree(poDir) { include(*includePatterns.toTypedArray()) }.files
+        val domainFiles = fileTree(i18nDir) { include(*includePatterns.toTypedArray()) }.files
         if (domainFiles.isEmpty()) {
-            logger.lifecycle("No domain translation files found in ${poDir.absolutePath}; skipping mergeDomainTranslations.")
+            logger.lifecycle("No domain translation files found in ${i18nDir.absolutePath}; skipping mergeDomainTranslations.")
             return@doLast
         }
 
         val locales = domainFiles
-            .mapNotNull { domainFile ->
-                translationDomains.firstNotNullOfOrNull { domain ->
-                    val suffix = ".${domain.id}.po"
-                    if (domainFile.name.endsWith(suffix)) domainFile.name.removeSuffix(suffix) else null
-                }
-            }
+            .map { it.nameWithoutExtension }
             .toSortedSet(String.CASE_INSENSITIVE_ORDER)
 
         locales.forEach { locale ->
             val sources = translationDomains.map { domain ->
-                val translatedDomainFile = file("$poDir/$locale.${domain.id}.po")
+                val translatedDomainFile = domainLocaleDirs.getValue(domain).resolve("$locale.po")
                 if (translatedDomainFile.exists()) translatedDomainFile else domainPotFiles.getValue(domain)
             }
             val mergedLocaleFile = outputDir.resolve("$locale.po")
@@ -430,8 +425,8 @@ val generateExtraTranslations = tasks.register("generateExtraTranslations") {
 
     doLast {
         val mergedPot = mergedPotFile.get().asFile
-        val pirateScript = file("$poDir/en2pirate.pl")
-        val kittehScript = file("$poDir/en2kitteh.pl")
+        val pirateScript = file("$i18nDir/en2pirate.pl")
+        val kittehScript = file("$i18nDir/en2kitteh.pl")
         val pirateOutput = generatedExtraTranslations.getValue("xx_PIRATE").get().asFile
         val kittehOutput = generatedExtraTranslations.getValue("xx_lol_US").get().asFile
         executeCommand(
