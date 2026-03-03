@@ -33,16 +33,45 @@ import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.ComponentLineSplitter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
-import static us.talabrek.ultimateskyblock.message.Msg.*;
-import static us.talabrek.ultimateskyblock.message.Placeholder.*;
+import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
+import static us.talabrek.ultimateskyblock.message.Msg.sendError;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * The home of challenge business logic.
@@ -545,8 +574,7 @@ public class ChallengeLogic implements Listener {
         return true;
     }
 
-    private ItemStack getItemStack(PlayerInfo playerInfo, Challenge challenge) {
-        ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
+    private ItemStack getItemStack(ChallengeCompletion completion, Challenge challenge) {
         ItemStack currentChallengeItem = challenge.getDisplayItem(completion, defaults.enableEconomyPlugin);
         ItemMeta meta = currentChallengeItem.getItemMeta();
         if (meta == null) {
@@ -571,7 +599,7 @@ public class ChallengeLogic implements Listener {
         }
     }
 
-    public void populateChallengeRank(Inventory menu, PlayerInfo pi, int page, boolean isAdminAccess) {
+    public void populateChallengeRank(Inventory menu, PlayerInfo pi, int page) {
         List<Rank> ranksOnPage = new ArrayList<>(ranks.values());
         // page 1 = 0-4, 2 = 5-8, ...
         if (page > 0) {
@@ -579,7 +607,7 @@ public class ChallengeLogic implements Listener {
         }
         int location = 0;
         for (Rank rank : ranksOnPage) {
-            location = populateChallengeRank(menu, rank, location, pi, isAdminAccess);
+            location = populateChallengeRank(menu, rank, location, pi);
             if ((location % 9) != 0) {
                 location += (9 - (location % 9)); // Skip the rest of that line
             }
@@ -632,23 +660,13 @@ public class ChallengeLogic implements Listener {
         return (int) Math.ceil(rankSize / 8f);
     }
 
-    public int populateChallengeRank(Inventory menu, final Rank rank, int location, final PlayerInfo playerInfo, boolean isAdminAccess) {
-        List<String> lores = new ArrayList<>();
-        ItemStack currentChallengeItem = rank.getDisplayItem();
-        ItemMeta meta4 = currentChallengeItem.getItemMeta();
-        meta4.setDisplayName("\u00a7e\u00a7l" + trLegacy("Rank: <rank>", legacyArg("rank", rank.getName())));
-        lores.addAll(Arrays.asList(trLegacy("Complete most challenges in<newline>this rank to unlock the next rank.", MUTED).split("\n")));
-        if (location < (CHALLENGE_PAGE_SIZE / 2)) {
-            lores.add(trLegacy("Click here to show the previous page.", PRIMARY));
-        } else {
-            lores.add(trLegacy("Click here to show the next page.", PRIMARY));
-        }
-        meta4.setLore(lores);
-        currentChallengeItem.setItemMeta(meta4);
-        menu.setItem(location, currentChallengeItem);
+    public int populateChallengeRank(Inventory menu, final Rank rank, int location, final PlayerInfo playerInfo) {
+        populateChallengeHeader(rank, location, menu);
         List<String> missingRankRequirements = rank.getMissingRequirements(playerInfo);
+        // Tracks if the previous challenge was completed. Relevant for progression through challenge chains, e.g. novice/adept/expert builder.
+        boolean wasPreviousChallengeCompleted = false;
         for (Challenge challenge : rank.getChallenges()) {
-            if (challenge.getOffset() == -1 && !currentChallengeItem.getItemMeta().hasEnchants()) {
+            if (challenge.getOffset() == -1 && !wasPreviousChallengeCompleted) {
                 continue; // skip
             }
             location += challenge.getOffset() + 1;
@@ -658,43 +676,71 @@ public class ChallengeLogic implements Listener {
             if (location >= CHALLENGE_PAGE_SIZE) {
                 break;
             }
-            lores.clear();
+
+            ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
+            wasPreviousChallengeCompleted = completion != null && completion.getTimesCompleted() > 0;
+
             try {
-                currentChallengeItem = getItemStack(playerInfo, challenge);
                 List<String> missingReqs = challenge.getMissingRequirements(playerInfo);
-                if (!missingRankRequirements.isEmpty() || !missingReqs.isEmpty()) {
-                    if (!isAdminAccess) {
-                        ItemStack locked = challenge.getLockedDisplayItem();
-                        if (locked == null) {
-                            locked = lockedItemMap.get(challenge.getType());
-                        }
-                        if (locked != null) {
-                            currentChallengeItem.setType(locked.getType());
-                        } else if (lockedItem != null) {
-                            currentChallengeItem.setType(lockedItem.getType());
-                        }
-                    } else {
-                        lores = currentChallengeItem.getItemMeta().getLore();
-                        if (lores == null) {
-                            lores = new ArrayList<>();
-                        }
-                    }
-                    meta4 = currentChallengeItem.getItemMeta();
-                    if (defaults.showLockedChallengeName) {
-                        lores.add(meta4.getDisplayName());
-                    }
-                    meta4.setDisplayName(trLegacy("Locked Challenge", ERROR));
-                    lores.addAll(missingReqs);
-                    lores.addAll(missingRankRequirements);
-                    meta4.setLore(lores);
-                    currentChallengeItem.setItemMeta(meta4);
+                boolean challengeLocked = !missingRankRequirements.isEmpty() || !missingReqs.isEmpty();
+
+                ItemStack displayItem;
+
+                if (!challengeLocked) {
+                    displayItem = getItemStack(completion, challenge);
+                } else {
+                    displayItem = renderLockedChallengeItem(challenge, missingReqs, missingRankRequirements);
                 }
-                menu.setItem(location, currentChallengeItem);
+                menu.setItem(location, displayItem);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Invalid challenge " + challenge, e);
             }
         }
         return location;
+    }
+
+    private void populateChallengeHeader(Rank rank, int location, Inventory menu) {
+        List<String> lores = new ArrayList<>();
+        ItemStack displayItem = rank.getDisplayItem();
+        ItemMeta itemMeta = displayItem.getItemMeta();
+        itemMeta.setDisplayName("\u00a7e\u00a7l" + trLegacy("Rank: <rank>", legacyArg("rank", rank.getName())));
+        for (Component line : ComponentLineSplitter.splitLines(tr("Complete most challenges in<newline>this rank to unlock the next rank.", MUTED))) {
+            lores.add(legacy(line));
+        }
+        if (location < (CHALLENGE_PAGE_SIZE / 2)) {
+            lores.add(trLegacy("Click here to show the previous page.", PRIMARY));
+        } else {
+            lores.add(trLegacy("Click here to show the next page.", PRIMARY));
+        }
+        displayItem.setItemMeta(itemMeta);
+        ItemStackUtil.setComponentLore(displayItem, lores.stream().map(line -> fromLegacy(line)).toList());
+        menu.setItem(location, displayItem);
+    }
+
+    private ItemStack renderLockedChallengeItem(Challenge challenge, List<String> missingReqs, List<String> missingRankRequirements) {
+        ItemStack locked = challenge.getLockedDisplayItem();
+        ItemStack typeLock = lockedItemMap.get(challenge.getType());
+        if (locked == null && typeLock != null) {
+            locked = new ItemStack(typeLock);
+        }
+        if (locked == null && lockedItem != null) {
+            locked = new ItemStack(lockedItem);
+        }
+        if (locked == null) {
+            locked = new ItemStack(challenge.getDisplayItem());
+        }
+
+        ItemMeta itemMeta = locked.getItemMeta();
+        itemMeta.setDisplayName(trLegacy("Locked Challenge", ERROR));
+        List<String> lores = new ArrayList<>();
+        if (defaults.showLockedChallengeName) {
+            lores.add(challenge.getDisplayName());
+        }
+        lores.addAll(missingReqs);
+        lores.addAll(missingRankRequirements);
+        locked.setItemMeta(itemMeta);
+        ItemStackUtil.setComponentLore(locked, lores.stream().map(line -> fromLegacy(line)).toList());
+        return locked;
     }
 
     public boolean isResetOnCreate() {

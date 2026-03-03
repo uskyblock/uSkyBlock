@@ -371,7 +371,7 @@ public class SkyBlockMenu {
             number("total", total));
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), CHALLENGE_PAGE_SIZE + COLS_PER_ROW, title);
         final PlayerInfo pi = playerName == null ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(playerName);
-        challengeLogic.populateChallengeRank(menu, pi, page, playerName != null && player.hasPermission("usb.mod.bypassrestriction"));
+        challengeLogic.populateChallengeRank(menu, pi, page);
         int[] pages = new int[9];
         pages[0] = 1;
         pages[8] = total;
