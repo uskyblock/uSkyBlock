@@ -1,1975 +1,1957 @@
-# uSkyBlock translation template
-# Copyright (C) 2026 uSkyBlock contributors
-# This file is distributed under GPL-3.0 license.
-# Translators should preserve MiniMessage tags/placeholders exactly.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: uSkyBlock\n"
+"Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-03-03 16:28\n"
 "Last-Translator: minoneer <minoneer@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ms\n"
+"Language-Team: Malay\n"
+"Language: ms_MY\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Crowdin-Language: ms\n"
+"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
+"X-Crowdin-File-ID: 24\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
-msgstr "** Kau sedang memasuki pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering a protected - but abandoned - island area."
-msgstr "** Kau sedang memasuki kawasan pulau yang dilindungi - tetapi ditinggalkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are leaving <leader>'s island."
-msgstr "** Kau sedang meninggalkan pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are leaving an abandoned island."
-msgstr "** Kau sedang meninggalkan pulau yang ditinggalkan."
+msgstr ""
 
 #. I18N: A summary of block limits on an island
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "<block-type>: <count> (max. <max>)"
-msgstr "<block-type>: <count> (maks. <max>)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 msgid "<command> timed out."
-msgstr "<command> tamat masa."
+msgstr ""
 
 #. I18N: A summary of entity group limits on an island
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "<entity-group>: <count> (max. <max>)"
-msgstr "<entity-group>: <count> (maks. <max>)"
+msgstr ""
 
 #. I18N: A UI string indicating a player does not have a particular permission
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "<error>Cannot</error> <permission>"
-msgstr "<error>Tidak boleh</error> <permission>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "<error>Warning:</error> <player> is warping to your island."
-msgstr "<error>Amaran:</error> <player> sedang teleport ke pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/GriefEvents.java
 msgid "<error>Wither despawned!</error> It wandered too far from your island."
-msgstr "<error>Wither telah hilang!</error> Ia berkeliaran terlalu jauh dari pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "<inviter> invited <invitee>."
-msgstr "<inviter> menjemput <invitee>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "<item> is limited. Scanning your island to check if you can place more. Please be patient."
-msgstr "<item> adalah terhad. Sedang mengimbas pulau kau untuk semak sama ada kau boleh letak lagi. Sila bersabar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WitherTagEvents.java
 msgid "<leader>'s Wither"
-msgstr "Wither <leader>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "<player> activated the island warp."
-msgstr "<player> mengaktifkan teleport pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "<player> changed the island biome to <biome>"
-msgstr "<player> menukar biom pulau kepada <biome>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "<player> changed the island warp location."
-msgstr "<player> menukar lokasi teleport pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "<player> created an area with a <biome> biome"
-msgstr "<player> mencipta kawasan dengan biom <biome>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<player> deactivated the island warp."
-msgstr "<player> menyahaktifkan teleport pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has been kicked from the island!"
-msgstr "<player> telah ditendang dari pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<player> has been removed from the island group."
-msgstr "<player> telah dikeluarkan dari kumpulan pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has been removed from the island!"
-msgstr "<player> telah dikeluarkan dari pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 msgid "<player> has completed the <challenge> challenge!"
-msgstr "<player> telah menyiapkan cabaran <challenge>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has kicked you from their island!"
-msgstr "<player> telah menendang kau dari pulau mereka!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> has removed you from their island!"
-msgstr "<player> telah mengeluarkan kau dari pulau mereka!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "<player> invited you to join their island!"
-msgstr "<player> menjemput kau untuk menyertai pulau mereka!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "<player> is already the leader of your island."
-msgstr "<player> sudah pun ketua pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "<player> is exempt from being banned."
-msgstr "<player> dikecualikan daripada diban."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> is exempt from being kicked."
-msgstr "<player> dikecualikan daripada ditendang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "<player> joined your island group."
-msgstr "<player> menyertai kumpulan pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<player> locked the island."
-msgstr "<player> mengunci pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "<player> rejected the invitation."
-msgstr "<player> menolak jemputan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "<player> revoked trust for <target> on the island."
-msgstr "<player> menarik balik kepercayaan untuk <target> di pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "<player> tried to ban you from their island!"
-msgstr "<player> cuba memban kau dari pulau mereka!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "<player> tried to invite you, but you are already in a party.<newline><muted>Use <cmd>/is leave</cmd> to leave your current party.</muted>"
-msgstr "<player> cuba menjemput kau, tetapi kau sudah berada dalam kumpulan.<newline><muted>Guna <cmd>/is leave</cmd> untuk keluar dari kumpulan semasa kau.</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "<player> tried to kick you from their island!"
-msgstr "<player> cuba menendang kau dari pulau mereka!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "<player> tried to take over the island!"
-msgstr "<player> cuba mengambil alih pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "<player> trusted <target> on the island."
-msgstr "<player> memberi kepercayaan kepada <target> di pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<player> unlocked the island."
-msgstr "<player> membuka kunci pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "<player>'s permissions"
-msgstr "Kebenaran <player>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<primary>SKY</primary><muted> ></muted> <message>"
-msgstr "<primary>SKY</primary><muted> ></muted> <message>"
+msgstr ""
 
-#. I18N: <page> and <max-page> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep tag names unchanged.
+#. I18N: <page> and <max-page> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
-msgstr "<primary>Wall of Fame</primary> (halaman <page> daripada <max-page>):"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary>"
-msgstr "<primary>uSkyBlock</primary> memerlukan <plugin> >= <secondary>v<required-version></secondary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "<primary>uSkyBlock</primary> depends on <plugin> >= <secondary>v<required-version></secondary> but only <error>v<actual-version></error> was found.<newline>"
-msgstr "<primary>uSkyBlock</primary> memerlukan <plugin> >= <secondary>v<required-version></secondary> tetapi hanya <error>v<actual-version></error> ditemui.<newline>"
+msgstr ""
 
 #. I18N: A UI string indicating a player has a particular permission
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "<success>Can</success> <permission>"
-msgstr "<success>Boleh</success> <permission>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "<success>Congratulations!</success> Your island is ready."
-msgstr "<success>Tahniah!</success> Pulau kau sudah sedia."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "All required items must be placed on your island, within <radius> blocks of you."
-msgstr "Semua item yang diperlukan mesti diletakkan di pulau kau, dalam jarak <radius> blok dari kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Ambiguous challenge name: <input>. Did you mean:<suggestions>"
-msgstr "Nama cabaran tidak jelas: <input>. Adakah kau maksudkan:<suggestions>"
+msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Animals"
-msgstr "Haiwan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Back to Main Menu"
-msgstr "Kembali ke Menu Utama"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "Banned: You are banned from this island."
-msgstr "Diban: Kau diban dari pulau ini."
+msgstr ""
 
-#. I18N: Section header for banned player list in admin island info debug
-#. output.
+#. I18N: Section header for banned player list in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Bans:"
-msgstr "Senarai ban:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "Be patient, young padawan"
-msgstr "Bersabarlah, padawan muda"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Biome: <biome>"
-msgstr "Biom: <biome>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Blocks on <player>'s island (page <page> of <max-page>):"
-msgstr "Blok di pulau <player> (halaman <page> daripada <max-page>):"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are ALLLLLLL ALOOOOONE!"
-msgstr "Tapi kau BEEEETUUUUL-BEEEETUUUUL BERSENDIRIAN!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are talking to yourself!"
-msgstr "Tapi kau sedang bercakap dengan diri sendiri!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But you are yelling in the wind!"
-msgstr "Tapi kau sedang menjerit kepada angin!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "But your fantasy friends are gone!"
-msgstr "Tapi kawan-kawan fantasi kau dah hilang!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Challenge Menu"
-msgstr "Menu Cabaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Challenge name: <challenge>"
-msgstr "Nama cabaran: <challenge>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Challenges"
-msgstr "Cabaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Challenges disabled."
-msgstr "Cabaran dinyahdayakan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "Challenges have been disabled. Contact an administrator."
-msgstr "Cabaran telah dinyahdayakan. Hubungi pentadbir."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Biome"
-msgstr "Tukar Biom"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Home Location"
-msgstr "Tukar Lokasi Rumah"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Island Biome"
-msgstr "Tukar Biom Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Change Warp Location"
-msgstr "Tukar Lokasi Teleport"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "Changing your obsidian back into lava. Be careful."
-msgstr "Menukar obsidian kau kembali menjadi lava. Berhati-hati."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to activate."
-msgstr "Klik di sini untuk aktifkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to change biomes."
-msgstr "Klik di sini untuk tukar biom."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to change."
-msgstr "Klik di sini untuk tukar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to deactivate."
-msgstr "Klik di sini untuk nyahaktifkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to grant this permission."
-msgstr "Klik di sini untuk berikan kebenaran ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to lock your island."
-msgstr "Klik di sini untuk kunci pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to remove this permission."
-msgstr "Klik di sini untuk buang kebenaran ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Click here to return to the main island screen."
-msgstr "Klik di sini untuk kembali ke skrin pulau utama."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to return to<newline>the main island screen."
-msgstr "Klik di sini untuk kembali ke<newline>skrin pulau utama."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to return to<newline>your island group's info."
-msgstr "Klik di sini untuk kembali ke<newline>info kumpulan pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Click here to show the next page."
-msgstr "Klik di sini untuk tunjuk halaman seterusnya."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Click here to show the previous page."
-msgstr "Klik di sini untuk tunjuk halaman sebelumnya."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to unlock your island."
-msgstr "Klik di sini untuk buka kunci pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to view challenges."
-msgstr "Klik di sini untuk lihat cabaran."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click to change this player's permissions."
-msgstr "Klik untuk tukar kebenaran pemain ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Click to change to this biome."
-msgstr "Klik untuk tukar kepada biom ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Click to complete this challenge."
-msgstr "Klik untuk selesaikan cabaran ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click to create!"
-msgstr "Klik untuk cipta!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click to leave"
-msgstr "Klik untuk keluar"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click to restart!"
-msgstr "Klik untuk mula semula!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Click to warp to the island!"
-msgstr "Klik untuk teleport ke pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click within <duration> to leave!"
-msgstr "Klik dalam <duration> untuk keluar!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click within <duration> to restart!"
-msgstr "Klik dalam <duration> untuk mula semula!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Command is currently disabled!"
-msgstr "Arahan sedang dinyahdayakan!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <remaining> more <rank> challenges"
-msgstr "Selesaikan lagi <remaining> cabaran pangkat <rank>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <requirements>"
-msgstr "Selesaikan <requirements>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Complete most challenges in<newline>this rank to unlock the next rank."
-msgstr "Selesaikan kebanyakan cabaran dalam<newline>pangkat ini untuk buka kunci pangkat seterusnya."
+msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Copper Golems"
-msgstr "Golem Tembaga"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Could not create your island. Please contact a server moderator."
-msgstr "Tidak dapat mencipta pulau kau. Sila hubungi moderator pelayan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "Could not locate rank of <player>"
-msgstr "Tidak dapat mencari pangkat <player>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 msgid "Creating an island <direction> of you"
-msgstr "Mencipta pulau di <direction> dari kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLocatorLogic.java
 msgid "Creating an island at your location"
-msgstr "Mencipta pulau di lokasi kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Currency reward: <currency:'#,##0'>"
-msgstr "Ganjaran mata wang: <currency:'#,##0'>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
-msgstr "Ganjaran mata wang: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Current biome: <biome>"
-msgstr "Bioma semasa: <biome>"
+msgstr ""
 
-#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat
-#. pattern; keep tag name "level".
+#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Current level: <level:'#,##0'>"
-msgstr "Tahap semasa: <level:'#,##0'>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Current page"
-msgstr "Halaman semasa"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Current radius: <radius>"
-msgstr "Jejari semasa: <radius>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Decrease radius of biome change"
-msgstr "Kurangkan jejari penukaran bioma"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "East"
-msgstr "Timur"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Either send a message directly to your group, or toggle it on/off."
-msgstr "Sama ada hantar mesej terus kepada kumpulan kau, atau togolkan hidup/mati."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "First Page"
-msgstr "Halaman Pertama"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"
-msgstr "Dapatkan tahap pulau dengan mengembangkan<newline>skyblock kau dan melengkapkan<newline>cabaran tertentu. Blok yang lebih jarang<newline>akan menambah lebih banyak pada tahap kau.<newline><primary>Klik di sini untuk segar semula.</primary><newline>(mesti berada di pulau kau)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Getting your island ready. Please be patient, this can take a while."
-msgstr "Sedang menyediakan pulau kau. Sila bersabar, ini mungkin mengambil masa."
+msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Golems"
-msgstr "Golem"
+msgstr ""
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
-msgstr "Ahli kumpulan: <current>/<max>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Hold your horses! <muted>You have to be patient."
-msgstr "Bertenang dulu! <muted>Kau kena bersabar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "Hold your horses! You have to be patient..."
-msgstr "Bertenang dulu! Kau kena bersabar..."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Hover over a player's icon to<newline>view their permissions. The<newline>leader can change permissions<newline>by clicking a player's icon."
-msgstr "Arahkan kursor pada ikon pemain untuk<newline>lihat kebenaran mereka. Ketua<newline>boleh tukar kebenaran<newline>dengan mengklik ikon pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Hover over an icon to view<newline>a permission. Change the<newline>permission by clicking it."
-msgstr "Arahkan kursor pada ikon untuk lihat<newline>satu kebenaran. Tukar<newline>kebenaran dengan mengkliknya."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Increase radius of biome change"
-msgstr "Tingkatkan jejari penukaran bioma"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "Information about <player>'s island:"
-msgstr "Maklumat tentang pulau <player>:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "Invalid arguments. Use /is biome [biome] [radius|chunk|all]"
-msgstr "Argumen tidak sah. Guna /is biome [biome] [radius|chunk|all]"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Invalid challenge name! Use /c help for more information"
-msgstr "Nama cabaran tidak sah! Guna /c help untuk maklumat lanjut"
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "Invalid command: <cmd><command></cmd>"
-msgstr "Perintah tidak sah: <cmd><command></cmd>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "Invalid permission <permission>. Must be one of <permissions>"
-msgstr "Kebenaran <permission> tidak sah. Mesti salah satu daripada <permissions>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Invitation for <leader>'s island timed out or was cancelled."
-msgstr "Jemputan untuk pulau <leader> telah tamat tempoh atau dibatalkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Invitation for <player> timed out or was cancelled."
-msgstr "Jemputan untuk <player> telah tamat tempoh atau dibatalkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Invite Players"
-msgstr "Jemput Pemain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Invite sent to <player>."
-msgstr "Jemputan dihantar kepada <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Island Biome"
-msgstr "Bioma Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Create Menu"
-msgstr "Menu Cipta Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group"
-msgstr "Kumpulan Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Group Members"
-msgstr "Ahli Kumpulan Pulau"
+msgstr ""
 
 #. I18N: Header line for the admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Island Info:"
-msgstr "Info Pulau:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Level"
-msgstr "Tahap Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Lock"
-msgstr "Kunci Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Log"
-msgstr "Log Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Menu"
-msgstr "Menu Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Restart Menu"
-msgstr "Menu Mulakan Semula Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Island Warp"
-msgstr "Teleport Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Island level has been disabled, contact an administrator."
-msgstr "Tahap pulau telah dinyahdayakan, hubungi pentadbir."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "Island level is <level:'#,##0'>"
-msgstr "Tahap pulau ialah <level:'#,##0'>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "It's a bad idea to replace your lava!"
-msgstr "Bukan idea yang baik untuk menggantikan lava kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Item reward: <reward-line>"
-msgstr "Ganjaran item: <reward-line>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Item rewards: <items>"
-msgstr "Ganjaran item: <items>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Items will be traded for the reward."
-msgstr "Item akan ditukar untuk ganjaran."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Join an Island"
-msgstr "Sertai Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Kick Players"
-msgstr "Tendang Pemain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Last Page"
-msgstr "Halaman Terakhir"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Leader"
-msgstr "Ketua"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "Leadership transferred by <from> to <to>."
-msgstr "Kepimpinan dipindahkan oleh <from> kepada <to>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Leave Island"
-msgstr "Tinggalkan Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Leaves your island.<newline><error>Warning! This will remove all your items!</error>"
-msgstr "Tinggalkan pulau kau.<newline><error>Amaran! Ini akan membuang semua item kau!</error>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "Let the player change their island's biome to <biome>"
-msgstr "Benarkan pemain menukar bioma pulau mereka kepada <biome>"
+msgstr ""
 
-#. I18N: Section header for configured island limits in admin island info
-#. debug output.
+#. I18N: Section header for configured island limits in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Limits:"
-msgstr "Had:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Lock status: <secondary>Active</secondary><newline>Your island is currently <error>locked</error>.<newline>Players outside your group<newline>cannot enter your island."
-msgstr "Status kunci: <secondary>Aktif</secondary><newline>Pulau kau kini <error>terkunci</error>.<newline>Pemain di luar kumpulan kau<newline>tidak boleh masuk pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Lock status: Inactive<newline>Your island is currently <secondary>unlocked</secondary>.<newline>All players can enter your island,<newline>but only you and your group<newline>members may build there."
-msgstr "Status kunci: Tidak aktif<newline>Pulau kau kini <secondary>tidak terkunci</secondary>.<newline>Semua pemain boleh masuk pulau kau,<newline>tetapi hanya kau dan ahli<newline>kumpulan kau boleh bina di sana."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Locked Challenge"
-msgstr "Cabaran Terkunci"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
 msgid "Locked: That island is locked. No entry allowed."
-msgstr "Terkunci: Pulau itu terkunci. Tiada kemasukan dibenarkan."
+msgstr ""
 
-#. I18N: Section header for island activity log in admin island info debug
-#. output.
+#. I18N: Section header for island activity log in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Log:"
-msgstr "Log:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "MAINTENANCE: <muted>uSkyBlock is currently in maintenance mode."
-msgstr "PENYELENGGARAAN: <muted>uSkyBlock sedang dalam mod penyelenggaraan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Member"
-msgstr "Ahli"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "Members are already trusted!"
-msgstr "Ahli sudah diberi kepercayaan!"
+msgstr ""
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Members: <current>/<max>"
-msgstr "Ahli: <current>/<max>"
+msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Monsters"
-msgstr "Raksasa"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "More players can be invited to this island."
-msgstr "Lebih ramai pemain boleh dijemput ke pulau ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Must be within <radius> meters."
-msgstr "Mesti dalam lingkungan <radius> meter."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "No access!<newline><muted>(<permission>)</muted>"
-msgstr "Tiada akses!<newline><muted>(<permission>)</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "No challenge matched: <input>"
-msgstr "Tiada cabaran yang sepadan: <input>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "No challenge with id <challenge-id> found"
-msgstr "Tiada cabaran dengan id <challenge-id> ditemui"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "No pending invite found for <player>"
-msgstr "Tiada jemputan tertunda ditemui untuk <player>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "No pending invites."
-msgstr "Tiada jemputan tertunda."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North"
-msgstr "Utara"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-East"
-msgstr "Timur Laut"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-West"
-msgstr "Barat Laut"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Not enough items in chest to complete challenge!"
-msgstr "Item dalam peti tidak mencukupi untuk melengkapkan cabaran!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "Not really patient, are you?"
-msgstr "Kau bukan jenis yang sabar, ya?"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "Note: Construction may still be in progress."
-msgstr "Nota: Pembinaan mungkin masih sedang berlangsung."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "OFF"
-msgstr "MATI"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "ON"
-msgstr "HIDUP"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "Only the island leader can transfer leadership!"
-msgstr "Hanya ketua pulau boleh memindahkan kepimpinan!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "Only the island's owner can invite!"
-msgstr "Hanya pemilik pulau boleh menjemput!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "Only the owner may restart this island. Leave this island first to start your own (/is leave)."
-msgstr "Hanya pemilik boleh mulakan semula pulau ini. Tinggalkan pulau ini dahulu untuk mula pulau kau sendiri (/is leave)."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "Owner: <player>"
-msgstr "Pemilik: <player>"
+msgstr ""
 
-#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "page".
+#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Page <page>"
-msgstr "Halaman <page>"
+msgstr ""
 
-#. I18N: Section header for party-related fields in admin island info debug
-#. output.
+#. I18N: Section header for party-related fields in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Party:"
-msgstr "Kumpulan:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "Patience you MUST have, young padawan"
-msgstr "Kesabaran kau MESTI ada, padawan muda"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "Pending invites: <invites>"
-msgstr "Jemputan tertunda: <invites>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Permissions"
-msgstr "Kebenaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "Permissions for <player>:<newline>"
-msgstr "Kebenaran untuk <player>:<newline>"
+msgstr ""
 
 #. I18N: Header line for the admin player info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 msgid "Player Info:"
-msgstr "Info Pemain:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Player Permissions"
-msgstr "Kebenaran Pemain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Player is already assigned to this island!"
-msgstr "Pemain sudah pun ditetapkan pada pulau ini!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "Rank is <rank>"
-msgstr "Pangkat ialah <rank>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Rank: <rank>"
-msgstr "Pangkat: <rank>"
+msgstr ""
 
 #. I18N: Status label on challenge signs when all requirements are met.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Ready"
-msgstr "Sedia"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Repeat <command> to toggle it off."
-msgstr "Ulang <command> untuk mematikannya."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Requirements will reset in <days> days."
-msgstr "Keperluan akan ditetapkan semula dalam <days> hari."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Requirements will reset in <hours> hours."
-msgstr "Keperluan akan ditetapkan semula dalam <hours> jam."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Requirements will reset in <minutes> minutes."
-msgstr "Keperluan akan ditetapkan semula dalam <minutes> minit."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Requires <requirement>"
-msgstr "Memerlukan <requirement>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Restart Island"
-msgstr "Mulakan Semula Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Restarts your island.<newline><error>Warning! This will remove your items and island!</error>"
-msgstr "Memulakan semula pulau kamu.<newline><error>Amaran! Ini akan membuang item kamu dan pulau kamu!</error>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Return Home"
-msgstr "Kembali Ke Rumah"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Return to Spawn"
-msgstr "Kembali Ke Spawn"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Return to the main menu"
-msgstr "Kembali ke menu utama"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary>Click here to return home.</primary>"
-msgstr "Kembali ke titik<newline>rumah pulau kamu. Kamu boleh tukar titik<newline>rumah kamu ke mana-mana lokasi di pulau<newline>kamu menggunakan <cmd>/is sethome</cmd>.<newline><primary>Klik di sini untuk kembali ke rumah.</primary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "Riding is only allowed on your own island."
-msgstr "Menunggang hanya dibenarkan di pulau kamu sendiri."
+msgstr ""
 
-#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "timeout".
+#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
-msgstr "Menjalankan <command> adalah <error>berisiko</error>. <muted>Ulang dalam <timeout> saat untuk sahkan.</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "Scanning complete. You can try again."
-msgstr "Imbasan selesai. Kamu boleh cuba lagi."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Score Count Block"
-msgstr "Kiraan Blok Skor"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Set Island Warp"
-msgstr "Tetapkan Teleport Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Set incoming warp to your current location using <cmd>/is setwarp</cmd>."
-msgstr "Tetapkan teleport masuk ke lokasi semasa kamu menggunakan <cmd>/is setwarp</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Since your island is locked, your incoming warp has been deactivated."
-msgstr "Oleh sebab pulau kamu terkunci, teleport masuk kamu telah dinyahaktifkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/ChatLogic.java
 msgid "Sorry! <reason>"
-msgstr "Maaf! <reason>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South"
-msgstr "Selatan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-East"
-msgstr "Tenggara"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "South-West"
-msgstr "Barat Daya"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Start an Island"
-msgstr "Mulakan Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Start your skyblock journey<newline>by starting your own island.<newline>Complete challenges to earn<newline>items and skybucks to help<newline>expand your skyblock. You can<newline>invite others to join in<newline>building your island empire!<newline><primary>Click here to start!</primary>"
-msgstr "Mulakan perjalanan skyblock kamu<newline>dengan memulakan pulau kamu sendiri.<newline>Lengkapkan cabaran untuk dapatkan<newline>item dan skybucks untuk membantu<newline>mengembangkan skyblock kamu. Kamu boleh<newline>menjemput orang lain untuk turut serta<newline>membina empayar pulau kamu!<newline><primary>Klik di sini untuk mula!</primary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/block/BlockCollection.java
 msgid "Still missing the following blocks: <blocks>"
-msgstr "Masih kekurangan blok berikut: <blocks>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Still missing the following entities:"
-msgstr "Masih kekurangan entiti berikut:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "Stop kicking yourself!"
-msgstr "Berhenti tendang diri sendiri!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "Successfully withdrew invite for <player>."
-msgstr "Berjaya menarik balik jemputan untuk <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Teleport cancelled"
-msgstr "Teleport dibatalkan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Teleport to the spawn area."
-msgstr "Teleport ke kawasan spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Teleporting you to <player>'s island."
-msgstr "Men-teleport kamu ke pulau <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Teleporting you to your island."
-msgstr "Men-teleport kamu ke pulau kamu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "That island is locked. <muted>Teleporting there is not allowed."
-msgstr "Pulau itu terkunci. <muted>Teleport ke sana tidak dibenarkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "That player does not exist!"
-msgstr "Pemain itu tidak wujud!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "That player does not have an active warp."
-msgstr "Pemain itu tiada teleport yang aktif."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "That player has forbidden you from teleporting to their island."
-msgstr "Pemain itu telah melarang kamu untuk teleport ke pulau mereka."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "That player has forbidden you from warping to their island."
-msgstr "Pemain itu telah melarang kamu daripada teleport ke pulau mereka."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "That player is already a member on another island."
-msgstr "Pemain itu sudah menjadi ahli di pulau lain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "That player is invalid or does not have an island!"
-msgstr "Pemain itu tidak sah atau tidak mempunyai pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "That player is not part of your island group, and not on your island!"
-msgstr "Pemain itu bukan sebahagian daripada kumpulan pulau kamu, dan juga tidak berada di pulau kamu!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "That player is offline or doesn't exist."
-msgstr "Pemain itu offline atau tidak wujud."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "That player is the leader of your island!"
-msgstr "Pemain itu ialah ketua pulau kamu!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "That player's island is currently generating, so you cannot warp to it right now."
-msgstr "Pulau pemain itu sedang dijana, jadi kamu tidak boleh teleport ke sana sekarang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "The <challenge> challenge is not available yet!"
-msgstr "Cabaran <challenge> belum tersedia lagi!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "The <challenge> challenge is not repeatable!"
-msgstr "Cabaran <challenge> tidak boleh diulang!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "The following leaders trust you:"
-msgstr "Ketua berikut mempercayai kamu:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "The following players are banned from warping to your island:"
-msgstr "Pemain berikut telah diharamkan daripada teleport ke pulau kamu:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "The following players are trusted on your island:"
-msgstr "Pemain berikut dipercayai di pulau kamu:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "The island biome affects things<newline>like grass color and spawning<newline>of both animals and monsters."
-msgstr "Biome pulau mempengaruhi perkara<newline>seperti warna rumput dan spawn<newline>haiwan serta raksasa."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "The island has been created."
-msgstr "Pulau telah dicipta."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "The island has been locked. <muted>Sending you to spawn."
-msgstr "Pulau telah dikunci. <muted>Menghantar kamu ke spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "The island owning this piece of nether is being deleted! Sending you to spawn."
-msgstr "Pulau yang memiliki bahagian nether ini sedang dipadam! Menghantar kamu ke spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "The island you are on is being deleted! Sending you to spawn."
-msgstr "Pulau yang kamu berada di atasnya sedang dipadam! Menghantar kamu ke spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "The pixies are busy changing the biome in your current chunk to <biome>, be patient."
-msgstr "Para pixie sedang sibuk menukar biome dalam chunk semasa kamu kepada <biome>, harap bersabar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "The pixies are busy changing the biome near you to <biome>, be patient."
-msgstr "Para pixie sedang sibuk menukar biome berhampiran kamu kepada <biome>, harap bersabar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "The pixies are busy changing the biome of your island to <biome>, be patient."
-msgstr "Para pixie sedang sibuk menukar biome pulau kamu kepada <biome>, harap bersabar."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
 msgid "The two most powerful warriors are patience and time."
-msgstr "Dua pejuang paling berkuasa ialah kesabaran dan masa."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "This challenge is currently unavailable."
-msgstr "Cabaran ini tidak tersedia buat masa ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "This challenge is not repeatable!"
-msgstr "Cabaran ini tidak boleh diulang!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "This challenge requires:"
-msgstr "Cabaran ini memerlukan:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/message/Msg.java
 msgid "This command is only available to players."
-msgstr "Arahan ini hanya tersedia untuk pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "This is your current biome."
-msgstr "Ini ialah biome semasa kamu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This island is full."
-msgstr "Pulau ini penuh."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This player <error>cannot</error>"
-msgstr "Pemain ini <error>tidak boleh</error>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This player <success>can</success>"
-msgstr "Pemain ini <success>boleh</success>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "To ban or unban on your island, use <cmd>/is ban [player]</cmd>."
-msgstr "Untuk ban atau unban di pulau kamu, guna <cmd>/is ban [player]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "To complete this challenge, use <cmd>/c complete [challenge]</cmd>."
-msgstr "Untuk lengkapkan cabaran ini, guna <cmd>/c complete [challenge]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "To trust or untrust on your island, use <cmd>/is trust [player]</cmd>."
-msgstr "Untuk trust atau untrust di pulau kamu, guna <cmd>/is trust [player]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "To unlock this rank, complete:"
-msgstr "Untuk membuka kunci pangkat ini, lengkapkan:"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Lock"
-msgstr "Togol Kunci Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Warp"
-msgstr "Togol Teleport Pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Toggle your warp on or off using <cmd>/is togglewarp</cmd>."
-msgstr "Togol teleport kamu hidup atau mati menggunakan <cmd>/is togglewarp</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Toggled <chat-type> chat <success>on</success>."
-msgstr "Sembang <chat-type> ditogol <success>hidup</success>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "Toggled <chat-type> chat off."
-msgstr "Sembang <chat-type> ditogol mati."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "Toggled permission <permission> for <player> to <state>."
-msgstr "Kebenaran <permission> untuk <player> ditogol kepada <state>."
+msgstr ""
 
-#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "level".
+#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered."
-msgstr "Senarai 10 teratas kosong! <muted>Hanya pulau melebihi tahap <level:'#,##0'> akan dipertimbangkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "Total completions: <times>"
-msgstr "Jumlah penyelesaian: <times>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "Trading isn't allowed on other islands. <muted>Use spawn instead."
-msgstr "Perdagangan tidak dibenarkan di pulau lain. <muted>Guna spawn sebagai ganti."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Trying to complete challenge <challenge>."
-msgstr "Mencuba melengkapkan cabaran <challenge>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/AdminCommand.java
 msgid "Ultimate SkyBlock Admin"
-msgstr "Admin Ultimate SkyBlock"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Unable to find a safe home location on your island!"
-msgstr "Tidak dapat mencari lokasi rumah yang selamat di pulau kamu!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/CreateIslandTask.java
 msgid "Unable to locate schematic <schematic>, contact a server admin"
-msgstr "Tidak dapat mencari skematik <schematic>, hubungi admin pelayan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "Unable to toggle permission <permission> for <player>."
-msgstr "Tidak dapat menogol kebenaran <permission> untuk <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "Unable to unban unknown player <player>."
-msgstr "Tidak dapat unban pemain tidak dikenali <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Unable to warp you to that player's island!"
-msgstr "Tidak dapat teleport kamu ke pulau pemain itu!"
+msgstr ""
 
 #. I18N: Fallback creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Unknown"
-msgstr "Tidak diketahui"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "Unknown player <player>"
-msgstr "Pemain tidak dikenali <player>"
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "Usage: <cmd><command></cmd> "
-msgstr "Penggunaan: <cmd><command></cmd> "
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "Usage: <usage>"
-msgstr "Penggunaan: <usage>"
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "Use <cmd>/<command> ? <page></cmd> to display the next page<newline>"
-msgstr "Guna <cmd>/<command> ? <page></cmd> untuk paparkan halaman seterusnya<newline>"
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "Use <cmd>/<command> ? <page></cmd> to display the previous page<newline>"
-msgstr "Guna <cmd>/<command> ? <page></cmd> untuk paparkan halaman sebelumnya<newline>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Use <cmd>/is accept</cmd> or <cmd>/is reject</cmd> to respond."
-msgstr "Guna <cmd>/is accept</cmd> atau <cmd>/is reject</cmd> untuk membalas."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/GenerateTask.java
 msgid "Use <cmd>/is home</cmd> or the <cmd>/is</cmd> menu to go there."
-msgstr "Guna <cmd>/is home</cmd> atau menu <cmd>/is</cmd> untuk pergi ke sana."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "Use <cmd>/is invite [player]</cmd> to invite a player to your island."
-msgstr "Guna <cmd>/is invite [player]</cmd> untuk menjemput pemain ke pulau kamu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "View a list of <primary>challenges</primary> that<newline>you can complete on your island<newline>to earn skybucks, items, perks,<newline>and titles."
-msgstr "Lihat senarai <primary>cabaran</primary> yang<newline>kamu boleh lengkapkan di pulau kamu<newline>untuk mendapatkan skybucks, item, kelebihan,<newline>dan gelaran."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "View a log of events from<newline>your island such as member,<newline>biome, and warp changes.<newline><primary>Click to view the log.</primary>"
-msgstr "Lihat log peristiwa dari<newline>pulau kamu seperti ahli,<newline>perubahan biome, dan teleport.<newline><primary>Klik untuk melihat log.</primary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "View the members of your island<newline>group and their permissions. If<newline>you are the island leader, you<newline>can change member permissions.<newline><primary>Click here to view or change.</primary>"
-msgstr "Lihat ahli kumpulan pulau kamu<newline>dan kebenaran mereka. Jika<newline>kamu ialah ketua pulau, kamu<newline>boleh menukar kebenaran ahli.<newline><primary>Klik di sini untuk melihat atau menukar.</primary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "Villager trading isn't allowed."
-msgstr "Perdagangan villager tidak dibenarkan."
+msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "Villagers"
-msgstr "Villager"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "Visitors can't drop items."
-msgstr "Pelawat tidak boleh menjatuhkan item."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
-msgstr "Nak menyertai pulau pemain lain<newline>daripada memulakan pulau kamu<newline>sendiri? Jika pemain lain<newline>menjemput kamu ke pulau mereka<newline>kamu boleh klik di sini atau guna<newline><cmd>/is accept</cmd> untuk menyertai mereka.<newline><primary>Klik di sini untuk menerima jemputan!</primary><newline>(Kamu mesti dijemput dahulu)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Warning: <muted>Could not transfer all required items to your inventory."
-msgstr "Amaran: <muted>Tidak dapat memindahkan semua item yang diperlukan ke inventori kamu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Warning: <muted>Teleporting you to mid-air."
-msgstr "Amaran: <muted>Men-teleport kamu ke udara."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "Warning: <muted>Your entire island and all your belongings will be reset."
-msgstr "Amaran: <muted>Seluruh pulau kamu dan semua barang milik kamu akan direset."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Warning: Accepting will replace your current island."
-msgstr "Amaran: Menerima akan menggantikan pulau semasa kamu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Warp status: <secondary>Active</secondary><newline>Other players may warp to your<newline>island at any time to the point<newline>you set with <cmd>/is setwarp</cmd>."
-msgstr "Status teleport: <secondary>Aktif</secondary><newline>Pemain lain boleh teleport ke<newline>pulau kau bila-bila masa ke titik<newline>yang kau tetapkan dengan <cmd>/is setwarp</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Warp status: Inactive<newline>Other players can't warp to your<newline>island. Set a warp point with<newline><cmd>/is setwarp</cmd> before activating."
-msgstr "Status teleport: Tidak aktif<newline>Pemain lain tak boleh teleport ke<newline>pulau kau. Tetapkan titik teleport dengan<newline><cmd>/is setwarp</cmd> sebelum mengaktifkan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Warp to another player's island using <cmd>/is warp [player]</cmd>."
-msgstr "Teleport ke pulau pemain lain menggunakan <cmd>/is warp [player]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/LocateChestTask.java
 msgid "Watchdog!<primary> Unable to locate a chest within <timeout>, bailing out."
-msgstr "Watchdog!<primary> Tak dapat cari peti dalam <timeout>, hentikan proses."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "West"
-msgstr "Barat"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "When you teleport to your<newline>island you will be taken to<newline>this location.<newline><primary>Click here to change.</primary>"
-msgstr "Apabila kau teleport ke<newline>pulau kau, kau akan dibawa ke<newline>lokasi ini.<newline><primary>Klik di sini untuk tukar.</primary>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "When your warp is activated,<newline>other players will be taken to<newline>this point when they teleport<newline>to your island."
-msgstr "Apabila teleport kau diaktifkan,<newline>pemain lain akan dibawa ke<newline>titik ini apabila mereka teleport<newline>ke pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "XP reward: <experience:'0'>"
-msgstr "Ganjaran XP: <experience:'0'>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "You <success>accepted</success> the invitation to join an island."
-msgstr "Kau <success>menerima</success> jemputan untuk menyertai sebuah pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "You already have an island. <muted>If you want a fresh island, use <cmd>/is restart</cmd>."
-msgstr "Kau sudah ada pulau. <muted>Jika kau nak pulau baru, guna <cmd>/is restart</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "You are already a member of an island. <muted>To start your own, first use <cmd>/is leave</cmd>."
-msgstr "Kau sudah menjadi ahli sebuah pulau. <muted>Untuk mula pulau sendiri, guna <cmd>/is leave</cmd> dulu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "You are no longer trusted on <leader>'s island."
-msgstr "Kau tidak lagi diberi kepercayaan di pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "You are now trusted on <leader>'s island."
-msgstr "Kau kini diberi kepercayaan di pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You are still missing the following items:<items>"
-msgstr "Kau masih kekurangan item berikut:<items>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You banned <player> from warping to your island."
-msgstr "Kau menyekat <player> daripada teleport ke pulau kau."
+msgstr ""
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You can change your biome again in <seconds> seconds."
-msgstr "Kau boleh tukar biome kau semula dalam <seconds> saat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "You can complete this <remaining> more time(s)."
-msgstr "Kau boleh selesaikan ini lagi <remaining> kali."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "You can complete this again in <days> days."
-msgstr "Kau boleh selesaikan ini semula dalam <days> hari."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "You can complete this again in <hours> hours."
-msgstr "Kau boleh selesaikan ini semula dalam <hours> jam."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "You can complete this again in <minutes> minutes."
-msgstr "Kau boleh selesaikan ini semula dalam <minutes> minit."
+msgstr ""
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "You can create a new island in <seconds> seconds."
-msgstr "Kau boleh buat pulau baru dalam <seconds> saat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "You can invite <count> more players."
-msgstr "Kau boleh jemput <count> lagi pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "You can only convert obsidian once every <cooldown> seconds"
-msgstr "Kau hanya boleh menukar obsidian sekali setiap <cooldown> saat"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "You can only submit challenges in the skyblock world!"
-msgstr "Kau hanya boleh hantar cabaran dalam dunia skyblock!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "You can only submit challenges when you have an island!"
-msgstr "Kau hanya boleh hantar cabaran apabila kau ada pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "You can only transfer ownership to party members!"
-msgstr "Kau hanya boleh memindahkan pemilikan kepada ahli kumpulan!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "You can only use spawn eggs on your own island."
-msgstr "Kau hanya boleh guna telur spawn di pulau kau sendiri."
+msgstr ""
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "You can restart your island in <seconds> seconds."
-msgstr "Kau boleh mula semula pulau kau dalam <seconds> saat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You can't ban members. Remove them first!"
-msgstr "Kau tak boleh ban ahli. Keluarkan mereka dulu!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "You can't change the biome."
-msgstr "Kau tak boleh tukar biome."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "You can't change the lock."
-msgstr "Kau tak boleh tukar kunci."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "You can't change the warp."
-msgstr "Kau tak boleh tukar teleport."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "You can't invite any more players."
-msgstr "Kau tak boleh jemput lagi pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "You can't invite yourself!"
-msgstr "Kau tak boleh jemput diri sendiri!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "You can't leave your island if you are the only person. <muted>Use <cmd>/is restart</cmd> if you want a new one."
-msgstr "Kau tak boleh tinggalkan pulau kau jika kau seorang sahaja. <muted>Guna <cmd>/is restart</cmd> jika kau nak yang baru."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "You can't remove the leader from the island!"
-msgstr "Kau tak boleh keluarkan ketua dari pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "You can't repeat this challenge."
-msgstr "Kau tak boleh ulang cabaran ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "You can't use that command right now. Leave your current party first."
-msgstr "Kau tak boleh guna arahan itu sekarang. Tinggalkan kumpulan semasa kau dulu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "You cannot break vehicles while being a visitor."
-msgstr "Kau tak boleh pecahkan kenderaan semasa menjadi pelawat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You cannot complete the <challenge> challenge again yet!"
-msgstr "Kau belum boleh selesaikan cabaran <challenge> lagi!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "You cannot drop items at spawn."
-msgstr "Kau tak boleh jatuhkan item di spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "You cannot hurt island members."
-msgstr "Kau tak boleh mencederakan ahli pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ItemDropEvents.java
 msgid "You cannot pick up other players' loot when you are a visitor!"
-msgstr "Kau tak boleh kutip loot pemain lain semasa kau pelawat!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "You cannot use another island's portals."
-msgstr "Kau tak boleh guna portal pulau orang lain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You completed the <challenge> challenge!"
-msgstr "Kau telah menyelesaikan cabaran <challenge>!"
+msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/BaseCommandExecutor.java
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
 msgid "You do not have access (<primary><permission></primary>)"
-msgstr "Kau tiada akses (<primary><permission></primary>)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/message/Msg.java
 msgid "You do not have access to that command."
-msgstr "Kau tiada akses kepada arahan itu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "You do not have access to that island schematic."
-msgstr "Kau tiada akses kepada skematik pulau itu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "You do not have an island!"
-msgstr "Kau tiada pulau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequireIslandCommand.java
 msgid "You do not have an island. <muted>Use <cmd>/is create</cmd> to get one."
-msgstr "Kau tiada pulau. <muted>Guna <cmd>/is create</cmd> untuk dapatkannya."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You do not have permission to change the biome of this island!"
-msgstr "Kau tak ada kebenaran untuk tukar biome pulau ini!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You do not have permission to change the biome of your current island."
-msgstr "Kau tak ada kebenaran untuk tukar biome pulau semasa kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You do not have permission to change your biome to that type."
-msgstr "Kau tak ada kebenaran untuk tukar biome kau kepada jenis itu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "You do not have permission to create a warp on your island!"
-msgstr "Kau tak ada kebenaran untuk cipta teleport di pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "You do not have permission to enable/disable your island's warp!"
-msgstr "Kau tak ada kebenaran untuk hidupkan/matikan teleport pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "You do not have permission to invite others to this island!"
-msgstr "Kau tak ada kebenaran untuk jemput orang lain ke pulau ini!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "You do not have permission to kick others from this island!"
-msgstr "Kau tak ada kebenaran untuk kick orang lain dari pulau ini!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You do not have permission to kick/ban players."
-msgstr "Kau tak ada kebenaran untuk kick/ban pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "You do not have permission to lock your island!"
-msgstr "Kau tak ada kebenaran untuk kunci pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "You do not have permission to set your island's warp point!"
-msgstr "Kau tak ada kebenaran untuk tetapkan titik teleport pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "You do not have permission to unlock your island!"
-msgstr "Kau tak ada kebenaran untuk buka kunci pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "You do not have permission to warp to other islands!"
-msgstr "Kau tak ada kebenaran untuk teleport ke pulau lain!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "You don't have permission to uninvite players."
-msgstr "Kau tak ada kebenaran untuk batalkan jemputan pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You have been <error>banned</error> from <leader>'s island."
-msgstr "Kau telah <error>diban</error> dari pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You have been <success>unbanned</success> from <leader>'s island."
-msgstr "Kau telah <success>dibuka ban</success> dari pulau <leader>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerLogic.java
 msgid "You have been banned from <leader>'s island. <muted>Sending you to spawn."
-msgstr "Kau telah diban dari pulau <leader>. <muted>Menghantar kau ke spawn."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You have changed <blocks> blocks around you to the <biome> biome"
-msgstr "Kau telah menukar <blocks> blok di sekeliling kau kepada biome <biome>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You have changed your island's biome to <biome>"
-msgstr "Kau telah menukar biome pulau kau kepada <biome>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You have misspelled the biome name. Must be one of <biomes>"
-msgstr "Kau tersalah eja nama biome. Mesti salah satu daripada <biomes>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
 msgid "You have reached your spawn limit for your island."
-msgstr "Kau telah mencapai had spawn untuk pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "You haven't been invited."
-msgstr "Kau belum dijemput."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "You joined an island. <muted>Use <cmd>/is party</cmd> to see the other members.</muted>"
-msgstr "Kau menyertai sebuah pulau. <muted>Guna <cmd>/is party</cmd> untuk lihat ahli lain.</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "You left the island and returned to player spawn."
-msgstr "Kau telah meninggalkan pulau dan kembali ke spawn pemain."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "You must be closer to your island to set your skyblock home!"
-msgstr "Kau mesti lebih dekat dengan pulau kau untuk tetapkan home skyblock kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "You must be in the skyblock world to leave your party!"
-msgstr "Kau mesti berada dalam dunia skyblock untuk tinggalkan kumpulan kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You must be on your island to change the biome."
-msgstr "Kau mesti berada di pulau kau untuk tukar biome."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You must be on your island to do that!"
-msgstr "Kau mesti berada di pulau kau untuk buat itu!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "You must be on your island to use this command."
-msgstr "Kau mesti berada di pulau kau untuk guna arahan ini."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You must be standing within <radius> blocks of all required items."
-msgstr "Kau mesti berdiri dalam jarak <radius> blok daripada semua item yang diperlukan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "You must be the party leader to lock your island!"
-msgstr "Kau mesti jadi ketua kumpulan untuk kunci pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "You must be the party leader to unlock your island!"
-msgstr "Kau mesti jadi ketua kumpulan untuk buka kunci pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "You must remove all players from your island before you can restart it. <muted>Use <cmd>/is kick [player]</cmd>. See your current island group with <cmd>/is party</cmd>."
-msgstr "Kau perlu keluarkan semua pemain dari pulau kau sebelum kau boleh mula semula. <muted>Guna <cmd>/is kick [player]</cmd>. Lihat kumpulan pulau semasa kau dengan <cmd>/is party</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "You need to be on your own island to set the warp!"
-msgstr "Kau perlu berada di pulau kau sendiri untuk tetapkan teleport!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "You own this island. <muted>Use <cmd>/is remove [player]</cmd> instead.</muted>"
-msgstr "Kau pemilik pulau ini. <muted>Guna <cmd>/is remove [player]</cmd> sebagai ganti.</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "You rejected the invitation to join an island."
-msgstr "Kau menolak jemputan untuk menyertai sebuah pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "You unbanned <player> from warping to your island."
-msgstr "Kau membuka sekatan <player> daripada teleport ke pulau kau."
+msgstr ""
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "You will be teleported in <seconds> seconds."
-msgstr "Kau akan diteleport dalam <seconds> saat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "You will lose all required items when you complete this challenge!"
-msgstr "Kau akan kehilangan semua item yang diperlukan apabila kau menyelesaikan cabaran ini!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "You've hit the <item> limit. <muted>You can't have more of that type on your island. Max: <max>.</muted>"
-msgstr "Kau telah capai had <item>. <muted>Kau tak boleh ada lebih jenis itu di pulau kau. Maks: <max>.</muted>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "Your current location is not a safe home location."
-msgstr "Lokasi semasa kau bukan lokasi home yang selamat."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Your incoming warp is active, players may warp to your island."
-msgstr "Teleport masuk kau aktif, pemain boleh teleport ke pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Your incoming warp is inactive, players may not warp to your island."
-msgstr "Teleport masuk kau tidak aktif, pemain tidak boleh teleport ke pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Your inventory is full. <muted>Items were dropped on the ground."
-msgstr "Inventori kau penuh. <muted>Item telah dijatuhkan ke tanah."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "Your inventory must have another empty slot."
-msgstr "Inventori kau mesti ada satu lagi slot kosong."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "Your island is currently generating, so you cannot warp to other players' islands right now."
-msgstr "Pulau kau sedang dijana, jadi kau tak boleh teleport ke pulau pemain lain sekarang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Your island is currently generating. You cannot create a new one right now."
-msgstr "Pulau kau sedang dijana. Kau tak boleh buat yang baru sekarang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
 msgid "Your island is full, or you have too many pending invites. You can't invite anyone else."
-msgstr "Pulau kau penuh, atau kau ada terlalu banyak jemputan tertangguh. Kau tak boleh jemput sesiapa lagi."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "Your island is in the process of generating, you cannot restart now."
-msgstr "Pulau kau sedang dalam proses penjanaan, kau tak boleh mula semula sekarang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
 msgid "Your island is in the process of generating, you cannot teleport home right now."
-msgstr "Pulau kau sedang dalam proses penjanaan, kau tak boleh teleport pulang sekarang."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "Your island is locked. You must unlock it before enabling your warp."
-msgstr "Pulau kau terkunci. Kau mesti buka kuncinya sebelum mengaktifkan teleport kau."
+msgstr ""
 
 #. I18N: Message sent when a player locks their island
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "Your island is now <error>locked</error>. Only your party members may enter."
-msgstr "Pulau kau kini <error>terkunci</error>. Hanya ahli kumpulan kau boleh masuk."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "Your island is now <secondary>unlocked</secondary>. Anyone may enter, but only you and your party members may build or remove blocks."
-msgstr "Pulau kau kini <secondary>dibuka</secondary>. Sesiapa pun boleh masuk, tetapi hanya kau dan ahli kumpulan kau boleh bina atau pecahkan blok."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Your island must be level <level> to complete this challenge!"
-msgstr "Pulau kau mesti tahap <level> untuk melengkapkan cabaran ini!"
+msgstr ""
 
-#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "rank".
+#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Your rank is: <rank>."
-msgstr "Pangkat kau ialah: <rank>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "Your skyblock home has been set to your current location."
-msgstr "Rumah skyblock kau telah ditetapkan ke lokasi semasa kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AcceptRejectCommand.java
 msgid "accept/reject an invitation."
-msgstr "terima/tolak jemputan."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "allows users to always generate the top-ten list (no caching)"
-msgstr "membolehkan pengguna sentiasa jana senarai 10 teratas (tiada caching)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to bypass cooldowns"
-msgstr "membolehkan pengguna memintas cooldown"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to bypass teleport delay"
-msgstr "membolehkan pengguna memintas kelewatan teleport"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to bypass visitor protections"
-msgstr "membolehkan pengguna memintas perlindungan pelawat"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to place [usb] signs"
-msgstr "membolehkan pengguna meletakkan papan tanda [usb]"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "allows users to query others' levels"
-msgstr "membolehkan pengguna menyemak tahap orang lain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "allows users to see others' island info"
-msgstr "membolehkan pengguna melihat info pulau orang lain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to use [usb] signs"
-msgstr "membolehkan pengguna menggunakan papan tanda [usb]"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 msgid "and more..."
-msgstr "dan banyak lagi..."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "ban/unban a player from your island."
-msgstr "sekat/buka sekatan seorang pemain daripada pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "change the biome of the island"
-msgstr "tukar biom pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "change the island's biome."
-msgstr "tukar biom pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PermCommand.java
 msgid "changes a member's island permissions"
-msgstr "menukar kebenaran pulau seorang ahli"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "check your or another's island info"
-msgstr "semak info pulau kau atau orang lain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "check your or another's island level"
-msgstr "semak tahap pulau kau atau orang lain"
+msgstr ""
 
-#. I18N: Used in biome radius display to indicate that a single chunk is
-#. affected
+#. I18N: Used in biome radius display to indicate that a single chunk is affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "chunk"
-msgstr "chunk"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "complete and list challenges"
-msgstr "lengkapkan dan senaraikan cabaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "create an island"
-msgstr "cipta pulau"
+msgstr ""
 
 #. I18N: Short form of 'day', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "d"
-msgstr "h"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "delete your island and start a new one."
-msgstr "padam pulau kau dan mula yang baharu."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LogCommand.java
 msgid "display log"
-msgstr "papar log"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TopCommand.java
 msgid "display the top 10 islands"
-msgstr "papar 10 pulau teratas"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/ToggleWarp.java
 msgid "enable/disable warping to your island."
-msgstr "aktifkan/nyahaktifkan teleport ke pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "exempt player from biome-cooldown"
-msgstr "kecualikan pemain daripada cooldown biom"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "exempt player from create-cooldown"
-msgstr "kecualikan pemain daripada cooldown cipta"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "exempt player from restart-cooldown"
-msgstr "kecualikan pemain daripada cooldown mula semula"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java
 msgid "exempts user from being banned"
-msgstr "mengecualikan pengguna daripada dikenakan sekatan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "general island command"
-msgstr "arahan pulau umum"
+msgstr ""
 
 #. I18N: Short form of 'hour', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "h"
-msgstr "j"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "has left your island!"
-msgstr "telah meninggalkan pulau kau!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InviteCommand.java
 msgid "invite a player to your island"
-msgstr "jemput seorang pemain ke pulau kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "invite others to the island."
-msgstr "jemput orang lain ke pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "invite<newline>other players to the island if<newline>there is enough room for more<newline>members"
-msgstr "jemput<newline>pemain lain ke pulau jika<newline>ada ruang mencukupi untuk lebih<newline>ramai ahli"
+msgstr ""
 
-#. I18N: Used in biome radius display to indicate that the entire island is
-#. affected
+#. I18N: Used in biome radius display to indicate that the entire island is affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "island"
-msgstr "pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "kick others from the island."
-msgstr "tendang orang lain dari pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "kick<newline>other players from the island,<newline>but they are unable to kick<newline>the island leader."
-msgstr "tendang<newline>pemain lain dari pulau,<newline>tetapi mereka tidak boleh tendang<newline>ketua pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LeaveCommand.java
 msgid "leave your party"
-msgstr "tinggalkan kumpulan kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LockUnlockCommand.java
 msgid "lock your island to non-party members."
-msgstr "kunci pulau kau daripada bukan ahli kumpulan."
+msgstr ""
 
 #. I18N: Short form of 'minute', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "m"
-msgstr "m"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "party"
-msgstr "kumpulan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "remove a member from your island."
-msgstr "keluarkan seorang ahli dari pulau kau."
+msgstr ""
 
 #. I18N: Short form of 'second', used as a suffix in duration strings
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/util/TimeUtil.java
 msgid "s"
-msgstr "s"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "set the island home"
-msgstr "tetapkan rumah pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "set the island's warp,<newline>which allows non-group<newline>members to teleport to<newline>the island."
-msgstr "tetapkan teleport pulau,<newline>yang membolehkan bukan ahli<newline>kumpulan untuk teleport ke<newline>pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "set the island's warp."
-msgstr "tetapkan teleport pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetWarpCommand.java
 msgid "set your island's warp location"
-msgstr "tetapkan lokasi teleport pulau kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "show information about the challenge"
-msgstr "tunjukkan maklumat tentang cabaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show party information"
-msgstr "tunjukkan maklumat kumpulan"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "show pending invites"
-msgstr "tunjukkan jemputan yang belum diterima"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MobLimitCommand.java
 msgid "show the island's limits"
-msgstr "tunjukkan had pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "shows information about your party"
-msgstr "menunjukkan maklumat tentang kumpulan kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandTalkCommand.java
 msgid "talk to players on your island"
-msgstr "berbual dengan pemain di pulau kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/PartyTalkCommand.java
 msgid "talk to your island party"
-msgstr "berbual dengan kumpulan pulau kau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/HomeCommand.java
 msgid "teleport to the island home"
-msgstr "teleport ke rumah pulau"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SpawnCommand.java
 msgid "teleports you to the skyblock spawn"
-msgstr "teleport kau ke spawn skyblock"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/AutoCommand.java
 msgid "teleports you to your island (or create one)"
-msgstr "teleport kau ke pulau kau (atau cipta satu)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island's lock."
-msgstr "togol kunci pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island's warp,<newline>allowing members to turn it<newline>on or off at any time, but<newline>not set the location."
-msgstr "togol teleport pulau,<newline>membolehkan ahli hidupkan atau matikannya<newline>bila-bila masa, tetapi<newline>tidak menetapkan lokasi."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "toggle the island's warp."
-msgstr "togol teleport pulau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/MakeLeaderCommand.java
 msgid "transfer leadership to another member"
-msgstr "pindahkan kepimpinan kepada ahli lain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/TrustCommand.java
 msgid "trust/untrust a player to help on your island."
-msgstr "beri kepercayaan/tarik kepercayaan kepada seorang pemain untuk membantu di pulau kau."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "try to complete a challenge"
-msgstr "cuba lengkapkan cabaran"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java
 msgid "warp to another player's island"
-msgstr "warp ke pulau pemain lain"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "withdraw an invite"
-msgstr "tarik balik jemputan"
+msgstr ""
+
