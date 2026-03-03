@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,6 +44,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -190,6 +192,12 @@ public class SkyBlockMenu {
 
     private void addLore(List<String> lores, String multiLine) {
         addLore(lores, "", multiLine);
+    }
+
+    private void addTranslatedComponentLore(List<Component> lores, String translation) {
+        for (String line : translation.split("\n")) {
+            lores.add(fromLegacy(line));
+        }
     }
 
     public Inventory displayPartyGUI(final Player player) {
@@ -520,13 +528,17 @@ public class SkyBlockMenu {
         menuItem = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
         meta4 = requireNonNull(requireNonNull(menuItem.getItemMeta()));
         meta4.setDisplayName(trLegacy("Island Level", SECONDARY));
-        // I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
-        addLore(lores, trLegacy("Current level: <level:'#,##0'>", MUTED,
-            number("level", islandInfo.getLevel(), SECONDARY)));
-        addLore(lores, limitLogic.getSummary(islandInfo));
-        addLore(lores, "\u00a7f", trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"));
-        meta4.setLore(lores);
         menuItem.setItemMeta(meta4);
+        List<Component> islandLevelLore = new ArrayList<>();
+        // I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
+        islandLevelLore.add(tr("Current level: <level:'#,##0'>", MUTED,
+            number("level", islandInfo.getLevel(), SECONDARY)));
+        islandLevelLore.addAll(limitLogic.getSummaryComponents(islandInfo));
+        addTranslatedComponentLore(
+            islandLevelLore,
+            trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)")
+        );
+        ItemStackUtil.setComponentLore(menuItem, islandLevelLore);
         menu.addItem(menuItem);
         lores.clear();
 

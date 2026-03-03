@@ -1,5 +1,10 @@
 package dk.lockfuglsang.minecraft.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -11,24 +16,23 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
+import static java.util.stream.Collectors.*;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Formatter.number;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 
 /**
  * Conversion to ItemStack from strings.
  */
 public enum ItemStackUtil {
     ;
+    private static final GsonComponentSerializer GSON_COMPONENT_SERIALIZER = GsonComponentSerializer.gson();
+    private static final Style LORE_FALLBACK_STYLE = Style.style(NamedTextColor.WHITE)
+        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
     private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
         "(\\{p=(?<prob>0\\.\\d+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
@@ -189,9 +193,9 @@ public enum ItemStackUtil {
         }
         return item.getAmount() > 1
             ? miniToLegacy("<secondary><amount></secondary>x <muted><item>",
-                number("amount", item.getAmount()),
-                legacyArg("item", getItemName(item)))
-            : miniToLegacy("<muted><item>", legacyArg("item", getItemName(item)));
+            number("amount", item.getAmount()),
+            component("item", getItemName(item)))
+            : miniToLegacy("<muted><item>", component("item", getItemName(item)));
     }
 
     @NotNull
@@ -205,22 +209,85 @@ public enum ItemStackUtil {
         return copy;
     }
 
-    @Contract("null -> null; !null -> !null")
+    @Contract(value = "null -> null; !null -> !null", pure = true)
     @Nullable
-    public static String getItemName(ItemStack stack) {
+    public static Component getItemName(@Nullable ItemStack stack) {
         if (stack == null) {
             return null;
         }
         var itemMeta = stack.getItemMeta();
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
-            return stack.getItemMeta().getDisplayName();
+            return fromLegacy(itemMeta.getDisplayName());
+        } else {
+            return Component.translatable(stack.getTranslationKey());
         }
-        return trLegacy(FormatUtil.camelcase(stack.getType().name()).replaceAll("([A-Z])", " $1").trim());
     }
 
+    @Contract(pure = true)
     @NotNull
-    public static String getBlockName(@NotNull BlockData block) {
-        return trLegacy(FormatUtil.camelcase(block.getMaterial().name()).replaceAll("([A-Z])", " $1").trim());
+    public static Component getBlockName(@NotNull BlockData block) {
+        String translationKey = block.getMaterial().getBlockTranslationKey();
+        if  (translationKey == null) {
+            translationKey = block.getMaterial().getTranslationKey();
+        }
+
+        return Component.translatable(translationKey);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void setComponentDisplayName(@NotNull ItemStack itemStack, @Nullable Component name) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+        if (name == null) {
+            itemMeta.setDisplayName(null);
+            itemStack.setItemMeta(itemMeta);
+            return;
+        }
+
+        // Keep legacy API consumers working while also preserving translation keys for clients.
+        itemMeta.setDisplayName(legacy(name));
+        itemStack.setItemMeta(itemMeta);
+        applyUnsafeDisplayName(itemStack, name);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void setComponentLore(@NotNull ItemStack itemStack, @Nullable List<Component> lore) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+        if (lore == null) {
+            itemMeta.setLore(null);
+            itemStack.setItemMeta(itemMeta);
+            return;
+        }
+
+        List<Component> normalizedLore = lore.stream()
+            .map(component -> component.applyFallbackStyle(LORE_FALLBACK_STYLE))
+            .collect(toList());
+        List<String> legacyLore = normalizedLore.stream().map(component -> legacy(component)).collect(toList());
+        // Keep legacy API consumers working while also preserving translation keys for clients.
+        itemMeta.setLore(legacyLore);
+        itemStack.setItemMeta(itemMeta);
+        applyUnsafeLore(itemStack, normalizedLore);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void applyUnsafeDisplayName(@NotNull ItemStack itemStack, @NotNull Component name) {
+        String nameJson = GSON_COMPONENT_SERIALIZER.serialize(name);
+        String args = itemStack.getType().getKey() + "[custom_name=" + nameJson + "]";
+        Bukkit.getUnsafe().modifyItemStack(itemStack, args);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void applyUnsafeLore(@NotNull ItemStack itemStack, @NotNull List<Component> lore) {
+        String loreEntries = lore.stream()
+            .map(GSON_COMPONENT_SERIALIZER::serialize)
+            .collect(joining(","));
+        String args = itemStack.getType().getKey() + "[lore=[" + loreEntries + "]]";
+        Bukkit.getUnsafe().modifyItemStack(itemStack, args);
     }
 
     @Contract(pure = true)
@@ -265,6 +332,11 @@ public enum ItemStackUtil {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(name);
             itemStack.setItemMeta(itemMeta);
+            return this;
+        }
+
+        public Builder displayName(Component name) {
+            setComponentDisplayName(itemStack, name);
             return this;
         }
 
@@ -327,6 +399,23 @@ public enum ItemStackUtil {
             return this;
         }
 
+        public Builder componentLore(@NotNull Component lore) {
+            return componentLore(Collections.singletonList(lore));
+        }
+
+        public Builder componentLore(@NotNull List<Component> lore) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                List<Component> mergedLore = new ArrayList<>();
+                if (itemMeta.getLore() != null) {
+                    mergedLore.addAll(itemMeta.getLore().stream().map(value -> fromLegacy(value)).collect(toList()));
+                }
+                mergedLore.addAll(lore);
+                setComponentLore(itemStack, mergedLore);
+            }
+            return this;
+        }
+
         public ItemStack build() {
             return itemStack;
         }
@@ -334,4 +423,5 @@ public enum ItemStackUtil {
 
     public record ItemProbability(double probability, ItemStack item) {
     }
+
 }

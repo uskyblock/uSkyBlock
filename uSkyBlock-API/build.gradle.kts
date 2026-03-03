@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     api(libs.org.jetbrains.annotations)
+    api(libs.net.kyori.adventure.api)
     compileOnly(libs.org.spigotmc.spigot.api)
 }
 

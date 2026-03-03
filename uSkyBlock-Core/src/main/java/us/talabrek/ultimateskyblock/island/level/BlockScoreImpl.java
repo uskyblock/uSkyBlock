@@ -1,7 +1,10 @@
 package us.talabrek.ultimateskyblock.island.level;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.block.data.BlockData;
+import org.jetbrains.annotations.Nullable;
 
 
 public class BlockScoreImpl implements us.talabrek.ultimateskyblock.api.model.BlockScore {
@@ -9,13 +12,13 @@ public class BlockScoreImpl implements us.talabrek.ultimateskyblock.api.model.Bl
     private final int count;
     private final double score;
     private final State state;
-    private final String name;
+    private final Component name;
 
     public BlockScoreImpl(BlockData block, int count, double score, State state) {
         this(block, count, score, state, null);
     }
 
-    public BlockScoreImpl(BlockData block, int count, double score, State state, String name) {
+    public BlockScoreImpl(BlockData block, int count, double score, State state, @Nullable Component name) {
         this.block = block;
         this.count = count;
         this.score = score;
@@ -60,6 +63,11 @@ public class BlockScoreImpl implements us.talabrek.ultimateskyblock.api.model.Bl
 
     @Override
     public String getName() {
+        return I18nUtil.legacy(name);
+    }
+
+    @Override
+    public Component getComponentName() {
         return name;
     }
 }

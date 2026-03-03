@@ -2,6 +2,8 @@ package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.Settings;
@@ -17,18 +19,16 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendNoCommandAccess;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 
 public class InfoCommand extends RequireIslandCommand {
 
@@ -102,10 +102,11 @@ public class InfoCommand extends RequireIslandCommand {
                     if (cmd.equalsIgnoreCase("info") && getState() != null) {
                         sendTr(player, "Score Count Block");
                         for (BlockScore score : getState().getTop((currentPage - 1) * 10, 10)) {
-                            sendLegacy(player, score.getState().getColor() + miniToLegacy("<score:'#,##0.00'>  <count:'#,##0'> <block>",
+                            send(player, parseMini("<score:'#,##0.00'>  <count:'#,##0'> <block>",
                                 number("score", score.getScore()),
                                 number("count", score.getCount()),
-                                legacyArg("block", ItemStackUtil.getBlockName(score.getBlockData()))));
+                                component("block", ItemStackUtil.getBlockName(score.getBlockData())))
+                                .applyFallbackStyle(styleFromBlockScoreState(score.getState())));
                         }
                         sendTr(player, "Island level is <level:'#,##0'>", SECONDARY, number("level", getState().getScore()));
                     }
@@ -120,5 +121,14 @@ public class InfoCommand extends RequireIslandCommand {
             logger.log(Level.SEVERE, "Error while calculating Island Level", e);
         }
         return true;
+    }
+
+    private static @NotNull Style styleFromBlockScoreState(@NotNull BlockScore.State state) {
+        return switch (state) {
+            case NORMAL -> Style.style(NamedTextColor.AQUA);
+            case DIMINISHING -> Style.style(NamedTextColor.YELLOW);
+            case LIMIT -> Style.style(NamedTextColor.RED);
+            case NEGATIVE -> Style.style(NamedTextColor.DARK_PURPLE);
+        };
     }
 }

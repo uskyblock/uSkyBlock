@@ -7,6 +7,8 @@ dependencies {
     api(project(":po-utils"))
     api(libs.org.spigotmc.spigot.api)
     api(libs.net.milkbowl.vault.vaultapi)
+    api(libs.net.kyori.adventure.api)
+    implementation(libs.net.kyori.adventure.text.serializer.gson)
     testImplementation(libs.org.hamcrest.hamcrest.core)
     testImplementation(libs.org.hamcrest.hamcrest.library)
     testImplementation(libs.junit.junit)

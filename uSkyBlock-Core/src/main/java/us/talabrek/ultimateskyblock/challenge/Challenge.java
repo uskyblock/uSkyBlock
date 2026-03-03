@@ -4,6 +4,7 @@ import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -18,16 +19,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.prefix;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 /**
@@ -167,7 +170,14 @@ public class Challenge {
         int timesCompleted = completion.getTimesCompletedInCooldown();
         ItemStack currentChallengeItem = getDisplayItem();
         ItemMeta meta = currentChallengeItem.getItemMeta();
-        List<String> lores = new ArrayList<>(prefix(wordWrap(getDescription(), MAX_LINE), "\u00a77"));
+        if (meta == null) {
+            return currentChallengeItem;
+        }
+
+        List<Component> lores = new ArrayList<>();
+        prefix(wordWrap(getDescription(), MAX_LINE), "\u00a77")
+            .forEach(line -> lores.add(fromLegacy(line)));
+
         Reward reward = getReward();
         if (completion.getTimesCompleted() > 0 && isRepeatable()) {
             currentChallengeItem.setAmount(completion.getTimesCompleted() < currentChallengeItem.getMaxStackSize() ? completion.getTimesCompleted() : currentChallengeItem.getMaxStackSize());
@@ -175,35 +185,35 @@ public class Challenge {
                 Duration cooldown = completion.getCooldown();
                 if (timesCompleted < getRepeatLimit() || getRepeatLimit() <= 0) {
                     if (getRepeatLimit() > 0) {
-                        lores.add(trLegacy("You can complete this <remaining> more time(s).",
+                        lores.add(tr("You can complete this <remaining> more time(s).",
                             MUTED,
                             number("remaining", getRepeatLimit() - timesCompleted, PRIMARY)));
                     }
                     if (cooldown.toDays() > 0) {
-                        lores.add(trLegacy("Requirements will reset in <days> days.",
+                        lores.add(tr("Requirements will reset in <days> days.",
                             MUTED,
                             number("days", cooldown.toDays(), PRIMARY)));
                     } else if (cooldown.toHours() > 0) {
-                        lores.add(trLegacy("Requirements will reset in <hours> hours.",
+                        lores.add(tr("Requirements will reset in <hours> hours.",
                             MUTED,
                             number("hours", cooldown.toHours(), PRIMARY)));
                     } else {
-                        lores.add(trLegacy("Requirements will reset in <minutes> minutes.",
+                        lores.add(tr("Requirements will reset in <minutes> minutes.",
                             MUTED,
                             number("minutes", cooldown.toMinutes(), PRIMARY)));
                     }
                 } else {
-                    lores.add(trLegacy("This challenge is currently unavailable.", ERROR));
+                    lores.add(tr("This challenge is currently unavailable.", ERROR));
                     if (cooldown.toDays() > 0) {
-                        lores.add(trLegacy("You can complete this again in <days> days.",
+                        lores.add(tr("You can complete this again in <days> days.",
                             MUTED,
                             number("days", cooldown.toDays(), PRIMARY)));
                     } else if (cooldown.toHours() > 0) {
-                        lores.add(trLegacy("You can complete this again in <hours> hours.",
+                        lores.add(tr("You can complete this again in <hours> hours.",
                             MUTED,
                             number("hours", cooldown.toHours(), PRIMARY)));
                     } else {
-                        lores.add(trLegacy("You can complete this again in <minutes> minutes.",
+                        lores.add(tr("You can complete this again in <minutes> minutes.",
                             MUTED,
                             number("minutes", cooldown.toMinutes(), PRIMARY)));
                     }
@@ -214,86 +224,86 @@ public class Challenge {
         Map<ItemStack, Integer> requiredItemsForChallenge = getRequiredItems(timesCompleted);
         if (!requiredItemsForChallenge.isEmpty() || !requiredBlocks.isEmpty()
             || (requiredEntities != null && !requiredEntities.isEmpty())) {
-            lores.add(trLegacy("This challenge requires:", MUTED));
+            lores.add(tr("This challenge requires:", MUTED));
         }
-        List<String> details = new ArrayList<>();
+        List<Component> details = new ArrayList<>();
         if (!requiredItemsForChallenge.isEmpty()) {
             for (Map.Entry<ItemStack, Integer> requiredItem : requiredItemsForChallenge.entrySet()) {
-                if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(trLegacy("and more...", MUTED));
+                if (details.size() >= MAX_DETAILS) {
+                    details.add(tr("and more...", MUTED));
                     break;
                 }
                 int requiredAmount = requiredItem.getValue();
                 ItemStack requiredType = requiredItem.getKey();
                 details.add(requiredAmount > 1
-                    ? miniToLegacy("<count>x <muted><item>",
+                    ? parseMini("<count>x <muted><item>",
                     number("count", requiredAmount, SECONDARY),
-                    legacyArg("item", ItemStackUtil.getItemName(requiredType)))
-                    : miniToLegacy("<muted><item>", legacyArg("item", ItemStackUtil.getItemName(requiredType))));
+                    component("item", ItemStackUtil.getItemName(requiredType)))
+                    : parseMini("<muted><item>", component("item", ItemStackUtil.getItemName(requiredType))));
             }
         }
-        if (!requiredBlocks.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
+        if (!requiredBlocks.isEmpty() && details.size() < MAX_DETAILS) {
             for (BlockRequirement blockRequirement : requiredBlocks) {
-                if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(trLegacy("and more...", MUTED));
+                if (details.size() >= MAX_DETAILS) {
+                    details.add(tr("and more...", MUTED));
                     break;
                 }
                 details.add(blockRequirement.amount() > 1
-                    ? miniToLegacy("<count>x <muted><block>",
+                    ? parseMini("<count>x <muted><block>",
                     number("count", blockRequirement.amount(), SECONDARY),
-                    legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type())))
-                    : miniToLegacy("<muted><block>", legacyArg("block", ItemStackUtil.getBlockName(blockRequirement.type()))));
+                    component("block", ItemStackUtil.getBlockName(blockRequirement.type())))
+                    : parseMini("<muted><block>", component("block", ItemStackUtil.getBlockName(blockRequirement.type()))));
             }
         }
-        if (requiredEntities != null && !requiredEntities.isEmpty() && wrappedDetails(details).size() < MAX_DETAILS) {
+        if (requiredEntities != null && !requiredEntities.isEmpty() && details.size() < MAX_DETAILS) {
             for (EntityMatch entityMatch : requiredEntities) {
-                if (wrappedDetails(details).size() >= MAX_DETAILS) {
-                    details.add(trLegacy("and more...", MUTED));
+                if (details.size() >= MAX_DETAILS) {
+                    details.add(tr("and more...", MUTED));
                     break;
                 }
                 details.add(entityMatch.getCount() > 1
-                    ? miniToLegacy("<count>x <muted><entity>",
+                    ? parseMini("<count>x <muted><entity>",
                     number("count", entityMatch.getCount(), SECONDARY),
                     component("entity", entityMatch.getDisplayName()))
-                    : miniToLegacy("<muted><entity>", component("entity", entityMatch.getDisplayName())));
+                    : parseMini("<muted><entity>", component("entity", entityMatch.getDisplayName())));
             }
         }
-        lores.addAll(wrappedDetails(details));
+        lores.addAll(details);
         if (type == Challenge.Type.PLAYER) {
             if (takeItems) {
-                lores.add(trLegacy("Items will be traded for the reward.", MUTED));
+                lores.add(tr("Items will be traded for the reward.", MUTED));
             }
         } else if (type == Challenge.Type.ISLAND) {
-            lores.add(trLegacy("Must be within <radius> meters.",
+            lores.add(tr("Must be within <radius> meters.",
                 MUTED,
                 number("radius", getRadius(), PRIMARY)));
         }
         List<String> lines = wordWrap(reward.getRewardText(), 20, MAX_LINE);
-        lores.add(trLegacy("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
-        lores.addAll(lines.subList(1, lines.size()));
+        lores.add(tr("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
+        lines.subList(1, lines.size()).forEach(line -> lores.add(fromLegacy(line)));
         if (withCurrency) {
-            lores.add(trLegacy("Currency reward: <currency:'#,##0'>",
+            lores.add(tr("Currency reward: <currency:'#,##0'>",
                 MUTED,
                 number("currency", reward.getCurrencyReward(), PRIMARY)));
         }
-        lores.add(trLegacy("XP reward: <experience:'0'>",
+        lores.add(tr("XP reward: <experience:'0'>",
             MUTED,
             number("experience", reward.getXpReward(), PRIMARY)));
-        lores.add(trLegacy("Total completions: <times>",
+        lores.add(tr("Total completions: <times>",
             MUTED,
             number("times", completion.getTimesCompleted(), PRIMARY)));
+        if (isRepeatable() || completion.getTimesCompleted() == 0) {
+            lores.add(tr("Click to complete this challenge.", PRIMARY));
+        } else {
+            lores.add(tr("You can't repeat this challenge.", ERROR));
+        }
 
-        meta.setLore(lores);
-        currentChallengeItem.setItemMeta(meta);
+        ItemStackUtil.setComponentLore(currentChallengeItem, lores);
         return currentChallengeItem;
     }
 
     public int getOffset() {
         return offset;
-    }
-
-    private List<String> wrappedDetails(List<String> details) {
-        return wordWrap(String.join(", ", details), MAX_LINE);
     }
 
     public ItemStack getDisplayItem() {

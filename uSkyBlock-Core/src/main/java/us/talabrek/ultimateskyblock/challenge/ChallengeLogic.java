@@ -6,6 +6,7 @@ import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,42 +34,15 @@ import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
-import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.message.Msg.send;
-import static us.talabrek.ultimateskyblock.message.Msg.sendError;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
-import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
+import static us.talabrek.ultimateskyblock.message.Msg.*;
+import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 
 /**
  * The home of challenge business logic.
@@ -353,7 +327,7 @@ public class ChallengeLogic implements Listener {
         } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
             if (!tryCompleteIslandLevel(player, challenge)) {
                 sendErrorTr(player, "Your island must be level <level> to complete this challenge!",
-                    number("level", challenge.getRequiredLevel()))  ;
+                    number("level", challenge.getRequiredLevel()));
             }
         }
     }
@@ -388,9 +362,9 @@ public class ChallengeLogic implements Listener {
                 }
             }
         }
-        String diff = blockCollection.diff(itemStacks);
+        Component diff = blockCollection.diff(itemStacks);
         if (diff != null) {
-            sendLegacy(player, diff);
+            send(player, diff);
             return false;
         }
         return true;
@@ -461,17 +435,17 @@ public class ChallengeLogic implements Listener {
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
         if (completion != null) {
-            StringBuilder sb = new StringBuilder();
+            Component missingItems = Component.empty();
             boolean hasAll = true;
             Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
             for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
                 ItemStack requiredType = required.getKey();
                 int requiredAmount = required.getValue();
-                String name = ItemStackUtil.getItemName(requiredType);
+                Component name = ItemStackUtil.getItemName(requiredType);
                 if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                    sb.append(miniToLegacy(" <count> <item>",
+                    missingItems = missingItems.append(parseMini(" <count> <item>",
                         number("count", requiredAmount - getCountOf(player.getInventory(), requiredType), ERROR),
-                        Placeholder.legacy("item", name, PRIMARY)));
+                        component("item", name, PRIMARY)));
                     hasAll = false;
                 }
             }
@@ -486,7 +460,7 @@ public class ChallengeLogic implements Listener {
                 giveReward(player, challenge);
                 return true;
             } else {
-                sendTr(player, "You are still missing the following items:<items>", legacyArg("items", sb.toString()));
+                sendTr(player, "You are still missing the following items:<items>", component("items", missingItems));
             }
         }
         return false;
@@ -575,17 +549,13 @@ public class ChallengeLogic implements Listener {
         ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
         ItemStack currentChallengeItem = challenge.getDisplayItem(completion, defaults.enableEconomyPlugin);
         ItemMeta meta = currentChallengeItem.getItemMeta();
-        List<String> lores = meta.getLore();
-        if (challenge.isRepeatable() || completion.getTimesCompleted() == 0) {
-            lores.add(trLegacy("Click to complete this challenge.", PRIMARY));
-        } else {
-            lores.add(trLegacy("You can't repeat this challenge.", ERROR));
+        if (meta == null) {
+            return currentChallengeItem;
         }
         if (completion.getTimesCompleted() > 0) {
             meta.addEnchant(Enchantment.LOYALTY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
-        meta.setLore(lores);
         currentChallengeItem.setItemMeta(meta);
         return currentChallengeItem;
     }
@@ -705,6 +675,9 @@ public class ChallengeLogic implements Listener {
                         }
                     } else {
                         lores = currentChallengeItem.getItemMeta().getLore();
+                        if (lores == null) {
+                            lores = new ArrayList<>();
+                        }
                     }
                     meta4 = currentChallengeItem.getItemMeta();
                     if (defaults.showLockedChallengeName) {

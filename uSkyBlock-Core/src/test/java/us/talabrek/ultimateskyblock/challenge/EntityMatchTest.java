@@ -1,10 +1,12 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Sheep;
 import org.bukkit.material.Colorable;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Map;
@@ -13,7 +15,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class EntityMatchTest {
+public class EntityMatchTest extends BukkitServerMock {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        setupServerMock();
+    }
+
     @Test
     public void testMatchColoredSheep() {
         EntityMatch matcher = new EntityMatch(EntityType.SHEEP, Map.of("Color", "RED"), 1);

@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.message;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
@@ -22,6 +23,15 @@ public class Placeholder {
 
     private Placeholder() {
         // Static utility class
+    }
+
+    public static TagResolver.@NotNull Single component(@TagPattern final @NotNull String key, final @NotNull ComponentLike value) {
+        return TagResolver.resolver(key, Tag.selfClosingInserting(value));
+    }
+
+    public static TagResolver.@NotNull Single component(@TagPattern final @NotNull String key, final @NotNull ComponentLike value, @NotNull Style style) {
+        Component component = value.asComponent().applyFallbackStyle(style);
+        return TagResolver.resolver(key, Tag.selfClosingInserting(component));
     }
 
     public static TagResolver.@NotNull Single unparsed(@TagPattern final @NotNull String key, final @NotNull String value) {

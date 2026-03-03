@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.command.admin.AbstractIslandInfoCommand;
@@ -9,7 +10,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
 
 public class MobLimitCommand extends AbstractIslandInfoCommand {
     private final uSkyBlock plugin;
@@ -22,6 +23,6 @@ public class MobLimitCommand extends AbstractIslandInfoCommand {
 
     @Override
     protected void doExecute(CommandSender sender, PlayerInfo playerInfo, IslandInfo islandInfo, String... args) {
-        sendLegacy(sender, plugin.getLimitLogic().getSummary(islandInfo).split("\n"));
+        send(sender, plugin.getLimitLogic().getSummaryComponents(islandInfo).toArray(Component[]::new));
     }
 }

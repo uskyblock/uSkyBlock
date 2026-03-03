@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static us.talabrek.ultimateskyblock.message.Msg.plainText;
+
 /**
  * The summary of island calculation.
  */
@@ -26,11 +28,12 @@ public class IslandScore implements us.talabrek.ultimateskyblock.api.model.Islan
     private List<BlockScore> joinTop(List<BlockScore> top) {
         Map<String, BlockScore> scoreMap = new HashMap<>();
         for (BlockScore score : top) {
-            BlockScore existing = scoreMap.get(score.getName());
+            String key = plainText(score.getComponentName());
+            BlockScore existing = scoreMap.get(key);
             if (existing == null) {
-                scoreMap.put(score.getName(), score);
+                scoreMap.put(key, score);
             } else {
-                scoreMap.put(score.getName(), add(score, existing));
+                scoreMap.put(key, add(score, existing));
             }
         }
         return new ArrayList<>(scoreMap.values());
@@ -43,7 +46,7 @@ public class IslandScore implements us.talabrek.ultimateskyblock.api.model.Islan
         }
         return new BlockScoreImpl(existing.getBlockData(),
                 score.getCount() + existing.getCount(),
-                score.getScore() + existing.getScore(), state, score.getName());
+                score.getScore() + existing.getScore(), state, score.getComponentName());
     }
 
     @Override

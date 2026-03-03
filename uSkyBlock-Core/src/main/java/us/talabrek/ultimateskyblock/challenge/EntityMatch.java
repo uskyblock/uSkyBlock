@@ -1,8 +1,6 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import com.google.gson.Gson;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
@@ -16,10 +14,11 @@ import us.talabrek.ultimateskyblock.util.EntityUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Data object holding values for matching an entity against a challenge.
@@ -119,23 +118,25 @@ public class EntityMatch {
     }
 
     public Component getDisplayName() {
-        StringBuilder sb = new StringBuilder();
+        Component entityName = EntityUtil.getEntityName(type);
         Map<String, Object> extra = new HashMap<>(meta);
+        Component colorPrefix = Component.empty();
         for (String key : COLOR_KEYS) {
             if (meta.containsKey(key)) {
-                String color = FormatUtil.capitalize(getColor(meta.get(key)).toString());
-                sb.append(color).append(" ");
+                String colorName = Arrays.stream(getColor(meta.get(key)).name().split("_"))
+                        .map(word -> word.isEmpty() ? "" : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
+                        .collect(joining(" "));
+                colorPrefix = colorPrefix.append(Component.text(colorName + " "));
                 extra.remove(key);
             }
         }
 
-        String name = EntityUtil.getEntityDisplayName(type);
-        sb.append(name);
+        Component result = colorPrefix.append(entityName);
 
         if (!extra.isEmpty()) {
-            sb.append(":").append(gson.toJson(extra));
+            result = result.append(Component.text(":" + gson.toJson(extra)));
         }
-        return fromLegacy(sb.toString());
+        return result;
     }
 
     /**
