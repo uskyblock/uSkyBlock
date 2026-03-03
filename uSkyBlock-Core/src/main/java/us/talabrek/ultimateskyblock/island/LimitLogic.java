@@ -174,10 +174,10 @@ public class LimitLogic {
                 currentCount = blockCount >= entry.getValue()
                     ? parseMini("<error><count>", number("count", blockCount))
                     : Component.text(String.valueOf(blockCount));
-                // I18N: A summary of block limits on an island
             } else {
                 currentCount = parseMini("<error><unknown>", unparsed("unknown", "?"));
             }
+            // I18N: A summary of block limits on an island
             lines.add(tr("<block-type>: <count> (max. <max>)",
                 MUTED,
                 component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
