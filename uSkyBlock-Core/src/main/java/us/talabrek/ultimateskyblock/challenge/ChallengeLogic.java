@@ -435,7 +435,7 @@ public class ChallengeLogic implements Listener {
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
         if (completion != null) {
-            StringBuilder sb = new StringBuilder();
+            Component missingItems = Component.empty();
             boolean hasAll = true;
             Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
             for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
@@ -443,7 +443,7 @@ public class ChallengeLogic implements Listener {
                 int requiredAmount = required.getValue();
                 Component name = ItemStackUtil.getItemName(requiredType);
                 if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                    sb.append(miniToLegacy(" <count> <item>",
+                    missingItems = missingItems.append(parseMini(" <count> <item>",
                         number("count", requiredAmount - getCountOf(player.getInventory(), requiredType), ERROR),
                         component("item", name, PRIMARY)));
                     hasAll = false;
@@ -460,7 +460,7 @@ public class ChallengeLogic implements Listener {
                 giveReward(player, challenge);
                 return true;
             } else {
-                sendTr(player, "You are still missing the following items:<items>", legacyArg("items", sb.toString()));
+                sendTr(player, "You are still missing the following items:<items>", component("items", missingItems));
             }
         }
         return false;
@@ -549,17 +549,13 @@ public class ChallengeLogic implements Listener {
         ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
         ItemStack currentChallengeItem = challenge.getDisplayItem(completion, defaults.enableEconomyPlugin);
         ItemMeta meta = currentChallengeItem.getItemMeta();
-        List<String> lores = meta.getLore();
-        if (challenge.isRepeatable() || completion.getTimesCompleted() == 0) {
-            lores.add(trLegacy("Click to complete this challenge.", PRIMARY));
-        } else {
-            lores.add(trLegacy("You can't repeat this challenge.", ERROR));
+        if (meta == null) {
+            return currentChallengeItem;
         }
         if (completion.getTimesCompleted() > 0) {
             meta.addEnchant(Enchantment.LOYALTY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
-        meta.setLore(lores);
         currentChallengeItem.setItemMeta(meta);
         return currentChallengeItem;
     }
@@ -679,6 +675,9 @@ public class ChallengeLogic implements Listener {
                         }
                     } else {
                         lores = currentChallengeItem.getItemMeta().getLore();
+                        if (lores == null) {
+                            lores = new ArrayList<>();
+                        }
                     }
                     meta4 = currentChallengeItem.getItemMeta();
                     if (defaults.showLockedChallengeName) {

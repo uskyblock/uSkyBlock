@@ -1,6 +1,7 @@
 package dk.lockfuglsang.minecraft.util;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -26,6 +27,7 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.comp
  */
 public enum ItemStackUtil {
     ;
+    private static final GsonComponentSerializer GSON_COMPONENT_SERIALIZER = GsonComponentSerializer.gson();
     private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
         "(\\{p=(?<prob>0\\.\\d+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
@@ -212,8 +214,7 @@ public enum ItemStackUtil {
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
             return fromLegacy(itemMeta.getDisplayName());
         } else {
-            String fallback = fallbackName(stack.getType());
-            return Component.translatable(stack.getTranslationKey(), fallback);
+            return Component.translatable(stack.getTranslationKey());
         }
     }
 
@@ -225,16 +226,60 @@ public enum ItemStackUtil {
             translationKey = block.getMaterial().getTranslationKey();
         }
 
-        return Component.translatable(translationKey, fallbackName(block.getMaterial()));
+        return Component.translatable(translationKey);
     }
 
-    @Contract(pure = true)
-    @NotNull
-    private static String fallbackName(@NotNull Material material) {
-        String key = material.getKey().getKey();
-        return Arrays.stream(key.split("[_-]"))
-                .map(word -> word.isEmpty() ? "" : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
-                .collect(joining(" "));
+    @SuppressWarnings("deprecation")
+    public static void setComponentDisplayName(@NotNull ItemStack itemStack, @Nullable Component name) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+        if (name == null) {
+            itemMeta.setDisplayName(null);
+            itemStack.setItemMeta(itemMeta);
+            return;
+        }
+
+        // Keep legacy API consumers working while also preserving translation keys for clients.
+        itemMeta.setDisplayName(legacy(name));
+        itemStack.setItemMeta(itemMeta);
+        applyUnsafeDisplayName(itemStack, name);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void setComponentLore(@NotNull ItemStack itemStack, @Nullable List<Component> lore) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+        if (lore == null) {
+            itemMeta.setLore(null);
+            itemStack.setItemMeta(itemMeta);
+            return;
+        }
+
+        List<String> legacyLore = lore.stream().map(component -> legacy(component)).collect(toList());
+        // Keep legacy API consumers working while also preserving translation keys for clients.
+        itemMeta.setLore(legacyLore);
+        itemStack.setItemMeta(itemMeta);
+        applyUnsafeLore(itemStack, lore);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void applyUnsafeDisplayName(@NotNull ItemStack itemStack, @NotNull Component name) {
+        String nameJson = GSON_COMPONENT_SERIALIZER.serialize(name);
+        String args = itemStack.getType().getKey() + "[custom_name=" + nameJson + "]";
+        Bukkit.getUnsafe().modifyItemStack(itemStack, args);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void applyUnsafeLore(@NotNull ItemStack itemStack, @NotNull List<Component> lore) {
+        String loreEntries = lore.stream()
+            .map(GSON_COMPONENT_SERIALIZER::serialize)
+            .collect(joining(","));
+        String args = itemStack.getType().getKey() + "[lore=[" + loreEntries + "]]";
+        Bukkit.getUnsafe().modifyItemStack(itemStack, args);
     }
 
     @Contract(pure = true)
@@ -279,6 +324,11 @@ public enum ItemStackUtil {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(name);
             itemStack.setItemMeta(itemMeta);
+            return this;
+        }
+
+        public Builder displayName(Component name) {
+            setComponentDisplayName(itemStack, name);
             return this;
         }
 
@@ -341,6 +391,23 @@ public enum ItemStackUtil {
             return this;
         }
 
+        public Builder componentLore(@NotNull Component lore) {
+            return componentLore(Collections.singletonList(lore));
+        }
+
+        public Builder componentLore(@NotNull List<Component> lore) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                List<Component> mergedLore = new ArrayList<>();
+                if (itemMeta.getLore() != null) {
+                    mergedLore.addAll(itemMeta.getLore().stream().map(value -> fromLegacy(value)).collect(toList()));
+                }
+                mergedLore.addAll(lore);
+                setComponentLore(itemStack, mergedLore);
+            }
+            return this;
+        }
+
         public ItemStack build() {
             return itemStack;
         }
@@ -348,4 +415,5 @@ public enum ItemStackUtil {
 
     public record ItemProbability(double probability, ItemStack item) {
     }
+
 }

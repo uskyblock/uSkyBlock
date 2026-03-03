@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,7 @@ public class BukkitServerMock {
         UnsafeValues unsafeMock = mock(UnsafeValues.class);
         when(unsafeMock.fromLegacy(any(Material.class))).thenAnswer(a -> a.getArguments()[0]);
         when(unsafeMock.getTranslationKey(any(EntityType.class))).thenAnswer(a -> "entity.minecraft." + ((EntityType)a.getArguments()[0]).name().toLowerCase());
+        when(unsafeMock.modifyItemStack(any(ItemStack.class), any(String.class))).thenAnswer(a -> a.getArguments()[0]);
         when(serverMock.getUnsafe()).thenReturn(unsafeMock);
         return serverMock;
     }
@@ -119,6 +121,23 @@ public class BukkitServerMock {
             }
             return null;
         }).when(meta).setLore(any(List.class));
+        when(meta.hasDisplayName()).thenAnswer((Answer<Boolean>) invocationOnMock ->
+            metaData.containsKey("displayName"));
+        when(meta.getDisplayName()).thenAnswer((Answer<String>) invocationOnMock -> metaData.get("displayName"));
+        when(meta.getLore()).thenAnswer((Answer<List<String>>) invocationOnMock -> {
+            String lore = metaData.get("lore");
+            if (lore == null || lore.length() < 2) {
+                return null;
+            }
+            if (!lore.startsWith("[") || !lore.endsWith("]")) {
+                return List.of(lore);
+            }
+            String inner = lore.substring(1, lore.length() - 1);
+            if (inner.isEmpty()) {
+                return List.of();
+            }
+            return Arrays.asList(inner.split(", "));
+        });
         when(meta.toString()).thenAnswer((Answer<String>) invocationOnMock -> "" + metaData);
         when(meta.clone()).thenReturn(meta); // Don't clone it - we need to verify it
         return meta;
