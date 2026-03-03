@@ -1,21 +1,20 @@
-# uSkyBlock translation template
-# Copyright (C) 2026 uSkyBlock contributors
-# This file is distributed under GPL-3.0 license.
-# Translators should preserve MiniMessage tags/placeholders exactly.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: uSkyBlock\n"
+"Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-03-03 18:13\n"
 "Last-Translator: minoneer <minoneer@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: sl\n"
+"Language-Team: Slovenian\n"
+"Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Crowdin-Language: sl\n"
+"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
+"X-Crowdin-File-ID: 24\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
@@ -182,8 +181,7 @@ msgstr "Dovoljenja od <player>"
 msgid "<primary>SKY</primary><muted> ></muted> <message>"
 msgstr "<primary>SKY</primary><muted> ></muted> <message>"
 
-#. I18N: <page> and <max-page> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep tag names unchanged.
+#. I18N: <page> and <max-page> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 msgstr "<primary>Zid slavnih</primary> (stran <page> od <max-page>):"
@@ -228,8 +226,7 @@ msgstr "Nazaj v glavni meni"
 msgid "Banned: You are banned from this island."
 msgstr "Prepoved: Imaš prepoved na tem otoku."
 
-#. I18N: Section header for banned player list in admin island info debug
-#. output.
+#. I18N: Section header for banned player list in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Bans:"
 msgstr "Prepovedi:"
@@ -443,8 +440,7 @@ msgstr "Denarna nagrada: <primary><amount:'#,##0'><currency></primary> <secondar
 msgid "Current biome: <biome>"
 msgstr "Trenutni biom: <biome>"
 
-#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat
-#. pattern; keep tag name "level".
+#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Current level: <level:'#,##0'>"
 msgstr "Trenutna raven: <level:'#,##0'>"
@@ -486,8 +482,7 @@ msgstr "Pripravljamo tvoj otok. Prosim, bodi potrpežljiv, to lahko traja nekaj 
 msgid "Golems"
 msgstr "Golemi"
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
 msgstr "Člani skupine: <current>/<max>"
@@ -653,8 +648,7 @@ msgstr "Zapusti tvoj otok.<newline><error>Opozorilo! To bo odstranilo vse tvoje 
 msgid "Let the player change their island's biome to <biome>"
 msgstr "Dovoli igralcu, da spremeni biom svojega otoka na <biome>"
 
-#. I18N: Section header for configured island limits in admin island info
-#. debug output.
+#. I18N: Section header for configured island limits in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Limits:"
 msgstr "Omejitve:"
@@ -677,8 +671,7 @@ msgstr "Zaklenjen izziv"
 msgid "Locked: That island is locked. No entry allowed."
 msgstr "Zaklenjeno: Ta otok je zaklenjen. Vstop ni dovoljen."
 
-#. I18N: Section header for island activity log in admin island info debug
-#. output.
+#. I18N: Section header for island activity log in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Log:"
 msgstr "Dnevnik:"
@@ -695,8 +688,7 @@ msgstr "Član"
 msgid "Members are already trusted!"
 msgstr "Člani so že zaupanja vredni!"
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use
-#. DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Members: <current>/<max>"
 msgstr "Člani: <current>/<max>"
@@ -782,14 +774,12 @@ msgstr "Le lastnik lahko ponovno zažene ta otok. Najprej zapusti ta otok, da za
 msgid "Owner: <player>"
 msgstr "Lastnik: <player>"
 
-#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "page".
+#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Page <page>"
 msgstr "Stran <page>"
 
-#. I18N: Section header for party-related fields in admin island info debug
-#. output.
+#. I18N: Section header for party-related fields in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Party:"
 msgstr "Skupina:"
@@ -885,8 +875,7 @@ msgstr "Vrni se na domačo točko<newline>svojega otoka. Domačo točko<newline>
 msgid "Riding is only allowed on your own island."
 msgstr "Jahanje je dovoljeno samo na tvojem lastnem otoku."
 
-#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "timeout".
+#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
 msgstr "Zagon <command> je <error>tvegan</error>. <muted>Ponovi v <timeout> sekundah za potrditev.</muted>"
@@ -1144,8 +1133,7 @@ msgstr "Klepet <chat-type> je preklopljen izklopljen."
 msgid "Toggled permission <permission> for <player> to <state>."
 msgstr "Dovoljenje <permission> za <player> je preklopljeno na <state>."
 
-#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "level".
+#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered."
 msgstr "Seznam najboljših deset je prazen! <muted>Upoštevani so samo otoki nad nivojem <level:'#,##0'>."
@@ -1329,8 +1317,7 @@ msgstr "Še vedno ti manjkajo naslednji predmeti:<items>"
 msgid "You banned <player> from warping to your island."
 msgstr "Igralcu <player> si prepovedal teleport na tvoj otok."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You can change your biome again in <seconds> seconds."
 msgstr "Svoj biom lahko znova spremeniš čez <seconds> sekund."
@@ -1351,8 +1338,7 @@ msgstr "To lahko znova opraviš čez <hours> ur."
 msgid "You can complete this again in <minutes> minutes."
 msgstr "To lahko znova opraviš čez <minutes> minut."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "You can create a new island in <seconds> seconds."
 msgstr "Nov otok lahko ustvariš čez <seconds> sekund."
@@ -1381,8 +1367,7 @@ msgstr "Lastništvo lahko preneseš samo na člane skupine!"
 msgid "You can only use spawn eggs on your own island."
 msgstr "Spawn jajca lahko uporabljaš samo na svojem otoku."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "You can restart your island in <seconds> seconds."
 msgstr "Otok lahko ponovno zaženeš čez <seconds> sekund."
@@ -1624,8 +1609,7 @@ msgstr "Zavrnil si povabilo za pridružitev otoku."
 msgid "You unbanned <player> from warping to your island."
 msgstr "Igralcu <player> si odstranil prepoved teleporta na tvoj otok."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "You will be teleported in <seconds> seconds."
 msgstr "Teleportiran boš čez <seconds> sekund."
@@ -1695,8 +1679,7 @@ msgstr "Tvoj otok je zdaj <secondary>odklenjen</secondary>. Vstopi lahko kdorkol
 msgid "Your island must be level <level> to complete this challenge!"
 msgstr "Tvoj otok mora biti ravni <level>, da lahko dokončaš ta izziv!"
 
-#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat
-#. patterns; keep tag name "rank".
+#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Your rank is: <rank>."
 msgstr "Tvoj rang je: <rank>."
@@ -1769,8 +1752,7 @@ msgstr "preveri informacije o svojem ali tujem otoku"
 msgid "check your or another's island level"
 msgstr "preveri raven svojega ali tujega otoka"
 
-#. I18N: Used in biome radius display to indicate that a single chunk is
-#. affected
+#. I18N: Used in biome radius display to indicate that a single chunk is affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "chunk"
 msgstr "odsek"
@@ -1845,8 +1827,7 @@ msgstr "povabi druge na otok."
 msgid "invite<newline>other players to the island if<newline>there is enough room for more<newline>members"
 msgstr "povabi<newline>druge igralce na otok, če<newline>je dovolj prostora za več<newline>članov"
 
-#. I18N: Used in biome radius display to indicate that the entire island is
-#. affected
+#. I18N: Used in biome radius display to indicate that the entire island is affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "island"
@@ -1973,3 +1954,4 @@ msgstr "teleportiraj se na otok drugega igralca"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "withdraw an invite"
 msgstr "prekliči povabilo"
+
