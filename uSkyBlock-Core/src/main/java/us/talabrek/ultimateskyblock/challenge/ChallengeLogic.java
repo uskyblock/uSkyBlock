@@ -3,10 +3,12 @@ package us.talabrek.ultimateskyblock.challenge;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -55,13 +57,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
+import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
@@ -700,20 +702,18 @@ public class ChallengeLogic implements Listener {
     }
 
     private void populateChallengeHeader(Rank rank, int location, Inventory menu) {
-        List<String> lores = new ArrayList<>();
         ItemStack displayItem = rank.getDisplayItem();
-        ItemMeta itemMeta = displayItem.getItemMeta();
-        itemMeta.setDisplayName("\u00a7e\u00a7l" + trLegacy("Rank: <rank>", legacyArg("rank", rank.getName())));
-        for (Component line : ComponentLineSplitter.splitLines(tr("Complete most challenges in<newline>this rank to unlock the next rank.", MUTED))) {
-            lores.add(legacy(line));
-        }
+        ItemStackUtil.setComponentDisplayName(displayItem,
+            tr("Rank: <rank>", Style.style(YELLOW, BOLD), legacyArg("rank", rank.getName())));
+        List<Component> lores = new ArrayList<>(
+            ComponentLineSplitter.splitLines(tr("Complete most challenges in<newline>this rank to unlock the next rank.", MUTED))
+        );
         if (location < (CHALLENGE_PAGE_SIZE / 2)) {
-            lores.add(trLegacy("Click here to show the previous page.", PRIMARY));
+            lores.add(tr("Click here to show the previous page.", PRIMARY));
         } else {
-            lores.add(trLegacy("Click here to show the next page.", PRIMARY));
+            lores.add(tr("Click here to show the next page.", PRIMARY));
         }
-        displayItem.setItemMeta(itemMeta);
-        ItemStackUtil.setComponentLore(displayItem, lores.stream().map(line -> fromLegacy(line)).toList());
+        ItemStackUtil.setComponentLore(displayItem, lores);
         menu.setItem(location, displayItem);
     }
 
@@ -730,16 +730,14 @@ public class ChallengeLogic implements Listener {
             locked = new ItemStack(challenge.getDisplayItem());
         }
 
-        ItemMeta itemMeta = locked.getItemMeta();
-        itemMeta.setDisplayName(trLegacy("Locked Challenge", ERROR));
+        ItemStackUtil.setComponentDisplayName(locked, tr("Locked Challenge", ERROR));
         List<String> lores = new ArrayList<>();
         if (defaults.showLockedChallengeName) {
             lores.add(challenge.getDisplayName());
         }
         lores.addAll(missingReqs);
         lores.addAll(missingRankRequirements);
-        locked.setItemMeta(itemMeta);
-        ItemStackUtil.setComponentLore(locked, lores.stream().map(line -> fromLegacy(line)).toList());
+        ItemStackUtil.setComponentLore(locked, lores.stream().map(I18nUtil::fromLegacy).toList());
         return locked;
     }
 

@@ -1,5 +1,8 @@
 package us.talabrek.ultimateskyblock.biome;
 
+import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -15,14 +18,15 @@ import us.talabrek.ultimateskyblock.gui.InventoryGui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class BiomeGui extends InventoryGui {
@@ -76,22 +80,20 @@ public class BiomeGui extends InventoryGui {
 
     private InventoryButton createBiomeButton(BiomeEntry biomeEntry, Biome currentBiome) {
         ItemStack displayItem = biomeEntry.displayItem().clone();
-        ItemMeta itemMeta = Objects.requireNonNull(displayItem.getItemMeta());
-        itemMeta.setDisplayName(trLegacy("Biome: <biome>", PRIMARY, unparsed("biome", biomeEntry.name())));
-        List<String> lore = new ArrayList<>(
-            Arrays.stream(biomeEntry.description().split("\\R"))
-                .filter(line -> !line.isBlank())
-                .map(line -> "\u00a7f" + line)
-                .toList()
-        );
+        ItemStackUtil.setComponentDisplayName(displayItem, tr("Biome: <biome>", PRIMARY, unparsed("biome", biomeEntry.name())));
+        List<Component> lore = Arrays.stream(biomeEntry.description().split("\\R"))
+            .filter(line -> !line.isBlank())
+            .map(line -> Component.text(line, MUTED))
+            .collect(Collectors.toCollection(ArrayList::new));
         if (biomeEntry.biome().equals(currentBiome)) {
-            lore.add(trLegacy("This is your current biome.", SECONDARY));
+            lore.add(tr("This is your current biome.", SECONDARY));
+            ItemMeta itemMeta = displayItem.getItemMeta();
             itemMeta.addEnchant(Enchantment.LOYALTY, 1, true);
+            displayItem.setItemMeta(itemMeta);
         } else {
-            lore.add(trLegacy("Click to change to this biome.", PRIMARY));
+            lore.add(tr("Click to change to this biome.", PRIMARY));
         }
-        itemMeta.setLore(lore);
-        displayItem.setItemMeta(itemMeta);
+        ItemStackUtil.setComponentLore(displayItem, lore);
 
         return new InventoryButton()
             .creator((player) -> displayItem)
@@ -111,14 +113,12 @@ public class BiomeGui extends InventoryGui {
         return new InventoryButton()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.RED_CARPET);
-                ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(miniToLegacy("<red>-"));
-                List<String> lore = List.of(
-                    trLegacy("Decrease radius of biome change"),
-                    trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius)))
+                ItemStackUtil.setComponentDisplayName(displayItem, Component.text("-", NamedTextColor.RED));
+                List<Component> lore = List.of(
+                    tr("Decrease radius of biome change"),
+                    tr("Current radius: <radius>", component("radius", formatRadius(radius)))
                 );
-                itemMeta.setLore(lore);
-                displayItem.setItemMeta(itemMeta);
+                ItemStackUtil.setComponentLore(displayItem, lore);
                 return displayItem;
             })
             .consumer((player, event) -> {
@@ -134,14 +134,12 @@ public class BiomeGui extends InventoryGui {
         return new InventoryButton()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.GREEN_CARPET);
-                ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(miniToLegacy("<green>+"));
-                List<String> lore = List.of(
-                    trLegacy("Increase radius of biome change"),
-                    trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius)))
+                ItemStackUtil.setComponentDisplayName(displayItem, Component.text("+", NamedTextColor.GREEN));
+                List<Component> lore = List.of(
+                    tr("Increase radius of biome change"),
+                    tr("Current radius: <radius>", component("radius", formatRadius(radius)))
                 );
-                itemMeta.setLore(lore);
-                displayItem.setItemMeta(itemMeta);
+                ItemStackUtil.setComponentLore(displayItem, lore);
                 return displayItem;
             })
             .consumer((player, event) -> {
@@ -157,20 +155,18 @@ public class BiomeGui extends InventoryGui {
         return new InventoryButton()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.GRASS_BLOCK);
-                ItemMeta itemMeta = requireNonNull(requireNonNull(displayItem.getItemMeta()));
-                itemMeta.setDisplayName(trLegacy("Current radius: <radius>", unparsed("radius", formatRadius(radius))));
-                displayItem.setItemMeta(itemMeta);
+                ItemStackUtil.setComponentDisplayName(displayItem, tr("Current radius: <radius>", component("radius", formatRadius(radius))));
                 return displayItem;
             });
     }
 
-    private static String formatRadius(String radius) {
+    private static Component formatRadius(String radius) {
         return switch (radius) {
             // I18N: Used in biome radius display to indicate that a single chunk is affected
-            case "chunk" -> trLegacy("chunk", SECONDARY);
+            case "chunk" -> tr("chunk", SECONDARY);
             // I18N: Used in biome radius display to indicate that the entire island is affected
-            case "all" -> trLegacy("island", SECONDARY);
-            default -> miniToLegacy("<secondary><radius>", unparsed("radius", radius));
+            case "all" -> tr("island", SECONDARY);
+            default -> Component.text(radius, SECONDARY);
         };
     }
 
@@ -178,10 +174,8 @@ public class BiomeGui extends InventoryGui {
         InventoryButton backButton = new InventoryButton()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.OAK_SIGN);
-                ItemMeta itemMeta = requireNonNull(displayItem.getItemMeta());
-                itemMeta.setDisplayName(trLegacy("Back to Main Menu", PRIMARY));
-                itemMeta.setLore(List.of(trLegacy("Click here to return to the main island screen.", MUTED)));
-                displayItem.setItemMeta(itemMeta);
+                ItemStackUtil.setComponentDisplayName(displayItem, tr("Back to Main Menu", PRIMARY));
+                ItemStackUtil.setComponentLore(displayItem, List.of(tr("Click here to return to the main island screen.", MUTED)));
                 return displayItem;
             })
             .consumer((player, event) -> player.performCommand("island"));
