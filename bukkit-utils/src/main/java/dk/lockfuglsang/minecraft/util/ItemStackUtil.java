@@ -1,6 +1,9 @@
 package dk.lockfuglsang.minecraft.util;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,6 +31,8 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.comp
 public enum ItemStackUtil {
     ;
     private static final GsonComponentSerializer GSON_COMPONENT_SERIALIZER = GsonComponentSerializer.gson();
+    private static final Style LORE_FALLBACK_STYLE = Style.style(NamedTextColor.WHITE)
+        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
     private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
         "(\\{p=(?<prob>0\\.\\d+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
@@ -259,11 +264,14 @@ public enum ItemStackUtil {
             return;
         }
 
-        List<String> legacyLore = lore.stream().map(component -> legacy(component)).collect(toList());
+        List<Component> normalizedLore = lore.stream()
+            .map(component -> component.applyFallbackStyle(LORE_FALLBACK_STYLE))
+            .collect(toList());
+        List<String> legacyLore = normalizedLore.stream().map(component -> legacy(component)).collect(toList());
         // Keep legacy API consumers working while also preserving translation keys for clients.
         itemMeta.setLore(legacyLore);
         itemStack.setItemMeta(itemMeta);
-        applyUnsafeLore(itemStack, lore);
+        applyUnsafeLore(itemStack, normalizedLore);
     }
 
     @SuppressWarnings("deprecation")

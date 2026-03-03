@@ -362,9 +362,9 @@ public class ChallengeLogic implements Listener {
                 }
             }
         }
-        String diff = blockCollection.diff(itemStacks);
+        Component diff = blockCollection.diff(itemStacks);
         if (diff != null) {
-            sendLegacy(player, diff);
+            send(player, diff);
             return false;
         }
         return true;

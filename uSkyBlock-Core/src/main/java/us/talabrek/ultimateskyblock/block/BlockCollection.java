@@ -2,16 +2,17 @@ package us.talabrek.ultimateskyblock.block;
 
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
@@ -29,22 +30,24 @@ public class BlockCollection {
     }
 
     /**
-     * Returns <code>null</code> if all the items are in the BlockCollection, a String describing the missing items if it's not
+     * Returns <code>null</code> if all the blocks are present, a Component describing missing blocks otherwise.
      */
-    public String diff(List<BlockRequirement> requirements) {
-        StringBuilder sb = new StringBuilder();
+    public @Nullable Component diff(List<BlockRequirement> requirements) {
+        Component missingBlocks = Component.empty();
+        boolean hasMissing = false;
         for (BlockRequirement requirement : requirements) {
             int diff = requirement.amount() - count(requirement.type().getMaterial());
             if (diff > 0) {
-                sb.append(miniToLegacy(" <secondary><count>x <muted><block>",
+                hasMissing = true;
+                missingBlocks = missingBlocks.append(parseMini(" <secondary><count>x <muted><block>",
                     number("count", diff),
                     component("block", ItemStackUtil.getBlockName(requirement.type()))));
             }
         }
-        if (sb.toString().trim().isEmpty()) {
+        if (!hasMissing) {
             return null;
         }
-        return trLegacy("Still missing the following blocks: <blocks>", MUTED, legacyArg("blocks", sb.toString()));
+        return tr("Still missing the following blocks: <blocks>", MUTED, component("blocks", missingBlocks));
     }
 
     private int count(Material type) {

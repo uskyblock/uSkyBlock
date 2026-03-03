@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+
+import static java.util.stream.Collectors.joining;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.*;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
@@ -138,9 +141,15 @@ public class LimitLogic {
     }
 
     public String getSummary(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
+        return getSummaryComponents(islandInfo).stream()
+            .map(component -> legacy(component))
+            .collect(joining("\n"));
+    }
+
+    public List<Component> getSummaryComponents(us.talabrek.ultimateskyblock.api.IslandInfo islandInfo) {
         Map<LimitLogic.CreatureType, Integer> creatureMax = getCreatureMax(islandInfo);
         Map<LimitLogic.CreatureType, Integer> count = getCreatureCount(islandInfo);
-        StringBuilder sb = new StringBuilder();
+        List<Component> lines = new ArrayList<>();
         for (LimitLogic.CreatureType key : creatureMax.keySet()) {
             if (key == CreatureType.UNKNOWN) {
                 continue; // Skip
@@ -151,34 +160,31 @@ public class LimitLogic {
                 ? parseMini("<error><count>", unparsed("count", String.valueOf(cnt)))
                 : Component.text(cnt);
             // I18N: A summary of entity group limits on an island
-            sb.append(trLegacy("<entity-group>: <count> (max. <max>)",
+            lines.add(tr("<entity-group>: <count> (max. <max>)",
                 MUTED,
                 component("entity-group", getCreatureTypeLabel(key)),
                 component("count", creatureCount.applyFallbackStyle(SECONDARY)),
-                unparsed("max", String.valueOf(max)))).append("\n");
+                number("max", max)));
         }
         Map<Material, Integer> blockLimits = blockLimitLogic.getLimits();
         for (Map.Entry<Material, Integer> entry : blockLimits.entrySet()) {
             int blockCount = blockLimitLogic.getCount(entry.getKey(), islandInfo.getIslandLocation());
+            Component currentCount;
             if (blockCount >= 0) {
-                String current = blockCount >= entry.getValue()
-                    ? miniToLegacy("<error><count>", number("count", blockCount))
-                    : String.valueOf(blockCount);
+                currentCount = blockCount >= entry.getValue()
+                    ? parseMini("<error><count>", number("count", blockCount))
+                    : Component.text(String.valueOf(blockCount));
                 // I18N: A summary of block limits on an island
-                sb.append(trLegacy("<block-type>: <count> (max. <max>)",
-                    MUTED,
-                    component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    legacy("count", current, SECONDARY),
-                    number("max", entry.getValue()))).append("\n");
             } else {
-                sb.append(trLegacy("<block-type>: <count> (max. <max>)",
-                    MUTED,
-                    component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
-                    legacy("count", miniToLegacy("<error><unknown>", unparsed("unknown", "?")), SECONDARY),
-                    number("max", entry.getValue()))).append("\n");
+                currentCount = parseMini("<error><unknown>", unparsed("unknown", "?"));
             }
+            lines.add(tr("<block-type>: <count> (max. <max>)",
+                MUTED,
+                component("block-type", ItemStackUtil.getItemName(new ItemStack(entry.getKey()))),
+                component("count", currentCount.applyFallbackStyle(SECONDARY)),
+                number("max", entry.getValue())));
         }
-        return sb.toString().trim();
+        return lines;
     }
 
     private Component getCreatureTypeLabel(CreatureType creatureType) {
