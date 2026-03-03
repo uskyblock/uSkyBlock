@@ -1,603 +1,602 @@
-# uSkyBlock translation template
-# Copyright (C) 2026 uSkyBlock contributors
-# This file is distributed under GPL-3.0 license.
-# Translators should preserve MiniMessage tags/placeholders exactly.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: uSkyBlock\n"
+"Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-03-03 16:29\n"
 "Last-Translator: minoneer <minoneer@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: el\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
+"X-Crowdin-File-ID: 26\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr "- Protect-All <progress_pct:'0%'> (<progress>/<total>, απέτυχαν:<failed>, παραλείφθηκαν:<skipped>) ~ <elapsed>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "<count> old island locations will be used before new ones."
-msgstr "Θα χρησιμοποιηθούν <count> παλιές τοποθεσίες νησιών πριν από τις νέες."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> has been protected."
-msgstr "Το νησί του/της <leader> στο <island> προστατεύτηκε."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> was already protected"
-msgstr "Το νησί του/της <leader> στο <island> ήταν ήδη προστατευμένο"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "<player> has had all challenges reset."
-msgstr "Έγινε επαναφορά όλων των προκλήσεων του/της <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<player> has joined your island group."
-msgstr "Ο/Η <player> μπήκε στην ομάδα του νησιού σου."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "A protect-all task is already running. <muted>Let it complete first, or use <cmd>/usb protectall stop</cmd>."
-msgstr "Μια εργασία protect-all εκτελείται ήδη. <muted>Άφησέ την να ολοκληρωθεί πρώτα, ή χρησιμοποίησε <cmd>/usb protectall stop</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "A purge is already running. <muted>Either <primary>confirm</primary> or <primary>stop</primary> it."
-msgstr "Μια εκκαθάριση εκτελείται ήδη. <muted>Είτε <primary>επιβεβαίωσέ</primary> την είτε <primary>σταμάτησέ</primary> την."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "Animation tick changed to <ticks>."
-msgstr "Το tick του animation άλλαξε σε <ticks>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "Animation tick must be a valid integer."
-msgstr "Το tick του animation πρέπει να είναι έγκυρος ακέραιος αριθμός."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Available locales (<count>):"
-msgstr "Διαθέσιμες γλώσσες (<count>):"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Challenge <challenge-id> has already been completed"
-msgstr "Η πρόκληση <challenge-id> έχει ήδη ολοκληρωθεί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Challenge <challenge-id> has been completed for <player>."
-msgstr "Η πρόκληση <challenge-id> ολοκληρώθηκε για τον/την <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Challenge <challenge-id> has been reset for <player>."
-msgstr "Η πρόκληση <challenge-id> επαναφέρθηκε για τον/την <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Changed <player>'s biome to <biome>."
-msgstr "Το biome του/της <player> άλλαξε σε <biome>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Changed biome of <leader>'s island to <biome>."
-msgstr "Το biome του νησιού του/της <leader> άλλαξε σε <biome>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Cleared cooldown on <command> for <player>"
-msgstr "Καθαρίστηκε ο χρόνος επαναφόρτισης του <command> για τον/την <player>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "Clearing all old unused island locations."
-msgstr "Γίνεται εκκαθάριση όλων των παλιών αχρησιμοποίητων τοποθεσιών νησιών."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Command cooldowns"
-msgstr "Χρόνοι επαναφόρτισης εντολών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "Configuration reloaded from file."
-msgstr "Η διαμόρφωση επαναφορτώθηκε από το αρχείο."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Could not locate an island for player <player>!"
-msgstr "Δεν ήταν δυνατός ο εντοπισμός νησιού για τον παίκτη <player>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Current language: <locale>"
-msgstr "Τρέχουσα γλώσσα: <locale>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Deleted abandoned island at your current location."
-msgstr "Διαγράφηκε εγκαταλελειμμένο νησί στην τρέχουσα τοποθεσία σου."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error! <primary>No valid island found for purging."
-msgstr "Σφάλμα! <primary>Δεν βρέθηκε έγκυρο νησί για εκκαθάριση."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "Error: <error>"
-msgstr "Σφάλμα: <error>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "Failed to unload chunk at <x>,<z>."
-msgstr "Αποτυχία αποφόρτωσης chunk στο <x>,<z>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "Finding all islands abandoned for more than <days> days below level <level>."
-msgstr "Εντοπισμός όλων των νησιών που είναι εγκαταλελειμμένα για πάνω από <days> ημέρες και κάτω από επίπεδο <level>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "Finished generating the top ten list."
-msgstr "Ολοκληρώθηκε η δημιουργία της λίστας των δέκα κορυφαίων."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "Generating the top ten list."
-msgstr "Δημιουργία της λίστας των δέκα κορυφαίων."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Help improve translations: <url>"
-msgstr "Βοήθησε να βελτιώσουμε τις μεταφράσεις: <url>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
-msgstr "Δόθηκε μη έγκυρη εντολή, υποστηρίζονται μόνο τα restart και biome!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 msgid "Invalid player <player> supplied."
-msgstr "Δόθηκε μη έγκυρος παίκτης <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Island WorldGuard regions updated for <island>."
-msgstr "Οι περιοχές WorldGuard του νησιού ενημερώθηκαν για το <island>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Island at this location has members.<newline><muted>Use <cmd>/usb island delete [name]</cmd> to delete it."
-msgstr "Το νησί σε αυτήν την τοποθεσία έχει μέλη.<newline><muted>Χρησιμοποίησε <cmd>/usb island delete [name]</cmd> για να το διαγράψεις."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "Island not found: unable to set the island!"
-msgstr "Το νησί δεν βρέθηκε: αδυναμία ορισμού του νησιού!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "Job Statistics"
-msgstr "Στατιστικά εργασιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Language is already set to <locale>."
-msgstr "Η γλώσσα είναι ήδη ορισμένη σε <locale>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Language updated to <locale>."
-msgstr "Η γλώσσα ενημερώθηκε σε <locale>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "Leadership transferred by <from> to <to>"
-msgstr "Η αρχηγία μεταφέρθηκε από <from> σε <to>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "Loaded chunk at <x>,<z>."
-msgstr "Φορτώθηκε chunk στο <x>,<z>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Loading chunks at <location>."
-msgstr "Φόρτωση chunks στο <location>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "MAINTENANCE: <muted>Disabled. All uSkyBlock gameplay features are now operational."
-msgstr "ΣΥΝΤΗΡΗΣΗ: <muted>Απενεργοποιήθηκε. Όλες οι λειτουργίες παιχνιδιού του uSkyBlock είναι τώρα διαθέσιμες."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "MAINTENANCE: <muted>Enabled. All uSkyBlock gameplay features are now disabled."
-msgstr "ΣΥΝΤΗΡΗΣΗ: <muted>Ενεργοποιήθηκε. Όλες οι λειτουργίες παιχνιδιού του uSkyBlock είναι τώρα απενεργοποιημένες."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "Maintenance mode can only be changed from console!"
-msgstr "Η λειτουργία συντήρησης μπορεί να αλλάξει μόνο από την κονσόλα!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "Manage challenges for a player"
-msgstr "Διαχείριση προκλήσεων για έναν παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "No active cooldown on <command> for <player> detected!"
-msgstr "Δεν εντοπίστηκε ενεργός χρόνος επαναφόρτισης στο <command> για τον/την <player>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "No active cooldowns found for <player>."
-msgstr "Δεν βρέθηκαν ενεργοί χρόνοι επαναφόρτισης για τον/την <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "No challenge named <challenge> was found!"
-msgstr "Δεν βρέθηκε πρόκληση με όνομα <challenge>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "No island found at your current location."
-msgstr "Δεν βρέθηκε νησί στην τρέχουσα τοποθεσία σου."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "No island found at your location."
-msgstr "Δεν βρέθηκε νησί στην τοποθεσία σου."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "No orphans are currently registered."
-msgstr "Δεν υπάρχουν καταχωρημένα εγκαταλελειμμένα νησιά αυτή τη στιγμή."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "No player named <player> was found!"
-msgstr "Δεν βρέθηκε παίκτης με όνομα <player>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "No rank named <rank> was found!"
-msgstr "Δεν βρέθηκε βαθμίδα με όνομα <rank>!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "No regions are currently shown for this player."
-msgstr "Δεν εμφανίζονται αυτή τη στιγμή περιοχές για αυτόν τον παίκτη."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "No valid island at your location"
-msgstr "Δεν υπάρχει έγκυρο νησί στην τοποθεσία σου"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "No valid island provided, either stand within one, or provide an island name"
-msgstr "Δεν δόθηκε έγκυρο νησί: είτε στάσου μέσα σε ένα, είτε δώσε όνομα νησιού"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "No valid player name supplied."
-msgstr "Δεν δόθηκε έγκυρο όνομα παίκτη."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "Orphans (<page>/<pages>): <orphan-list>"
-msgstr "Εγκαταλελειμμένα νησιά (<page>/<pages>): <orphan-list>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm."
-msgstr "ΕΚΚΑΘΑΡΙΣΗ: <muted>Τρέξε <cmd>/usb purge confirm</cmd> μέσα σε <timeout> για επιβεβαίωση."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "PURGE: <primary>Purged island at <island>"
-msgstr "ΕΚΚΑΘΑΡΙΣΗ: <primary>Έγινε εκκαθάριση νησιού στο <island>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "Player <player> already has an island. <muted>Use <cmd>/usb island remove [name]</cmd> first."
-msgstr "Ο παίκτης <player> έχει ήδη νησί. <muted>Χρησιμοποίησε πρώτα <cmd>/usb island remove [name]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "Player <player> has no island to transfer!"
-msgstr "Ο παίκτης <player> δεν έχει νησί για μεταφορά!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 msgid "Player <player> has no island."
-msgstr "Ο παίκτης <player> δεν έχει νησί."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "Purge aborted!"
-msgstr "Η εκκαθάριση ακυρώθηκε!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "Purge timed out."
-msgstr "Το χρονικό όριο για την εκκαθάριση έληξε."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removed ignore-flag of <leader>'s island, it will now show up on top-ten and purge."
-msgstr "Αφαιρέθηκε η σημαία παράβλεψης από το νησί του/της <leader>, θα εμφανίζεται πλέον στα δέκα κορυφαία και στην εκκαθάριση."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removing <player> from the island."
-msgstr "Αφαίρεση του/της <player> από το νησί."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removing <player>'s island."
-msgstr "Αφαίρεση του νησιού του/της <player>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Resending chunks to the client."
-msgstr "Επαναποστολή chunks στον client."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Reset cooldown on <command> for <player> to <seconds> seconds."
-msgstr "Ο χρόνος επαναφόρτισης του <command> για τον/την <player> ορίστηκε ξανά σε <seconds> δευτερόλεπτα."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Set <leader>'s island to be ignored on top-ten and purge."
-msgstr "Ορίστηκε το νησί του/της <leader> να παραβλέπεται στα δέκα κορυφαία και στην εκκαθάριση."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "Set <player>'s island to the current island."
-msgstr "Ορίστηκε το νησί του/της <player> στο τρέχον νησί."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Set language with <cmd>/usb lang [locale]</cmd>."
-msgstr "Όρισε γλώσσα με <cmd>/usb lang [locale]</cmd>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "Starting a protect-all task. It may take a while."
-msgstr "Ξεκινάει εργασία protect-all. Μπορεί να πάρει λίγη ώρα."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "Starting purge..."
-msgstr "Ξεκινάει εκκαθάριση..."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "Stopped displaying regions."
-msgstr "Σταμάτησε η εμφάνιση περιοχών."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "Successfully regenerated chunk at <x>,<z>."
-msgstr "Το chunk στο <x>,<z> αναδημιουργήθηκε με επιτυχία."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "Successfully unloaded chunk at <x>,<z>."
-msgstr "Το chunk στο <x>,<z> αποφορτώθηκε με επιτυχία."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "System locale suggestion: <locale>"
-msgstr "Πρόταση γλώσσας συστήματος: <locale>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "That player does not have an island!"
-msgstr "Αυτός ο παίκτης δεν έχει νησί!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "That player is not currently online."
-msgstr "Αυτός ο παίκτης δεν είναι online αυτή τη στιγμή."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "The level must be a valid number"
-msgstr "Το επίπεδο πρέπει να είναι έγκυρος αριθμός"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "This challenge has never been completed"
-msgstr "Αυτή η πρόκληση δεν έχει ολοκληρωθεί ποτέ"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "Trying to abort protect-all task."
-msgstr "Προσπάθεια ακύρωσης της εργασίας protect-all."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "Trying to abort purge"
-msgstr "Προσπάθεια ακύρωσης της εκκαθάρισης"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Unloading chunks at <location>."
-msgstr "Αποφόρτωση chunks στο <location>."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Unsupported locale: <locale>"
-msgstr "Μη υποστηριζόμενη γλώσσα: <locale>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Use <cmd>/usb lang</cmd> to list all supported locales."
-msgstr "Χρησιμοποίησε <cmd>/usb lang</cmd> για να δεις όλες τις υποστηριζόμενες γλώσσες."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources."
-msgstr "Χρησιμοποίησε <cmd>/usb reload</cmd> για πλήρη επαναφόρτωση των πόρων ρυθμίσεων που εξαρτώνται από τη γλώσσα."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "You may need to go to spawn, or relog, to see the changes."
-msgstr "Ίσως χρειαστεί να πας στο spawn ή να ξαναμπείς, για να δεις τις αλλαγές."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "You must provide the age in days to purge!"
-msgstr "Πρέπει να δώσεις την ηλικία σε ημέρες για εκκαθάριση!"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "additional perks <perks>"
-msgstr "επιπλέον perks <perks>"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "adds the player to the island"
-msgstr "προσθέτει τον παίκτη στο νησί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "clear orphans"
-msgstr "εκκαθάριση εγκαταλελειμμένων νησιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "clears the cooldown on a command (* = all)"
-msgstr "καθαρίζει τον χρόνο επαναφόρτισης σε μια εντολή (* = όλα)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "complete all challenges in the rank"
-msgstr "ολοκληρώνει όλες τις προκλήσεις στη βαθμίδα"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "controls async jobs"
-msgstr "ελέγχει ασύγχρονες εργασίες"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "controls player cooldowns"
-msgstr "ελέγχει τους χρόνους επαναφόρτισης παικτών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "count orphans"
-msgstr "μέτρηση εγκαταλελειμμένων νησιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "delete the island (removes the blocks)"
-msgstr "διαγράφει το νησί (αφαιρεί τα blocks)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/VersionCommand.java
 msgid "displays version information"
-msgstr "εμφανίζει πληροφορίες έκδοσης"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "hides the regions again"
-msgstr "κρύβει ξανά τις περιοχές"
+msgstr ""
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
-#. still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
-msgstr "εργασίες ms/εργασία ms/tick ticks    ενεργό   χρόνος    όνομα"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "list orphans"
-msgstr "λίστα εγκαταλελειμμένων νησιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "lists all the active cooldowns"
-msgstr "εμφανίζει όλους τους ενεργούς χρόνους επαναφόρτισης"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "load current chunk"
-msgstr "φόρτωση του τρέχοντος chunk"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "load the region chunks"
-msgstr "φόρτωση των chunks της περιοχής"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "manage islands"
-msgstr "διαχείριση νησιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "manage orphans"
-msgstr "διαχείριση εγκαταλελειμμένων νησιών"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "manually update the top 10 list"
-msgstr "χειροκίνητη ενημέρωση της λίστας top 10"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "print out info about the island"
-msgstr "εμφανίζει πληροφορίες για το νησί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "protects all islands (time consuming)"
-msgstr "προστατεύει όλα τα νησιά (χρειάζεται χρόνο)"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "protects the island"
-msgstr "προστατεύει το νησί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "purges all abandoned islands"
-msgstr "καθαρίζει όλα τα εγκαταλελειμμένα νησιά"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "purges the island"
-msgstr "καθαρίζει το νησί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunk around the player"
-msgstr "ανανεώνει το chunk γύρω από τον παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "refreshes the chunks around the player"
-msgstr "ανανεώνει τα chunks γύρω από τον παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "refreshes the existing animations"
-msgstr "ανανεώνει τις υπάρχουσες κινήσεις"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "regenerate current chunk"
-msgstr "αναδημιουργία του τρέχοντος chunk"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "region manipulations"
-msgstr "χειρισμοί περιοχής"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ReloadCommand.java
 msgid "reload configuration from file."
-msgstr "επαναφόρτωση ρυθμίσεων από αρχείο."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "removes the player from the island"
-msgstr "αφαιρεί τον παίκτη από το νησί"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets all challenges for the player"
-msgstr "επαναφέρει όλες τις προκλήσεις για τον παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 msgid "resets the challenge for the player"
-msgstr "επαναφέρει την πρόκληση για τον παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "restarts the cooldown on the command"
-msgstr "επανεκκινεί τον χρόνο επαναφόρτισης της εντολής"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegisterIslandToPlayerCommand.java
 msgid "set a player's island to your location"
-msgstr "ορίζει το νησί ενός παίκτη στη δική σου τοποθεσία"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "set the ticks between animations"
-msgstr "ορίζει τα ticks ανάμεσα στις κινήσεις"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "sets the biome of the island"
-msgstr "ορίζει το biome του νησιού"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PlayerInfoCommand.java
 msgid "show player information"
-msgstr "εμφανίζει πληροφορίες παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows a specific player's perks"
-msgstr "εμφανίζει τα perks ενός συγκεκριμένου παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "shows or sets the plugin language"
-msgstr "εμφανίζει ή ορίζει τη γλώσσα του πρόσθετου"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "shows perk information"
-msgstr "εμφανίζει πληροφορίες για τα perks"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current chunk"
-msgstr "εμφανίζει τα όρια του τρέχοντος chunk"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the current island"
-msgstr "εμφανίζει τα όρια του τρέχοντος νησιού"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the inner-chunks"
-msgstr "εμφανίζει τα όρια των εσωτερικών chunks"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the borders of the outer-chunks"
-msgstr "εμφανίζει τα όρια των εξωτερικών chunks"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/RegionCommand.java
 msgid "shows the non-chunk-aligned borders"
-msgstr "εμφανίζει τα όρια που δεν ευθυγραμμίζονται με τα chunks"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another player's island"
-msgstr "τηλεμεταφορά στο νησί άλλου παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetMaintenanceCommand.java
 msgid "toggles maintenance mode"
-msgstr "ενεργοποιεί/απενεργοποιεί τη λειτουργία συντήρησης"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "toggles the island's ignore status"
-msgstr "ενεργοποιεί/απενεργοποιεί την κατάσταση παράβλεψης του νησιού"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
-msgstr "μεταφέρει την αρχηγία σε άλλον παίκτη"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"
-msgstr "αποφόρτωση του τρέχοντος chunk"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "update the WG regions"
-msgstr "ενημερώνει τις περιοχές WG"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "various WorldGuard utilities"
-msgstr "διάφορα εργαλεία WorldGuard"
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
-msgstr "διάφορες εντολές chunk"
+msgstr ""
+
