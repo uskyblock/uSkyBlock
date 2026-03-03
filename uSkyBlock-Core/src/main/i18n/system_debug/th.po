@@ -19,23 +19,23 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid " - name: <item-name>"
-msgstr ""
+msgstr " - ชื่อ: <item-name>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
-msgstr ""
+msgstr "- กำลังลบล้าง: <progress_pct:'0%'> (<progress>/<total>), ใช้เวลาไป <elapsed>, คาดว่าจะเสร็จ ~<eta>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
-msgstr ""
+msgstr "- กำลังสแกน: <progress_pct:'0%'> (<progress>/<total> ล้มเหลว: <failed>) ~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "<field> was set to '<value>'."
-msgstr ""
+msgstr "ตั้งค่า <field> เป็น '<value>' แล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Aborted: <muted>Protect-all was aborted."
-msgstr ""
+msgstr "ยกเลิกแล้ว: <muted>Protect-all ถูกยกเลิกแล้ว."
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Command"
@@ -43,16 +43,16 @@ msgstr "คำสั่ง"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Completed protect-all in <elapsed>. <count> new regions were created."
-msgstr ""
+msgstr "เสร็จสิ้น protect-all ใน <elapsed> มีการสร้างภูมิภาคใหม่ <count> รายการ."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Converted <converted>/<total> files in <elapsed>."
-msgstr ""
+msgstr "แปลงไฟล์แล้ว <converted>/<total> ใน <elapsed>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Current value for <field> is '<value>'."
-msgstr ""
+msgstr "ค่าปัจจุบันของ <field> คือ '<value>'."
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Description"
@@ -60,67 +60,67 @@ msgstr "คำอธิบาย"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Error writing documentation: <reason>"
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะเขียนเอกสาร: <reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "Flushed <islands> islands, <players> players, and <challenges> challenge completions."
-msgstr ""
+msgstr "ล้างข้อมูลแล้ว: เกาะ <islands>, ผู้เล่น <players>, และการทำความท้าทายสำเร็จ <challenges> รายการ."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "Info for <item>"
-msgstr ""
+msgstr "ข้อมูลสำหรับ <item>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Invalid argument, try INFO, FINE, FINER, FINEST"
-msgstr ""
+msgstr "อาร์กิวเมนต์ไม่ถูกต้อง ลอง INFO, FINE, FINER, FINEST"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Invalid field <field>"
-msgstr ""
+msgstr "ฟิลด์ไม่ถูกต้อง <field>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Log file has been flushed."
-msgstr "ล้างบัฟเฟอร์ไฟล์ล็อกแล้ว"
+msgstr "ล้างไฟล์ล็อกแล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging disabled."
-msgstr "ปิดการบันทึกล็อกแล้ว"
+msgstr "ปิดการบันทึกล็อกแล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
-msgstr ""
+msgstr "ยังไม่ได้เปิดการบันทึกล็อก <muted>ใช้ <cmd>/usb debug enable</cmd>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging to <logfile>."
-msgstr ""
+msgstr "กำลังบันทึกล็อกไปที่ <logfile>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging wasn't active, so you can't disable it!"
-msgstr ""
+msgstr "การบันทึกล็อกไม่ได้ทำงานอยู่ จึงปิดไม่ได้!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "No importer named <importer> found."
-msgstr ""
+msgstr "ไม่พบตัวนำเข้าชื่อ <importer>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "No item in hand!"
-msgstr ""
+msgstr "ไม่มีไอเทมอยู่ในมือ!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Aborted purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> ยกเลิกการลบล้างเกาะร้างแล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Finished purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> เสร็จสิ้นการลบล้างเกาะร้างแล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning aborted."
-msgstr ""
+msgstr "PURGE:<primary> ยกเลิกการสแกนแล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
-msgstr ""
+msgstr "PURGE:<primary> สแกนเสร็จแล้ว พบผู้เข้าข่าย <count> รายการที่ต่ำกว่าระดับ <level> พร้อมสำหรับการลบล้าง."
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"
@@ -128,45 +128,45 @@ msgstr "สิทธิ์"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr ""
+msgstr "ความคืบหน้า: <progress_pct:'0%'> (<progress>/<total> - สำเร็จ:<success>, ล้มเหลว:<failed>, ข้าม:<skipped>) ~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Set debug level to <loglevel>."
-msgstr ""
+msgstr "ตั้งค่าระดับดีบักเป็น <loglevel> แล้ว."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Unable to enable logging: <reason>"
-msgstr ""
+msgstr "ไม่สามารถเปิดการบันทึกล็อกได้: <reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to get state for <field>"
-msgstr ""
+msgstr "ไม่สามารถดึงสถานะของ <field> ได้"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>'"
-msgstr ""
+msgstr "ไม่สามารถตั้งค่า <field> เป็น '<value>' ได้"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>', a number was expected"
-msgstr ""
+msgstr "ไม่สามารถตั้งค่า <field> เป็น '<value>' ได้ ต้องเป็นตัวเลข"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Valid fields: <fields>"
-msgstr ""
+msgstr "ฟิลด์ที่ใช้ได้: <fields>"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Wrote documentation to <file>"
-msgstr "เขียนเอกสารไปยัง <file> แล้ว"
+msgstr "เขียนเอกสารไปที่ <file> แล้ว"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 msgid "advanced command for getting island-data"
-msgstr "คำสั่งขั้นสูงสำหรับดึงข้อมูลเกาะ"
+msgstr "คำสั่งขั้นสูงสำหรับรับ island-data"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "advanced command for setting island-data"
-msgstr "คำสั่งขั้นสูงสำหรับตั้งค่าข้อมูลเกาะ"
+msgstr "คำสั่งขั้นสูงสำหรับตั้งค่า island-data"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "advanced info about items"
@@ -178,11 +178,11 @@ msgstr "ควบคุมการดีบัก"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "flush current content of the logger to file."
-msgstr "เขียนเนื้อหาปัจจุบันของตัวบันทึกลงไฟล์"
+msgstr "ล้างเนื้อหาปัจจุบันของตัวบันทึกล็อกลงไฟล์."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "flushes all caches to files"
-msgstr "เขียนแคชทั้งหมดลงไฟล์"
+msgstr "ล้างแคชทั้งหมดลงไฟล์"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ImportCommand.java
 msgid "imports players and islands from other formats"
@@ -194,12 +194,12 @@ msgstr "บันทึกเอกสารของคำสั่งลงไ
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "set debug-level"
-msgstr "ตั้งระดับดีบัก"
+msgstr "ตั้งค่าระดับดีบัก"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "shows the component format for the currently held item"
-msgstr "แสดงรูปแบบคอมโพเนนต์สำหรับไอเท็มที่ถืออยู่ตอนนี้"
+msgstr "แสดงรูปแบบคอมโพเนนต์ของไอเทมที่ถืออยู่ขณะนี้"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "toggle debug-logging"
-msgstr "สลับการบันทึกดีบัก"
+msgstr "สลับการบันทึกล็อกดีบัก"

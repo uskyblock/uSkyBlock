@@ -19,23 +19,23 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid " - name: <item-name>"
-msgstr ""
+msgstr " - নাম: <item-name>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
-msgstr ""
+msgstr "- পরিশোধন করা হচ্ছে: <progress_pct:'0%'> (<progress>/<total>), অতিবাহিত <elapsed>, আনুমানিক সমাপ্তি ~<eta>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
-msgstr ""
+msgstr "- স্ক্যান করা হচ্ছে: <progress_pct:'0%'> (<progress>/<total> ব্যর্থ: <failed>) ~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "<field> was set to '<value>'."
-msgstr ""
+msgstr "<field> সেট করা হয়েছে '<value>'-এ।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Aborted: <muted>Protect-all was aborted."
-msgstr ""
+msgstr "বাতিল করা হয়েছে: <muted>Protect-all বাতিল করা হয়েছে।"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Command"
@@ -43,16 +43,16 @@ msgstr "কমান্ড"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Completed protect-all in <elapsed>. <count> new regions were created."
-msgstr ""
+msgstr "<elapsed>-এ protect-all সম্পন্ন হয়েছে। <count>টি নতুন রিজিয়ন তৈরি হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Converted <converted>/<total> files in <elapsed>."
-msgstr ""
+msgstr "<elapsed>-এ <converted>/<total>টি ফাইল রূপান্তর করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Current value for <field> is '<value>'."
-msgstr ""
+msgstr "<field>-এর বর্তমান মান হলো '<value>'।"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Description"
@@ -60,67 +60,67 @@ msgstr "বিবরণ"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Error writing documentation: <reason>"
-msgstr ""
+msgstr "ডকুমেন্টেশন লিখতে ত্রুটি: <reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "Flushed <islands> islands, <players> players, and <challenges> challenge completions."
-msgstr ""
+msgstr "<islands>টি দ্বীপ, <players> জন খেলোয়াড়, এবং <challenges>টি চ্যালেঞ্জ সম্পন্নতা ফ্লাশ করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "Info for <item>"
-msgstr ""
+msgstr "<item>-এর তথ্য"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Invalid argument, try INFO, FINE, FINER, FINEST"
-msgstr ""
+msgstr "অবৈধ আর্গুমেন্ট, INFO, FINE, FINER, FINEST চেষ্টা করো"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Invalid field <field>"
-msgstr ""
+msgstr "অবৈধ ফিল্ড <field>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Log file has been flushed."
-msgstr "লগ ফাইল ফ্লাশ করা হয়েছে।"
+msgstr "লগ ফাইল ফ্লাশ করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging disabled."
-msgstr "লগিং নিষ্ক্রিয় করা হয়েছে।"
+msgstr "লগিং নিষ্ক্রিয় করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
-msgstr ""
+msgstr "লগিং সক্রিয় নেই। <muted>ব্যবহার করো <cmd>/usb debug enable</cmd>।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging to <logfile>."
-msgstr ""
+msgstr "<logfile>-এ লগ করা হচ্ছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging wasn't active, so you can't disable it!"
-msgstr ""
+msgstr "লগিং সক্রিয় ছিল না, তাই তুমি এটা নিষ্ক্রিয় করতে পারবে না!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "No importer named <importer> found."
-msgstr ""
+msgstr "<importer> নামে কোনো ইম্পোর্টার পাওয়া যায়নি।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "No item in hand!"
-msgstr ""
+msgstr "হাতে কোনো আইটেম নেই!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Aborted purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> পরিত্যক্ত দ্বীপ পরিশোধন বাতিল করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Finished purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> পরিত্যক্ত দ্বীপ পরিশোধন সম্পন্ন হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning aborted."
-msgstr ""
+msgstr "PURGE:<primary> স্ক্যানিং বাতিল করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
-msgstr ""
+msgstr "PURGE:<primary> স্ক্যানিং শেষ, লেভেল <level>-এর নিচে <count>টি প্রার্থী পাওয়া গেছে, পরিশোধনের জন্য প্রস্তুত।"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"
@@ -128,37 +128,37 @@ msgstr "অনুমতি"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr ""
+msgstr "অগ্রগতি: <progress_pct:'0%'> (<progress>/<total> - সফল:<success>, ব্যর্থ:<failed>, এড়ানো:<skipped>) ~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Set debug level to <loglevel>."
-msgstr ""
+msgstr "ডিবাগ লেভেল <loglevel>-এ সেট করা হয়েছে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Unable to enable logging: <reason>"
-msgstr ""
+msgstr "লগিং চালু করা যায়নি: <reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to get state for <field>"
-msgstr ""
+msgstr "<field>-এর স্টেট পাওয়া যায়নি"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>'"
-msgstr ""
+msgstr "ফিল্ড <field> '<value>'-এ সেট করা যায়নি"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>', a number was expected"
-msgstr ""
+msgstr "ফিল্ড <field> '<value>'-এ সেট করা যায়নি, একটি সংখ্যা প্রত্যাশিত ছিল"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Valid fields: <fields>"
-msgstr ""
+msgstr "বৈধ ফিল্ডগুলো: <fields>"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Wrote documentation to <file>"
-msgstr "ডকুমেন্টেশন <file> এ লেখা হয়েছে"
+msgstr "ডকুমেন্টেশন <file>-এ লেখা হয়েছে"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 msgid "advanced command for getting island-data"
@@ -178,7 +178,7 @@ msgstr "ডিবাগিং নিয়ন্ত্রণ করো"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "flush current content of the logger to file."
-msgstr "লগারের বর্তমান কনটেন্ট ফাইলে ফ্লাশ করো।"
+msgstr "লগারের বর্তমান কনটেন্ট ফাইলে ফ্লাশ করে।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "flushes all caches to files"
@@ -186,7 +186,7 @@ msgstr "সব ক্যাশ ফাইলে ফ্লাশ করে"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ImportCommand.java
 msgid "imports players and islands from other formats"
-msgstr "অন্যান্য ফরম্যাট থেকে খেলোয়াড় ও দ্বীপ ইমপোর্ট করে"
+msgstr "অন্যান্য ফরম্যাট থেকে খেলোয়াড় এবং দ্বীপ ইম্পোর্ট করে"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "saves documentation of the commands to a file"

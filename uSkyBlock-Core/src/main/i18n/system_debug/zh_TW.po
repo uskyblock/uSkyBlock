@@ -19,23 +19,23 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid " - name: <item-name>"
-msgstr ""
+msgstr " - 名稱：<item-name>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"
-msgstr ""
+msgstr "- 清理中：<progress_pct:'0%'>（<progress>/<total>），已耗時 <elapsed>，預計完成 ~<eta>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"
-msgstr ""
+msgstr "- 掃描中：<progress_pct:'0%'>（<progress>/<total> 失敗：<failed>）~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "<field> was set to '<value>'."
-msgstr ""
+msgstr "已將 <field> 設為「<value>」。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Aborted: <muted>Protect-all was aborted."
-msgstr ""
+msgstr "已中止：<muted>已中止 Protect-all。"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Command"
@@ -43,16 +43,16 @@ msgstr "指令"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/ProtectAllTask.java
 msgid "Completed protect-all in <elapsed>. <count> new regions were created."
-msgstr ""
+msgstr "在 <elapsed> 內完成 protect-all。已建立 <count> 個新區域。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Converted <converted>/<total> files in <elapsed>."
-msgstr ""
+msgstr "已在 <elapsed> 內轉換 <converted>/<total> 個檔案。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Current value for <field> is '<value>'."
-msgstr ""
+msgstr "<field> 的目前值為「<value>」。"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Description"
@@ -60,27 +60,27 @@ msgstr "描述"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Error writing documentation: <reason>"
-msgstr ""
+msgstr "寫入文件時發生錯誤：<reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "Flushed <islands> islands, <players> players, and <challenges> challenge completions."
-msgstr ""
+msgstr "已刷新 <islands> 個島嶼、<players> 名玩家與 <challenges> 筆挑戰完成紀錄。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "Info for <item>"
-msgstr ""
+msgstr "<item> 的資訊"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Invalid argument, try INFO, FINE, FINER, FINEST"
-msgstr ""
+msgstr "無效參數，請嘗試 INFO、FINE、FINER、FINEST"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Invalid field <field>"
-msgstr ""
+msgstr "無效的欄位 <field>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Log file has been flushed."
-msgstr "記錄檔已刷新。"
+msgstr "已刷新日誌檔案。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging disabled."
@@ -88,39 +88,39 @@ msgstr "已停用記錄。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging is not enabled. <muted>Use <cmd>/usb debug enable</cmd>."
-msgstr ""
+msgstr "目前未啟用記錄。<muted>使用 <cmd>/usb debug enable</cmd>。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging to <logfile>."
-msgstr ""
+msgstr "正在記錄到 <logfile>。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Logging wasn't active, so you can't disable it!"
-msgstr ""
+msgstr "記錄未啟用，因此你無法停用它！"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "No importer named <importer> found."
-msgstr ""
+msgstr "找不到名為 <importer> 的匯入器。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "No item in hand!"
-msgstr ""
+msgstr "手上沒有物品！"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Aborted purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> 已中止清理廢棄島嶼。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
 msgid "PURGE:<primary> Finished purging abandoned islands."
-msgstr ""
+msgstr "PURGE:<primary> 已完成清理廢棄島嶼。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning aborted."
-msgstr ""
+msgstr "PURGE:<primary> 已中止掃描。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
-msgstr ""
+msgstr "PURGE:<primary> 掃描完成，找到 <count> 個等級低於 <level> 的候選目標，準備清理。"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"
@@ -128,33 +128,33 @@ msgstr "權限"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/imports/USBImporterExecutor.java
 msgid "Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
-msgstr ""
+msgstr "進度：<progress_pct:'0%'>（<progress>/<total> - 成功：<success>，失敗：<failed>，略過：<skipped>）~ <elapsed>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Set debug level to <loglevel>."
-msgstr ""
+msgstr "已將除錯等級設為 <loglevel>。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "Unable to enable logging: <reason>"
-msgstr ""
+msgstr "無法啟用記錄：<reason>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to get state for <field>"
-msgstr ""
+msgstr "無法取得 <field> 的狀態"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>'"
-msgstr ""
+msgstr "無法將欄位 <field> 設為「<value>」"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Unable to set field <field> to '<value>', a number was expected"
-msgstr ""
+msgstr "無法將欄位 <field> 設為「<value>」，需要數字"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "Valid fields: <fields>"
-msgstr ""
+msgstr "有效欄位：<fields>"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "Wrote documentation to <file>"
@@ -162,11 +162,11 @@ msgstr "已將文件寫入 <file>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GetIslandDataCommand.java
 msgid "advanced command for getting island-data"
-msgstr "用於取得 island-data 的進階指令"
+msgstr "用於取得島嶼資料的進階指令"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/SetIslandDataCommand.java
 msgid "advanced command for setting island-data"
-msgstr "用於設定 island-data 的進階指令"
+msgstr "用於設定島嶼資料的進階指令"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid "advanced info about items"
@@ -178,11 +178,11 @@ msgstr "控制除錯"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "flush current content of the logger to file."
-msgstr "將記錄器目前內容寫入檔案。"
+msgstr "將記錄器目前內容刷新到檔案。"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/FlushCommand.java
 msgid "flushes all caches to files"
-msgstr "將所有快取寫入檔案"
+msgstr "將所有快取刷新到檔案"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ImportCommand.java
 msgid "imports players and islands from other formats"
@@ -190,7 +190,7 @@ msgstr "從其他格式匯入玩家與島嶼"
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/DocumentCommand.java
 msgid "saves documentation of the commands to a file"
-msgstr "將指令說明文件儲存到檔案"
+msgstr "將指令文件儲存到檔案"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/DebugCommand.java
 msgid "set debug-level"
