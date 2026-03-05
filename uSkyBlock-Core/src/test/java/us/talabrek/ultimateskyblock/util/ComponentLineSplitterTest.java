@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.util;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -86,5 +87,16 @@ public class ComponentLineSplitterTest {
         assertThat(LEGACY.serialize(lines.get(1)), is("b"));
         assertThat(LEGACY.serialize(lines.get(2)), is("c"));
         assertThat(LEGACY.serialize(lines.get(3)), is(""));
+    }
+
+    @Test
+    public void splitLines_preservesNestedFormatting() {
+        Component input = I18nUtil.parseMini("Test <red>with<newline>nested <green>formatting</green>.</red>");
+
+        List<Component> lines = ComponentLineSplitter.splitLines(input);
+
+        assertThat(lines, hasSize(2));
+        assertThat(LEGACY.serialize(lines.get(0)), is("Test \u00a7cwith"));
+        assertThat(LEGACY.serialize(lines.get(1)), is("\u00a7cnested \u00a7aformatting\u00a7c."));
     }
 }
