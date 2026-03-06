@@ -58,6 +58,7 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.comp
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGE_SIZE;
 import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
+import static us.talabrek.ultimateskyblock.message.Msg.MENU;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
@@ -139,7 +140,7 @@ public class SkyBlockMenu {
         String emptyTitle = miniToLegacy("<player> [<menu>]", unparsed("player", ""), component("menu", tr("Permissions")));
         String name = resolvePartyMemberName(partyMember, partyMemberId);
         int maxNameLength = Math.max(0, 32 - emptyTitle.length());
-        String title = miniToLegacy("<player> [<menu>]",
+        String title = miniToLegacy("<blue><player> [<menu>]",
             unparsed("player", name.substring(0, Math.min(maxNameLength, name.length()))),
             component("menu", tr("Permissions")));
         Inventory menu = Bukkit.createInventory(new UltimateHolder(inventoryViewer, title, MenuType.DEFAULT), 9, title);
@@ -196,7 +197,7 @@ public class SkyBlockMenu {
 
     public Inventory displayPartyGUI(final Player player) {
         List<Component> lores = new ArrayList<>();
-        String title = "\u00a79" + trLegacy("Island Group Members");
+        String title = trLegacy("Island Group Members", MENU);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 18, title);
         IslandInfo islandInfo = plugin.getIslandInfo(player);
         final Set<UUID> memberList = islandInfo.getMemberUUIDs();
@@ -248,7 +249,7 @@ public class SkyBlockMenu {
 
     public Inventory displayLogGUI(final Player player) {
         List<Component> lores = new ArrayList<>();
-        String title = "\u00a79" + trLegacy("Island Log");
+        String title = trLegacy("Island Log", MENU);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 9, title);
         addLore(lores, tr("Click here to return to<newline>the main island screen.", PRIMARY));
         ItemStackUtil.setComponentDisplayName(sign, tr("Island Log", PRIMARY));
@@ -351,7 +352,7 @@ public class SkyBlockMenu {
 
     public Inventory displayChallengeGUI(final Player player, int page, String playerName) {
         int total = challengeLogic.getTotalPages();
-        String title = "\u00a79" + miniToLegacy("<title> (<page>/<total>)",
+        String title = miniToLegacy("<blue><title> (<page>/<total>)",
             legacyArg("title", trLegacy("Challenge Menu")),
             number("page", page),
             number("total", total));
@@ -409,7 +410,7 @@ public class SkyBlockMenu {
     private Inventory createInitMenu(Player player) {
         List<String> schemeNames = schematicHandler.getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d) * 9;
-        String title = trLegacy("Island Create Menu", PRIMARY);
+        String title = trLegacy("Island Create Menu", MENU);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);
         List<Component> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_SAPLING, 1);
@@ -477,7 +478,7 @@ public class SkyBlockMenu {
     }
 
     private Inventory createMainMenu(Player player) {
-        String title = trLegacy("Island Menu", PRIMARY);
+        String title = trLegacy("Island Menu", MENU);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 18, title);
         List<Component> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_DOOR, 1);
@@ -812,7 +813,7 @@ public class SkyBlockMenu {
     public Inventory createRestartGUI(Player player) {
         List<String> schemeNames = schematicHandler.getSchemeNames();
         int menuSize = (int) Math.ceil(getMaxSchemeIndex(schemeNames) / 9d) * 9;
-        String title = "\u00a79" + trLegacy("Island Restart Menu");
+        String title = trLegacy("Island Restart Menu", MENU);
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), menuSize, title);
         List<Component> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_SIGN, 1);

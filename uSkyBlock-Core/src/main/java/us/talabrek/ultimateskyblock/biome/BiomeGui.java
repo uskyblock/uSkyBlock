@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
+import static us.talabrek.ultimateskyblock.message.Msg.MENU;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
@@ -59,7 +60,7 @@ public class BiomeGui extends InventoryGui {
     }
 
     private static Inventory createInventory(int size) {
-        return Bukkit.createInventory(null, size, trLegacy("Island Biome", PRIMARY));
+        return Bukkit.createInventory(null, size, trLegacy("Island Biome", MENU));
     }
 
     @Override

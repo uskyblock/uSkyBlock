@@ -33,6 +33,7 @@ public class Msg {
     public static final Style MUTED = Style.style(NamedTextColor.GRAY);
     public static final Style PRIMARY = Style.style(NamedTextColor.AQUA);
     public static final Style SECONDARY = Style.style(NamedTextColor.GREEN);
+    public static final Style MENU = Style.style(NamedTextColor.BLUE);
 
     @FunctionalInterface
     public interface Delivery {
