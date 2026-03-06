@@ -234,7 +234,6 @@ public enum ItemStackUtil {
         return Component.translatable(translationKey);
     }
 
-    @SuppressWarnings("deprecation")
     public static void setComponentDisplayName(@NotNull ItemStack itemStack, @Nullable Component name) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) {
@@ -245,6 +244,9 @@ public enum ItemStackUtil {
             itemStack.setItemMeta(itemMeta);
             return;
         }
+
+        // Item names are italic by default - apply fallback style
+        name = name.applyFallbackStyle(LORE_FALLBACK_STYLE);
 
         // Keep legacy API consumers working while also preserving translation keys for clients.
         itemMeta.setDisplayName(legacy(name));
