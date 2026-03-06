@@ -1,4 +1,7 @@
 commit_message: '[ci skip]'
+# NOTE:
+# `keys.system_debug.pot` is intentionally excluded from Crowdin.
+# We keep `system_debug` translations AI-generated only to reduce required human translation effort.
 files:
   - source: /uSkyBlock-Core/src/main/i18n/keys.player_facing.pot
     translation: /uSkyBlock-Core/src/main/i18n/player_facing/%locale_with_underscore%.po
