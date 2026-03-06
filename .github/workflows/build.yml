@@ -24,11 +24,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Verify keys.pot is up to date (PR)
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Verify translation templates are up to date (PR + main)
+        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
         run: |
+          set -euo pipefail
           ./gradlew :uSkyBlock-Core:extractTranslation --no-daemon --no-configuration-cache
-          git diff --exit-code -- uSkyBlock-Core/src/main/po/keys.pot
+          set -- $(find uSkyBlock-Core/src/main/i18n -type f -name '*.pot' | sort)
+          if [ "$#" -eq 0 ]; then
+            echo "No .pot files found under uSkyBlock-Core/src/main/i18n" >&2
+            exit 1
+          fi
+          git diff --exit-code -- "$@"
 
       - name: Build with Gradle
         run: ./gradlew build translation publishAllPublicationsToStagingRepository --no-daemon --no-configuration-cache
