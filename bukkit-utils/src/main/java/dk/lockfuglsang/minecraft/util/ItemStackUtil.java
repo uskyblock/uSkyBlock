@@ -252,7 +252,6 @@ public enum ItemStackUtil {
         applyUnsafeDisplayName(itemStack, name);
     }
 
-    @SuppressWarnings("deprecation")
     public static void setComponentLore(@NotNull ItemStack itemStack, @Nullable List<Component> lore) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) {
