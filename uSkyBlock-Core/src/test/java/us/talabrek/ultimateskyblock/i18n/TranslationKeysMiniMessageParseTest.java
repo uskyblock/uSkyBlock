@@ -61,21 +61,74 @@ public class TranslationKeysMiniMessageParseTest {
         assertTrue("MiniMessage parse failures in domain .pot files:\n" + String.join("\n", failures), failures.isEmpty());
     }
 
+    @Test
+    public void allPoValuesShouldParseAsMiniMessageWithoutPlaceholderReplacement() throws Exception {
+        MiniMessage miniMessage = MiniMessage.miniMessage();
+        List<String> failures = new ArrayList<>();
+        for (Path poFile : locatePoFiles()) {
+            Properties properties;
+            try (InputStream in = Files.newInputStream(poFile)) {
+                properties = POParser.asProperties(in);
+            }
+            assertNotNull("Unable to parse " + poFile, properties);
+
+            for (String key : properties.stringPropertyNames()) {
+                if (key == null || key.isBlank()) {
+                    continue;
+                }
+                String value = properties.getProperty(key);
+                if (value == null || value.isBlank()) {
+                    continue;
+                }
+                try {
+                    miniMessage.deserialize(value, SEMANTIC_STYLE_TAGS);
+                } catch (RuntimeException e) {
+                    failures.add(poFile + ": " + key + " -> " + e.getMessage());
+                }
+            }
+        }
+
+        assertTrue("MiniMessage parse failures in translated .po files:\n" + String.join("\n", failures), failures.isEmpty());
+    }
+
     private List<Path> locatePotFiles() throws IOException {
+        Path i18nRoot = locateI18nRoot();
         List<Path> potFiles = new ArrayList<>();
         for (String fileName : DOMAIN_POT_FILENAMES) {
-            Path moduleLocal = Path.of("src/main/i18n", fileName);
-            if (Files.exists(moduleLocal)) {
-                potFiles.add(moduleLocal);
-                continue;
+            Path potFile = i18nRoot.resolve(fileName);
+            if (!Files.exists(potFile)) {
+                throw new IOException("Could not locate " + fileName + " under " + i18nRoot);
             }
-            Path workspaceRelative = Path.of("uSkyBlock-Core/src/main/i18n", fileName);
-            if (Files.exists(workspaceRelative)) {
-                potFiles.add(workspaceRelative);
-                continue;
-            }
-            throw new IOException("Could not locate " + fileName);
+            potFiles.add(potFile);
         }
         return Collections.unmodifiableList(potFiles);
+    }
+
+    private List<Path> locatePoFiles() throws IOException {
+        Path i18nRoot = locateI18nRoot();
+        List<Path> poFiles;
+        try (var files = Files.walk(i18nRoot)) {
+            poFiles = files
+                .filter(Files::isRegularFile)
+                .filter(path -> path.getFileName().toString().endsWith(".po"))
+                .sorted()
+                .toList();
+        }
+        if (poFiles.isEmpty()) {
+            throw new IOException("Could not locate any .po files under " + i18nRoot);
+        }
+        return Collections.unmodifiableList(poFiles);
+    }
+
+    private Path locateI18nRoot() throws IOException {
+        Path moduleLocal = Path.of("src/main/i18n");
+        if (Files.exists(moduleLocal)) {
+            return moduleLocal;
+        }
+        Path workspaceRelative = Path.of("uSkyBlock-Core/src/main/i18n");
+        if (Files.exists(workspaceRelative)) {
+            return workspaceRelative;
+        }
+        throw new IOException("Could not locate src/main/i18n");
     }
 }
