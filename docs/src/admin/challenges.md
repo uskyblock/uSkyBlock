@@ -107,6 +107,8 @@ Most challenges use a small subset of fields:
 | `repeatReward` | Rewards for repeats |
 | `disabled` | Hide this challenge without deleting it |
 
+`name`, `description`, and reward `text` are player-facing text from `challenges.yml`. They are not translated automatically by the plugin locale or Crowdin integration, so translate or rewrite them yourself if your server is not using English.
+
 ## Rewards
 
 `reward:` and `repeatReward:` share the same structure:
