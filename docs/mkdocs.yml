@@ -1,0 +1,56 @@
+site_name: uSkyBlock Docs
+site_description: Official documentation for the uSkyBlock plugin
+site_url: https://uskyblock.github.io/uSkyBlock/
+repo_url: https://github.com/uskyblock/uSkyBlock
+repo_name: uskyblock/uSkyBlock
+edit_uri: edit/master/docs/src/
+docs_dir: src
+site_dir: ../site
+
+strict: true
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - scheme: default
+      primary: green
+      accent: lime
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Players: players.md
+  - Server Admins:
+    - Setup: admin/setup.md
+    - Customization: admin/customization.md
+    - Challenges Config: admin/challenges.md
+    - Useful Commands & Permissions: admin/reference.md
+  - Developers: developers.md
+  - Contributing: contributing.md
