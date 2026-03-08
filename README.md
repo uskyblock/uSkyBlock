@@ -20,12 +20,15 @@ Useful entry points:
 
 ## Installation
 
-uSkyBlock depends on the following plugins:
+uSkyBlock requires the following plugins:
 
 * Spigot/Paper
-* Vault
 * WorldEdit
 * WorldGuard
+
+Optional integrations:
+
+* Vault
 
 ## Releases
 https://www.spigotmc.org/resources/uskyblock-revived.66795/history
