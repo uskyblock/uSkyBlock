@@ -22,6 +22,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
  */
 public enum ItemStackUtil {
     ;
+    private static final Set<String> TEXT_HIDING_FLAGS = Set.of(
+        "HIDE_LORE",
+        "HIDE_ADDITIONAL_TOOLTIP",
+        "HIDE_TOOLTIP_DISPLAY",
+        "HIDE_ITEM_NAME",
+        "HIDE_CUSTOM_NAME"
+    );
     private static final Pattern ITEM_AMOUNT_PROBABILITY_PATTERN = Pattern.compile(
         "(\\{p=(?<prob>0\\.\\d+)})?(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
@@ -190,7 +197,12 @@ public enum ItemStackUtil {
         ItemStack copy = new ItemStack(item);
         ItemMeta itemMeta = copy.getItemMeta();
         if (itemMeta != null) {
-            itemMeta.addItemFlags(ItemFlag.values());
+            // Keep hiding extra vanilla details, but never hide menu title/lore text.
+            for (ItemFlag itemFlag : ItemFlag.values()) {
+                if (!TEXT_HIDING_FLAGS.contains(itemFlag.name())) {
+                    itemMeta.addItemFlags(itemFlag);
+                }
+            }
         }
         copy.setItemMeta(itemMeta);
         return copy;
