@@ -151,8 +151,8 @@ The server-wide locale is set via `language` in `config.yml`. Admins can switch 
 ```bash
 python3 -m venv .venv-docs
 source .venv-docs/bin/activate
-pip install -r requirements-docs.txt
-mkdocs serve
+pip install -r docs/requirements-docs.txt
+mkdocs serve -f docs/mkdocs.yml
 ```
 
 Docs are served at `http://127.0.0.1:8000`.
