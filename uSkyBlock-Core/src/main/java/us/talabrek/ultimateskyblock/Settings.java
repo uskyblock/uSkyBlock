@@ -110,29 +110,17 @@ public class Settings {
         } catch (Exception e) {
             island_height = 120;
         }
-        if (!config.contains("options.extras.obsidianToLava")) {
-            config.set("options.extras.obsidianToLava", true);
-            changed = true;
-        }
-        if (!config.contains("options.general.spawnSize")) {
-            config.set("options.general.spawnSize", 50);
-            changed = true;
-        }
         general_spawnSize = config.getInt("options.general.spawnSize", 50);
         island_chestItems = ItemStackUtil.createItemList(config.getStringList("options.island.chestItems"));
 
-        island_schematicName = config.getString("options.island.schematicName");
-        if (island_schematicName == null || "yourschematicname".equals(island_schematicName) || "uSkyBlockDefault".equals(island_schematicName)) {
-            island_schematicName = "default";
-            config.set("options.island.schematicName", island_schematicName);
-            changed = true;
-        }
+        island_schematicName = PluginConfigLoader.normalizeIslandSchematicName(
+            config.getString("options.island.schematicName", "default"));
         final Set<String> permissionList = new HashSet<>();
         if (config.isConfigurationSection("options.island.extraPermissions")) {
             permissionList.addAll(config.getConfigurationSection("options.island.extraPermissions").getKeys(false));
         }
         island_addExtraItems = config.getBoolean("options.island.addExtraItems");
-        extras_obsidianToLava = config.getBoolean("options.extras.obsidianToLava");
+        extras_obsidianToLava = config.getBoolean("options.extras.obsidianToLava", true);
         island_useIslandLevel = config.getBoolean("options.island.useIslandLevel");
         island_extraPermissions = permissionList.toArray(new String[0]);
         extras_sendToSpawn = config.getBoolean("options.extras.sendToSpawn");

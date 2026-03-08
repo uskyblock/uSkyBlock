@@ -31,15 +31,33 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration config = loader.load();
 
-        assertEquals(PluginConfigLoader.LEGACY_BASELINE_VERSION, config.getInt("version"));
+        assertEquals(loadBundledVersion(), config.getInt("version"));
         assertTrue(config.contains("options.general.worldName"));
         assertTrue(config.contains("options.general.spawnSize"));
         assertTrue(config.contains("options.island.schematicName"));
+        assertTrue(config.getBoolean("options.extras.obsidianToLava"));
         assertTrue(config.contains("options.advanced.manageSpawn"));
         assertTrue(new File(testFolder.getRoot(), "config.yml.old").isFile());
         try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
             assertTrue(stream.findAny().isPresent());
         }
+    }
+
+    @Test
+    public void appliesExplicitMigrationsAfterTheLegacyCutover() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(PluginConfigLoader.LEGACY_BASELINE_VERSION);
+        config.set("options.extras.obsidianToLava", null);
+        config.set("options.island.schematicName", "uSkyBlockDefault");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
+        assertEquals("default", migrated.getString("options.island.schematicName"));
     }
 
     @Test
@@ -63,16 +81,8 @@ public class PluginConfigLoaderTest {
     public void rejectsMalformedCurrentVersionConfig() throws Exception {
         FileUtil.setDataFolder(testFolder.getRoot());
         File configFile = new File(testFolder.getRoot(), "config.yml");
-        YamlConfiguration config = new YamlConfiguration();
-        config.set("version", PluginConfigLoader.LEGACY_BASELINE_VERSION);
-        config.set("language", "en");
-        config.set("options.general.maxPartySize", 4);
-        config.set("options.general.worldName", "skyworld");
-        config.set("options.general.spawnSize", 64);
-        config.set("options.island.height", 150);
-        config.set("options.island.schematicName", "default");
-        config.set("options.restart.teleportDelay", 1000);
-        config.set("nether.enabled", false);
+        YamlConfiguration config = createValidConfig(loadBundledVersion());
+        config.set("options.advanced.manageSpawn", null);
         config.save(configFile);
 
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
@@ -81,6 +91,51 @@ public class PluginConfigLoaderTest {
             fail("Expected malformed current-version configs to be rejected");
         } catch (IllegalStateException expected) {
             assertTrue(expected.getMessage().contains("Missing required path"));
+        }
+    }
+
+    @Test
+    public void rejectsCurrentVersionConfigsWithLegacySchematicPlaceholders() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(loadBundledVersion());
+        config.set("options.island.schematicName", "uSkyBlockDefault");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        try {
+            loader.load();
+            fail("Expected invalid current-version schematic names to be rejected");
+        } catch (IllegalStateException expected) {
+            assertTrue(expected.getMessage().contains("Invalid schematic name"));
+        }
+    }
+
+    private YamlConfiguration createValidConfig(int version) {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("version", version);
+        config.set("language", "en");
+        config.set("options.general.maxPartySize", 4);
+        config.set("options.general.worldName", "skyworld");
+        config.set("options.general.spawnSize", 64);
+        config.set("options.island.height", 150);
+        config.set("options.island.schematicName", "default");
+        config.set("options.extras.obsidianToLava", true);
+        config.set("options.advanced.manageSpawn", true);
+        config.set("options.restart.teleportDelay", 1000);
+        config.set("nether.enabled", false);
+        return config;
+    }
+
+    private int loadBundledVersion() {
+        YamlConfiguration bundled = new YamlConfiguration();
+        try (var reader = new java.io.InputStreamReader(
+            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(PluginConfigLoader.CONFIG_NAME)),
+            java.nio.charset.StandardCharsets.UTF_8)) {
+            bundled.load(reader);
+            return bundled.getInt("version");
+        } catch (Exception e) {
+            throw new AssertionError("Unable to load bundled config.yml", e);
         }
     }
 }
