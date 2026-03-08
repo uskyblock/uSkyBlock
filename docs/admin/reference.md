@@ -1,4 +1,8 @@
-# Commands & Permissions Reference
+# Useful Commands & Permissions
+
+This page covers the most useful player and admin commands.
+
+It is intentionally not exhaustive. For the full admin command tree available on your server, use `/usb` in-game.
 
 ## Permission groups
 
@@ -8,8 +12,8 @@ Assign these group nodes where possible rather than individual permissions.
 |---|---|---|
 | `usb.use` | everyone | All normal player commands |
 | `usb.social` | everyone | Party chat and social features |
-| `usb.mod` | op | Moderator tools (goto, bypass protection) |
-| `usb.admin` | op | All admin commands |
+| `usb.mod` | no one by default | Moderator tools (goto, bypass protection) |
+| `usb.admin` | no one by default | All admin commands |
 
 ## Player commands
 
@@ -35,9 +39,11 @@ All player commands use `/island` (alias: `/is`).
 | `warp` | `usb.island.warp` | Warp to island |
 | `invite` | `usb.party.invite` | Invite a player |
 | `accept` / `reject` | `usb.party.join` | Accept or reject invite |
+| `party` | — | Open the party menu and view party info |
+| `party invites` | `usb.party.invites` | Show pending invites |
+| `party uninvite <player>` | `usb.party.uninvite` | Withdraw an invite |
 | `kick` | `usb.party.kick` | Remove a member |
 | `leave` | `usb.party.leave` | Leave island party |
-| `party` | — | List party members |
 | `makeleader` | `usb.island.makeleader` | Transfer leadership |
 | `trust` / `untrust` | `usb.island.trust` | Trust a visitor |
 | `perm` | `usb.island.perm` | Set member permissions |
@@ -69,9 +75,12 @@ Chat commands:
 
 All admin commands use `/usb`. Requires `usb.admin` or the specific `usb.admin.*` node.
 
+These are the most useful admin commands for day-to-day server management. Additional import, debug, region, and maintenance tooling is available through `/usb`.
+
 | Subcommand | Description |
 |---|---|
 | `reload` | Reload config and language files |
+| `lang [locale]` | Show or change the active plugin language |
 | `island info <player>` | Show island data for a player |
 | `island delete <player>` | Delete a player's island |
 | `island addmember <island> <player>` | Force-add a member |
@@ -86,5 +95,4 @@ All admin commands use `/usb`. Requires `usb.admin` or the specific `usb.admin.*
 | `challenge <player>` | View or reset player challenges |
 | `perk <player>` | Manage player perks |
 | `flush` | Write cached data to disk |
-| `debug` | Toggle debug logging |
 | `version` | Show plugin and dependency versions |

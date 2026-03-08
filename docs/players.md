@@ -30,7 +30,9 @@ You can share your island with other players. The party size limit is set by you
 |---|---|
 | `/island invite <player>` | Invite someone to join your island |
 | `/island accept` / `/island reject` | Accept or decline an invite |
-| `/island party` | List your island members |
+| `/island party` | Open the party menu and view party info |
+| `/island party invites` | Show pending invites |
+| `/island party uninvite <player>` | Withdraw an invite |
 | `/island kick <player>` | Remove a member |
 | `/island leave` | Leave someone else's island |
 | `/island makeleader <player>` | Hand over island leadership |

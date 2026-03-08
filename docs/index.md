@@ -8,7 +8,7 @@ uSkyBlock is a Skyblock plugin for Spigot and Paper servers. Each player starts 
 Get your island, run challenges, team up. → [Player guide](players.md)
 
 **Running a server?**
-Install, configure permissions, manage islands. → [Setup & config](admin/setup.md)
+Install the plugin and get it running. → [Setup](admin/setup.md)
 
 **Building an integration or contributing?**
 Understand the architecture, build from source, use the API. → [Developer overview](developers.md)
