@@ -8,7 +8,9 @@
 
 uSkyBlock is a Skyblock plugin for Spigot and Paper servers. Build a server around islands, progression, challenges, party play, and deep gameplay customization, backed by more than a decade of project history and continued maintenance for modern Minecraft versions.
 
-It is also an open-source project with public docs, a public API, and a long community-maintained lineage.
+uSkyBlock is an open-source project with public docs, public API, and a long community-maintained lineage.
+
+**We need your help on translations!** Join the project on [Crowdin](https://crowdin.com/project/uskyblock-revived) to improve translations in your language.
 
 ## Quick Links
 
