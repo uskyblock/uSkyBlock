@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.world;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -240,11 +239,7 @@ public class WorldManager {
                 skyBlockWorld.save();
             }
 
-            scheduler.sync(() ->
-                hookManager.getWorldHook().ifPresent(hook -> {
-                    hook.registerOverworld(skyBlockWorld);
-                    setupWorld(skyBlockWorld, Settings.island_height);
-                }), TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("init.initDelay", 50L) + 40L));
+            scheduleOverworldSetup(skyBlockWorld);
         }
 
         return skyBlockWorld;
@@ -280,11 +275,7 @@ public class WorldManager {
                 skyBlockNetherWorld.save();
             }
 
-            scheduler.sync(() -> {
-                hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(skyBlockNetherWorld));
-                hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), skyBlockNetherWorld));
-                setupWorld(skyBlockNetherWorld, island_height / 2);
-            }, TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("init.initDelay", 50L) + 100L));
+            scheduleNetherSetup(skyBlockNetherWorld);
         }
 
         return skyBlockNetherWorld;
@@ -317,6 +308,21 @@ public class WorldManager {
 
         World netherWorld = getNetherWorld();
         return netherWorld != null && world.getName().equalsIgnoreCase(netherWorld.getName());
+    }
+
+    private void scheduleOverworldSetup(@NotNull World world) {
+        scheduler.sync(() -> {
+            hookManager.getWorldHook().ifPresent(hook -> hook.registerOverworld(world));
+            setupWorld(world, Settings.island_height);
+        });
+    }
+
+    private void scheduleNetherSetup(@NotNull World world) {
+        scheduler.sync(() -> {
+            hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(world));
+            hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), world));
+            setupWorld(world, island_height / 2);
+        });
     }
 
     /**
