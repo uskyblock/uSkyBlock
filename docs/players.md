@@ -1,5 +1,7 @@
 # Player Guide
 
+uSkyBlock starts you on a small island with very limited resources. The goal is to turn that empty start into a thriving island by expanding, automating, completing challenges, and building with other players through the party system.
+
 ## Getting your island
 
 Run `/island` to get started — it opens a menu where you can create an island or manage your existing one. You can also use commands directly:
