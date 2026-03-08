@@ -78,6 +78,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -179,9 +180,18 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return config.getYamlConfig();
     }
 
+    @Override
+    public void saveConfig() {
+        try {
+            config.save();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to save config.yml", e);
+        }
+    }
+
     private void convertConfigItemsTo1_20_6IfRequired() {
         var converter = new ItemComponentConverter(getLogger());
-        converter.checkAndDoImport(getDataFolder());
+        converter.checkAndDoChallengeImport(getDataFolder());
     }
 
     private void convertConfigToBlockRequirements() {
@@ -676,7 +686,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAlwaysOverwrite("levelConfig.yml");
-        FileConfiguration pluginConfig = new PluginConfig().getYamlConfig();
+        FileConfiguration pluginConfig = config.getYamlConfig();
+        config.setYamlConfig(pluginConfig);
         Settings.loadPluginConfig(pluginConfig);
         applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);
         I18nUtil.initialize(getDataFolder(), Settings.locale);

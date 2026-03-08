@@ -25,10 +25,18 @@ public class ItemComponentConverter {
     }
 
     public void checkAndDoImport(File directory) {
+        checkAndDoConfigImport(directory);
+        checkAndDoChallengeImport(directory);
+    }
+
+    public void checkAndDoConfigImport(File directory) {
         var configFile = new File(directory, "config.yml");
         if (configFile.exists() && YamlConfiguration.loadConfiguration(configFile).getInt("version") <= 108) {
             importFile(configFile);
         }
+    }
+
+    public void checkAndDoChallengeImport(File directory) {
         var challengesFile = new File(directory, "challenges.yml");
         if (challengesFile.exists() && YamlConfiguration.loadConfiguration(challengesFile).getInt("version") <= 106) {
             importFile(challengesFile);
