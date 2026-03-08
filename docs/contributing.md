@@ -21,9 +21,9 @@ Public API changes need clear migration notes. When in doubt, open an issue to d
 
 ## Translating
 
-Translations are managed through [Crowdin](https://crowdin.com). The project has two translation domains synced there:
+Translations are managed on [Crowdin](https://crowdin.com/project/uskyblock-revived). Two domains are synced there:
 
 - **Player-facing strings** — messages players see in-game
 - **Admin/ops strings** — messages for server operators
 
-To contribute a translation, join the project on Crowdin and translate directly in the web editor. Completed translations are pulled into the repository automatically.
+Join the project on Crowdin and translate in the web editor. Completed translations are pulled into the repository automatically. For details on how the system works internally, see [Translation system](developers.md#translation-system) in the developer docs.

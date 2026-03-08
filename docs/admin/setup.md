@@ -38,6 +38,7 @@ Config lives in `plugins/uSkyBlock/config.yml`. The most important options:
 
 | Option | Default | Notes |
 |---|---|---|
+| `language` | `en` | Server language — see [Crowdin](https://crowdin.com/project/uskyblock-revived) for available translations. Help improve them! |
 | `options.general.worldName` | `skyworld` | Name of the skyblock world |
 | `options.general.maxPartySize` | `4` | Max players per island |
 | `options.island.distance` | `128` | Blocks between island centers |
