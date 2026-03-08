@@ -8,6 +8,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -17,6 +18,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PluginConfigLoaderTest {
+    private static final List<String> RESTART_COOLDOWN_COMMENT = List.of(
+        "# [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.");
+    private static final List<String> RESTART_TELEPORT_COMMENT = List.of(
+        "# [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.");
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
@@ -44,9 +49,15 @@ public class PluginConfigLoaderTest {
     public void appliesExplicitMigrationsAfterTheLegacyCutover() throws Exception {
         FileUtil.setDataFolder(testFolder.getRoot());
         File configFile = new File(testFolder.getRoot(), "config.yml");
-        YamlConfiguration config = createValidConfig(PluginConfigLoader.LEGACY_BASELINE_VERSION);
+        YamlConfiguration config = createValidConfig(111);
         config.set("options.extras.obsidianToLava", null);
         config.set("options.island.schematicName", "uSkyBlockDefault");
+        config.set("options.general.cooldownRestart", 30);
+        config.set("options.general.biomeChange", 60);
+        config.set("options.island.islandTeleportDelay", 2);
+        config.set("options.island.topTenTimeout", 20);
+        config.set("options.advanced.confirmTimeout", 10);
+        config.set("options.restart.teleportDelay", 1000);
         config.save(configFile);
 
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
@@ -54,6 +65,8 @@ public class PluginConfigLoaderTest {
         YamlConfiguration bundled = loadBundledConfig();
 
         assertMatchesBundledDefaults(migrated, bundled);
+        assertEquals(RESTART_COOLDOWN_COMMENT, migrated.getComments("options.general.cooldownRestart"));
+        assertEquals(RESTART_TELEPORT_COMMENT, migrated.getComments("options.restart.teleportDelay"));
     }
 
     @Test
@@ -108,12 +121,17 @@ public class PluginConfigLoaderTest {
         config.set("language", "en");
         config.set("options.general.maxPartySize", 4);
         config.set("options.general.worldName", "skyworld");
+        config.set("options.general.cooldownRestart", "30s");
+        config.set("options.general.biomeChange", "60s");
         config.set("options.general.spawnSize", 64);
         config.set("options.island.height", 150);
+        config.set("options.island.islandTeleportDelay", "2s");
+        config.set("options.island.topTenTimeout", "20m");
         config.set("options.island.schematicName", "default");
         config.set("options.extras.obsidianToLava", true);
+        config.set("options.advanced.confirmTimeout", "10s");
         config.set("options.advanced.manageSpawn", true);
-        config.set("options.restart.teleportDelay", 1000);
+        config.set("options.restart.teleportDelay", "1000ms");
         config.set("nether.enabled", false);
         return config;
     }
@@ -139,7 +157,13 @@ public class PluginConfigLoaderTest {
         assertEquals(bundled.getInt("version"), config.getInt("version"));
         assertEquals(bundled.getString("options.general.worldName"), config.getString("options.general.worldName"));
         assertEquals(bundled.getInt("options.general.spawnSize"), config.getInt("options.general.spawnSize"));
+        assertEquals(bundled.getString("options.general.cooldownRestart"), config.getString("options.general.cooldownRestart"));
+        assertEquals(bundled.getString("options.general.biomeChange"), config.getString("options.general.biomeChange"));
+        assertEquals(bundled.getString("options.island.islandTeleportDelay"), config.getString("options.island.islandTeleportDelay"));
+        assertEquals(bundled.getString("options.island.topTenTimeout"), config.getString("options.island.topTenTimeout"));
         assertEquals(bundled.getString("options.island.schematicName"), config.getString("options.island.schematicName"));
         assertEquals(bundled.getBoolean("options.extras.obsidianToLava"), config.getBoolean("options.extras.obsidianToLava"));
+        assertEquals(bundled.getString("options.advanced.confirmTimeout"), config.getString("options.advanced.confirmTimeout"));
+        assertEquals(bundled.getString("options.restart.teleportDelay"), config.getString("options.restart.teleportDelay"));
     }
 }

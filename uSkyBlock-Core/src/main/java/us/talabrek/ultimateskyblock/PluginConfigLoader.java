@@ -40,6 +40,26 @@ public class PluginConfigLoader {
             }
             config.set("options.island.schematicName",
                 normalizeIslandSchematicName(config.getString("options.island.schematicName", "default")));
+        }),
+        new ConfigMigration(112, 113, config -> {
+            migrateSecondsToDuration(config, "options.general.cooldownRestart");
+            migrateSecondsToDuration(config, "options.general.biomeChange");
+            migrateSecondsToDuration(config, "options.island.islandTeleportDelay");
+            migrateMinutesToDuration(config, "options.island.topTenTimeout");
+            migrateSecondsToDuration(config, "options.advanced.confirmTimeout");
+            migrateMillisToDuration(config, "options.restart.teleportDelay");
+            setComment(config, "options.general.cooldownRestart",
+                "# [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.");
+            setComment(config, "options.general.biomeChange",
+                "# [duration] The time before a player can use the /island biome command again. Use ms, s, m, h, or d.");
+            setComment(config, "options.island.islandTeleportDelay",
+                "# [duration] The delay before teleporting a player to their island. Use ms, s, m, h, or d.");
+            setComment(config, "options.island.topTenTimeout",
+                "# [duration] How long to cache top-ten data before recalculating it. Use ms, s, m, h, or d.");
+            setComment(config, "options.advanced.confirmTimeout",
+                "# [duration] The time to wait for repeating a risky command. Use ms, s, m, h, or d.");
+            setComment(config, "options.restart.teleportDelay",
+                "# [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.");
         })
     );
 
@@ -271,6 +291,43 @@ public class PluginConfigLoader {
         }
         destination.set("move-nodes", null);
         requireNonNull(destination.getDefaults()).set("move-nodes", null);
+    }
+
+    private static void migrateSecondsToDuration(@NotNull YamlConfiguration config, @NotNull String path) {
+        migrateToDuration(config, path, ConfigDuration::seconds);
+    }
+
+    private static void migrateMinutesToDuration(@NotNull YamlConfiguration config, @NotNull String path) {
+        migrateToDuration(config, path, ConfigDuration::minutes);
+    }
+
+    private static void migrateMillisToDuration(@NotNull YamlConfiguration config, @NotNull String path) {
+        migrateToDuration(config, path, ConfigDuration::millis);
+    }
+
+    private static void migrateToDuration(@NotNull YamlConfiguration config, @NotNull String path,
+                                          @NotNull java.util.function.LongFunction<String> formatter) {
+        Object value = config.get(path);
+        if (value instanceof Number number) {
+            config.set(path, formatter.apply(number.longValue()));
+            return;
+        }
+        if (value instanceof String text) {
+            String trimmed = text.trim();
+            if (trimmed.matches("[0-9]+")) {
+                config.set(path, formatter.apply(Long.parseLong(trimmed)));
+                return;
+            }
+            ConfigDuration.parse(trimmed);
+            config.set(path, trimmed.toLowerCase());
+            return;
+        }
+        throw new IllegalStateException("Cannot migrate config duration at " + path + ": " + value);
+    }
+
+    private static void setComment(@NotNull YamlConfiguration config, @NotNull String path, @NotNull String comment) {
+        config.setComments(path, List.of(comment));
+        config.setInlineComments(path, List.of());
     }
 
     @FunctionalInterface

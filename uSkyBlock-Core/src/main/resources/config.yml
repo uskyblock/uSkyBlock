@@ -9,11 +9,11 @@ options:
     # [integer] The time in seconds before a player can use the /island info command again. (note: cooldowns are reset when the plugin is reloaded)
     cooldownInfo: 20
 
-    # [integer] The time in seconds before a player can use the /island restart command again.
-    cooldownRestart: 30
+    # [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.
+    cooldownRestart: 30s
 
-    # [integer] The time in seconds before a player can use the /island biome command again.
-    biomeChange: 60
+    # [duration] The time before a player can use the /island biome command again. Use ms, s, m, h, or d.
+    biomeChange: 60s
 
     # [string] The default biome assigned to new islands
     defaultBiome: ocean
@@ -62,12 +62,12 @@ options:
     - sugar_cane:1
     - oak_sign:1
     addExtraItems: true
-    islandTeleportDelay: 2
+    islandTeleportDelay: 2s
     allowPvP: deny
     allowIslandLock: true
     useIslandLevel: true
     useTopTen: true
-    topTenTimeout: 20
+    topTenTimeout: 20m
     autoRefreshScore: 0
     topTenShowMembers: true
     chat-format: '&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}'
@@ -228,9 +228,8 @@ options:
     # any island with a level above this, is spared.
     purgeLevel: 10
 
-    # [seconds] The number of seconds for confirming a command by
-    # re-executing it (/is leave, /is restart).
-    confirmTimeout: 10
+    # [duration] The time to wait for repeating a risky command. Use ms, s, m, h, or d.
+    confirmTimeout: 10s
 
     # [number] The number of chunks to regenerate per server tick. Might be decreased or increased based on available
     # server resources. Default value: 4.
@@ -264,9 +263,8 @@ options:
     # Clears the users balance (set to 0)
     clearCurrency: false
 
-    # [ms] The number of ms to wait, before porting the player back
-    # on /is restart or /is create (default: 1000)
-    teleportDelay: 1000
+    # [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.
+    teleportDelay: 1000ms
 
     # [true/false] Whether or not the player should be auto teleported to the island when it's ready
     teleportWhenReady: true
@@ -465,10 +463,10 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 112
+version: 113
 force-replace:
   options.party.invite-timeout: 100
-  options.island.islandTeleportDelay: 5
+  options.island.islandTeleportDelay: 5s
   options.island.useOldIslands: false
   options.island.schematicName: yourschematichere
 move-nodes:
