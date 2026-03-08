@@ -90,7 +90,7 @@ Use these methods from `I18nUtil` and `Msg`:
 | `sendErrorTr(sender, "message")` | void | Same, but styled as an error (red) |
 | `marktr("message")` | `String` | Mark a string for extraction without translating it at call time (used for command descriptions) |
 
-Strings use MiniMessage syntax. Placeholders are passed as `TagResolver` arguments:
+Strings use [MiniMessage](https://docs.advntr.dev/minimessage/format.html) syntax. Placeholders are passed as `TagResolver` arguments:
 
 ```java
 // Simple message
