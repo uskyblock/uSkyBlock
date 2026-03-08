@@ -33,18 +33,6 @@ public class PluginConfigLoader {
     static final int LEGACY_BASELINE_VERSION = 111;
     private static final String LEGACY_BASELINE_RESOURCE = "legacy/config-111.yml";
     private static final Set<String> INVALID_SCHEMATIC_NAMES = Set.of("yourschematicname", "uSkyBlockDefault");
-    private static final List<String> REQUIRED_CURRENT_PATHS = List.of(
-        "language",
-        "options.general.maxPartySize",
-        "options.general.worldName",
-        "options.general.spawnSize",
-        "options.island.height",
-        "options.island.schematicName",
-        "options.extras.obsidianToLava",
-        "options.advanced.manageSpawn",
-        "options.restart.teleportDelay",
-        "nether.enabled"
-    );
     private static final List<ConfigMigration> EXPLICIT_MIGRATIONS = List.of(
         new ConfigMigration(111, 112, config -> {
             if (!config.contains("options.extras.obsidianToLava")) {
@@ -80,15 +68,12 @@ public class PluginConfigLoader {
         if (version < LEGACY_BASELINE_VERSION) {
             migrateWithLegacySystem(configFile);
             config = loadFromDisk(configFile);
-            verifyCurrentLayout(config, LEGACY_BASELINE_VERSION, "Legacy migration");
             version = config.getInt("version", 0);
         }
 
         if (version < currentVersion) {
             config = applyExplicitMigrations(configFile, config, version, currentVersion);
         }
-
-        verifyCurrentLayout(config, currentVersion, "Config validation");
 
         return config;
     }
@@ -118,26 +103,6 @@ public class PluginConfigLoader {
             nextVersion = migration.toVersion;
         }
         return loadFromDisk(configFile);
-    }
-
-    private void verifyCurrentLayout(@NotNull YamlConfiguration config, int expectedVersion, @NotNull String phase) {
-        int version = config.getInt("version", 0);
-        if (version != expectedVersion) {
-            throw new IllegalStateException(phase + " did not produce the expected config.yml version "
-                + expectedVersion + ". Found version " + version + " instead.");
-        }
-        for (String path : REQUIRED_CURRENT_PATHS) {
-            if (!config.contains(path)) {
-                throw new IllegalStateException(phase + " produced an invalid config.yml. Missing required path: " + path);
-            }
-        }
-        String schematicName = config.getString("options.island.schematicName");
-        if (schematicName == null || !normalizeIslandSchematicName(schematicName).equals(schematicName)) {
-            throw new IllegalStateException(phase + " produced an invalid config.yml. Invalid schematic name: " + schematicName);
-        }
-        if (!config.isBoolean("options.extras.obsidianToLava")) {
-            throw new IllegalStateException(phase + " produced an invalid config.yml. options.extras.obsidianToLava must be boolean.");
-        }
     }
 
     private void ensureConfigExists(@NotNull File configFile) {
