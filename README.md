@@ -55,10 +55,14 @@ For API integration, translation workflow, and local docs preview, see:
 
 - https://uskyblock.github.io/uSkyBlock/contributing/
 
+## Project History
+
+uSkyBlock traces back to the [skySMP plugin](https://dev.bukkit.org/projects/skysmp), which was licensed under GPLv3, and to [rlf/uSkyBlock](https://github.com/rlf/uSkyBlock), an earlier continuation of Talabrek's Ultimate SkyBlock work.
+
+For a time, public continuation of the project was difficult because the Bukkit listing was registered as `All rights reserved`, which complicated sharing and maintenance even as community interest continued.
+
+At the end of 2014, Talabrek explicitly gave his blessing for this repository to continue the project and consolidate the different community branches into a single, officially maintained uSkyBlock codebase.
+
 ## License
 
-TL;DR - This is licensed under GPLv3
-
-## References
-
-* [GPLv3](http://www.gnu.org/copyleft/gpl.html) - [tl;dr Legal](https://www.tldrlegal.com/l/gpl-3.0)
+[GPLv3](http://www.gnu.org/copyleft/gpl.html) - [tl;dr Legal](https://www.tldrlegal.com/l/gpl-3.0)
