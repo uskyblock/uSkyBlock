@@ -57,7 +57,7 @@ To apply config changes without a full restart: `/usb reload`
 
 Beyond `config.yml`, two files control gameplay tuning:
 
-- **`challenges.yml`** — defines all challenges, organised by rank. Each challenge has a type (`onPlayer` for items in inventory, `onIsland` for blocks/entities nearby, or `islandLevel` for level thresholds), requirements, and rewards.
+- **`challenges.yml`** — defines all challenges, organised by rank. See [Challenges config](challenges.md) for the structure, safe editing workflow, and examples.
 - **`levelConfig.yml`** — controls how blocks contribute to island score. You can set per-block values, group similar blocks, apply diminishing returns, and set hard caps. Edit with care — small changes affect every island.
 
 Both files are well-commented. The defaults are a solid starting point.
