@@ -8,9 +8,9 @@ Everyone can contribute in their own way, whether they write code or not. If you
 
 If you have an idea, found a bug, or want to improve the default experience, start by opening an issue:
 
-- Issues: https://github.com/uskyblock/uSkyBlock/issues
-- New bug report: https://github.com/uskyblock/uSkyBlock/issues/new?template=bug_report.md
-- New feature request: https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md
+- [Issues](https://github.com/uskyblock/uSkyBlock/issues)
+- [New bug report](https://github.com/uskyblock/uSkyBlock/issues/new?template=bug_report.md)
+- [New feature request](https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md)
 
 Good issues are concrete. Explain what is wrong, what you expected instead, and who it affects.
 
@@ -38,9 +38,7 @@ Challenge ideas are very welcome! Useful contributions include:
 - smoothing difficulty ramps
 - improving progression between ranks
 
-If you have a challenge idea, open a feature request:
-
-- https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md
+If you have a challenge idea, open a [new feature request](https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md).
 
 ## Docs
 
