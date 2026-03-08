@@ -1,29 +1,62 @@
 # Contributing
 
-## Editing docs
+uSkyBlock is open source and relies on community contributions.
 
-The quickest way: open any file under `docs/` on GitHub and click the pencil icon to edit it directly in the browser, then submit a pull request.
+Everyone can contribute in their own way, whether they write code or not. If you care about the plugin and want to help improve it, your contribution is welcome :)
 
-For a local preview before opening a PR, see [Previewing docs locally](developers.md#previewing-docs-locally).
+## Ideas, bugs, and suggestions
 
-**Writing style:** plain language, short sections, concrete steps. Prefer one clear instruction over multiple hedged alternatives.
+If you have an idea, found a bug, or want to improve the default experience, start by opening an issue:
 
-## Contributing code
+- Issues: https://github.com/uskyblock/uSkyBlock/issues
+- New bug report: https://github.com/uskyblock/uSkyBlock/issues/new?template=bug_report.md
+- New feature request: https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md
 
-- One problem per pull request.
-- Add or update tests when behavior changes.
-- Keep user-facing messages and config keys backward-compatible where practical.
-- Describe the operational impact in your pull request description — not just what changed, but why and what admins or players might notice.
+Good issues are concrete. Explain what is wrong, what you expected instead, and who it affects.
 
-Public API changes need clear migration notes. When in doubt, open an issue to discuss before writing code.
+## Translations
 
-**Code style:** spaces for indentation, opening braces on the same line, `lowerCamelCase` for methods and variables, `UpperCamelCase` for classes, `ALL_CAPS` for constants. Always use braces around `if`/`else` blocks. Avoid wildcard imports.
+Translations are managed on [Crowdin](https://crowdin.com/project/uskyblock-revived).
 
-## Translating
+Translation help is always appreciated! High-value contributions include:
 
-Translations are managed on [Crowdin](https://crowdin.com/project/uskyblock-revived). Two domains are synced there:
+- adding missing translations
+- verifying existing translations
+- improving wording, consistency, and Minecraft-specific terminology
+- checking placeholders and formatting tags carefully
 
-- **Player-facing strings** — messages players see in-game
-- **Admin/ops strings** — messages for server operators
+For details on how the translation system works internally, see [Translation system](developers.md#translation-system).
 
-Join the project on Crowdin and translate in the web editor. Completed translations are pulled into the repository automatically. For details on how the system works internally, see [Translation system](developers.md#translation-system) in the developer docs.
+## Challenge ideas
+
+Challenge contributions do not have to start as code.
+
+Challenge ideas are very welcome! Useful contributions include:
+
+- proposing new default challenges
+- improving rewards
+- smoothing difficulty ramps
+- improving progression between ranks
+
+If you have a challenge idea, open a feature request:
+
+- https://github.com/uskyblock/uSkyBlock/issues/new?template=feature_request.md
+
+## Docs
+
+Docs improvements are always welcome too.
+
+The quickest way is to edit files under `docs/` on GitHub and open a pull request. For a local preview, see [Previewing docs locally](developers.md#previewing-docs-locally).
+
+## Code contributions
+
+Code contributions are appreciated too, whether they are small fixes or larger improvements.
+
+Keep it simple:
+
+- one problem per pull request
+- add or update tests when behavior changes
+- keep user-facing messages and config keys backward-compatible where practical
+- describe the operational impact, not just the code change
+
+Public API changes need clear migration notes. When in doubt, open an issue first.
