@@ -16,3 +16,14 @@ For a local preview before opening a PR, see [Previewing docs locally](developer
 - Describe the operational impact in your pull request description — not just what changed, but why and what admins or players might notice.
 
 Public API changes need clear migration notes. When in doubt, open an issue to discuss before writing code.
+
+**Code style:** spaces for indentation, opening braces on the same line, `lowerCamelCase` for methods and variables, `UpperCamelCase` for classes, `ALL_CAPS` for constants. Always use braces around `if`/`else` blocks. Avoid wildcard imports.
+
+## Translating
+
+Translations are managed through [Crowdin](https://crowdin.com). The project has two translation domains synced there:
+
+- **Player-facing strings** — messages players see in-game
+- **Admin/ops strings** — messages for server operators
+
+To contribute a translation, join the project on Crowdin and translate directly in the web editor. Completed translations are pulled into the repository automatically.

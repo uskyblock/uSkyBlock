@@ -62,6 +62,25 @@ UltimateSkyblock api = UltimateSkyblockProvider.getInstance();
 
 The legacy `uSkyBlockAPI` interface (artifact `uSkyBlock-Core`) is still available and provides island/player data methods like `getIslandLevel(player)`, `getIslandInfo(player)`, and `getTopTen()`. It is stable but APIv2 is the direction going forward.
 
+### Events
+
+The API fires Bukkit events you can listen to:
+
+- `uSkyBlockEvent` — base event for all uSkyBlock actions
+- `uSkyBlockScoreChangedEvent` — island score recalculated (carries the new `IslandScore`)
+- `CreateIslandEvent`, `RestartIslandEvent` — island lifecycle
+- `MemberJoinedEvent`, `IslandChatEvent` — social actions
+
+Register a listener the standard Bukkit way:
+
+```java
+@EventHandler
+public void onScoreChanged(uSkyBlockScoreChangedEvent event) {
+    IslandScore score = event.getScore();
+    // ...
+}
+```
+
 ## Previewing docs locally
 
 ```bash

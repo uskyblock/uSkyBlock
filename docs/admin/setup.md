@@ -52,9 +52,34 @@ Cooldowns, spawn limits, block limits, biome permissions, and starting chest ite
 
 To apply config changes without a full restart: `/usb reload`
 
+## Other config files
+
+Beyond `config.yml`, two files control gameplay tuning:
+
+- **`challenges.yml`** — defines all challenges, organised by rank. Each challenge has a type (`onPlayer` for items in inventory, `onIsland` for blocks/entities nearby, or `islandLevel` for level thresholds), requirements, and rewards.
+- **`levelConfig.yml`** — controls how blocks contribute to island score. You can set per-block values, group similar blocks, apply diminishing returns, and set hard caps. Edit with care — small changes affect every island.
+
+Both files are well-commented. The defaults are a solid starting point.
+
 ## Schematics
 
-Island schematics live in `plugins/uSkyBlock/schematics/`. Additional schematics can be registered under `island-schemes` in `config.yml` and gated behind permissions using `usb.schematic.<name>`.
+Island schematics live in `plugins/uSkyBlock/schematics/`. Additional schematics are registered under `island-schemes` in `config.yml` and gated behind permissions using `usb.schematic.<name>`.
+
+### Creating a custom schematic
+
+1. Build your island in-game. Include at least one chest — the chest closest to the island center becomes the player's spawn point.
+2. Select the island bounds with WorldEdit and run `//copy`, then `//schem save <name>`.
+3. Copy the `.schem` file from `plugins/WorldEdit/schematics/` to `plugins/uSkyBlock/schematics/`.
+4. Add a config entry under `island-schemes` in `config.yml` with the schematic name, permission, description, display item, and any limits.
+5. `/usb reload` to pick up the changes.
+
+To disable a built-in schematic without deleting it (it would be recreated on restart), set `enabled: false`:
+
+```yaml
+island-schemes:
+  skySMP:
+    enabled: false
+```
 
 ## Cooldowns and limits
 
@@ -66,3 +91,19 @@ Island schematics live in `plugins/uSkyBlock/schematics/`. Additional schematics
 | `options.island.spawn-limits.monsters` | `50` | Per-island monster cap |
 | `options.island.block-limits.hopper` | `50` | Per-island hopper limit |
 | `options.island.block-limits.spawner` | `10` | Per-island spawner limit |
+
+## Visitor protection
+
+Islands are automatically protected. The `protection.visitors` section in `config.yml` controls what visitors can and cannot do. Key flags:
+
+| Flag | Default | Notes |
+|---|---|---|
+| `kill-animals` | off | Visitors cannot kill animals |
+| `kill-monsters` | off | Visitors cannot kill monsters |
+| `villager-trading` | off | Visitors cannot trade |
+| `shearing` | off | Visitors cannot shear |
+| `item-drops` | on | Visitors can pick up item drops |
+| `trample` | off | Visitors cannot trample crops |
+| `portal-access` | off | Visitors cannot use portals |
+
+Island members and trusted players bypass these restrictions. Creeper and wither damage, fire spread, and lava flow protection are also configurable under the `protection` section.

@@ -2,11 +2,11 @@
 
 ## Getting your island
 
-Run `/island` to get started. If you don't have an island yet, it will offer to create one.
+Run `/island` to get started — it opens a menu where you can create an island or manage your existing one. You can also use commands directly:
 
 | Command | What it does |
 |---|---|
-| `/island create` | Create a new island |
+| `/island create [schematic]` | Create a new island (server may offer a choice of starting islands) |
 | `/island home` | Teleport to your island |
 | `/island sethome` | Move your home point |
 | `/island spawn` | Go to the skyblock spawn |
@@ -35,6 +35,13 @@ You can share your island with other players. The party size limit is set by you
 | `/island leave` | Leave someone else's island |
 | `/island makeleader <player>` | Hand over island leadership |
 | `/island perm <player>` | Adjust a member's permissions |
+
+Chat with your island or party members using dedicated channels:
+
+| Command | What it does |
+|---|---|
+| `/islandtalk <message>` | Send a message to all island members (alias: `/it`) |
+| `/partytalk <message>` | Send a message to your party (alias: `/ptk`) |
 
 You can also trust players to build without them joining:
 
@@ -72,8 +79,8 @@ Your island is automatically protected from other players. You can fine-tune acc
 | `/island lock` / `/island unlock` | Block or allow visitor entry |
 | `/island ban <player>` | Ban a specific player from your island |
 | `/island unban <player>` | Remove the ban |
-| `/island biome` | Change your island's biome (cooldown applies) |
+| `/island biome <biome>` | Change your island's biome (cooldown applies). Optionally add a radius, `chunk`, or `all` |
 
 ## Restarting
 
-`/island restart` deletes your island and creates a fresh one. This is permanent. Depending on your server's settings, your inventory may also be cleared.
+`/island restart [schematic]` deletes your island and creates a fresh one. This is permanent. Depending on your server's settings, your inventory may also be cleared.

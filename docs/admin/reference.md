@@ -45,6 +45,13 @@ All player commands use `/island` (alias: `/is`).
 
 Challenges: `/challenges` (alias: `/c`) — requires `usb.island.challenges`
 
+Chat commands:
+
+| Command | Permission | Description |
+|---|---|---|
+| `/islandtalk` (`/it`) | `usb.island.talk` | Message all island members |
+| `/partytalk` (`/ptk`) | `usb.party.talk` | Message party members |
+
 ## Notable individual permissions
 
 | Permission | Notes |
