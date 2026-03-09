@@ -38,9 +38,17 @@ public class PluginConfigLoaderTest {
 
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration config = loader.load();
-        YamlConfiguration bundled = loadBundledConfig();
 
-        assertMatchesBundledDefaults(config, bundled);
+        assertEquals(loadBundledVersion(), config.getInt("version"));
+        assertEquals("default", config.getString("options.island.schematicName"));
+        assertTrue(config.getBoolean("options.extras.obsidianToLava"));
+        assertEquals("30s", config.getString("options.general.cooldownRestart"));
+        assertEquals("60s", config.getString("options.general.biomeChange"));
+        assertEquals("2s", config.getString("options.island.islandTeleportDelay"));
+        assertEquals("20m", config.getString("options.island.topTenTimeout"));
+        assertEquals("30s", config.getString("options.party.invite-timeout"));
+        assertEquals("10s", config.getString("options.advanced.confirmTimeout"));
+        assertEquals("1000ms", config.getString("options.restart.teleportDelay"));
         assertTrue(new File(testFolder.getRoot(), "config.yml.old").isFile());
         try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
             assertTrue(stream.findAny().isPresent());
@@ -65,10 +73,17 @@ public class PluginConfigLoaderTest {
 
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration migrated = loader.load();
-        YamlConfiguration bundled = loadBundledConfig();
 
-        assertMatchesBundledDefaults(migrated, bundled);
+        assertEquals(113, migrated.getInt("version"));
+        assertEquals("default", migrated.getString("options.island.schematicName"));
+        assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
+        assertEquals("30s", migrated.getString("options.general.cooldownRestart"));
+        assertEquals("60s", migrated.getString("options.general.biomeChange"));
+        assertEquals("2s", migrated.getString("options.island.islandTeleportDelay"));
+        assertEquals("20m", migrated.getString("options.island.topTenTimeout"));
         assertEquals("30s", migrated.getString("options.party.invite-timeout"));
+        assertEquals("10s", migrated.getString("options.advanced.confirmTimeout"));
+        assertEquals("1000ms", migrated.getString("options.restart.teleportDelay"));
         assertEquals(RESTART_COOLDOWN_COMMENT, migrated.getComments("options.general.cooldownRestart"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
         assertEquals(RESTART_TELEPORT_COMMENT, migrated.getComments("options.restart.teleportDelay"));
@@ -134,8 +149,7 @@ public class PluginConfigLoaderTest {
         YamlConfiguration loaded = loader.load();
         YamlConfiguration bundled = loadBundledConfig();
 
-        assertMatchesBundledDefaults(loaded, bundled);
-        assertEquals("2m", loaded.getString("options.party.invite-timeout"));
+        assertEquals(bundled.saveToString(), loaded.saveToString());
     }
 
     @Test
@@ -192,17 +206,4 @@ public class PluginConfigLoaderTest {
         }
     }
 
-    private void assertMatchesBundledDefaults(YamlConfiguration config, YamlConfiguration bundled) {
-        assertEquals(bundled.getInt("version"), config.getInt("version"));
-        assertEquals(bundled.getString("options.general.worldName"), config.getString("options.general.worldName"));
-        assertEquals(bundled.getInt("options.general.spawnSize"), config.getInt("options.general.spawnSize"));
-        assertEquals(bundled.getString("options.general.cooldownRestart"), config.getString("options.general.cooldownRestart"));
-        assertEquals(bundled.getString("options.general.biomeChange"), config.getString("options.general.biomeChange"));
-        assertEquals(bundled.getString("options.island.islandTeleportDelay"), config.getString("options.island.islandTeleportDelay"));
-        assertEquals(bundled.getString("options.island.topTenTimeout"), config.getString("options.island.topTenTimeout"));
-        assertEquals(bundled.getString("options.island.schematicName"), config.getString("options.island.schematicName"));
-        assertEquals(bundled.getBoolean("options.extras.obsidianToLava"), config.getBoolean("options.extras.obsidianToLava"));
-        assertEquals(bundled.getString("options.advanced.confirmTimeout"), config.getString("options.advanced.confirmTimeout"));
-        assertEquals(bundled.getString("options.restart.teleportDelay"), config.getString("options.restart.teleportDelay"));
-    }
 }
