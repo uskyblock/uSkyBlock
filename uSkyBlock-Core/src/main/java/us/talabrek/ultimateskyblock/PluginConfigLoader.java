@@ -46,6 +46,7 @@ public class PluginConfigLoader {
             migrateSecondsToDuration(config, "options.general.biomeChange");
             migrateSecondsToDuration(config, "options.island.islandTeleportDelay");
             migrateMinutesToDuration(config, "options.island.topTenTimeout");
+            migrateInviteTimeoutToDuration(config, "options.party.invite-timeout");
             migrateSecondsToDuration(config, "options.advanced.confirmTimeout");
             migrateMillisToDuration(config, "options.restart.teleportDelay");
             setComment(config, "options.general.cooldownRestart",
@@ -56,6 +57,8 @@ public class PluginConfigLoader {
                 "# [duration] The delay before teleporting a player to their island. Use ms, s, m, h, or d.");
             setComment(config, "options.island.topTenTimeout",
                 "# [duration] How long to cache top-ten data before recalculating it. Use ms, s, m, h, or d.");
+            setComment(config, "options.party.invite-timeout",
+                "# [duration] How long an island invite stays valid. Use ms, s, m, h, or d.");
             setComment(config, "options.advanced.confirmTimeout",
                 "# [duration] The time to wait for repeating a risky command. Use ms, s, m, h, or d.");
             setComment(config, "options.restart.teleportDelay",
@@ -303,6 +306,34 @@ public class PluginConfigLoader {
 
     private static void migrateMillisToDuration(@NotNull YamlConfiguration config, @NotNull String path) {
         migrateToDuration(config, path, ConfigDuration::millis);
+    }
+
+    private static void migrateInviteTimeoutToDuration(@NotNull YamlConfiguration config, @NotNull String path) {
+        Object value = config.get(path);
+        if (value instanceof Number number) {
+            config.set(path, formatInviteTimeout(number.longValue()));
+            return;
+        }
+        if (value instanceof String text) {
+            String trimmed = text.trim();
+            if (trimmed.matches("[0-9]+")) {
+                config.set(path, formatInviteTimeout(Long.parseLong(trimmed)));
+                return;
+            }
+            throw new IllegalStateException("Cannot migrate invite-timeout at " + path + " from non-numeric value: " + value);
+        }
+        throw new IllegalStateException("Cannot migrate config duration at " + path + ": " + value);
+    }
+
+    @NotNull
+    private static String formatInviteTimeout(long rawValue) {
+        if (rawValue >= 1000) {
+            if (rawValue % 1000 == 0) {
+                return ConfigDuration.seconds(rawValue / 1000);
+            }
+            return ConfigDuration.millis(rawValue);
+        }
+        return ConfigDuration.seconds(rawValue);
     }
 
     private static void migrateToDuration(@NotNull YamlConfiguration config, @NotNull String path,

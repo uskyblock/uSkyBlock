@@ -204,8 +204,8 @@ options:
 
   party:
 
-    # The number of ms before an invite timeouts (1000 ms per second)
-    invite-timeout: 30000
+    # [duration] How long an island invite stays valid. Use ms, s, m, h, or d.
+    invite-timeout: 2m
 
     # The format used in /partytalk chat messages
     chat-format: '&9PARTY &r{DISPLAYNAME} &f>&b {MESSAGE}'
@@ -465,7 +465,6 @@ placeholder:
 # DO NOT TOUCH THE FIELDS BELOW
 version: 113
 force-replace:
-  options.party.invite-timeout: 100
   options.island.islandTeleportDelay: 5s
   options.island.useOldIslands: false
   options.island.schematicName: yourschematichere

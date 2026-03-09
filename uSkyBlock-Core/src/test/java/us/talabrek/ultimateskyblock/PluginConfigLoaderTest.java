@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 public class PluginConfigLoaderTest {
     private static final List<String> RESTART_COOLDOWN_COMMENT = List.of(
         "# [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.");
+    private static final List<String> INVITE_TIMEOUT_COMMENT = List.of(
+        "# [duration] How long an island invite stays valid. Use ms, s, m, h, or d.");
     private static final List<String> RESTART_TELEPORT_COMMENT = List.of(
         "# [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.");
 
@@ -56,6 +58,7 @@ public class PluginConfigLoaderTest {
         config.set("options.general.biomeChange", 60);
         config.set("options.island.islandTeleportDelay", 2);
         config.set("options.island.topTenTimeout", 20);
+        config.set("options.party.invite-timeout", 30000);
         config.set("options.advanced.confirmTimeout", 10);
         config.set("options.restart.teleportDelay", 1000);
         config.save(configFile);
@@ -65,8 +68,42 @@ public class PluginConfigLoaderTest {
         YamlConfiguration bundled = loadBundledConfig();
 
         assertMatchesBundledDefaults(migrated, bundled);
+        assertEquals("30s", migrated.getString("options.party.invite-timeout"));
         assertEquals(RESTART_COOLDOWN_COMMENT, migrated.getComments("options.general.cooldownRestart"));
+        assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
         assertEquals(RESTART_TELEPORT_COMMENT, migrated.getComments("options.restart.teleportDelay"));
+    }
+
+    @Test
+    public void migratesSmallNumericInviteTimeoutsAsSeconds() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(112);
+        config.set("options.party.invite-timeout", 60);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(113, migrated.getInt("version"));
+        assertEquals("60s", migrated.getString("options.party.invite-timeout"));
+        assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
+    }
+
+    @Test
+    public void keepsMillisecondInviteTimeoutsWhenTheyAreNotWholeSeconds() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(112);
+        config.set("options.party.invite-timeout", 1500);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(113, migrated.getInt("version"));
+        assertEquals("1500ms", migrated.getString("options.party.invite-timeout"));
+        assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
     }
 
     @Test
@@ -98,6 +135,7 @@ public class PluginConfigLoaderTest {
         YamlConfiguration bundled = loadBundledConfig();
 
         assertMatchesBundledDefaults(loaded, bundled);
+        assertEquals("2m", loaded.getString("options.party.invite-timeout"));
     }
 
     @Test
@@ -129,6 +167,7 @@ public class PluginConfigLoaderTest {
         config.set("options.island.topTenTimeout", "20m");
         config.set("options.island.schematicName", "default");
         config.set("options.extras.obsidianToLava", true);
+        config.set("options.party.invite-timeout", "2m");
         config.set("options.advanced.confirmTimeout", "10s");
         config.set("options.advanced.manageSpawn", true);
         config.set("options.restart.teleportDelay", "1000ms");
