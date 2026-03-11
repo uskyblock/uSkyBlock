@@ -1,10 +1,11 @@
 # uSkyBlock
 
 [![Build](https://img.shields.io/github/actions/workflow/status/uskyblock/uSkyBlock/build.yml?branch=master&label=build)](https://github.com/uskyblock/uSkyBlock/actions/workflows/build.yml)
-[![Version](https://img.shields.io/github/v/tag/uskyblock/uSkyBlock?label=version&sort=semver&color=375EAB)](https://github.com/uskyblock/uSkyBlock/tags)
-[![Spigot](https://img.shields.io/spiget/version/66795?label=spigot&color=ED8106)](https://www.spigotmc.org/resources/uskyblock-revived.66795/)
-[![Docs](https://img.shields.io/badge/docs-site-1f7a52)](https://uskyblock.github.io/docs/)
-[![License](https://img.shields.io/badge/license-GPLv3-375EAB)](http://www.gnu.org/copyleft/gpl.html)
+[![Version](https://img.shields.io/github/v/tag/uskyblock/uSkyBlock?label=version&sort=semver&color=007EC6)](https://github.com/uskyblock/uSkyBlock/tags)
+[![Spigot](https://img.shields.io/badge/plugin-spigot-ED8106)](https://www.spigotmc.org/resources/uskyblock-revived.66795/)
+[![Hangar](https://img.shields.io/badge/plugin-hangar-007EC6)](https://hangar.papermc.io/uSkyBlock/uSkyBlock)
+[![Docs](https://img.shields.io/badge/docs-site-1F7A52)](https://uskyblock.github.io/docs/)
+[![License](https://img.shields.io/badge/license-GPLv3-007EC6)](http://www.gnu.org/copyleft/gpl.html)
 
 uSkyBlock is a Skyblock plugin for Spigot and Paper servers. Build a server around islands, progression, challenges, party play, and deep gameplay customization, backed by more than a decade of project history and continued maintenance for modern Minecraft versions.
 
@@ -17,6 +18,7 @@ uSkyBlock is an open-source Skyblock plugin for Spigot and Paper, with public do
 - Homepage: https://uskyblock.github.io/
 - Docs: https://uskyblock.github.io/docs/
 - Releases: https://www.spigotmc.org/resources/uskyblock-revived.66795/history
+- Hangar page: https://hangar.papermc.io/uSkyBlock/uSkyBlock
 - Spigot page: https://www.spigotmc.org/resources/uskyblock-revived.66795/
 - Issues: https://github.com/uskyblock/uSkyBlock/issues
 - Contributing: https://uskyblock.github.io/docs/contributing/
