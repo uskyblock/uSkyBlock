@@ -87,7 +87,7 @@ jobs:
             --notes-output .release-assets/spigot-release-notes.txt
 
       - name: Upload Spigot release artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: spigot-release-assets-${{ env.RELEASE_VERSION }}
           path: |
