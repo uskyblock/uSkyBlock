@@ -86,6 +86,7 @@ jobs:
         with:
           name: spigot-release-assets-${{ env.RELEASE_VERSION }}
           path: |
+            ${{ steps.asset.outputs.jar_path }}
             .release-assets/spigot-release-title.txt
             .release-assets/spigot-release-notes.txt
           if-no-files-found: error
@@ -111,4 +112,4 @@ jobs:
       - name: Summarize manual follow-up
         run: |
           echo "Hangar release published for ${RELEASE_TAG}." >> "${GITHUB_STEP_SUMMARY}"
-          echo "Spigot copy/paste artifacts uploaded: spigot-release-title.txt and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"
+          echo "Spigot upload artifact includes the release jar, spigot-release-title.txt, and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"
