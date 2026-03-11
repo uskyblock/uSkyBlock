@@ -31,6 +31,17 @@ class HtmlToBbcodeParser(HTMLParser):
         if newline_count < count:
             self.parts.append("\n" * (count - newline_count))
 
+    def heading_just_closed(self) -> bool:
+        return "".join(self.parts).endswith("[/B]\n\n")
+
+    def trim_trailing_newlines(self, count: int) -> None:
+        current = "".join(self.parts)
+        newline_count = len(current) - len(current.rstrip("\n"))
+        if newline_count <= count:
+            return
+        trimmed = current[:- (newline_count - count)]
+        self.parts = [trimmed] if trimmed else []
+
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attr_map = dict(attrs)
         if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
@@ -54,11 +65,17 @@ class HtmlToBbcodeParser(HTMLParser):
             self.blockquote_depth += 1
             self.append("[INDENT]")
         elif tag == "ul":
-            self.ensure_newlines(2)
+            after_heading = self.heading_just_closed()
+            if after_heading:
+                self.trim_trailing_newlines(1)
+            self.ensure_newlines(1 if after_heading else 2)
             self.list_stack.append("ul")
             self.append("[LIST]\n")
         elif tag == "ol":
-            self.ensure_newlines(2)
+            after_heading = self.heading_just_closed()
+            if after_heading:
+                self.trim_trailing_newlines(1)
+            self.ensure_newlines(1 if after_heading else 2)
             self.list_stack.append("ol")
             self.append("[LIST=1]\n")
         elif tag == "li":
