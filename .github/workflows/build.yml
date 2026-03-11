@@ -95,6 +95,7 @@ jobs:
         run: |
           set -euo pipefail
           tag="${GITHUB_REF_NAME}"
+          title="${tag#v}"
           asset="${{ steps.jar.outputs.jar_path }}#${{ steps.jar.outputs.jar_name }}"
           if gh release view "${tag}" >/dev/null 2>&1; then
             gh release upload "${tag}" "${asset}" --clobber
@@ -103,7 +104,7 @@ jobs:
               --draft \
               --verify-tag \
               --generate-notes \
-              --title "${tag}"
+              --title "${title}"
           fi
 
       - name: Summarize release URL
