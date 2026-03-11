@@ -41,6 +41,11 @@ jobs:
           fi
           {
             echo "HANGAR_CHANGELOG<<EOF"
+            if [ -n "${RELEASE_TITLE_FROM_EVENT}" ]; then
+              printf '## %s\n\n' "${RELEASE_TITLE_FROM_EVENT}"
+            else
+              printf '## %s\n\n' "${RELEASE_TAG_FROM_EVENT}"
+            fi
             printf '%s\n' "${RELEASE_BODY_FROM_EVENT}"
             echo "EOF"
           } >> "${GITHUB_ENV}"
