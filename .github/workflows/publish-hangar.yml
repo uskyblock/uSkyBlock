@@ -28,11 +28,17 @@ jobs:
       - name: Capture release metadata
         env:
           RELEASE_TAG_FROM_EVENT: ${{ github.event.release.tag_name }}
+          RELEASE_TITLE_FROM_EVENT: ${{ github.event.release.name }}
           RELEASE_BODY_FROM_EVENT: ${{ github.event.release.body }}
         run: |
           set -euo pipefail
           echo "RELEASE_TAG=${RELEASE_TAG_FROM_EVENT}" >> "${GITHUB_ENV}"
           echo "RELEASE_VERSION=${RELEASE_TAG_FROM_EVENT#v}" >> "${GITHUB_ENV}"
+          if [ -n "${RELEASE_TITLE_FROM_EVENT}" ]; then
+            echo "RELEASE_TITLE=${RELEASE_TITLE_FROM_EVENT}" >> "${GITHUB_ENV}"
+          else
+            echo "RELEASE_TITLE=${RELEASE_TAG_FROM_EVENT}" >> "${GITHUB_ENV}"
+          fi
           {
             echo "HANGAR_CHANGELOG<<EOF"
             printf '%s\n' "${RELEASE_BODY_FROM_EVENT}"
@@ -57,6 +63,34 @@ jobs:
           fi
           echo "jar_path=${jar_path}" >> "${GITHUB_OUTPUT}"
 
+      - name: Generate Spigot release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          set -euo pipefail
+          gh api markdown \
+            --method POST \
+            -f text="${RELEASE_BODY}" \
+            -f mode=gfm \
+            -f context="${GITHUB_REPOSITORY}" > .release-assets/release-body.html
+          python3 .github/scripts/render_spigot_release_assets.py \
+            --html .release-assets/release-body.html \
+            --title "${RELEASE_TITLE}" \
+            --version "${RELEASE_VERSION}" \
+            --title-output .release-assets/spigot-release-title.txt \
+            --notes-output .release-assets/spigot-release-notes.txt
+
+      - name: Upload Spigot release assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload "${RELEASE_TAG}" \
+            .release-assets/spigot-release-title.txt#spigot-release-title.txt \
+            .release-assets/spigot-release-notes.txt#spigot-release-notes.txt \
+            --clobber
+
       - name: Verify Hangar token is configured
         env:
           HANGAR_API_TOKEN: ${{ secrets.HANGAR_API_TOKEN }}
@@ -78,4 +112,4 @@ jobs:
       - name: Summarize manual follow-up
         run: |
           echo "Hangar release published for ${RELEASE_TAG}." >> "${GITHUB_STEP_SUMMARY}"
-          echo "Manual follow-up: write the shorter Spigot update post from the GitHub release notes." >> "${GITHUB_STEP_SUMMARY}"
+          echo "Spigot copy/paste assets attached: spigot-release-title.txt and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"
