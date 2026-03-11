@@ -81,15 +81,14 @@ jobs:
             --title-output .release-assets/spigot-release-title.txt \
             --notes-output .release-assets/spigot-release-notes.txt
 
-      - name: Upload Spigot release assets to GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh release upload "${RELEASE_TAG}" \
-            .release-assets/spigot-release-title.txt#spigot-release-title.txt \
-            .release-assets/spigot-release-notes.txt#spigot-release-notes.txt \
-            --clobber
+      - name: Upload Spigot release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: spigot-release-assets-${{ env.RELEASE_VERSION }}
+          path: |
+            .release-assets/spigot-release-title.txt
+            .release-assets/spigot-release-notes.txt
+          if-no-files-found: error
 
       - name: Verify Hangar token is configured
         env:
@@ -112,4 +111,4 @@ jobs:
       - name: Summarize manual follow-up
         run: |
           echo "Hangar release published for ${RELEASE_TAG}." >> "${GITHUB_STEP_SUMMARY}"
-          echo "Spigot copy/paste assets attached: spigot-release-title.txt and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"
+          echo "Spigot copy/paste artifacts uploaded: spigot-release-title.txt and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"
