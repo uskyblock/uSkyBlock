@@ -1,7 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
     id("buildlogic.java-conventions")
+    id("io.papermc.hangar-publish-plugin") version "0.1.4"
     alias(libs.plugins.shadow)
 }
 
@@ -66,4 +68,40 @@ configurations.apiElements {
 configurations.runtimeElements {
     outgoing.artifacts.clear()
     outgoing.artifact(shadowJar)
+}
+
+val hangarJarOverride = providers.environmentVariable("HANGAR_JAR").orNull
+val hangarVersion = providers.environmentVariable("HANGAR_VERSION")
+    .orElse(providers.provider { project.version.toString() })
+val hangarChannel = providers.environmentVariable("HANGAR_CHANNEL")
+    .orElse(
+        providers.provider {
+            if (project.version.toString().contains('-')) "Snapshot" else "Release"
+        }
+    )
+val hangarChangelog = providers.environmentVariable("HANGAR_CHANGELOG")
+    .orElse("See the canonical GitHub release notes.")
+val paperVersions = (findProperty("paperVersion") as String)
+    .split(",")
+    .map { it.trim() }
+    .filter { it.isNotEmpty() }
+
+hangarPublish {
+    publications.register("plugin") {
+        version.set(hangarVersion)
+        channel.set(hangarChannel)
+        changelog.set(hangarChangelog)
+        id.set("uSkyBlock")
+        apiKey.set(providers.environmentVariable("HANGAR_API_TOKEN"))
+        platforms {
+            register(Platforms.PAPER) {
+                if (hangarJarOverride != null) {
+                    jar.set(rootProject.layout.projectDirectory.file(hangarJarOverride))
+                } else {
+                    jar.set(shadowJar.flatMap { it.archiveFile })
+                }
+                platformVersions.set(paperVersions)
+            }
+        }
+    }
 }

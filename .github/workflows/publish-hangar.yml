@@ -1,0 +1,115 @@
+name: Publish Hangar Release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  publish_hangar:
+    if: github.repository_owner == 'uskyblock' && !github.event.release.prerelease
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Capture release metadata
+        env:
+          RELEASE_TAG_FROM_EVENT: ${{ github.event.release.tag_name }}
+          RELEASE_TITLE_FROM_EVENT: ${{ github.event.release.name }}
+          RELEASE_BODY_FROM_EVENT: ${{ github.event.release.body }}
+        run: |
+          set -euo pipefail
+          echo "RELEASE_TAG=${RELEASE_TAG_FROM_EVENT}" >> "${GITHUB_ENV}"
+          echo "RELEASE_VERSION=${RELEASE_TAG_FROM_EVENT#v}" >> "${GITHUB_ENV}"
+          if [ -n "${RELEASE_TITLE_FROM_EVENT}" ]; then
+            echo "RELEASE_TITLE=${RELEASE_TITLE_FROM_EVENT}" >> "${GITHUB_ENV}"
+          else
+            echo "RELEASE_TITLE=${RELEASE_TAG_FROM_EVENT}" >> "${GITHUB_ENV}"
+          fi
+          {
+            echo "HANGAR_CHANGELOG<<EOF"
+            printf '%s\n' "${RELEASE_BODY_FROM_EVENT}"
+            echo "EOF"
+          } >> "${GITHUB_ENV}"
+
+      - name: Verify tag matches Gradle version
+        run: ./gradlew verifyReleaseTag -PreleaseTag="${RELEASE_TAG}" --no-daemon --no-configuration-cache
+
+      - name: Download canonical GitHub release asset
+        id: asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .release-assets
+          gh release download "${RELEASE_TAG}" --pattern 'uSkyBlock-*.jar' --dir .release-assets
+          jar_path="$(find .release-assets -maxdepth 1 -type f -name 'uSkyBlock-*.jar' | head -n 1)"
+          if [ -z "${jar_path}" ]; then
+            echo "No release JAR asset found on ${RELEASE_TAG}." >&2
+            exit 1
+          fi
+          echo "jar_path=${jar_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Generate Spigot release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          set -euo pipefail
+          gh api markdown \
+            --method POST \
+            -f text="${RELEASE_BODY}" \
+            -f mode=gfm \
+            -f context="${GITHUB_REPOSITORY}" > .release-assets/release-body.html
+          python3 .github/scripts/render_spigot_release_assets.py \
+            --html .release-assets/release-body.html \
+            --title "${RELEASE_TITLE}" \
+            --version "${RELEASE_VERSION}" \
+            --title-output .release-assets/spigot-release-title.txt \
+            --notes-output .release-assets/spigot-release-notes.txt
+
+      - name: Upload Spigot release assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload "${RELEASE_TAG}" \
+            .release-assets/spigot-release-title.txt#spigot-release-title.txt \
+            .release-assets/spigot-release-notes.txt#spigot-release-notes.txt \
+            --clobber
+
+      - name: Verify Hangar token is configured
+        env:
+          HANGAR_API_TOKEN: ${{ secrets.HANGAR_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HANGAR_API_TOKEN}" ]; then
+            echo "HANGAR_API_TOKEN secret is not configured." >&2
+            exit 1
+          fi
+
+      - name: Publish to Hangar
+        env:
+          HANGAR_API_TOKEN: ${{ secrets.HANGAR_API_TOKEN }}
+          HANGAR_CHANNEL: Release
+          HANGAR_JAR: ${{ steps.asset.outputs.jar_path }}
+          HANGAR_VERSION: ${{ env.RELEASE_VERSION }}
+        run: ./gradlew :uSkyBlock-Plugin:publishPluginPublicationToHangar --stacktrace --no-daemon --no-configuration-cache
+
+      - name: Summarize manual follow-up
+        run: |
+          echo "Hangar release published for ${RELEASE_TAG}." >> "${GITHUB_STEP_SUMMARY}"
+          echo "Spigot copy/paste assets attached: spigot-release-title.txt and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"

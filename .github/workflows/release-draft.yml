@@ -1,0 +1,69 @@
+name: Draft GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  draft_release:
+    if: github.repository_owner == 'uskyblock'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Verify tag matches Gradle version
+        run: ./gradlew verifyReleaseTag -PreleaseTag="${GITHUB_REF_NAME}" --no-daemon --no-configuration-cache
+
+      - name: Build release JAR
+        run: ./gradlew :uSkyBlock-Plugin:build --no-daemon --no-configuration-cache
+
+      - name: Locate release JAR
+        id: jar
+        run: |
+          set -euo pipefail
+          jar_path="$(find uSkyBlock-Plugin/build/libs -maxdepth 1 -type f -name 'uSkyBlock-*.jar' | head -n 1)"
+          if [ -z "${jar_path}" ]; then
+            echo "Release JAR not found." >&2
+            exit 1
+          fi
+          echo "jar_path=${jar_path}" >> "${GITHUB_OUTPUT}"
+          echo "jar_name=$(basename "${jar_path}")" >> "${GITHUB_OUTPUT}"
+
+      - name: Create or update draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          asset="${{ steps.jar.outputs.jar_path }}#${{ steps.jar.outputs.jar_name }}"
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            gh release upload "${tag}" "${asset}" --clobber
+          else
+            gh release create "${tag}" "${asset}" \
+              --draft \
+              --verify-tag \
+              --generate-notes \
+              --title "${tag}"
+          fi
+
+      - name: Summarize release URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_url="$(gh release view "${GITHUB_REF_NAME}" --json url --jq '.url')"
+          echo "Draft release: ${release_url}" >> "${GITHUB_STEP_SUMMARY}"
