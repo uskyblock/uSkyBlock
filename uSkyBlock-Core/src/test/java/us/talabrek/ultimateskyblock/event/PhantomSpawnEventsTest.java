@@ -7,8 +7,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import static org.junit.Assert.assertFalse;
@@ -23,14 +22,11 @@ public class PhantomSpawnEventsTest {
 
     @Before
     public void setUp() {
-        uSkyBlock fakePlugin = Mockito.mock(uSkyBlock.class);
         YamlConfiguration config = new YamlConfiguration();
+        PluginConfig pluginConfig = new PluginConfig();
         worldManager = mock(WorldManager.class);
-
-        when(fakePlugin.getWorldManager()).thenReturn(worldManager);
-        when(fakePlugin.getConfig()).thenReturn(config);
-
-        phantomSpawnEvents = new PhantomSpawnEvents(fakePlugin);
+        pluginConfig.setYamlConfig(config);
+        phantomSpawnEvents = new PhantomSpawnEvents(pluginConfig, worldManager);
     }
 
     @Test

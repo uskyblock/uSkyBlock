@@ -8,23 +8,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 /**
  * Controls natural phantom spawns on sky worlds.
  */
 @Singleton
 public class PhantomSpawnEvents implements Listener {
-    private final uSkyBlock plugin;
+    private final WorldManager worldManager;
 
     private boolean phantomsInOverworld;
     private boolean phantomsInNether;
 
     @Inject
-    public PhantomSpawnEvents(@NotNull uSkyBlock plugin) {
-        this.plugin = plugin;
-        phantomsInOverworld = plugin.getConfig().getBoolean("options.spawning.phantoms.overworld", true);
-        phantomsInNether = plugin.getConfig().getBoolean("options.spawning.phantoms.nether", false);
+    public PhantomSpawnEvents(@NotNull PluginConfig config, @NotNull WorldManager worldManager) {
+        this.worldManager = worldManager;
+        phantomsInOverworld = config.getYamlConfig().getBoolean("options.spawning.phantoms.overworld", true);
+        phantomsInNether = config.getYamlConfig().getBoolean("options.spawning.phantoms.nether", false);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -35,11 +36,11 @@ public class PhantomSpawnEvents implements Listener {
         }
 
         World spawnWorld = event.getEntity().getWorld();
-        if (!phantomsInOverworld && plugin.getWorldManager().isSkyWorld(spawnWorld)) {
+        if (!phantomsInOverworld && worldManager.isSkyWorld(spawnWorld)) {
             event.setCancelled(true);
         }
 
-        if (!phantomsInNether && plugin.getWorldManager().isSkyNether(spawnWorld)) {
+        if (!phantomsInNether && worldManager.isSkyNether(spawnWorld)) {
             event.setCancelled(true);
         }
     }

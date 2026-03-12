@@ -14,10 +14,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.PluginConfig;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
+import us.talabrek.ultimateskyblock.island.LimitLogic;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.Collection;
 import java.util.Set;
@@ -33,14 +36,25 @@ public class GuardianHabitatEvents implements Listener {
     private static final Collection<Biome> DEEP_OCEAN_BIOMES =
         Set.of(Biome.DEEP_OCEAN, Biome.DEEP_COLD_OCEAN, Biome.DEEP_FROZEN_OCEAN, Biome.DEEP_LUKEWARM_OCEAN);
 
-    private final uSkyBlock plugin;
+    private final PluginConfig config;
+    private final WorldManager worldManager;
+    private final LimitLogic limitLogic;
+    private final IslandLogic islandLogic;
     private final GuardianHabitatPolicy policy;
 
     @Inject
-    public GuardianHabitatEvents(@NotNull uSkyBlock plugin) {
-        this.plugin = plugin;
-        int maxPerIsland = Math.max(0, plugin.getConfig().getInt("options.spawning.guardians.max-per-island", 10));
-        double configuredChance = plugin.getConfig().getDouble("options.spawning.guardians.spawn-chance", 0.10d);
+    public GuardianHabitatEvents(
+        @NotNull PluginConfig config,
+        @NotNull WorldManager worldManager,
+        @NotNull LimitLogic limitLogic,
+        @NotNull IslandLogic islandLogic
+    ) {
+        this.config = config;
+        this.worldManager = worldManager;
+        this.limitLogic = limitLogic;
+        this.islandLogic = islandLogic;
+        int maxPerIsland = Math.max(0, config.getYamlConfig().getInt("options.spawning.guardians.max-per-island", 10));
+        double configuredChance = config.getYamlConfig().getDouble("options.spawning.guardians.spawn-chance", 0.10d);
         this.policy = new GuardianHabitatPolicy(maxPerIsland, configuredChance);
     }
 
@@ -52,7 +66,7 @@ public class GuardianHabitatEvents implements Listener {
 
         Location location = event.getLocation();
         World world = location.getWorld();
-        if (world == null || !plugin.getWorldManager().isSkyAssociatedWorld(world)) {
+        if (world == null || !worldManager.isSkyAssociatedWorld(world)) {
             return;
         }
         if (!isGuardianHabitat(location)) {
@@ -67,14 +81,14 @@ public class GuardianHabitatEvents implements Listener {
             return;
         }
         String islandName = WorldGuardHandler.getIslandNameAt(location);
-        IslandInfo islandInfo = islandName != null ? plugin.getIslandInfo(islandName) : null;
+        IslandInfo islandInfo = islandName != null ? islandLogic.getIslandInfo(islandName) : null;
         if (islandInfo == null) {
             return;
         }
 
         event.setCancelled(true);
-        boolean generalMonsterLimitAllowsSpawn = !plugin.getConfig().getBoolean("options.island.spawn-limits.enabled", true)
-            || plugin.getLimitLogic().canSpawn(EntityType.GUARDIAN, islandInfo);
+        boolean generalMonsterLimitAllowsSpawn = !config.getYamlConfig().getBoolean("options.island.spawn-limits.enabled", true)
+            || limitLogic.canSpawn(EntityType.GUARDIAN, islandInfo);
         if (!policy.shouldSpawnGuardian(countGuardians(world, islandRegion), generalMonsterLimitAllowsSpawn,
             ThreadLocalRandom.current().nextDouble())) {
             return;

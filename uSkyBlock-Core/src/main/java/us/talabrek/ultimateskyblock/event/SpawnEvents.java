@@ -22,7 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
+import us.talabrek.ultimateskyblock.island.LimitLogic;
+import us.talabrek.ultimateskyblock.player.PlayerNotifier;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.Objects;
 import java.util.Set;
@@ -38,16 +42,30 @@ public class SpawnEvents implements Listener {
     private static final Set<Action> RIGHT_CLICKS = Set.of(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK);
 
     private final uSkyBlock plugin;
+    private final WorldManager worldManager;
+    private final LimitLogic limitLogic;
+    private final IslandLogic islandLogic;
+    private final PlayerNotifier notifier;
 
     @Inject
-    public SpawnEvents(@NotNull uSkyBlock plugin) {
+    public SpawnEvents(
+        @NotNull uSkyBlock plugin,
+        @NotNull WorldManager worldManager,
+        @NotNull LimitLogic limitLogic,
+        @NotNull IslandLogic islandLogic,
+        @NotNull PlayerNotifier notifier
+    ) {
         this.plugin = plugin;
+        this.worldManager = worldManager;
+        this.limitLogic = limitLogic;
+        this.islandLogic = islandLogic;
+        this.notifier = notifier;
     }
 
     @EventHandler
     public void onSpawnEggEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (event.useItemInHand() == Event.Result.DENY || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
+        if (event.useItemInHand() == Event.Result.DENY || !worldManager.isSkyAssociatedWorld(player.getWorld())) {
             return; // Bail out, we don't care
         }
         if (player.hasPermission("usb.mod.bypassprotection") || player.isOp()) {
@@ -57,13 +75,13 @@ public class SpawnEvents implements Listener {
         if (RIGHT_CLICKS.contains(event.getAction()) && item != null && item.getItemMeta() instanceof SpawnEggMeta) {
             if (!plugin.playerIsOnIsland(player)) {
                 event.setCancelled(true);
-                plugin.notifyPlayer(player, tr("You can only use spawn eggs on your own island.", ERROR));
+                notifier.notifyPlayer(player, tr("You can only use spawn eggs on your own island.", ERROR));
                 return;
             }
 
             checkLimits(event, getSpawnEggType(item), player.getLocation());
             if (event.useItemInHand() == Event.Result.DENY) {
-                plugin.notifyPlayer(player, tr("You have reached your spawn limit for your island.", ERROR));
+                notifier.notifyPlayer(player, tr("You have reached your spawn limit for your island.", ERROR));
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
             }
@@ -88,7 +106,7 @@ public class SpawnEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event == null || !plugin.getWorldManager().isSkyAssociatedWorld(event.getLocation().getWorld())) {
+        if (event == null || !worldManager.isSkyAssociatedWorld(event.getLocation().getWorld())) {
             return; // Bail out, we don't care
         }
         if (event.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) {
@@ -111,13 +129,13 @@ public class SpawnEvents implements Listener {
             event.setCancelled(true);
             return;
         }
-        IslandInfo islandInfo = plugin.getIslandInfo(islandName);
+        IslandInfo islandInfo = islandLogic.getIslandInfo(islandName);
         if (islandInfo == null) {
             // Disallow spawns on inactive islands
             event.setCancelled(true);
             return;
         }
-        if (!plugin.getLimitLogic().canSpawn(entityType, islandInfo)) {
+        if (!limitLogic.canSpawn(entityType, islandInfo)) {
             event.setCancelled(true);
         }
     }
