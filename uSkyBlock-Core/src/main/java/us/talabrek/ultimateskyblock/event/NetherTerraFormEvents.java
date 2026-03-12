@@ -242,7 +242,7 @@ public class NetherTerraFormEvents implements Listener {
     }
 
     /**
-     * Comes AFTER the {@link SpawnEvents#onCreatureSpawn(CreatureSpawnEvent)} - so cancelled will have effect
+     * Comes AFTER the {@link GuardianHabitatEvents#onCreatureSpawn(CreatureSpawnEvent)} - so cancelled will have effect
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent e) {

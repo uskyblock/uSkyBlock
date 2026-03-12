@@ -17,8 +17,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SpawnEventsTest {
-    private SpawnEvents spawnEvents;
+public class PhantomSpawnEventsTest {
+    private PhantomSpawnEvents phantomSpawnEvents;
     private WorldManager worldManager;
 
     @Before
@@ -30,14 +30,14 @@ public class SpawnEventsTest {
         when(fakePlugin.getWorldManager()).thenReturn(worldManager);
         when(fakePlugin.getConfig()).thenReturn(config);
 
-        spawnEvents = new SpawnEvents(fakePlugin);
+        phantomSpawnEvents = new PhantomSpawnEvents(fakePlugin);
     }
 
     @Test
     public void onPhantomSpawn_noPhantom() {
         Zombie entity = mock(Zombie.class);
         CreatureSpawnEvent event = new CreatureSpawnEvent(entity, CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.onPhantomSpawn(event);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }
@@ -47,9 +47,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyWorld(any(World.class))).thenReturn(true);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInOverworld(true);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInOverworld(true);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }
@@ -59,9 +59,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyWorld(any(World.class))).thenReturn(true);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInOverworld(false);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInOverworld(false);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertTrue(event.isCancelled());
     }
@@ -71,9 +71,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyWorld(any(World.class))).thenReturn(false);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInOverworld(false);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInOverworld(false);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }
@@ -83,9 +83,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyWorld(any(World.class))).thenReturn(true);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
-        spawnEvents.setPhantomsInOverworld(false);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
+        phantomSpawnEvents.setPhantomsInOverworld(false);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }
@@ -95,9 +95,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyNether(any(World.class))).thenReturn(true);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInNether(true);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInNether(true);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }
@@ -107,9 +107,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyNether(any(World.class))).thenReturn(true);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInNether(false);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInNether(false);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertTrue(event.isCancelled());
     }
@@ -119,9 +119,9 @@ public class SpawnEventsTest {
         when(worldManager.isSkyNether(any(World.class))).thenReturn(false);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(getFakePhantom(),
-                CreatureSpawnEvent.SpawnReason.NATURAL);
-        spawnEvents.setPhantomsInNether(false);
-        spawnEvents.onPhantomSpawn(event);
+            CreatureSpawnEvent.SpawnReason.NATURAL);
+        phantomSpawnEvents.setPhantomsInNether(false);
+        phantomSpawnEvents.onPhantomSpawn(event);
 
         assertFalse(event.isCancelled());
     }

@@ -3,16 +3,12 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.EntitySnapshot;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WaterMob;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -27,9 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import us.talabrek.ultimateskyblock.util.LocationUtil;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,7 +31,7 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 
 /**
- * Responsible for controlling spawns on uSkyBlock islands.
+ * Responsible for enforcing island creature spawn limits.
  */
 @Singleton
 public class SpawnEvents implements Listener {
@@ -45,14 +39,9 @@ public class SpawnEvents implements Listener {
 
     private final uSkyBlock plugin;
 
-    private boolean phantomsInOverworld;
-    private boolean phantomsInNether;
-
     @Inject
     public SpawnEvents(@NotNull uSkyBlock plugin) {
         this.plugin = plugin;
-        phantomsInOverworld = plugin.getConfig().getBoolean("options.spawning.phantoms.overworld", true);
-        phantomsInNether = plugin.getConfig().getBoolean("options.spawning.phantoms.nether", false);
     }
 
     @EventHandler
@@ -106,23 +95,6 @@ public class SpawnEvents implements Listener {
             return; // Allow it, the above method would have blocked it if it should be blocked.
         }
         checkLimits(event, event.getEntity().getType(), event.getLocation());
-        if (event.getEntity() instanceof WaterMob) {
-            Location loc = event.getLocation();
-            if (isDeepOceanBiome(loc) && isPrismarineRoof(loc)) {
-                loc.getWorld().spawnEntity(loc, EntityType.GUARDIAN);
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    private boolean isPrismarineRoof(Location loc) {
-        Collection<Material> prismarineBlocks = Set.of(Material.PRISMARINE, Material.PRISMARINE_BRICKS, Material.DARK_PRISMARINE);
-        return prismarineBlocks.contains(LocationUtil.findRoofBlock(loc).getType());
-    }
-
-    private boolean isDeepOceanBiome(Location loc) {
-        Collection<Biome> deepOceans = Set.of(Biome.DEEP_OCEAN, Biome.DEEP_COLD_OCEAN, Biome.DEEP_FROZEN_OCEAN, Biome.DEEP_LUKEWARM_OCEAN);
-        return deepOceans.contains(loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
     }
 
     private void checkLimits(Cancellable event, EntityType entityType, Location location) {
@@ -148,38 +120,5 @@ public class SpawnEvents implements Listener {
         if (!plugin.getLimitLogic().canSpawn(entityType, islandInfo)) {
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPhantomSpawn(CreatureSpawnEvent event) {
-        if (!(event.getEntity() instanceof Phantom) ||
-                event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL) {
-            return;
-        }
-
-        World spawnWorld = event.getEntity().getWorld();
-        if (!phantomsInOverworld && plugin.getWorldManager().isSkyWorld(spawnWorld)) {
-            event.setCancelled(true);
-        }
-
-        if (!phantomsInNether && plugin.getWorldManager().isSkyNether(spawnWorld)) {
-            event.setCancelled(true);
-        }
-    }
-
-    /**
-     * Changes the setting that allows Phantoms to spawn in the overworld. Used for testing purposes.
-     * @param state True/enabled means spawning is allowed, false disallowed.
-     */
-    void setPhantomsInOverworld(boolean state) {
-        this.phantomsInOverworld = state;
-    }
-
-    /**
-     * Changes the setting that allows Phantoms to spawn in the nether. Used for testing purposes.
-     * @param state True/enabled means spawning is allowed, false disallowed.
-     */
-    void setPhantomsInNether(boolean state) {
-        this.phantomsInNether = state;
     }
 }
