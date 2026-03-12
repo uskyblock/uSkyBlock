@@ -7,7 +7,7 @@ import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI;

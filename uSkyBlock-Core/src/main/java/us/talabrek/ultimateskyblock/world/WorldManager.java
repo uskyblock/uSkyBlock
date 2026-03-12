@@ -17,8 +17,8 @@ import org.bukkit.entity.Monster;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.PluginConfig;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static us.talabrek.ultimateskyblock.Settings.island_height;
+import static us.talabrek.ultimateskyblock.config.Settings.island_height;
 
 @Singleton
 public class WorldManager {

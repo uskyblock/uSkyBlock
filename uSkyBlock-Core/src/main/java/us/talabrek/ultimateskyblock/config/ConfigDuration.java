@@ -1,4 +1,4 @@
-package us.talabrek.ultimateskyblock;
+package us.talabrek.ultimateskyblock.config;
 
 import org.jetbrains.annotations.NotNull;
 

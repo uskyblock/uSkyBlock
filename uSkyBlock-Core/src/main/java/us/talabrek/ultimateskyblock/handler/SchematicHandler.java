@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
 import us.talabrek.ultimateskyblock.util.FileUtil;
 

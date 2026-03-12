@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.util;
 
 import org.bukkit.Location;
 import org.junit.Test;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

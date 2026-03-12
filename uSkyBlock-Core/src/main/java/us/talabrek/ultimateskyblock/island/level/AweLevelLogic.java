@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;

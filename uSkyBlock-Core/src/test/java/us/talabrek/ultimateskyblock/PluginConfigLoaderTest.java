@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 
 import java.io.File;
 import java.nio.file.Files;

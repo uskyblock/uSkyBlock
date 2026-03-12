@@ -12,7 +12,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.material.Directional;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 
 import java.util.Locale;

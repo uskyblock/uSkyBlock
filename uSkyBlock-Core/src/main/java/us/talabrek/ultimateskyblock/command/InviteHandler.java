@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.ConfigDuration;
+import us.talabrek.ultimateskyblock.config.ConfigDuration;
 import us.talabrek.ultimateskyblock.api.event.AcceptEvent;
 import us.talabrek.ultimateskyblock.api.event.InviteEvent;
 import us.talabrek.ultimateskyblock.api.event.RejectEvent;

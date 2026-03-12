@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock;
 
 import org.junit.Test;
+import us.talabrek.ultimateskyblock.config.ConfigDuration;
 
 import java.time.Duration;
 
