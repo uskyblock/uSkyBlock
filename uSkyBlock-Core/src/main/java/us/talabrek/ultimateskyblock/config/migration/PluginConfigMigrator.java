@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -97,7 +98,7 @@ public class PluginConfigMigrator {
             Path backupFolder = requireParent(configPath).resolve("backup");
             Files.createDirectories(backupFolder);
             Path backupPath = resolveBackupPath(backupFolder);
-            Files.move(configPath,
+            Files.copy(configPath,
                 backupPath,
                 StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
@@ -203,11 +204,35 @@ public class PluginConfigMigrator {
     }
 
     private void saveUnchecked(@NotNull Path configPath, @NotNull YamlConfiguration config, int fromVersion, int toVersion) {
+        Path tempFile = null;
         try {
-            config.save(configPath.toFile());
+            tempFile = Files.createTempFile(requireParent(configPath), "config-migration-", ".yml");
+            config.save(tempFile.toFile());
+            moveIntoPlace(tempFile, configPath);
         } catch (IOException e) {
             throw new IllegalStateException(
                 "Unable to save config.yml after explicit migration " + fromVersion + " -> " + toVersion + ".", e);
+        } finally {
+            deleteIfExists(tempFile);
+        }
+    }
+
+    private void moveIntoPlace(@NotNull Path source, @NotNull Path target) throws IOException {
+        try {
+            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException ignored) {
+            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void deleteIfExists(Path file) {
+        if (file == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(file);
+        } catch (IOException ignored) {
+            // Best effort cleanup only.
         }
     }
 

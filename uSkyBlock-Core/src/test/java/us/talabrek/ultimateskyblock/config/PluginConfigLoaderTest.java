@@ -159,6 +159,29 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void failedExplicitMigrationLeavesTheOriginalConfigInPlace() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(112);
+        config.set("options.party.invite-timeout", "not-a-duration");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        try {
+            loader.load();
+            fail("Expected explicit migration to fail for an invalid invite-timeout");
+        } catch (IllegalStateException expected) {
+            assertTrue(configFile.isFile());
+            YamlConfiguration original = YamlConfiguration.loadConfiguration(configFile);
+            assertEquals(112, original.getInt("version"));
+            assertEquals("not-a-duration", original.getString("options.party.invite-timeout"));
+            try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
+                assertTrue(stream.findAny().isPresent());
+            }
+        }
+    }
+
+    @Test
     public void removesLegacyMigrationMetadataFromVersion113Configs() throws Exception {
         FileUtil.setDataFolder(testFolder.getRoot());
         File configFile = new File(testFolder.getRoot(), "config.yml");
