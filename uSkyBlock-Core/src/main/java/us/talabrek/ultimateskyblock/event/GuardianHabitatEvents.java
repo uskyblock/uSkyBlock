@@ -27,7 +27,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Replaces qualified deep-ocean water-mob spawns with guardians using a dedicated cap and chance.
+ * Applies guardian-only spawn rules to qualified deep-ocean prismarine habitats.
+ * Eligible water-mob spawns are suppressed, and guardians are spawned instead only when the
+ * configured cap and chance allow it. This preserves the existing behavior of not spawning
+ * other water mobs in these habitats.
  */
 @Singleton
 public class GuardianHabitatEvents implements Listener {
