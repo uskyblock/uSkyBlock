@@ -6,10 +6,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
+import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -37,7 +39,7 @@ public class PluginConfigLoaderTest {
             Files.copy(reader, configFile.toPath());
         }
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration config = loader.load();
 
         assertEquals(loadBundledVersion(), config.getInt("version"));
@@ -78,7 +80,7 @@ public class PluginConfigLoaderTest {
         config.set("options.deprecated.fixFlatland", true);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(114, migrated.getInt("version"));
@@ -107,7 +109,7 @@ public class PluginConfigLoaderTest {
         config.set("options.party.invite-timeout", 60);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(114, migrated.getInt("version"));
@@ -123,7 +125,7 @@ public class PluginConfigLoaderTest {
         config.set("options.party.invite-timeout", 1500);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(114, migrated.getInt("version"));
@@ -141,7 +143,7 @@ public class PluginConfigLoaderTest {
         config.set("options.deprecated.fixFlatland", true);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(114, migrated.getInt("version"));
@@ -159,7 +161,7 @@ public class PluginConfigLoaderTest {
         config.set("version", 999);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         try {
             loader.load();
             fail("Expected future config versions to be rejected");
@@ -175,11 +177,28 @@ public class PluginConfigLoaderTest {
         YamlConfiguration config = loadBundledConfig();
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration loaded = loader.load();
         YamlConfiguration bundled = loadBundledConfig();
 
         assertEquals(bundled.saveToString(), loaded.saveToString());
+    }
+
+    @Test
+    public void rejectsLocalizedConfigFileNamesWithoutCanonicalConfig() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File localizedConfigFile = new File(testFolder.getRoot(), "config_" + Locale.getDefault() + ".yml");
+        YamlConfiguration config = loadBundledConfig();
+        config.save(localizedConfigFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        try {
+            loader.load();
+            fail("Expected localized config filenames to be rejected");
+        } catch (IllegalStateException expected) {
+            assertTrue(expected.getMessage().contains(localizedConfigFile.getName()));
+            assertTrue(expected.getMessage().contains("config.yml"));
+        }
     }
 
     @Test
@@ -190,7 +209,7 @@ public class PluginConfigLoaderTest {
         config.set("options.advanced.manageSpawn", null);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration loaded = loader.load();
 
         assertEquals(loadBundledVersion(), loaded.getInt("version"));

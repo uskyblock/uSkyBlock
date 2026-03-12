@@ -6,16 +6,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class PluginConfig {
-    private static final Logger logger = Logger.getLogger(PluginConfig.class.getName());
 
-    private final PluginConfigLoader loader = new PluginConfigLoader(logger);
+    private final PluginConfigLoader loader;
     private YamlConfiguration yamlConfig;
 
     @Inject
-    public PluginConfig() {
+    public PluginConfig(@NotNull PluginConfigLoader loader) {
+        this.loader = loader;
     }
 
     @NotNull

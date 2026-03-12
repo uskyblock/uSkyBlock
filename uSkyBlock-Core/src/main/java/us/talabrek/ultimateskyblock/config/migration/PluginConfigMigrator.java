@@ -1,17 +1,18 @@
 package us.talabrek.ultimateskyblock.config.migration;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
+@Singleton
 public class PluginConfigMigrator {
     public static final int LEGACY_BASELINE_VERSION = 111;
     private static final String LEGACY_BASELINE_RESOURCE = "legacy/config-111.yml";
@@ -29,39 +31,40 @@ public class PluginConfigMigrator {
     private final Logger logger;
     private final ConfigMigrations migrations;
 
+    @Inject
     public PluginConfigMigrator(@NotNull Logger logger) {
         this(logger, ConfigMigrations.defaults());
     }
 
-    PluginConfigMigrator(@NotNull Logger logger, @NotNull ConfigMigrations migrations) {
+    private PluginConfigMigrator(@NotNull Logger logger, @NotNull ConfigMigrations migrations) {
         this.logger = logger;
         this.migrations = migrations;
     }
 
-    public void migrate(@NotNull File configFile, int currentVersion) {
-        YamlConfiguration config = loadFromDisk(configFile);
+    public void migrate(@NotNull Path configPath, int currentVersion) {
+        YamlConfiguration config = loadFromDisk(configPath);
         int version = config.getInt("version", 0);
 
         if (version < LEGACY_BASELINE_VERSION) {
-            migrateWithLegacySystem(configFile);
-            config = loadFromDisk(configFile);
+            migrateWithLegacySystem(configPath);
+            config = loadFromDisk(configPath);
             version = config.getInt("version", 0);
         }
 
         if (version < currentVersion) {
-            applyExplicitMigrations(configFile, config, version, currentVersion);
+            applyExplicitMigrations(configPath, config, version, currentVersion);
         }
     }
 
-    private void migrateWithLegacySystem(@NotNull File configFile) {
+    private void migrateWithLegacySystem(@NotNull Path configPath) {
         logger.info("Migrating config.yml using the legacy compatibility path.");
-        new ItemComponentConverter(logger).checkAndDoConfigImport(requireParent(configFile));
-        YamlConfiguration config = loadFromDisk(configFile);
+        new ItemComponentConverter(logger).checkAndDoConfigImport(requireParent(configPath).toFile());
+        YamlConfiguration config = loadFromDisk(configPath);
         YamlConfiguration baselineConfig = loadBundledConfig(LEGACY_BASELINE_RESOURCE);
-        migrateToLegacyBaseline(configFile, config, baselineConfig);
+        migrateToLegacyBaseline(configPath, config, baselineConfig);
     }
 
-    private void applyExplicitMigrations(@NotNull File configFile, @NotNull YamlConfiguration config,
+    private void applyExplicitMigrations(@NotNull Path configPath, @NotNull YamlConfiguration config,
                                          int version, int currentVersion) {
         int nextVersion = version;
         while (nextVersion < currentVersion) {
@@ -69,30 +72,30 @@ public class PluginConfigMigrator {
             logger.info("Applying explicit config.yml migration " + migration.fromVersion() + " -> " + migration.toVersion() + ".");
             migration.apply(config);
             config.set("version", migration.toVersion());
-            saveUnchecked(configFile, config, migration.fromVersion(), migration.toVersion());
+            saveUnchecked(configPath, config, migration.fromVersion(), migration.toVersion());
             nextVersion = migration.toVersion();
         }
     }
 
-    private void migrateToLegacyBaseline(@NotNull File configFile, @NotNull YamlConfiguration config,
+    private void migrateToLegacyBaseline(@NotNull Path configPath, @NotNull YamlConfiguration config,
                                          @NotNull YamlConfiguration baselineConfig) {
         int currentVersion = config.getInt("version", 0);
         int baselineVersion = baselineConfig.getInt("version", LEGACY_BASELINE_VERSION);
         if (currentVersion >= baselineVersion) {
             return;
         }
-        backupForLegacyMigration(configFile);
+        backupForLegacyMigration(configPath);
         YamlConfiguration merged = mergeConfig(baselineConfig, config);
-        saveUnchecked(configFile, merged, currentVersion, baselineVersion);
+        saveUnchecked(configPath, merged, currentVersion, baselineVersion);
     }
 
-    private void backupForLegacyMigration(@NotNull File configFile) {
+    private void backupForLegacyMigration(@NotNull Path configPath) {
         try {
-            File backupFolder = new File(requireParent(configFile), "backup");
-            backupFolder.mkdirs();
+            Path backupFolder = requireParent(configPath).resolve("backup");
+            Files.createDirectories(backupFolder);
             String backupName = String.format("config-%1$tY%1$tm%1$td-%1$tH%1$tM.yml", new Date());
-            Files.move(Paths.get(configFile.toURI()),
-                Paths.get(new File(backupFolder, backupName).toURI()),
+            Files.move(configPath,
+                backupFolder.resolve(backupName),
                 StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to back up config.yml before legacy migration.", e);
@@ -174,19 +177,19 @@ public class PluginConfigMigrator {
     }
 
     @NotNull
-    private YamlConfiguration loadFromDisk(@NotNull File configFile) {
+    private YamlConfiguration loadFromDisk(@NotNull Path configPath) {
         YamlConfiguration config = new YamlConfiguration();
-        try {
-            config.load(configFile);
+        try (Reader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
+            config.load(reader);
             return config;
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to load config.yml from " + configFile, e);
+            throw new IllegalStateException("Unable to load config.yml from " + configPath, e);
         }
     }
 
-    private void saveUnchecked(@NotNull File configFile, @NotNull YamlConfiguration config, int fromVersion, int toVersion) {
+    private void saveUnchecked(@NotNull Path configPath, @NotNull YamlConfiguration config, int fromVersion, int toVersion) {
         try {
-            config.save(configFile);
+            config.save(configPath.toFile());
         } catch (IOException e) {
             throw new IllegalStateException(
                 "Unable to save config.yml after explicit migration " + fromVersion + " -> " + toVersion + ".", e);
@@ -194,8 +197,8 @@ public class PluginConfigMigrator {
     }
 
     @NotNull
-    private static File requireParent(@NotNull File file) {
-        File parent = file.getParentFile();
+    private static Path requireParent(@NotNull Path file) {
+        Path parent = file.getParent();
         if (parent == null) {
             throw new IllegalStateException("Config file has no parent directory: " + file);
         }
