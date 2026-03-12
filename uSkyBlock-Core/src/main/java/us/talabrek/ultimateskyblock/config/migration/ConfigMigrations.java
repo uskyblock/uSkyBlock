@@ -24,7 +24,8 @@ public final class ConfigMigrations {
         return new ConfigMigrations(List.of(
             new ConfigMigrationV112(),
             new ConfigMigrationV113(),
-            new ConfigMigrationV114()
+            new ConfigMigrationV114(),
+            new ConfigMigrationV115()
         ));
     }
 

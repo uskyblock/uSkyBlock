@@ -26,6 +26,12 @@ public class PluginConfigLoaderTest {
         "# [duration] How long an island invite stays valid. Use ms, s, m, h, or d.");
     private static final List<String> RESTART_TELEPORT_COMMENT = List.of(
         "# [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.");
+    private static final List<String> GUARDIAN_ENABLED_COMMENT = List.of(
+        "# [true/false] If true, deep-ocean prismarine habitats can replace water-mob spawns with guardians.");
+    private static final List<String> GUARDIAN_CAP_COMMENT = List.of(
+        "# [integer] Maximum number of guardians allowed at one island guardian habitat. This safety cap always applies.");
+    private static final List<String> GUARDIAN_CHANCE_COMMENT = List.of(
+        "# [number] Chance from 0.0 to 1.0 that an eligible water-mob spawn is replaced with a guardian.");
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
@@ -52,6 +58,9 @@ public class PluginConfigLoaderTest {
         assertEquals("30s", config.getString("options.party.invite-timeout"));
         assertEquals("10s", config.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", config.getString("options.restart.teleportDelay"));
+        assertTrue(config.getBoolean("options.spawning.guardians.enabled"));
+        assertEquals(10, config.getInt("options.spawning.guardians.max-per-island"));
+        assertEquals(0.1d, config.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
         assertFalse(config.contains("force-replace"));
         assertFalse(config.contains("move-nodes"));
         assertFalse(config.contains("options.deprecated.fixFlatland"));
@@ -83,7 +92,7 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(114, migrated.getInt("version"));
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertEquals("default", migrated.getString("options.island.schematicName"));
         assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
         assertEquals("30s", migrated.getString("options.general.cooldownRestart"));
@@ -93,9 +102,15 @@ public class PluginConfigLoaderTest {
         assertEquals("30s", migrated.getString("options.party.invite-timeout"));
         assertEquals("10s", migrated.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", migrated.getString("options.restart.teleportDelay"));
+        assertTrue(migrated.getBoolean("options.spawning.guardians.enabled"));
+        assertEquals(10, migrated.getInt("options.spawning.guardians.max-per-island"));
+        assertEquals(0.1d, migrated.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
         assertEquals(RESTART_COOLDOWN_COMMENT, migrated.getComments("options.general.cooldownRestart"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
         assertEquals(RESTART_TELEPORT_COMMENT, migrated.getComments("options.restart.teleportDelay"));
+        assertEquals(GUARDIAN_ENABLED_COMMENT, migrated.getComments("options.spawning.guardians.enabled"));
+        assertEquals(GUARDIAN_CAP_COMMENT, migrated.getComments("options.spawning.guardians.max-per-island"));
+        assertEquals(GUARDIAN_CHANCE_COMMENT, migrated.getComments("options.spawning.guardians.spawn-chance"));
         assertFalse(migrated.contains("force-replace"));
         assertFalse(migrated.contains("move-nodes"));
         assertFalse(migrated.contains("options.deprecated.fixFlatland"));
@@ -122,7 +137,7 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(114, migrated.getInt("version"));
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertEquals("default", migrated.getString("options.island.schematicName"));
     }
 
@@ -137,7 +152,7 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(114, migrated.getInt("version"));
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertEquals("60s", migrated.getString("options.party.invite-timeout"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
     }
@@ -153,7 +168,7 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(114, migrated.getInt("version"));
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertEquals("1500ms", migrated.getString("options.party.invite-timeout"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
     }
@@ -194,11 +209,31 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(114, migrated.getInt("version"));
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertFalse(migrated.contains("force-replace"));
         assertFalse(migrated.contains("move-nodes"));
         assertFalse(migrated.contains("options.deprecated.fixFlatland"));
         assertFalse(migrated.contains("options.deprecated"));
+    }
+
+    @Test
+    public void addsGuardianHabitatDefaultsDuringMigration115() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(114);
+        config.set("options.spawning.guardians", null);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertTrue(migrated.getBoolean("options.spawning.guardians.enabled"));
+        assertEquals(10, migrated.getInt("options.spawning.guardians.max-per-island"));
+        assertEquals(0.1d, migrated.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
+        assertEquals(GUARDIAN_ENABLED_COMMENT, migrated.getComments("options.spawning.guardians.enabled"));
+        assertEquals(GUARDIAN_CAP_COMMENT, migrated.getComments("options.spawning.guardians.max-per-island"));
+        assertEquals(GUARDIAN_CHANCE_COMMENT, migrated.getComments("options.spawning.guardians.spawn-chance"));
     }
 
     @Test
@@ -282,6 +317,11 @@ public class PluginConfigLoaderTest {
         config.set("options.advanced.confirmTimeout", "10s");
         config.set("options.advanced.manageSpawn", true);
         config.set("options.restart.teleportDelay", "1000ms");
+        if (version >= 115) {
+            config.set("options.spawning.guardians.enabled", true);
+            config.set("options.spawning.guardians.max-per-island", 10);
+            config.set("options.spawning.guardians.spawn-chance", 0.1d);
+        }
         config.set("nether.enabled", false);
         return config;
     }
@@ -302,5 +342,4 @@ public class PluginConfigLoaderTest {
             throw new AssertionError("Unable to load bundled config.yml", e);
         }
     }
-
 }

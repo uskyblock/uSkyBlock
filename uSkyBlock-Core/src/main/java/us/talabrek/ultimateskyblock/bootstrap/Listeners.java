@@ -11,11 +11,13 @@ import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
 import us.talabrek.ultimateskyblock.command.InviteHandler;
 import us.talabrek.ultimateskyblock.event.ExploitEvents;
+import us.talabrek.ultimateskyblock.event.GuardianHabitatEvents;
 import us.talabrek.ultimateskyblock.event.GriefEvents;
 import us.talabrek.ultimateskyblock.event.InternalEvents;
 import us.talabrek.ultimateskyblock.event.ItemDropEvents;
 import us.talabrek.ultimateskyblock.event.MenuEvents;
 import us.talabrek.ultimateskyblock.event.NetherTerraFormEvents;
+import us.talabrek.ultimateskyblock.event.PhantomSpawnEvents;
 import us.talabrek.ultimateskyblock.event.PlayerEvents;
 import us.talabrek.ultimateskyblock.event.PortalEvents;
 import us.talabrek.ultimateskyblock.event.SpawnEvents;
@@ -41,6 +43,8 @@ public class Listeners {
     private final GriefEvents griefEvents;
     private final ItemDropEvents itemDropEvents;
     private final SpawnEvents spawnEvents;
+    private final PhantomSpawnEvents phantomSpawnEvents;
+    private final GuardianHabitatEvents guardianHabitatEvents;
     private final WorldGuardEvents worldGuardEvents;
     private final NetherTerraFormEvents netherTerraFormEvents;
     private final ToolMenuEvents toolMenuEvents;
@@ -62,6 +66,8 @@ public class Listeners {
         @NotNull GriefEvents griefEvents,
         @NotNull ItemDropEvents itemDropEvents,
         @NotNull SpawnEvents spawnEvents,
+        @NotNull PhantomSpawnEvents phantomSpawnEvents,
+        @NotNull GuardianHabitatEvents guardianHabitatEvents,
         @NotNull WorldGuardEvents worldGuardEvents,
         @NotNull NetherTerraFormEvents netherTerraFormEvents,
         @NotNull ToolMenuEvents toolMenuEvents,
@@ -81,6 +87,8 @@ public class Listeners {
         this.griefEvents = griefEvents;
         this.itemDropEvents = itemDropEvents;
         this.spawnEvents = spawnEvents;
+        this.phantomSpawnEvents = phantomSpawnEvents;
+        this.guardianHabitatEvents = guardianHabitatEvents;
         this.worldGuardEvents = worldGuardEvents;
         this.netherTerraFormEvents = netherTerraFormEvents;
         this.toolMenuEvents = toolMenuEvents;
@@ -114,6 +122,10 @@ public class Listeners {
         if (config.getYamlConfig().getBoolean("options.island.spawn-limits.enabled", true)) {
             manager.registerEvents(spawnEvents, plugin);
         }
+        if (config.getYamlConfig().getBoolean("options.spawning.guardians.enabled", true)) {
+            manager.registerEvents(guardianHabitatEvents, plugin);
+        }
+        manager.registerEvents(phantomSpawnEvents, plugin);
         if (config.getYamlConfig().getBoolean("options.protection.visitors.block-banned-entry", true)) {
             manager.registerEvents(worldGuardEvents, plugin);
         }

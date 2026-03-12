@@ -194,6 +194,13 @@ options:
 
   # Contains flags for controlling monster spawning on islands.
   spawning:
+    guardians:
+      # [true/false] If true, deep-ocean prismarine habitats can replace water-mob spawns with guardians.
+      enabled: true
+      # [integer] Maximum number of guardians allowed at one island guardian habitat. This safety cap always applies.
+      max-per-island: 10
+      # [number] Chance from 0.0 to 1.0 that an eligible water-mob spawn is replaced with a guardian.
+      spawn-chance: 0.1
     # Controls if Phantoms are allowed to spawn naturally. Non-natural spawns, e.g. from a spawnegg, are not
     # managed by us.
     phantoms:
@@ -463,4 +470,4 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 114
+version: 115

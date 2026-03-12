@@ -1,0 +1,55 @@
+package us.talabrek.ultimateskyblock.event;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.bukkit.World;
+import org.bukkit.entity.Phantom;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.world.WorldManager;
+
+/**
+ * Controls natural phantom spawns on sky worlds.
+ */
+@Singleton
+public class PhantomSpawnEvents implements Listener {
+    private final WorldManager worldManager;
+
+    private boolean phantomsInOverworld;
+    private boolean phantomsInNether;
+
+    @Inject
+    public PhantomSpawnEvents(@NotNull PluginConfig config, @NotNull WorldManager worldManager) {
+        this.worldManager = worldManager;
+        phantomsInOverworld = config.getYamlConfig().getBoolean("options.spawning.phantoms.overworld", true);
+        phantomsInNether = config.getYamlConfig().getBoolean("options.spawning.phantoms.nether", false);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPhantomSpawn(CreatureSpawnEvent event) {
+        if (!(event.getEntity() instanceof Phantom) ||
+            event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL) {
+            return;
+        }
+
+        World spawnWorld = event.getEntity().getWorld();
+        if (!phantomsInOverworld && worldManager.isSkyWorld(spawnWorld)) {
+            event.setCancelled(true);
+        }
+
+        if (!phantomsInNether && worldManager.isSkyNether(spawnWorld)) {
+            event.setCancelled(true);
+        }
+    }
+
+    void setPhantomsInOverworld(boolean state) {
+        this.phantomsInOverworld = state;
+    }
+
+    void setPhantomsInNether(boolean state) {
+        this.phantomsInNether = state;
+    }
+}
