@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
 

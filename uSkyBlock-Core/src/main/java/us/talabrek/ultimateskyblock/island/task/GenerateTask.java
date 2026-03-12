@@ -3,7 +3,8 @@ package us.talabrek.ultimateskyblock.island.task;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.ConfigDuration;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -86,7 +87,7 @@ public class GenerateTask extends BukkitRunnable {
                 for (String command : plugin.getConfig().getStringList("options.restart.extra-commands")) {
                     plugin.execCommand(player, command, true);
                 }
-            }, Duration.ofMillis(plugin.getConfig().getInt("options.restart.teleportDelay", 2000))
+            }, ConfigDuration.parse(plugin.getConfig().getString("options.restart.teleportDelay", "2000ms"))
         );
     }
 }

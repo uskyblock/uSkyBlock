@@ -8,8 +8,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 
 import java.util.Arrays;

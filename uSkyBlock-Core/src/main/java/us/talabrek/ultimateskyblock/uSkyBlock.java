@@ -43,6 +43,10 @@ import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
+import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -78,6 +82,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -92,11 +97,11 @@ import java.util.regex.Pattern;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
@@ -153,7 +158,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private PlayerLogic playerLogic;
     // TODO: don't assign value directly, but use injection instead. Currently, legacy code in PlaceholderHandler accesses it too early for injection to work.
     @Inject
-    private PluginConfig config = new PluginConfig();
+    private PluginConfig config = new PluginConfig(new PluginConfigLoader(getDataFolder().toPath(), new PluginConfigMigrator(getLogger())));
     @Inject
     private BlockLimitLogic blockLimitLogic;
     @Inject
@@ -179,9 +184,18 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return config.getYamlConfig();
     }
 
+    @Override
+    public void saveConfig() {
+        try {
+            config.save();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to save config.yml", e);
+        }
+    }
+
     private void convertConfigItemsTo1_20_6IfRequired() {
         var converter = new ItemComponentConverter(getLogger());
-        converter.checkAndDoImport(getDataFolder());
+        converter.checkAndDoChallengeImport(getDataFolder());
     }
 
     private void convertConfigToBlockRequirements() {
@@ -676,7 +690,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAlwaysOverwrite("levelConfig.yml");
-        FileConfiguration pluginConfig = new PluginConfig().getYamlConfig();
+        FileConfiguration pluginConfig = config.reload();
         Settings.loadPluginConfig(pluginConfig);
         applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);
         I18nUtil.initialize(getDataFolder(), Settings.locale);

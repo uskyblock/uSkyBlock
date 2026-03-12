@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.player.Perk;

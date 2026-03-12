@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.command.completion.AllPlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.BiomeTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.MemberTabCompleter;

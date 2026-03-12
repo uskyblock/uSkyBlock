@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 public class PlaceholderModule {

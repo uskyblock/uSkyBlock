@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
+import us.talabrek.ultimateskyblock.config.Settings;
 
 import java.util.logging.Level;
 

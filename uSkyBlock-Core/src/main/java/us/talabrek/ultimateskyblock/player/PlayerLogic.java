@@ -9,7 +9,7 @@ import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;

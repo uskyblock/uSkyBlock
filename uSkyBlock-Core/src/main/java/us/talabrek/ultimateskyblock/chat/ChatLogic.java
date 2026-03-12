@@ -6,7 +6,7 @@ import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;

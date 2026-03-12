@@ -9,7 +9,7 @@ import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;

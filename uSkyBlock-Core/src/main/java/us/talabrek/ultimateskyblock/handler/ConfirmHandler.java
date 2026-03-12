@@ -4,7 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.ConfigDuration;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.time.Duration;
@@ -36,7 +37,7 @@ public class ConfirmHandler {
     ) {
         this.scheduler = scheduler;
         this.config = config;
-        this.timeout = Duration.ofSeconds(config.getYamlConfig().getInt("options.advanced.confirmTimeout", 10));
+        this.timeout = ConfigDuration.parse(config.getYamlConfig().getString("options.advanced.confirmTimeout", "10s"));
     }
 
     public @NotNull Duration durationLeft(@NotNull Player player, @NotNull String cmd) {

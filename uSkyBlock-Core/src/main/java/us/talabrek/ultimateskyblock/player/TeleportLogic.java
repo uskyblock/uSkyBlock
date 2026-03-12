@@ -13,7 +13,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.ConfigDuration;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -54,7 +55,7 @@ public class TeleportLogic implements Listener {
     ) {
         this.logger = logger;
         this.plugin = plugin;
-        teleportDelay = Duration.ofSeconds(plugin.getConfig().getInt("options.island.islandTeleportDelay", 2));
+        teleportDelay = ConfigDuration.parse(plugin.getConfig().getString("options.island.islandTeleportDelay", "2s"));
         cancelDistance = plugin.getConfig().getDouble("options.island.teleportCancelDistance", 0.2);
         this.worldManager = worldManager;
         this.scheduler = scheduler;

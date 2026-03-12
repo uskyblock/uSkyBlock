@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.event.island.IslandBanPlayerEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandLockEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandTrustPlayerEvent;

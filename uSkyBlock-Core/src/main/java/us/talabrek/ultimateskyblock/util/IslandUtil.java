@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.util;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import us.talabrek.ultimateskyblock.Settings;
+import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package us.talabrek.ultimateskyblock;
+package us.talabrek.ultimateskyblock.config;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
@@ -84,7 +84,7 @@ public class Settings {
             general_cooldownInfo = 60;
         }
         try {
-            general_biomeChange = Duration.ofSeconds(config.getInt("options.general.biomeChange"));
+            general_biomeChange = ConfigDuration.parse(config.getString("options.general.biomeChange"));
             if (general_biomeChange.isNegative()) {
                 general_biomeChange = Duration.ZERO;
             }
@@ -95,7 +95,7 @@ public class Settings {
         general_defaultNetherBiome = loadBiome(config, "options.general.defaultNetherBiome", Biome.NETHER_WASTES);
 
         try {
-            general_cooldownRestart = Duration.ofSeconds(config.getInt("options.general.cooldownRestart"));
+            general_cooldownRestart = ConfigDuration.parse(config.getString("options.general.cooldownRestart"));
             if (general_cooldownRestart.isNegative()) {
                 general_cooldownRestart = Duration.ZERO;
             }
@@ -110,29 +110,16 @@ public class Settings {
         } catch (Exception e) {
             island_height = 120;
         }
-        if (!config.contains("options.extras.obsidianToLava")) {
-            config.set("options.extras.obsidianToLava", true);
-            changed = true;
-        }
-        if (!config.contains("options.general.spawnSize")) {
-            config.set("options.general.spawnSize", 50);
-            changed = true;
-        }
         general_spawnSize = config.getInt("options.general.spawnSize", 50);
         island_chestItems = ItemStackUtil.createItemList(config.getStringList("options.island.chestItems"));
 
-        island_schematicName = config.getString("options.island.schematicName");
-        if (island_schematicName == null || "yourschematicname".equals(island_schematicName) || "uSkyBlockDefault".equals(island_schematicName)) {
-            island_schematicName = "default";
-            config.set("options.island.schematicName", island_schematicName);
-            changed = true;
-        }
+        island_schematicName = config.getString("options.island.schematicName", "default");
         final Set<String> permissionList = new HashSet<>();
         if (config.isConfigurationSection("options.island.extraPermissions")) {
             permissionList.addAll(config.getConfigurationSection("options.island.extraPermissions").getKeys(false));
         }
         island_addExtraItems = config.getBoolean("options.island.addExtraItems");
-        extras_obsidianToLava = config.getBoolean("options.extras.obsidianToLava");
+        extras_obsidianToLava = config.getBoolean("options.extras.obsidianToLava", true);
         island_useIslandLevel = config.getBoolean("options.island.useIslandLevel");
         island_extraPermissions = permissionList.toArray(new String[0]);
         extras_sendToSpawn = config.getBoolean("options.extras.sendToSpawn");
@@ -141,7 +128,7 @@ public class Settings {
         general_worldName = config.getString("options.general.worldName", "skyworld");
         island_removeCreaturesByTeleport = config.getBoolean("options.island.removeCreaturesByTeleport");
         island_allowIslandLock = config.getBoolean("options.island.allowIslandLock");
-        island_topTenTimeout = Duration.ofMinutes(config.getLong("options.island.topTenTimeout", 7));
+        island_topTenTimeout = ConfigDuration.parse(config.getString("options.island.topTenTimeout", "7m"));
         island_allowPvP = config.getString("options.island.allowPvP", "deny").equalsIgnoreCase("allow") ||
             config.getString("options.island.allowPvP", "false").equalsIgnoreCase("true");
         Locale loc = I18nUtil.getLocale(config.getString("language", null));

@@ -13,6 +13,7 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;

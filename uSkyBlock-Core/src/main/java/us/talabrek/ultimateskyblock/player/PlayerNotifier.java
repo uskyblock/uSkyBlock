@@ -8,7 +8,7 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 
 import java.time.Duration;
 import java.time.Instant;
