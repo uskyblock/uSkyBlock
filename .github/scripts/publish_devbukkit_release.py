@@ -11,6 +11,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
+DEFAULT_GAME_VERSION_TYPE_ID = 1
+
 
 def parse_version_spec(spec: str) -> list[str]:
     versions: list[str] = []
@@ -57,20 +59,30 @@ def fetch_json(base_url: str, path: str, api_token: str) -> Any:
 def resolve_game_version_ids(
     versions: list[dict[str, Any]],
     requested_names: list[str],
+    game_version_type_id: int,
 ) -> list[int]:
     matches_by_name: dict[str, list[int]] = {}
     for version in versions:
         name = str(version.get("name", ""))
-        if name not in requested_names:
+        if name not in requested_names or int(version.get("gameVersionTypeID", -1)) != game_version_type_id:
             continue
         matches_by_name.setdefault(name, []).append(int(version["id"]))
 
     missing = [name for name in requested_names if name not in matches_by_name]
     if missing:
-        available = ", ".join(sorted({str(version.get("name", "")) for version in versions}))
+        available = ", ".join(
+            sorted(
+                {
+                    str(version.get("name", ""))
+                    for version in versions
+                    if int(version.get("gameVersionTypeID", -1)) == game_version_type_id
+                }
+            )
+        )
         raise ValueError(
             "Missing CurseForge game versions for "
-            f"{', '.join(missing)}. Available Bukkit versions: {available}"
+            f"{', '.join(missing)} in dependency type {game_version_type_id}. "
+            f"Available Bukkit versions: {available}"
         )
 
     resolved_ids: list[int] = []
@@ -175,6 +187,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--title", required=True)
     parser.add_argument("--body-file", required=True)
     parser.add_argument("--game-version-spec", required=True)
+    parser.add_argument("--game-version-type-id", type=int, default=DEFAULT_GAME_VERSION_TYPE_ID)
     parser.add_argument("--release-type", default="release", choices=["alpha", "beta", "release"])
     return parser.parse_args()
 
@@ -192,7 +205,11 @@ def main() -> int:
         body=Path(args.body_file).read_text(encoding="utf-8"),
     )
     versions = fetch_json(args.base_url, "/api/game/versions", args.api_token)
-    game_version_ids = resolve_game_version_ids(versions, requested_versions)
+    game_version_ids = resolve_game_version_ids(
+        versions,
+        requested_versions,
+        args.game_version_type_id,
+    )
     file_id = upload_release(
         base_url=args.base_url,
         project_id=args.project_id,

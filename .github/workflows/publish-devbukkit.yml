@@ -116,6 +116,7 @@ jobs:
               --title "${RELEASE_TITLE}" \
               --body-file .release-assets/release-body.md \
               --game-version-spec "${MINECRAFT_VERSIONS}" \
+              --game-version-type-id 1 \
               --release-type release
           )"
           echo "file_id=${file_id}" >> "${GITHUB_OUTPUT}"

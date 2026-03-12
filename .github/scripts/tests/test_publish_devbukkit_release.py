@@ -34,7 +34,7 @@ class BuildChangelogTest(unittest.TestCase):
 
 
 class ResolveGameVersionIdsTest(unittest.TestCase):
-    def test_resolve_game_version_ids_collects_all_exact_matches(self) -> None:
+    def test_resolve_game_version_ids_filters_to_requested_dependency_type(self) -> None:
         versions = [
             {"id": 157, "gameVersionTypeID": 42, "name": "1.21.10"},
             {"id": 158, "gameVersionTypeID": 43, "name": "1.21.10"},
@@ -45,17 +45,19 @@ class ResolveGameVersionIdsTest(unittest.TestCase):
             publish_devbukkit_release.resolve_game_version_ids(
                 versions,
                 ["1.21.10", "1.21.11"],
+                42,
             ),
-            [157, 158, 159],
+            [157, 159],
         )
 
-    def test_resolve_game_version_ids_reports_missing_versions(self) -> None:
+    def test_resolve_game_version_ids_reports_missing_versions_for_dependency_type(self) -> None:
         versions = [{"id": 157, "gameVersionTypeID": 42, "name": "1.21.10"}]
 
         with self.assertRaisesRegex(ValueError, "1.21.11"):
             publish_devbukkit_release.resolve_game_version_ids(
                 versions,
                 ["1.21.11"],
+                42,
             )
 
 
