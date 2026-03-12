@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
+import us.talabrek.ultimateskyblock.util.BackupFileUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,27 +96,15 @@ public class PluginConfigMigrator {
 
     private void backupConfig(@NotNull Path configPath, @NotNull String context) {
         try {
-            Path backupFolder = requireParent(configPath).resolve("backup");
-            Files.createDirectories(backupFolder);
-            Path backupPath = resolveBackupPath(backupFolder);
-            Files.copy(configPath,
-                backupPath,
-                StandardCopyOption.REPLACE_EXISTING);
+            BackupFileUtil.copyToBackup(requireParent(configPath), configPath, backupFileName());
         } catch (IOException e) {
             throw new IllegalStateException("Unable to back up config.yml " + context + ".", e);
         }
     }
 
     @NotNull
-    private static Path resolveBackupPath(@NotNull Path backupFolder) {
-        String timestamp = LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT);
-        Path candidate = backupFolder.resolve("config-" + timestamp + ".yml");
-        int suffix = 1;
-        while (Files.exists(candidate)) {
-            candidate = backupFolder.resolve("config-" + timestamp + "-" + suffix + ".yml");
-            suffix++;
-        }
-        return candidate;
+    private static String backupFileName() {
+        return "config-" + LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT) + ".yml";
     }
 
     @NotNull

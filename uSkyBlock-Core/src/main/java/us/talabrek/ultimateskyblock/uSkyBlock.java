@@ -689,7 +689,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         boolean isFirstSetup = !new File(getDataFolder(), "config.yml").exists();
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
-        FileUtil.setAlwaysOverwrite("levelConfig.yml");
         FileConfiguration pluginConfig = config.reload();
         Settings.loadPluginConfig(pluginConfig);
         applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);

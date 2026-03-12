@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.island.level;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -37,11 +36,12 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
     public ChunkSnapshotLevelLogic(
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
+        @NotNull LevelConfigLoader levelConfigLoader,
         @NotNull PluginConfig pluginConfig,
         @NotNull Scheduler scheduler,
         @NotNull Logger logger
     ) {
-        super(FileUtil.getYmlConfiguration("levelConfig.yml"), worldManager);
+        super(levelConfigLoader.load(), worldManager);
         this.plugin = plugin;
         this.pluginConfig = pluginConfig;
         this.scheduler = scheduler;
