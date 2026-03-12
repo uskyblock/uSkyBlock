@@ -2,9 +2,16 @@ package us.talabrek.ultimateskyblock.config.migration;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
+
+import java.util.Set;
 
 public final class ConfigMigrationV112 implements ConfigMigration {
+    private static final Set<String> LEGACY_SCHEMATIC_PLACEHOLDERS = Set.of(
+        "yourschematicname",
+        "yourschematichere",
+        "uSkyBlockDefault"
+    );
+
     @Override
     public int fromVersion() {
         return 111;
@@ -20,7 +27,15 @@ public final class ConfigMigrationV112 implements ConfigMigration {
         if (!config.contains("options.extras.obsidianToLava")) {
             config.set("options.extras.obsidianToLava", true);
         }
-        config.set("options.island.schematicName",
-            PluginConfigLoader.normalizeIslandSchematicName(config.getString("options.island.schematicName", "default")));
+        config.set("options.island.schematicName", normalizeIslandSchematicName(
+            config.getString("options.island.schematicName", "default")));
+    }
+
+    @NotNull
+    private static String normalizeIslandSchematicName(String schematicName) {
+        if (schematicName == null || LEGACY_SCHEMATIC_PLACEHOLDERS.contains(schematicName)) {
+            return "default";
+        }
+        return schematicName;
     }
 }

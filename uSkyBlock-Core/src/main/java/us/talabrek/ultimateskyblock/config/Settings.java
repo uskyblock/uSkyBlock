@@ -113,8 +113,7 @@ public class Settings {
         general_spawnSize = config.getInt("options.general.spawnSize", 50);
         island_chestItems = ItemStackUtil.createItemList(config.getStringList("options.island.chestItems"));
 
-        island_schematicName = PluginConfigLoader.normalizeIslandSchematicName(
-            config.getString("options.island.schematicName", "default"));
+        island_schematicName = config.getString("options.island.schematicName", "default");
         final Set<String> permissionList = new HashSet<>();
         if (config.isConfigurationSection("options.island.extraPermissions")) {
             permissionList.addAll(config.getConfigurationSection("options.island.extraPermissions").getKeys(false));

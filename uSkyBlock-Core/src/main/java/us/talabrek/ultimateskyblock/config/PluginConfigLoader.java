@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -23,7 +22,6 @@ import java.util.stream.Stream;
  */
 public class PluginConfigLoader {
     public static final String CONFIG_NAME = "config.yml";
-    private static final Set<String> INVALID_SCHEMATIC_NAMES = Set.of("yourschematicname", "uSkyBlockDefault");
 
     private final Path configPath;
     private final PluginConfigMigrator migrator;
@@ -59,14 +57,6 @@ public class PluginConfigLoader {
     public void save(@NotNull YamlConfiguration config) throws IOException {
         validateNoLocalizedConfigFiles();
         config.save(configPath.toFile());
-    }
-
-    @NotNull
-    public static String normalizeIslandSchematicName(String schematicName) {
-        if (schematicName == null || INVALID_SCHEMATIC_NAMES.contains(schematicName)) {
-            return "default";
-        }
-        return schematicName;
     }
 
     private void ensureConfigExists(@NotNull Path configPath) {
@@ -112,8 +102,9 @@ public class PluginConfigLoader {
         }
     }
 
-    @NotNull
     private void validateNoLocalizedConfigFiles() {
+        // 2026-03-12: transitional guard for the move from locale-specific config filenames to canonical config.yml.
+        // Keep this until admins have had a release cycle to rename old config_<locale>.yml files, then remove it.
         if (Files.exists(configPath)) {
             return;
         }

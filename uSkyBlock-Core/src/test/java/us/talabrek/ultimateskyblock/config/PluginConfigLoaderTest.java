@@ -102,6 +102,28 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void normalizesLegacySchematicPlaceholderDuringV112Migration() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(111);
+        config.set("options.island.schematicName", "yourschematichere");
+        config.set("options.general.cooldownRestart", 30);
+        config.set("options.general.biomeChange", 60);
+        config.set("options.island.islandTeleportDelay", 2);
+        config.set("options.island.topTenTimeout", 20);
+        config.set("options.party.invite-timeout", 30000);
+        config.set("options.advanced.confirmTimeout", 10);
+        config.set("options.restart.teleportDelay", 1000);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(114, migrated.getInt("version"));
+        assertEquals("default", migrated.getString("options.island.schematicName"));
+    }
+
+    @Test
     public void migratesSmallNumericInviteTimeoutsAsSeconds() throws Exception {
         FileUtil.setDataFolder(testFolder.getRoot());
         File configFile = new File(testFolder.getRoot(), "config.yml");
