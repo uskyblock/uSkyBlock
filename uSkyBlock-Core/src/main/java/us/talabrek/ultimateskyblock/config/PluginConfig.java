@@ -20,8 +20,14 @@ public class PluginConfig {
     @NotNull
     public synchronized YamlConfiguration getYamlConfig() {
         if (yamlConfig == null) {
-            yamlConfig = loader.load();
+            return reload();
         }
+        return yamlConfig;
+    }
+
+    @NotNull
+    public synchronized YamlConfiguration reload() {
+        yamlConfig = loader.load();
         return yamlConfig;
     }
 

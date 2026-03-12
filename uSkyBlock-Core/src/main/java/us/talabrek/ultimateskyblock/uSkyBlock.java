@@ -690,8 +690,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         FileUtil.setAlwaysOverwrite("levelConfig.yml");
-        FileConfiguration pluginConfig = config.getYamlConfig();
-        config.setYamlConfig(pluginConfig);
+        FileConfiguration pluginConfig = config.reload();
         Settings.loadPluginConfig(pluginConfig);
         applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);
         I18nUtil.initialize(getDataFolder(), Settings.locale);
