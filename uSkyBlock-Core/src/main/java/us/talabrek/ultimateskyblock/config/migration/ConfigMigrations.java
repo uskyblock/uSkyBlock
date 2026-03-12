@@ -23,7 +23,8 @@ public final class ConfigMigrations {
     public static ConfigMigrations defaults() {
         return new ConfigMigrations(List.of(
             new ConfigMigrationV112(),
-            new ConfigMigrationV113()
+            new ConfigMigrationV113(),
+            new ConfigMigrationV114()
         ));
     }
 

@@ -50,6 +50,9 @@ public class PluginConfigLoaderTest {
         assertEquals("30s", config.getString("options.party.invite-timeout"));
         assertEquals("10s", config.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", config.getString("options.restart.teleportDelay"));
+        assertFalse(config.contains("force-replace"));
+        assertFalse(config.contains("move-nodes"));
+        assertFalse(config.contains("options.deprecated.fixFlatland"));
         assertTrue(new File(testFolder.getRoot(), "config.yml.old").isFile());
         try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
             assertTrue(stream.findAny().isPresent());
@@ -70,12 +73,15 @@ public class PluginConfigLoaderTest {
         config.set("options.party.invite-timeout", 30000);
         config.set("options.advanced.confirmTimeout", 10);
         config.set("options.restart.teleportDelay", 1000);
+        config.set("force-replace.options.island.schematicName", "yourschematichere");
+        config.set("move-nodes.options.island.fixFlatland", "options.deprecated.fixFlatland");
+        config.set("options.deprecated.fixFlatland", true);
         config.save(configFile);
 
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(113, migrated.getInt("version"));
+        assertEquals(114, migrated.getInt("version"));
         assertEquals("default", migrated.getString("options.island.schematicName"));
         assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
         assertEquals("30s", migrated.getString("options.general.cooldownRestart"));
@@ -88,6 +94,9 @@ public class PluginConfigLoaderTest {
         assertEquals(RESTART_COOLDOWN_COMMENT, migrated.getComments("options.general.cooldownRestart"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
         assertEquals(RESTART_TELEPORT_COMMENT, migrated.getComments("options.restart.teleportDelay"));
+        assertFalse(migrated.contains("force-replace"));
+        assertFalse(migrated.contains("move-nodes"));
+        assertFalse(migrated.contains("options.deprecated.fixFlatland"));
     }
 
     @Test
@@ -101,7 +110,7 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(113, migrated.getInt("version"));
+        assertEquals(114, migrated.getInt("version"));
         assertEquals("60s", migrated.getString("options.party.invite-timeout"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
     }
@@ -117,9 +126,29 @@ public class PluginConfigLoaderTest {
         PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
         YamlConfiguration migrated = loader.load();
 
-        assertEquals(113, migrated.getInt("version"));
+        assertEquals(114, migrated.getInt("version"));
         assertEquals("1500ms", migrated.getString("options.party.invite-timeout"));
         assertEquals(INVITE_TIMEOUT_COMMENT, migrated.getComments("options.party.invite-timeout"));
+    }
+
+    @Test
+    public void removesLegacyMigrationMetadataFromVersion113Configs() throws Exception {
+        FileUtil.setDataFolder(testFolder.getRoot());
+        File configFile = new File(testFolder.getRoot(), "config.yml");
+        YamlConfiguration config = createValidConfig(113);
+        config.set("force-replace.options.island.schematicName", "yourschematichere");
+        config.set("move-nodes.options.island.fixFlatland", "options.deprecated.fixFlatland");
+        config.set("options.deprecated.fixFlatland", true);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(Logger.getAnonymousLogger());
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(114, migrated.getInt("version"));
+        assertFalse(migrated.contains("force-replace"));
+        assertFalse(migrated.contains("move-nodes"));
+        assertFalse(migrated.contains("options.deprecated.fixFlatland"));
+        assertFalse(migrated.contains("options.deprecated"));
     }
 
     @Test
