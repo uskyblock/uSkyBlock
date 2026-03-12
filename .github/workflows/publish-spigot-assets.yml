@@ -1,0 +1,111 @@
+name: Publish Spigot Release Assets
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to prepare, for example v3.1.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish_spigot_assets:
+    if: github.repository_owner == 'uskyblock' && (github.event_name == 'workflow_dispatch' || !github.event.release.prerelease)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.release_tag }}
+
+      - name: JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Capture release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG_CANDIDATE: ${{ github.event.release.tag_name || inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p .release-assets
+          gh release view "${RELEASE_TAG_CANDIDATE}" --json tagName,name,body,isPrerelease > .release-assets/release.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          release = json.loads(Path(".release-assets/release.json").read_text(encoding="utf-8"))
+          if release.get("isPrerelease"):
+              raise SystemExit(f"Release {release['tagName']} is marked as a prerelease.")
+          title = release.get("name") or release["tagName"]
+          with Path(os.environ["GITHUB_ENV"]).open("a", encoding="utf-8") as env_file:
+              env_file.write(f"RELEASE_TAG={release['tagName']}\n")
+              env_file.write(f"RELEASE_VERSION={release['tagName'].removeprefix('v')}\n")
+              env_file.write(f"RELEASE_TITLE={title}\n")
+          Path(".release-assets/release-body.md").write_text(
+              (release.get("body") or "") + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Verify tag matches Gradle version
+        run: ./gradlew verifyReleaseTag -PreleaseTag="${RELEASE_TAG}" --no-daemon --no-configuration-cache
+
+      - name: Download canonical GitHub release asset
+        id: asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download "${RELEASE_TAG}" --pattern 'uSkyBlock-*.jar' --dir .release-assets
+          jar_path="$(find .release-assets -maxdepth 1 -type f -name 'uSkyBlock-*.jar' | head -n 1)"
+          if [ -z "${jar_path}" ]; then
+            echo "No release JAR asset found on ${RELEASE_TAG}." >&2
+            exit 1
+          fi
+          echo "jar_path=${jar_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Render Spigot release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_body="$(cat .release-assets/release-body.md)"
+          gh api markdown \
+            --method POST \
+            -f text="${release_body}" \
+            -f mode=gfm \
+            -f context="${GITHUB_REPOSITORY}" > .release-assets/release-body.html
+          python3 .github/scripts/render_spigot_release_assets.py \
+            --html .release-assets/release-body.html \
+            --title "${RELEASE_TITLE}" \
+            --version "${RELEASE_VERSION}" \
+            --title-output .release-assets/spigot-release-title.txt \
+            --notes-output .release-assets/spigot-release-notes.txt
+
+      - name: Upload Spigot release artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: spigot-release-assets-${{ env.RELEASE_VERSION }}
+          path: |
+            ${{ steps.asset.outputs.jar_path }}
+            .release-assets/spigot-release-title.txt
+            .release-assets/spigot-release-notes.txt
+          if-no-files-found: error
+
+      - name: Summarize release assets
+        run: |
+          echo "Spigot upload artifact prepared for ${RELEASE_TAG}." >> "${GITHUB_STEP_SUMMARY}"
+          echo "Artifact includes the release jar, spigot-release-title.txt, and spigot-release-notes.txt." >> "${GITHUB_STEP_SUMMARY}"

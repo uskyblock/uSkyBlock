@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.papermc.hangarpublishplugin.model.Platforms
+import org.gradle.api.GradleException
 
 plugins {
     id("buildlogic.java-conventions")
@@ -81,10 +82,14 @@ val hangarChannel = providers.environmentVariable("HANGAR_CHANNEL")
     )
 val hangarChangelog = providers.environmentVariable("HANGAR_CHANGELOG")
     .orElse("See the canonical GitHub release notes.")
-val paperVersions = (findProperty("paperVersion") as String)
+val minecraftVersions = ((findProperty("minecraftVersions") as String?) ?: "")
     .split(",")
     .map { it.trim() }
     .filter { it.isNotEmpty() }
+
+if (minecraftVersions.isEmpty()) {
+    throw GradleException("Set the minecraftVersions Gradle property to a comma-separated list of supported versions.")
+}
 
 hangarPublish {
     publications.register("plugin") {
@@ -100,7 +105,7 @@ hangarPublish {
                 } else {
                     jar.set(shadowJar.flatMap { it.archiveFile })
                 }
-                platformVersions.set(paperVersions)
+                platformVersions.set(minecraftVersions)
             }
         }
     }
