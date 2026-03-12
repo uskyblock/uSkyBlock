@@ -18,6 +18,7 @@ uSkyBlock is an open-source Skyblock plugin for Spigot and Paper, with public do
 - Homepage: https://uskyblock.github.io/
 - Docs: https://uskyblock.github.io/docs/
 - Releases: https://www.spigotmc.org/resources/uskyblock-revived.66795/history
+- DevBukkit page: https://dev.bukkit.org/projects/uskyblock
 - Hangar page: https://hangar.papermc.io/uSkyBlock/uSkyBlock
 - Spigot page: https://www.spigotmc.org/resources/uskyblock-revived.66795/
 - Issues: https://github.com/uskyblock/uSkyBlock/issues
