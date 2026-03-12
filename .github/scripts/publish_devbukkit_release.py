@@ -29,11 +29,10 @@ def parse_version_spec(spec: str) -> list[str]:
 
 
 def build_changelog(title: str, version: str, body: str) -> str:
-    heading = title.strip() or version.strip()
     rendered_body = body.strip()
     if rendered_body:
-        return f"# {heading}\n\n{rendered_body}\n"
-    return f"# {heading}\n"
+        return f"{rendered_body}\n"
+    return f"{title.strip() or version.strip()}\n"
 
 
 def fetch_json(base_url: str, path: str, api_token: str) -> Any:

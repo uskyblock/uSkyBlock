@@ -20,16 +20,16 @@ class ParseVersionSpecTest(unittest.TestCase):
 
 
 class BuildChangelogTest(unittest.TestCase):
-    def test_build_changelog_includes_heading_and_body(self) -> None:
+    def test_build_changelog_uses_release_body_without_prepending_title(self) -> None:
         self.assertEqual(
             publish_devbukkit_release.build_changelog("3.0.0", "3.0.0", "Fixes\n\nMore fixes"),
-            "# 3.0.0\n\nFixes\n\nMore fixes\n",
+            "Fixes\n\nMore fixes\n",
         )
 
-    def test_build_changelog_falls_back_to_version_when_title_is_blank(self) -> None:
+    def test_build_changelog_falls_back_to_version_when_body_is_blank(self) -> None:
         self.assertEqual(
             publish_devbukkit_release.build_changelog(" ", "3.0.0", ""),
-            "# 3.0.0\n",
+            "3.0.0\n",
         )
 
 
