@@ -4,8 +4,8 @@ import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class CompositeCommandTest {
     private static final UUID modUUID = UUID.randomUUID();
     private static BaseCommandExecutor executor;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupAll() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         executor = new BaseCommandExecutor("plugin", "plugin", null, "does stuff", ownerUUID);

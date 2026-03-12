@@ -3,8 +3,8 @@ package us.talabrek.ultimateskyblock.event;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
@@ -30,7 +30,7 @@ public class InternalEventsTest {
     private uSkyBlock fakePlugin;
     private InternalEvents internalEvents;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         fakePlugin = mock(uSkyBlock.class);
         internalEvents = new InternalEvents(fakePlugin);

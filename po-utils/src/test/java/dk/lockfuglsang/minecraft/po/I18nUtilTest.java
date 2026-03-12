@@ -3,8 +3,8 @@ package dk.lockfuglsang.minecraft.po;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URL;
@@ -12,10 +12,10 @@ import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class I18nUtilTest {
-    @Before
+    @BeforeEach
     public void setUp() {
         URL dataFolderUrl = getClass().getClassLoader().getResource("");
         I18nUtil.initialize(new File(dataFolderUrl.getFile()), Locale.ENGLISH);

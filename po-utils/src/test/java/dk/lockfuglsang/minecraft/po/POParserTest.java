@@ -1,6 +1,6 @@
 package dk.lockfuglsang.minecraft.po;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class POParserTest {
 
@@ -21,19 +22,22 @@ public class POParserTest {
         assertThat(POParser.asProperties(null), nullValue());
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testPOWithMissingMsgid() throws Exception {
-        POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_missing_msgid.po"));
+        assertThrows(IOException.class,
+            () -> POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_missing_msgid.po")));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testPOWithMissingMsgstr() throws Exception {
-        POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_missing_msgstr.po"));
+        assertThrows(IOException.class,
+            () -> POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_missing_msgstr.po")));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testPOWithMissingContent() throws Exception {
-        POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_mixed_content.po"));
+        assertThrows(IOException.class,
+            () -> POParser.asProperties(getClass().getClassLoader().getResourceAsStream("invalid_mixed_content.po")));
     }
 
     @Test

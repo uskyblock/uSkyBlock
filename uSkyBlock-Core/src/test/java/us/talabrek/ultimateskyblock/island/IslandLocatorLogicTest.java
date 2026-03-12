@@ -5,9 +5,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -16,6 +15,8 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,9 +32,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class IslandLocatorLogicTest {
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     @Test
     public void testNextIslandLocation() throws Exception {
@@ -52,7 +52,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservation() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        IslandLocatorLogic locator = new IslandLocatorLogic(plugin, tempFolder.newFolder().toPath(), mock(), mock(), mock(), mock());
+        IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-1")), mock(), mock(), mock(), mock());
         Player player = createPlayerMock();
         Location location1 = locator.getNextIslandLocation(player);
         assertThat(location1, notNullValue());
@@ -65,7 +65,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservationConcurrency() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, tempFolder.newFolder().toPath(), mock(), mock(), mock(), mock());
+        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-2")), mock(), mock(), mock(), mock());
         final List<Location> locations = new ArrayList<>();
         ThreadGroup threadGroup = new ThreadGroup("My");
         for (int i = 0; i < 10; i++) {

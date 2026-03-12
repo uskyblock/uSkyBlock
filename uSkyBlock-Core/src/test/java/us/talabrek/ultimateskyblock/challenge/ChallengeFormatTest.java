@@ -1,8 +1,8 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.hamcrest.MockitoHamcrest;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -22,7 +22,7 @@ public class ChallengeFormatTest {
     private static ChallengeLogic challengeLogic;
     private static PlayerInfo playerInfo;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeAll() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         playerInfo = Mockito.mock(PlayerInfo.class);

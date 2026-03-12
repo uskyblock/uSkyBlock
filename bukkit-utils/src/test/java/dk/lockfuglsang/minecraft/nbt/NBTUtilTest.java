@@ -3,7 +3,7 @@ package dk.lockfuglsang.minecraft.nbt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.List;

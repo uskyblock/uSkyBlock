@@ -1,27 +1,26 @@
 package us.talabrek.ultimateskyblock.imports;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ItemComponentConverterTest {
-
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     @Test
     public void testMinimalChallengeConversion() throws Exception {
@@ -44,7 +43,7 @@ public class ItemComponentConverterTest {
     }
 
     private void testBlockConverterConfig(String originalName, String expectedName, String fileName) throws Exception {
-        var testFile = new File(testFolder.getRoot(), fileName);
+        var testFile = tempDir.resolve(fileName).toFile();
         try (var reader = Objects.requireNonNull(getClass().getResourceAsStream(originalName))) {
             Files.copy(reader, testFile.toPath());
         }
@@ -54,7 +53,7 @@ public class ItemComponentConverterTest {
 
         assertTrue(testFile.exists());
         long backupFiles;
-        try (var stream = Files.find(testFolder.getRoot().toPath(), 1,
+        try (var stream = Files.find(tempDir, 1,
             (path, attr) ->
                 path.getFileName().toString().startsWith(fileName) && path.getFileName().toString().endsWith(".old")
         )) {
@@ -73,7 +72,7 @@ public class ItemComponentConverterTest {
     }
 
     private void testConfig(String originalName, String expectedName, String fileName) throws Exception {
-        var testFile = new File(testFolder.getRoot(), fileName);
+        var testFile = tempDir.resolve(fileName).toFile();
         try (var reader = Objects.requireNonNull(getClass().getResourceAsStream(originalName))) {
             Files.copy(reader, testFile.toPath());
         }
@@ -82,7 +81,7 @@ public class ItemComponentConverterTest {
         converter.importFile(testFile);
 
         assertTrue(testFile.exists());
-        File backup = new File(testFolder.getRoot(), fileName + ".old");
+        File backup = tempDir.resolve(fileName + ".old").toFile();
         assertTrue(backup.isFile());
 
         YamlConfiguration actual = new YamlConfiguration();
@@ -97,11 +96,11 @@ public class ItemComponentConverterTest {
 
     private void assertConfigsEquals(YamlConfiguration expected, YamlConfiguration actual) {
         for (String key : expected.getKeys(true)) {
-            assertTrue("Missing key: " + key, actual.contains(key));
+            assertTrue(actual.contains(key), "Missing key: " + key);
             if (expected.isConfigurationSection(key)) {
-                assertTrue("Key should be a section: " + key, actual.isConfigurationSection(key));
+                assertTrue(actual.isConfigurationSection(key), "Key should be a section: " + key);
             } else {
-                assertEquals("Items mismatch at key: " + key, expected.get(key), actual.get(key));
+                assertEquals(expected.get(key), actual.get(key), "Items mismatch at key: " + key);
             }
             assertThat("Comments mismatch at key: " + key, actual.getComments(key), is(expected.getComments(key)));
             assertThat("Inline comments mismatch at key: " + key, actual.getInlineComments(key), is(expected.getInlineComments(key)));

@@ -2,22 +2,22 @@ package us.talabrek.ultimateskyblock.config;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class PluginConfigLoaderTest {
     private static final List<String> RESTART_COOLDOWN_COMMENT = List.of(
@@ -32,20 +32,19 @@ public class PluginConfigLoaderTest {
         "# [integer] Maximum number of guardians allowed at one island guardian habitat. This safety cap always applies.");
     private static final List<String> GUARDIAN_CHANCE_COMMENT = List.of(
         "# [number] Chance from 0.0 to 1.0 that an eligible water-mob spawn is replaced with a guardian.");
-
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     @Test
     public void upgradesLegacyConfigThroughTheCurrentCompatibilityPath() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         try (var reader = Objects.requireNonNull(
             getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-config.yml"))) {
             Files.copy(reader, configFile.toPath());
         }
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration config = loader.load();
 
         assertEquals(loadBundledVersion(), config.getInt("version"));
@@ -64,16 +63,16 @@ public class PluginConfigLoaderTest {
         assertFalse(config.contains("force-replace"));
         assertFalse(config.contains("move-nodes"));
         assertFalse(config.contains("options.deprecated.fixFlatland"));
-        assertTrue(new File(testFolder.getRoot(), "config.yml.old").isFile());
-        try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
+        assertTrue(tempDir.resolve("config.yml.old").toFile().isFile());
+        try (var stream = Files.list(tempDir.resolve("backup"))) {
             assertTrue(stream.findAny().isPresent());
         }
     }
 
     @Test
     public void appliesExplicitMigrationsAfterTheLegacyCutover() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(111);
         config.set("options.extras.obsidianToLava", null);
         config.set("options.island.schematicName", "uSkyBlockDefault");
@@ -89,7 +88,7 @@ public class PluginConfigLoaderTest {
         config.set("options.deprecated.fixFlatland", true);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -114,15 +113,15 @@ public class PluginConfigLoaderTest {
         assertFalse(migrated.contains("force-replace"));
         assertFalse(migrated.contains("move-nodes"));
         assertFalse(migrated.contains("options.deprecated.fixFlatland"));
-        try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
+        try (var stream = Files.list(tempDir.resolve("backup"))) {
             assertTrue(stream.findAny().isPresent());
         }
     }
 
     @Test
     public void normalizesLegacySchematicPlaceholderDuringV112Migration() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(111);
         config.set("options.island.schematicName", "yourschematichere");
         config.set("options.general.cooldownRestart", 30);
@@ -134,7 +133,7 @@ public class PluginConfigLoaderTest {
         config.set("options.restart.teleportDelay", 1000);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -143,13 +142,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void migratesSmallNumericInviteTimeoutsAsSeconds() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(112);
         config.set("options.party.invite-timeout", 60);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -159,13 +158,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void keepsMillisecondInviteTimeoutsWhenTheyAreNotWholeSeconds() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(112);
         config.set("options.party.invite-timeout", 1500);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -175,13 +174,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void failedExplicitMigrationLeavesTheOriginalConfigInPlace() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(112);
         config.set("options.party.invite-timeout", "not-a-duration");
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         try {
             loader.load();
             fail("Expected explicit migration to fail for an invalid invite-timeout");
@@ -190,7 +189,7 @@ public class PluginConfigLoaderTest {
             YamlConfiguration original = YamlConfiguration.loadConfiguration(configFile);
             assertEquals(112, original.getInt("version"));
             assertEquals("not-a-duration", original.getString("options.party.invite-timeout"));
-            try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
+            try (var stream = Files.list(tempDir.resolve("backup"))) {
                 assertTrue(stream.findAny().isPresent());
             }
         }
@@ -198,15 +197,15 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void removesLegacyMigrationMetadataFromVersion113Configs() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(113);
         config.set("force-replace.options.island.schematicName", "yourschematichere");
         config.set("move-nodes.options.island.fixFlatland", "options.deprecated.fixFlatland");
         config.set("options.deprecated.fixFlatland", true);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -218,13 +217,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void addsGuardianHabitatDefaultsDuringMigration115() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(114);
         config.set("options.spawning.guardians", null);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
@@ -238,13 +237,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void rejectsFutureConfigVersions() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = new YamlConfiguration();
         config.set("version", 999);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         try {
             loader.load();
             fail("Expected future config versions to be rejected");
@@ -255,12 +254,12 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void loadsBundledCurrentConfig() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = loadBundledConfig();
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration loaded = loader.load();
         YamlConfiguration bundled = loadBundledConfig();
 
@@ -269,12 +268,12 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void rejectsLocalizedConfigFileNamesWithoutCanonicalConfig() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File localizedConfigFile = new File(testFolder.getRoot(), "config_" + Locale.getDefault() + ".yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File localizedConfigFile = tempDir.resolve("config_" + Locale.getDefault() + ".yml").toFile();
         YamlConfiguration config = loadBundledConfig();
         config.save(localizedConfigFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         try {
             loader.load();
             fail("Expected localized config filenames to be rejected");
@@ -286,13 +285,13 @@ public class PluginConfigLoaderTest {
 
     @Test
     public void currentVersionConfigsAreNotRejectedByTheLoaderForSchemaShape() throws Exception {
-        FileUtil.setDataFolder(testFolder.getRoot());
-        File configFile = new File(testFolder.getRoot(), "config.yml");
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
         YamlConfiguration config = createValidConfig(loadBundledVersion());
         config.set("options.advanced.manageSpawn", null);
         config.save(configFile);
 
-        PluginConfigLoader loader = new PluginConfigLoader(testFolder.getRoot().toPath(), new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
         YamlConfiguration loaded = loader.load();
 
         assertEquals(loadBundledVersion(), loaded.getInt("version"));

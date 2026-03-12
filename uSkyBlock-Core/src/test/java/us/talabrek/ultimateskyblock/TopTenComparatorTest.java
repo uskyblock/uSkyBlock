@@ -1,6 +1,6 @@
 package us.talabrek.ultimateskyblock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.island.TopTenComparator;
 
 import java.util.HashMap;

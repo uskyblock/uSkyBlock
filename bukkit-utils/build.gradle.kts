@@ -11,7 +11,9 @@ dependencies {
     implementation(libs.net.kyori.adventure.text.serializer.gson)
     testImplementation(libs.org.hamcrest.hamcrest.core)
     testImplementation(libs.org.hamcrest.hamcrest.library)
-    testImplementation(libs.junit.junit)
+    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
+    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
+    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
     testImplementation(libs.org.mockito.mockito.core)
     testImplementation(libs.com.google.code.gson.gson)
 

@@ -7,9 +7,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,13 +21,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ChallengeFactoryTest {
 
-    @Before
+    @BeforeEach
     public void beforeEach() throws NoSuchFieldException, IllegalAccessException {
         BukkitServerMock.setupServerMock();
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void createChallenge_IronGolem() {
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("challengefactory/requiredEntities.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(resourceAsStream));
@@ -43,7 +43,7 @@ public class ChallengeFactoryTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void createChallenge_ManyItems() {
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("challengefactory/manyRequiredItems.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(resourceAsStream));

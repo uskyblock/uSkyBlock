@@ -11,8 +11,9 @@ dependencies {
     api(libs.net.kyori.adventure.api)
     api(libs.net.kyori.adventure.text.minimessage)
     implementation(libs.net.kyori.adventure.text.serializer.legacy)
-    testImplementation(libs.junit.junit)
-    testImplementation(libs.org.junit.vintage.junit.vintage.engine)
+    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
+    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
+    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
     testImplementation(libs.org.hamcrest.hamcrest)
     testImplementation(libs.org.hamcrest.hamcrest.library.x1)
 }

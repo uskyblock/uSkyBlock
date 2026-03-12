@@ -1,8 +1,8 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -26,7 +26,7 @@ public class ChallengeLogicResolveTest {
     private Challenge chCobbleGolem;    // id: cobblegolem,          display: §aCobblestone Golem
     private Challenge chSandCastle;     // id: sandcastle,           display: §eSand Castle
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         BukkitServerMock.setupServerMock();
 

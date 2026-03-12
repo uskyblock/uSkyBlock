@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.event;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Locale;

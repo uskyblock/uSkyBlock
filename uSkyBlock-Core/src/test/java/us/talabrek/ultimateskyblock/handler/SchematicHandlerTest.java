@@ -1,8 +1,7 @@
 package us.talabrek.ultimateskyblock.handler;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -11,12 +10,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class SchematicHandlerTest {
-    @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     @Test
     public void resolveTargetAcceptsNormalEntry() throws Exception {
-        Path root = tmp.getRoot().toPath().resolve("plugins/uSkyBlock/schematics");
+        Path root = tempDir.resolve("plugins/uSkyBlock/schematics");
         Optional<Path> result = SchematicHandler.resolveTarget(root, "default.schematic");
 
         assertThat("Expected normal schematic path to resolve", result.isPresent(), is(true));
@@ -26,7 +25,7 @@ public class SchematicHandlerTest {
 
     @Test
     public void resolveTargetRejectsTraversal() throws Exception {
-        Path root = tmp.getRoot().toPath().resolve("plugins/uSkyBlock/schematics");
+        Path root = tempDir.resolve("plugins/uSkyBlock/schematics");
         Optional<Path> result = SchematicHandler.resolveTarget(root, "../evil.schematic");
 
         assertThat("Traversal paths must be rejected", result.isPresent(), is(false));

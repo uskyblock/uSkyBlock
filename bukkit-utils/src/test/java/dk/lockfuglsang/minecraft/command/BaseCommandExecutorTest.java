@@ -2,8 +2,8 @@ package dk.lockfuglsang.minecraft.command;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -23,7 +23,7 @@ public class BaseCommandExecutorTest {
     StringBuffer messages = new StringBuffer();
     private static BaseCommandExecutor mycmd;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         mycmd = new BaseCommandExecutor("mycmd", "myplugin.perm.mycmd", "main myplugin command");

@@ -4,17 +4,17 @@ import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.entity.EntityType;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EntityUtilTest extends BukkitServerMock {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setupServerMock();
     }

@@ -7,8 +7,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -26,7 +26,7 @@ public class ChatEventsTest {
     private ChatLogic fakeLogic;
     private BukkitScheduler fakeScheduler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         uSkyBlock fakePlugin = mock(uSkyBlock.class);

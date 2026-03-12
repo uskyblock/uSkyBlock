@@ -5,13 +5,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,7 +20,7 @@ public class PhantomSpawnEventsTest {
     private PhantomSpawnEvents phantomSpawnEvents;
     private WorldManager worldManager;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         YamlConfiguration config = new YamlConfiguration();
         PluginConfig pluginConfig = mock(PluginConfig.class);

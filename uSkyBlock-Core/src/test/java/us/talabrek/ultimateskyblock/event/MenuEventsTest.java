@@ -8,8 +8,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
@@ -29,7 +29,7 @@ public class MenuEventsTest {
 
     private MenuEvents menuEvents;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         fakeMenu = mock(SkyBlockMenu.class);
 

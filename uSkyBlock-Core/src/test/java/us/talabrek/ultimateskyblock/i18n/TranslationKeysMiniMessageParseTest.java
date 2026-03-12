@@ -5,7 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TranslationKeysMiniMessageParseTest {
     private static final List<String> DOMAIN_POT_FILENAMES = List.of(
@@ -44,7 +44,7 @@ public class TranslationKeysMiniMessageParseTest {
             try (InputStream in = Files.newInputStream(potFile)) {
                 properties = POParser.asProperties(in);
             }
-            assertNotNull("Unable to parse " + potFile.getFileName(), properties);
+            assertNotNull(properties, "Unable to parse " + potFile.getFileName());
 
             for (String key : properties.stringPropertyNames()) {
                 if (key == null || key.isBlank()) {
@@ -58,7 +58,8 @@ public class TranslationKeysMiniMessageParseTest {
             }
         }
 
-        assertTrue("MiniMessage parse failures in domain .pot files:\n" + String.join("\n", failures), failures.isEmpty());
+        assertTrue(failures.isEmpty(),
+            "MiniMessage parse failures in domain .pot files:\n" + String.join("\n", failures));
     }
 
     @Test
@@ -70,7 +71,7 @@ public class TranslationKeysMiniMessageParseTest {
             try (InputStream in = Files.newInputStream(poFile)) {
                 properties = POParser.asProperties(in);
             }
-            assertNotNull("Unable to parse " + poFile, properties);
+            assertNotNull(properties, "Unable to parse " + poFile);
 
             for (String key : properties.stringPropertyNames()) {
                 if (key == null || key.isBlank()) {
@@ -88,7 +89,8 @@ public class TranslationKeysMiniMessageParseTest {
             }
         }
 
-        assertTrue("MiniMessage parse failures in translated .po files:\n" + String.join("\n", failures), failures.isEmpty());
+        assertTrue(failures.isEmpty(),
+            "MiniMessage parse failures in translated .po files:\n" + String.join("\n", failures));
     }
 
     private List<Path> locatePotFiles() throws IOException {

@@ -75,6 +75,10 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
     val standardOptions = options as StandardJavadocDocletOptions

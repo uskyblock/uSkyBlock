@@ -2,35 +2,37 @@ package us.talabrek.ultimateskyblock.util;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BlockUtilTest {
 
-    @Ignore
+    @Disabled
     @Test
     public void testIsBreathable() throws Exception {
         Block fakeBlock = Mockito.mock(Block.class);
 
         Mockito.when(fakeBlock.getType()).thenReturn(Material.DIRT);
-        Assert.assertFalse(BlockUtil.isBreathable(fakeBlock));
+        assertFalse(BlockUtil.isBreathable(fakeBlock));
 
         Mockito.when(fakeBlock.getType()).thenReturn(Material.SHORT_GRASS);
-        Assert.assertTrue(BlockUtil.isBreathable(fakeBlock));
+        assertTrue(BlockUtil.isBreathable(fakeBlock));
 
         Mockito.when(fakeBlock.getType()).thenReturn(Material.WATER);
-        Assert.assertFalse(BlockUtil.isBreathable(fakeBlock));
+        assertFalse(BlockUtil.isBreathable(fakeBlock));
     }
 
     @Test
     public void testIsFluidMaterial() throws Exception {
-        Assert.assertFalse(BlockUtil.isFluid(Material.DIAMOND_BLOCK));
-        Assert.assertFalse(BlockUtil.isFluid(Material.LAVA_BUCKET));
+        assertFalse(BlockUtil.isFluid(Material.DIAMOND_BLOCK));
+        assertFalse(BlockUtil.isFluid(Material.LAVA_BUCKET));
 
-        Assert.assertTrue(BlockUtil.isFluid(Material.WATER));
-        Assert.assertTrue(BlockUtil.isFluid(Material.LAVA));
+        assertTrue(BlockUtil.isFluid(Material.WATER));
+        assertTrue(BlockUtil.isFluid(Material.LAVA));
     }
 
     @Test
@@ -38,9 +40,9 @@ public class BlockUtilTest {
         Block fakeBlock = Mockito.mock(Block.class);
 
         Mockito.when(fakeBlock.getType()).thenReturn(Material.WATER);
-        Assert.assertTrue(BlockUtil.isFluid(fakeBlock));
+        assertTrue(BlockUtil.isFluid(fakeBlock));
 
         Mockito.when(fakeBlock.getType()).thenReturn(Material.AIR);
-        Assert.assertFalse(BlockUtil.isFluid(fakeBlock));
+        assertFalse(BlockUtil.isFluid(fakeBlock));
     }
 }

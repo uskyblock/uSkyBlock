@@ -6,18 +6,18 @@ import org.bukkit.entity.Cow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Sheep;
 import org.bukkit.material.Colorable;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class EntityMatchTest extends BukkitServerMock {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setupServerMock();
     }

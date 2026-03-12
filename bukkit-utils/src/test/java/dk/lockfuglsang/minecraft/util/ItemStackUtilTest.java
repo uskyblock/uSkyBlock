@@ -2,9 +2,9 @@ package dk.lockfuglsang.minecraft.util;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +13,16 @@ import static dk.lockfuglsang.minecraft.util.ItemStackMatcher.itemStack;
 import static dk.lockfuglsang.minecraft.util.ItemStackMatcher.itemStacks;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ItemStackUtilTest extends BukkitServerMock {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         setupServerMock();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         useMetaData = false;
         itemMetaMap.clear();

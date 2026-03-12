@@ -2,10 +2,9 @@ package us.talabrek.ultimateskyblock.island;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -15,6 +14,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -23,10 +23,10 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
 
 public class IslandInfoLogFormatTest {
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
-    @Before
+    @BeforeEach
     public void setUpI18n() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
     }
@@ -91,7 +91,8 @@ public class IslandInfoLogFormatTest {
 
     private IslandInfo createIslandInfo(ConfigCustomizer customizer) throws Exception {
         String islandName = "island";
-        File islandDir = tempFolder.newFolder();
+        File islandDir = tempDir.resolve("island-info").toFile();
+        islandDir.mkdirs();
         File islandConfigFile = new File(islandDir, islandName + ".yml");
         YamlConfiguration config = new YamlConfiguration();
         config.set("version", 3);

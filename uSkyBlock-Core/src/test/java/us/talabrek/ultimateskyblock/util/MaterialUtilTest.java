@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.util;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.Material;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

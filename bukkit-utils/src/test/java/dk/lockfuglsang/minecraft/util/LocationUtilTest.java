@@ -3,8 +3,8 @@ package dk.lockfuglsang.minecraft.util;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LocationUtilTest {
-    @BeforeClass
+    @BeforeAll
     public static void SetupOnce() throws Exception {
         Server server = BukkitServerMock.setupServerMock();
         when(server.getWorld(anyString())).thenAnswer((a) -> {

@@ -1,9 +1,10 @@
 package us.talabrek.ultimateskyblock.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MetaUtilTest {
     @Test
@@ -11,7 +12,7 @@ public class MetaUtilTest {
         String inputMap = "{\"Color\":8}";
 
         Map<String, Object> outputMap = MetaUtil.createMap(inputMap);
-        Assert.assertEquals(1, outputMap.size());
-        Assert.assertEquals(8.0, outputMap.get("Color"));
+        assertEquals(1, outputMap.size());
+        assertEquals(8.0, outputMap.get("Color"));
     }
 }
