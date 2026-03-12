@@ -14,9 +14,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ import static java.util.Objects.requireNonNull;
 public class PluginConfigMigrator {
     public static final int LEGACY_BASELINE_VERSION = 111;
     private static final String LEGACY_BASELINE_RESOURCE = "legacy/config-111.yml";
+    private static final DateTimeFormatter BACKUP_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
     private final Logger logger;
     private final ConfigMigrations migrations;
@@ -66,6 +68,7 @@ public class PluginConfigMigrator {
 
     private void applyExplicitMigrations(@NotNull Path configPath, @NotNull YamlConfiguration config,
                                          int version, int currentVersion) {
+        backupConfig(configPath, "before explicit migration");
         int nextVersion = version;
         while (nextVersion < currentVersion) {
             ConfigMigration migration = migrations.find(nextVersion);
@@ -84,22 +87,34 @@ public class PluginConfigMigrator {
         if (currentVersion >= baselineVersion) {
             return;
         }
-        backupForLegacyMigration(configPath);
+        backupConfig(configPath, "before legacy migration");
         YamlConfiguration merged = mergeConfig(baselineConfig, config);
         saveUnchecked(configPath, merged, currentVersion, baselineVersion);
     }
 
-    private void backupForLegacyMigration(@NotNull Path configPath) {
+    private void backupConfig(@NotNull Path configPath, @NotNull String context) {
         try {
             Path backupFolder = requireParent(configPath).resolve("backup");
             Files.createDirectories(backupFolder);
-            String backupName = String.format("config-%1$tY%1$tm%1$td-%1$tH%1$tM.yml", new Date());
+            Path backupPath = resolveBackupPath(backupFolder);
             Files.move(configPath,
-                backupFolder.resolve(backupName),
+                backupPath,
                 StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to back up config.yml before legacy migration.", e);
+            throw new IllegalStateException("Unable to back up config.yml " + context + ".", e);
         }
+    }
+
+    @NotNull
+    private static Path resolveBackupPath(@NotNull Path backupFolder) {
+        String timestamp = LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT);
+        Path candidate = backupFolder.resolve("config-" + timestamp + ".yml");
+        int suffix = 1;
+        while (Files.exists(candidate)) {
+            candidate = backupFolder.resolve("config-" + timestamp + "-" + suffix + ".yml");
+            suffix++;
+        }
+        return candidate;
     }
 
     @NotNull

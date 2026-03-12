@@ -99,6 +99,9 @@ public class PluginConfigLoaderTest {
         assertFalse(migrated.contains("force-replace"));
         assertFalse(migrated.contains("move-nodes"));
         assertFalse(migrated.contains("options.deprecated.fixFlatland"));
+        try (var stream = Files.list(new File(testFolder.getRoot(), "backup").toPath())) {
+            assertTrue(stream.findAny().isPresent());
+        }
     }
 
     @Test
