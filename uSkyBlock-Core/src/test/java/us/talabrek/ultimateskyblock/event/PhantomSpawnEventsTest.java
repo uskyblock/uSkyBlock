@@ -7,7 +7,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.junit.Before;
 import org.junit.Test;
-import us.talabrek.ultimateskyblock.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import static org.junit.Assert.assertFalse;
@@ -23,9 +23,9 @@ public class PhantomSpawnEventsTest {
     @Before
     public void setUp() {
         YamlConfiguration config = new YamlConfiguration();
-        PluginConfig pluginConfig = new PluginConfig();
+        PluginConfig pluginConfig = mock(PluginConfig.class);
         worldManager = mock(WorldManager.class);
-        pluginConfig.setYamlConfig(config);
+        when(pluginConfig.getYamlConfig()).thenReturn(config);
         phantomSpawnEvents = new PhantomSpawnEvents(pluginConfig, worldManager);
     }
 
