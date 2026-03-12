@@ -1,11 +1,10 @@
-package us.talabrek.ultimateskyblock;
+package us.talabrek.ultimateskyblock.config;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 
 import java.io.File;
@@ -35,7 +34,8 @@ public class PluginConfigLoaderTest {
     public void upgradesLegacyConfigThroughTheCurrentCompatibilityPath() throws Exception {
         FileUtil.setDataFolder(testFolder.getRoot());
         File configFile = new File(testFolder.getRoot(), "config.yml");
-        try (var reader = Objects.requireNonNull(getClass().getResourceAsStream("imports/old-config.yml"))) {
+        try (var reader = Objects.requireNonNull(
+            getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-config.yml"))) {
             Files.copy(reader, configFile.toPath());
         }
 

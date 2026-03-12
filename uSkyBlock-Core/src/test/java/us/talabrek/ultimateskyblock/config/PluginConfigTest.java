@@ -1,9 +1,7 @@
-package us.talabrek.ultimateskyblock;
+package us.talabrek.ultimateskyblock.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
