@@ -32,9 +32,8 @@ public class AutoIslandLevelRefresh {
     }
 
     public void startup() {
-        int refreshEveryMinute = runtimeConfigs.current().island().autoRefreshScore();
-        if (refreshEveryMinute > 0) {
-            Duration refreshRate = Duration.ofMinutes(refreshEveryMinute);
+        Duration refreshRate = runtimeConfigs.current().island().autoRefreshScore();
+        if (!refreshRate.isZero() && !refreshRate.isNegative()) {
             autoRecalculateTask = scheduler.sync(new RecalculateRunnable(plugin), refreshRate, refreshRate);
         }
     }

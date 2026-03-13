@@ -22,10 +22,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class PluginConfigLoaderTest {
     private static final List<String> RESTART_COOLDOWN_COMMENT = List.of(
         "# [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.");
+    private static final List<String> INFO_COOLDOWN_COMMENT = List.of(
+        "# [duration] The time before a player can use the /island info command again. Use ms, s, m, h, or d.",
+        "# Note: cooldowns are reset when the plugin is reloaded.");
     private static final List<String> INVITE_TIMEOUT_COMMENT = List.of(
         "# [duration] How long an island invite stays valid. Use ms, s, m, h, or d.");
     private static final List<String> RESTART_TELEPORT_COMMENT = List.of(
         "# [duration] The time to wait before porting the player back on /is restart or /is create. Use ms, s, m, h, or d.");
+    private static final List<String> MAX_SPAM_COMMENT = List.of(
+        "# [duration] The time between the same notification being sent to the player. Use ms, s, m, h, or d.",
+        "# This is used when events are triggered heavily - i.e. item-pickup-prevention, damage-prevention etc.");
+    private static final List<String> AUTO_REFRESH_COMMENT = List.of(
+        "# [duration] Automatically refresh island levels on this interval. Use 0m to disable. Use ms, s, m, h, or d.");
+    private static final List<String> AWE_HEARTBEAT_COMMENT = List.of(
+        "# [duration] The interval between each heartbeat. Use ms, s, m, h, or d.");
     private static final List<String> GUARDIAN_ENABLED_COMMENT = List.of(
         "# [true/false] If true, deep-ocean prismarine habitats can replace water-mob spawns with guardians.");
     private static final List<String> GUARDIAN_CAP_COMMENT = List.of(
@@ -50,13 +60,17 @@ public class PluginConfigLoaderTest {
         assertEquals(loadBundledVersion(), config.getInt("version"));
         assertEquals("default", config.getString("options.island.schematicName"));
         assertTrue(config.getBoolean("options.extras.obsidianToLava"));
+        assertEquals("20s", config.getString("options.general.cooldownInfo"));
         assertEquals("30s", config.getString("options.general.cooldownRestart"));
         assertEquals("60s", config.getString("options.general.biomeChange"));
+        assertEquals("2000ms", config.getString("options.general.maxSpam"));
         assertEquals("2s", config.getString("options.island.islandTeleportDelay"));
         assertEquals("20m", config.getString("options.island.topTenTimeout"));
+        assertEquals("0m", config.getString("options.island.autoRefreshScore"));
         assertEquals("30s", config.getString("options.party.invite-timeout"));
         assertEquals("10s", config.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", config.getString("options.restart.teleportDelay"));
+        assertEquals("2000ms", config.getString("asyncworldedit.watchDog.heartBeat"));
         assertTrue(config.getBoolean("options.spawning.guardians.enabled"));
         assertEquals(10, config.getInt("options.spawning.guardians.max-per-island"));
         assertEquals(0.1d, config.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
@@ -94,13 +108,17 @@ public class PluginConfigLoaderTest {
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
         assertEquals("default", migrated.getString("options.island.schematicName"));
         assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
+        assertEquals("20s", migrated.getString("options.general.cooldownInfo"));
         assertEquals("30s", migrated.getString("options.general.cooldownRestart"));
         assertEquals("60s", migrated.getString("options.general.biomeChange"));
+        assertEquals("2s", migrated.getString("options.general.maxSpam"));
         assertEquals("2s", migrated.getString("options.island.islandTeleportDelay"));
         assertEquals("20m", migrated.getString("options.island.topTenTimeout"));
+        assertEquals("0m", migrated.getString("options.island.autoRefreshScore"));
         assertEquals("30s", migrated.getString("options.party.invite-timeout"));
         assertEquals("10s", migrated.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", migrated.getString("options.restart.teleportDelay"));
+        assertEquals("2s", migrated.getString("asyncworldedit.watchDog.heartBeat"));
         assertTrue(migrated.getBoolean("options.spawning.guardians.enabled"));
         assertEquals(10, migrated.getInt("options.spawning.guardians.max-per-island"));
         assertEquals(0.1d, migrated.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
@@ -283,7 +301,7 @@ public class PluginConfigLoaderTest {
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
-        assertEquals(1700, migrated.getInt("options.general.maxSpam"));
+        assertEquals("1700ms", migrated.getString("options.general.maxSpam"));
         assertTrue(migrated.getBoolean("options.protection.visitors.vehicle-damage"));
         assertFalse(migrated.contains("general.maxSpam"));
         assertFalse(migrated.contains("options.protection.visitors.vehicle-break"));
@@ -291,6 +309,47 @@ public class PluginConfigLoaderTest {
         assertFalse(migrated.contains("asyncworldedit.progressEveryMs"));
         assertFalse(migrated.contains("asyncworldedit.progressEveryPct"));
         assertFalse(migrated.contains("nether.activate-at"));
+    }
+
+    @Test
+    public void convertsNumericDurationsDuringMigration118() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(117);
+        config.set("options.general.cooldownInfo", 20);
+        config.set("options.general.maxSpam", 1700);
+        config.set("options.island.autoRefreshScore", 15);
+        config.set("init.initDelay", 50);
+        config.set("options.advanced.island.saveEvery", 30);
+        config.set("options.advanced.player.saveEvery", 120);
+        config.set("async.long.feedbackEvery", 30000);
+        config.set("options.advanced.purgeTimeout", 600000);
+        config.set("playerdb.saveDelay", 10000);
+        config.set("async.maxMs", 15);
+        config.set("async.yieldDelay", 2);
+        config.set("importer.progressEveryMs", 10000);
+        config.set("asyncworldedit.watchDog.heartBeat", null);
+        config.set("asyncworldedit.watchDog.heartBeatMs", 2000);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals("20s", migrated.getString("options.general.cooldownInfo"));
+        assertEquals("1700ms", migrated.getString("options.general.maxSpam"));
+        assertEquals("15m", migrated.getString("options.island.autoRefreshScore"));
+        assertEquals("2500ms", migrated.getString("init.initDelay"));
+        assertEquals("30s", migrated.getString("options.advanced.island.saveEvery"));
+        assertEquals("120s", migrated.getString("options.advanced.player.saveEvery"));
+        assertEquals("30000ms", migrated.getString("async.long.feedbackEvery"));
+        assertEquals("600000ms", migrated.getString("options.advanced.purgeTimeout"));
+        assertEquals("10000ms", migrated.getString("playerdb.saveDelay"));
+        assertEquals("15ms", migrated.getString("async.maxMs"));
+        assertEquals("100ms", migrated.getString("async.yieldDelay"));
+        assertEquals("10000ms", migrated.getString("importer.progressEveryMs"));
+        assertEquals("2000ms", migrated.getString("asyncworldedit.watchDog.heartBeat"));
+        assertFalse(migrated.contains("asyncworldedit.watchDog.heartBeatMs"));
     }
 
     @Test

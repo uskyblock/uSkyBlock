@@ -50,13 +50,13 @@ public record RuntimeConfig(
     public record General(
         int maxPartySize,
         @NotNull String worldName,
-        int cooldownInfo,
+        @NotNull Duration cooldownInfo,
         @NotNull Duration cooldownRestart,
         @NotNull Duration biomeChange,
         @NotNull String defaultBiomeKey,
         @NotNull String defaultNetherBiomeKey,
         int spawnSize,
-        int maxSpam
+        @NotNull Duration maxSpam
     ) {
     }
 
@@ -78,7 +78,7 @@ public record RuntimeConfig(
         boolean allowPvP,
         @NotNull Duration teleportDelay,
         double teleportCancelDistance,
-        int autoRefreshScore,
+        @NotNull Duration autoRefreshScore,
         boolean topTenShowMembers,
         int logSize,
         boolean schemesEnabled,

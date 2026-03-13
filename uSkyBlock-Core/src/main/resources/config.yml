@@ -6,8 +6,9 @@ options:
     # [integer] The max number of players allowed in a single party. (including the leader)
     maxPartySize: 4
 
-    # [integer] The time in seconds before a player can use the /island info command again. (note: cooldowns are reset when the plugin is reloaded)
-    cooldownInfo: 20
+    # [duration] The time before a player can use the /island info command again. Use ms, s, m, h, or d.
+    # Note: cooldowns are reset when the plugin is reloaded.
+    cooldownInfo: 20s
 
     # [duration] The time before a player can use the /island restart command again. Use ms, s, m, h, or d.
     cooldownRestart: 30s
@@ -21,9 +22,9 @@ options:
     # [string] The default biome assigned to new islands
     defaultNetherBiome: nether_wastes
 
-    # [integer] The number of milliseconds between the same notification is sent to the player.
+    # [duration] The time between the same notification being sent to the player. Use ms, s, m, h, or d.
     # This is used when events are triggered heavily - i.e. item-pickup-prevention, damage-prevention etc.
-    maxSpam: 2000
+    maxSpam: 2s
 
     # [string] The name of the skyblock world, will be automatically generated if it doesn't exist.
     worldName: skyworld
@@ -67,7 +68,8 @@ options:
     useIslandLevel: true
     useTopTen: true
     topTenTimeout: 20m
-    autoRefreshScore: 0
+    # [duration] Automatically refresh island levels on this interval. Use 0m to disable. Use ms, s, m, h, or d.
+    autoRefreshScore: 0m
     topTenShowMembers: true
     chat-format: '&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}'
     log-size: 10
@@ -372,8 +374,8 @@ asyncworldedit:
     # The maximum time to wait for AWE paste to complete (2m, 3m20s, etc.)
     timeout: 15s
 
-    # The number of ms between each heartbeat
-    heartBeatMs: 2000
+    # [duration] The interval between each heartbeat. Use ms, s, m, h, or d.
+    heartBeat: 2s
 worldguard:
   entry-message: true
   exit-message: true
@@ -464,4 +466,4 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 117
+version: 118

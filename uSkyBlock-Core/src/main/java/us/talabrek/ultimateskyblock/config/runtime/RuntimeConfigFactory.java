@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.config.runtime;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -16,25 +15,29 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class RuntimeConfigFactory {
-    private static final long DEFAULT_INIT_DELAY_TICKS = 50L;
+    private static final Duration DEFAULT_INIT_DELAY = Duration.ofMillis(2500);
+    private static final Duration DEFAULT_COOLDOWN_INFO = Duration.ofSeconds(20);
+    private static final Duration DEFAULT_MAX_SPAM = Duration.ofSeconds(2);
     private static final String DEFAULT_PLAYER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final String DEFAULT_ISLAND_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final String DEFAULT_PLACEHOLDER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=20s";
     private static final String DEFAULT_COMPLETION_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
-    private static final long DEFAULT_ISLAND_SAVE_EVERY_SECONDS = 30L;
-    private static final long DEFAULT_PLAYER_SAVE_EVERY_SECONDS = 120L;
+    private static final Duration DEFAULT_AUTO_REFRESH_SCORE = Duration.ZERO;
+    private static final Duration DEFAULT_ISLAND_SAVE_EVERY = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_PLAYER_SAVE_EVERY = Duration.ofSeconds(120);
     private static final String DEFAULT_OVERWORLD_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator";
     private static final String DEFAULT_NETHER_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator";
-    private static final long DEFAULT_LONG_FEEDBACK_EVERY_MS = 30000L;
-    private static final long DEFAULT_PURGE_TIMEOUT_MS = 600000L;
+    private static final Duration DEFAULT_LONG_FEEDBACK_EVERY = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_PURGE_TIMEOUT = Duration.ofMinutes(10);
     private static final String DEFAULT_PLAYERDB_NAME_CACHE_SPEC = "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m";
     private static final String DEFAULT_PLAYERDB_UUID_CACHE_SPEC = "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m";
-    private static final long DEFAULT_PLAYERDB_SAVE_DELAY_MS = 10000L;
-    private static final long DEFAULT_ASYNC_MAX_MS = 15L;
+    private static final Duration DEFAULT_PLAYERDB_SAVE_DELAY = Duration.ofSeconds(10);
+    private static final Duration DEFAULT_ASYNC_MAX_ITERATION_TIME = Duration.ofMillis(15);
     private static final long DEFAULT_ASYNC_MAX_CONSECUTIVE_TICKS = 20L;
-    private static final long DEFAULT_ASYNC_YIELD_DELAY_TICKS = 2L;
+    private static final Duration DEFAULT_ASYNC_YIELD_DELAY = Duration.ofMillis(100);
+    private static final Duration DEFAULT_AWE_WATCHDOG_HEART_BEAT = Duration.ofSeconds(2);
     private static final double DEFAULT_IMPORTER_PROGRESS_EVERY_PCT = 10d;
-    private static final long DEFAULT_IMPORTER_PROGRESS_EVERY_MS = 10000L;
+    private static final Duration DEFAULT_IMPORTER_PROGRESS_EVERY = Duration.ofSeconds(10);
 
     private RuntimeConfigFactory() {
     }
@@ -54,17 +57,17 @@ public final class RuntimeConfigFactory {
         return new RuntimeConfig(
             configuredLanguage,
             loadLocale(configuredLanguage),
-            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(getLong(config, "init.initDelay", DEFAULT_INIT_DELAY_TICKS))),
+            new RuntimeConfig.Init(parseDuration(config, "init.initDelay", DEFAULT_INIT_DELAY, false)),
             new RuntimeConfig.General(
                 maxPartySize,
                 config.getString("options.general.worldName"),
-                Math.max(0, config.getInt("options.general.cooldownInfo")),
+                parseDuration(config, "options.general.cooldownInfo", DEFAULT_COOLDOWN_INFO, true),
                 parseDuration(config, "options.general.cooldownRestart", Duration.ofHours(1), true),
                 parseDuration(config, "options.general.biomeChange", Duration.ofHours(1), true),
                 config.getString("options.general.defaultBiome"),
                 config.getString("options.general.defaultNetherBiome"),
                 config.getInt("options.general.spawnSize"),
-                config.getInt("options.general.maxSpam")
+                parseDuration(config, "options.general.maxSpam", DEFAULT_MAX_SPAM, true)
             ),
             new RuntimeConfig.Island(
                 distance,
@@ -84,7 +87,7 @@ public final class RuntimeConfigFactory {
                 isAllowPvP(config),
                 parseDuration(config, "options.island.islandTeleportDelay", Duration.ofSeconds(2), false),
                 config.getDouble("options.island.teleportCancelDistance"),
-                Math.max(0, config.getInt("options.island.autoRefreshScore")),
+                parseDuration(config, "options.island.autoRefreshScore", DEFAULT_AUTO_REFRESH_SCORE, true),
                 config.getBoolean("options.island.topTenShowMembers"),
                 Math.max(0, config.getInt("options.island.log-size")),
                 config.getBoolean("island-schemes-enabled"),
@@ -166,29 +169,29 @@ public final class RuntimeConfigFactory {
                 getString(config, "options.advanced.islandCache", DEFAULT_ISLAND_CACHE_SPEC),
                 getString(config, "options.advanced.placeholderCache", DEFAULT_PLACEHOLDER_CACHE_SPEC),
                 getString(config, "options.advanced.completionCache", DEFAULT_COMPLETION_CACHE_SPEC),
-                Duration.ofSeconds(getLong(config, "options.advanced.island.saveEvery", DEFAULT_ISLAND_SAVE_EVERY_SECONDS)),
-                Duration.ofSeconds(getLong(config, "options.advanced.player.saveEvery", DEFAULT_PLAYER_SAVE_EVERY_SECONDS)),
+                parseDuration(config, "options.advanced.island.saveEvery", DEFAULT_ISLAND_SAVE_EVERY, true),
+                parseDuration(config, "options.advanced.player.saveEvery", DEFAULT_PLAYER_SAVE_EVERY, true),
                 getString(config, "options.advanced.chunk-generator", DEFAULT_OVERWORLD_CHUNK_GENERATOR),
                 Math.max(0, config.getInt("options.advanced.chunkRegenSpeed")),
-                Duration.ofMillis(getLong(config, "async.long.feedbackEvery", DEFAULT_LONG_FEEDBACK_EVERY_MS)),
+                parseDuration(config, "async.long.feedbackEvery", DEFAULT_LONG_FEEDBACK_EVERY, true),
                 config.getDouble("options.advanced.purgeLevel"),
-                Duration.ofMillis(getLong(config, "options.advanced.purgeTimeout", DEFAULT_PURGE_TIMEOUT_MS)),
+                parseDuration(config, "options.advanced.purgeTimeout", DEFAULT_PURGE_TIMEOUT, true),
                 normalizeBlank(config.getString("options.advanced.debugLevel")),
                 new RuntimeConfig.PlayerDb(
                     config.getString("options.advanced.playerdb.storage"),
                     getString(config, "options.advanced.playerdb.nameCache", DEFAULT_PLAYERDB_NAME_CACHE_SPEC),
                     getString(config, "options.advanced.playerdb.uuidCache", DEFAULT_PLAYERDB_UUID_CACHE_SPEC),
-                    Duration.ofMillis(getLong(config, "playerdb.saveDelay", DEFAULT_PLAYERDB_SAVE_DELAY_MS))
+                    parseDuration(config, "playerdb.saveDelay", DEFAULT_PLAYERDB_SAVE_DELAY, true)
                 )
             ),
             new RuntimeConfig.Async(
-                Duration.ofMillis(getLong(config, "async.maxMs", DEFAULT_ASYNC_MAX_MS)),
+                parseDuration(config, "async.maxMs", DEFAULT_ASYNC_MAX_ITERATION_TIME, true),
                 getLong(config, "async.maxConsecutiveTicks", DEFAULT_ASYNC_MAX_CONSECUTIVE_TICKS),
-                TimeUtil.ticksAsDuration(getLong(config, "async.yieldDelay", DEFAULT_ASYNC_YIELD_DELAY_TICKS))
+                parseDuration(config, "async.yieldDelay", DEFAULT_ASYNC_YIELD_DELAY, true)
             ),
             new RuntimeConfig.AsyncWorldEdit(
                 config.getBoolean("asyncworldedit.enabled"),
-                Duration.ofMillis(config.getInt("asyncworldedit.watchDog.heartBeatMs")),
+                parseDuration(config, "asyncworldedit.watchDog.heartBeat", DEFAULT_AWE_WATCHDOG_HEART_BEAT, true),
                 parseDuration(config, "asyncworldedit.watchDog.timeout", Duration.ofMinutes(5), false)
             ),
             new RuntimeConfig.Party(
@@ -230,7 +233,7 @@ public final class RuntimeConfigFactory {
             ),
             new RuntimeConfig.Importer(
                 getDouble(config, "importer.progressEveryPct", DEFAULT_IMPORTER_PROGRESS_EVERY_PCT),
-                Duration.ofMillis(getLong(config, "importer.progressEveryMs", DEFAULT_IMPORTER_PROGRESS_EVERY_MS))
+                parseDuration(config, "importer.progressEveryMs", DEFAULT_IMPORTER_PROGRESS_EVERY, true)
             ),
             loadIslandSchemes(config),
             loadExtraMenus(config.getConfigurationSection("options.extra-menus")),

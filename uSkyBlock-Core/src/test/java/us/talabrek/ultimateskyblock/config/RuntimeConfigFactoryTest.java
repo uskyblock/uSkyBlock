@@ -18,12 +18,12 @@ public class RuntimeConfigFactoryTest {
         YamlConfiguration config = new YamlConfiguration();
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "en");
-        config.set("init.initDelay", 80L);
-        config.set("options.general.maxSpam", 1500);
+        config.set("init.initDelay", "4s");
+        config.set("options.general.cooldownInfo", "15s");
+        config.set("options.general.maxSpam", "1500ms");
         config.set("plugin-updates.branch", "STAGING");
         config.set("options.general.maxPartySize", 6);
         config.set("options.general.worldName", "skyworld");
-        config.set("options.general.cooldownInfo", -5);
         config.set("options.general.cooldownRestart", "30s");
         config.set("options.general.biomeChange", "2m");
         config.set("options.general.defaultBiome", "plains");
@@ -43,6 +43,7 @@ public class RuntimeConfigFactoryTest {
         config.set("options.island.allowPvP", "allow");
         config.set("options.island.islandTeleportDelay", "5s");
         config.set("options.island.teleportCancelDistance", 0.5d);
+        config.set("options.island.autoRefreshScore", "5m");
         config.set("options.island.spawn-limits.enabled", false);
         config.set("options.island.extraPermissions.warp", java.util.List.of("diamond:1"));
         config.set("options.extras.sendToSpawn", true);
@@ -78,6 +79,7 @@ public class RuntimeConfigFactoryTest {
         config.set("nether.spawn-chances.blaze", 0.3d);
         config.set("nether.spawn-chances.wither", 0.5d);
         config.set("nether.spawn-chances.skeleton", 0.2d);
+        config.set("asyncworldedit.watchDog.heartBeat", "2500ms");
         config.set("island-schemes.default.enabled", true);
         config.set("island-schemes.default.schematic", "default.schematic");
         config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
@@ -87,13 +89,15 @@ public class RuntimeConfigFactoryTest {
 
         assertEquals(6, runtimeConfig.general().maxPartySize());
         assertEquals(Duration.ofSeconds(4), runtimeConfig.init().initDelay());
+        assertEquals(Duration.ofSeconds(15), runtimeConfig.general().cooldownInfo());
         assertEquals(Duration.ofSeconds(30), runtimeConfig.general().cooldownRestart());
         assertEquals("plains", runtimeConfig.general().defaultBiomeKey());
-        assertEquals(1500, runtimeConfig.general().maxSpam());
+        assertEquals(Duration.ofMillis(1500), runtimeConfig.general().maxSpam());
         assertEquals(96, runtimeConfig.island().protectionRange());
         assertEquals(48, runtimeConfig.island().radius());
         assertEquals(Duration.ofSeconds(5), runtimeConfig.island().teleportDelay());
         assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
+        assertEquals(Duration.ofMinutes(5), runtimeConfig.island().autoRefreshScore());
         assertFalse(runtimeConfig.island().spawnLimits().enabled());
         assertTrue(runtimeConfig.extras().sendToSpawn());
         assertFalse(runtimeConfig.protection().creepers());
@@ -121,6 +125,7 @@ public class RuntimeConfigFactoryTest {
         assertEquals(1.5d, runtimeConfig.nether().terraform().toolWeights().get("pickaxe"));
         assertFalse(runtimeConfig.nether().spawnChances().enabled());
         assertEquals(0.3d, runtimeConfig.nether().spawnChances().blaze());
+        assertEquals(Duration.ofMillis(2500), runtimeConfig.asyncWorldEdit().heartBeat());
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
@@ -135,7 +140,7 @@ public class RuntimeConfigFactoryTest {
 
         RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
 
-        assertEquals(2000, runtimeConfig.general().maxSpam());
+        assertEquals(Duration.ofSeconds(2), runtimeConfig.general().maxSpam());
         assertFalse(runtimeConfig.protection().visitorVehicleBreakAllowed());
     }
 
@@ -159,6 +164,7 @@ public class RuntimeConfigFactoryTest {
         RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
 
         assertEquals(Duration.ofMillis(2500), runtimeConfig.init().initDelay());
+        assertEquals(Duration.ofSeconds(20), runtimeConfig.general().cooldownInfo());
         assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().playerCacheSpec());
         assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().islandCacheSpec());
         assertEquals("maximumSize=200,expireAfterWrite=20s", runtimeConfig.advanced().placeholderCacheSpec());
@@ -168,6 +174,9 @@ public class RuntimeConfigFactoryTest {
         assertEquals("us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator", runtimeConfig.advanced().chunkGenerator());
         assertEquals(Duration.ofSeconds(30), runtimeConfig.advanced().feedbackEvery());
         assertEquals(Duration.ofMinutes(10), runtimeConfig.advanced().purgeTimeout());
+        assertEquals(Duration.ofSeconds(2), runtimeConfig.general().maxSpam());
+        assertEquals(Duration.ZERO, runtimeConfig.island().autoRefreshScore());
+        assertEquals(Duration.ofSeconds(2), runtimeConfig.asyncWorldEdit().heartBeat());
         assertEquals("us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator", runtimeConfig.nether().chunkGenerator());
         assertEquals("maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m", runtimeConfig.advanced().playerDb().nameCacheSpec());
         assertEquals("maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m", runtimeConfig.advanced().playerDb().uuidCacheSpec());

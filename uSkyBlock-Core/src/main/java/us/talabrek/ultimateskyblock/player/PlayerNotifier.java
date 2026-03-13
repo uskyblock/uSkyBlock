@@ -64,6 +64,6 @@ public class PlayerNotifier {
 
     @NotNull
     private Duration spawnThreshold() {
-        return Duration.ofMillis(runtimeConfigs.current().general().maxSpam());
+        return runtimeConfigs.current().general().maxSpam();
     }
 }
