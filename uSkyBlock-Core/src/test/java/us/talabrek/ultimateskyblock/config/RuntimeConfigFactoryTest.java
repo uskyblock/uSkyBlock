@@ -6,6 +6,7 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -122,5 +123,16 @@ public class RuntimeConfigFactoryTest {
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
+    }
+
+    @Test
+    public void fallsBackToEnglishForInvalidLanguage() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("language", "definitely-not-a-real-locale");
+
+        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+
+        assertEquals("en", runtimeConfig.configuredLanguage());
+        assertEquals(Locale.ENGLISH, runtimeConfig.locale());
     }
 }

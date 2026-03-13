@@ -41,6 +41,25 @@ class ConfigBootstrapTest {
     }
 
     @Test
+    void keepsInvalidConfiguredLanguageButBootstrapsEnglishLocale() {
+        Locale originalDefault = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.GERMAN);
+            PluginConfig initialConfig = new ConfigBootstrap(tempDir, LOGGER, "en").bootstrap();
+            initialConfig.getYamlConfig().set("language", "definitely-not-a-real-locale");
+            initialConfig.save();
+
+            new ConfigBootstrap(tempDir, LOGGER, "en").bootstrap();
+
+            assertThat(dk.lockfuglsang.minecraft.po.I18nUtil.getI18n().getLocale(), is(Locale.ENGLISH));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            Locale.setDefault(originalDefault);
+        }
+    }
+
+    @Test
     void selectsSupportedSystemLanguageOnFirstSetup() {
         Locale supportedSystemLocale = findSupportedNonEnglishLocale();
         String expectedLanguage = dk.lockfuglsang.minecraft.po.I18nUtil.resolveSupportedLocaleKey(supportedSystemLocale)

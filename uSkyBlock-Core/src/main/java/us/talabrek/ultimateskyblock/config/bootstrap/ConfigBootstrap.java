@@ -56,10 +56,7 @@ public class ConfigBootstrap {
     }
 
     private boolean applyFirstSetupLanguageSelection(@NotNull FileConfiguration pluginConfig) {
-        String configuredLanguage = pluginConfig.getString("language", defaultLanguage);
-        String effectiveConfiguredLanguage = I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse(
-            configuredLanguage != null ? configuredLanguage : defaultLanguage
-        );
+        String effectiveConfiguredLanguage = normalizeConfiguredLanguage(pluginConfig.getString("language"));
         Locale systemLocale = Locale.getDefault();
         Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
         if (supportedSystemLocale.isPresent() && !supportedSystemLocale.get().equalsIgnoreCase(effectiveConfiguredLanguage)) {
@@ -83,10 +80,7 @@ public class ConfigBootstrap {
     }
 
     private void logLanguageSuggestionIfUsingDefaultLanguage(@NotNull FileConfiguration pluginConfig) {
-        String configuredLanguage = pluginConfig.getString("language", defaultLanguage);
-        String effectiveConfiguredLanguage = I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse(
-            configuredLanguage != null ? configuredLanguage : defaultLanguage
-        );
+        String effectiveConfiguredLanguage = normalizeConfiguredLanguage(pluginConfig.getString("language"));
         if (!defaultLanguage.equalsIgnoreCase(effectiveConfiguredLanguage)) {
             return;
         }
@@ -104,8 +98,15 @@ public class ConfigBootstrap {
 
     @NotNull
     private Locale resolveLocale(@NotNull FileConfiguration pluginConfig) {
-        String configuredLanguage = pluginConfig.getString("language", defaultLanguage);
-        Locale configuredLocale = I18nUtil.getLocale(configuredLanguage);
-        return configuredLocale != null ? configuredLocale : Locale.getDefault();
+        Locale configuredLocale = I18nUtil.getLocale(normalizeConfiguredLanguage(pluginConfig.getString("language")));
+        return configuredLocale != null ? configuredLocale : Locale.ENGLISH;
+    }
+
+    @NotNull
+    private String normalizeConfiguredLanguage(String configuredLanguage) {
+        if (configuredLanguage == null || configuredLanguage.isBlank()) {
+            return defaultLanguage;
+        }
+        return I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse(defaultLanguage);
     }
 }

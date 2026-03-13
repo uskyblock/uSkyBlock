@@ -21,7 +21,7 @@ public final class RuntimeConfigFactory {
 
     @NotNull
     public static RuntimeConfig load(@NotNull FileConfiguration config) {
-        String configuredLanguage = config.getString("language", "en");
+        String configuredLanguage = normalizeConfiguredLanguage(config.getString("language"));
         int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize", 4));
         int distance = Math.max(50, config.getInt("options.island.distance", 110));
         int protectionRange = Math.min(distance, config.getInt("options.island.protectionRange", 128));
@@ -218,7 +218,15 @@ public final class RuntimeConfigFactory {
     @NotNull
     private static Locale loadLocale(@NotNull String configuredLanguage) {
         Locale configured = I18nUtil.getLocale(configuredLanguage);
-        return configured != null ? configured : Locale.getDefault();
+        return configured != null ? configured : Locale.ENGLISH;
+    }
+
+    @NotNull
+    private static String normalizeConfiguredLanguage(String configuredLanguage) {
+        if (configuredLanguage == null || configuredLanguage.isBlank()) {
+            return "en";
+        }
+        return I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse("en");
     }
 
     @NotNull
