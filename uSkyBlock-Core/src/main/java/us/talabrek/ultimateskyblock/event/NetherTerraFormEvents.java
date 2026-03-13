@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.PigZombie;
@@ -23,6 +22,8 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -55,39 +56,25 @@ public class NetherTerraFormEvents implements Listener {
     private final double maxPitch;
 
     @Inject
-    public NetherTerraFormEvents(@NotNull uSkyBlock plugin) {
+    public NetherTerraFormEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        // TODO: 23/09/2015 - R4zorax: Allow this to be perk-based?
-        terraformEnabled = plugin.getConfig().getBoolean("nether.terraform-enabled", true);
-        spawnEnabled = plugin.getConfig().getBoolean("nether.spawn-chances.enabled", true);
-        minPitch = plugin.getConfig().getDouble("nether.terraform-min-pitch", -70d);
-        maxPitch = plugin.getConfig().getDouble("nether.terraform-max-pitch", 90d);
-        ConfigurationSection config = plugin.getConfig().getConfigurationSection("nether.terraform");
-        if (config != null) {
-            for (String key : config.getKeys(false)) {
-                Material mat = Material.matchMaterial(key);
-                if (mat != null) {
-                    terraFormMap.put(mat, MaterialUtil.createProbabilityList(config.getStringList(key)));
-                }
+        RuntimeConfig.Terraform terraform = runtimeConfigs.current().nether().terraform();
+        RuntimeConfig.SpawnChances spawnChances = runtimeConfigs.current().nether().spawnChances();
+        terraformEnabled = terraform.enabled();
+        spawnEnabled = spawnChances.enabled();
+        minPitch = terraform.minPitch();
+        maxPitch = terraform.maxPitch();
+        maxScan = terraform.distance();
+        for (Map.Entry<String, List<String>> entry : terraform.blocks().entrySet()) {
+            Material material = Material.matchMaterial(entry.getKey());
+            if (material != null) {
+                terraFormMap.put(material, MaterialUtil.createProbabilityList(entry.getValue()));
             }
         }
-        config = plugin.getConfig().getConfigurationSection("nether.terraform-weight");
-        if (config != null) {
-            for (String tool : config.getKeys(false)) {
-                toolWeights.put(tool, config.getDouble(tool, 1d));
-            }
-        }
-        maxScan = plugin.getConfig().getInt("nether.terraform-distance", 7);
-        config = plugin.getConfig().getConfigurationSection("nether.spawn-chances");
-        if (config != null) {
-            chanceBlaze = config.getDouble("blaze", 0.2);
-            chanceWither = config.getDouble("wither", 0.4);
-            chanceSkeleton = config.getDouble("skeleton", 0.1);
-        } else {
-            chanceBlaze = 0.2;
-            chanceWither = 0.4;
-            chanceSkeleton = 0.1;
-        }
+        toolWeights.putAll(terraform.toolWeights());
+        chanceBlaze = spawnChances.blaze();
+        chanceWither = spawnChances.wither();
+        chanceSkeleton = spawnChances.skeleton();
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

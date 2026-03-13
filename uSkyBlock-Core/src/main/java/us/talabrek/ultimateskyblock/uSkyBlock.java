@@ -8,7 +8,6 @@ import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -231,7 +230,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             delayedEnable();
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
-        }, TimeUtil.ticksAsDuration(getConfig().getLong("init.initDelay", 50L)));
+        }, getRuntimeConfigs().current().init().initDelay());
 
         getScheduler().async(() -> getUpdateChecker().checkForUpdates(), Duration.ZERO, Duration.ofHours(4));
     }

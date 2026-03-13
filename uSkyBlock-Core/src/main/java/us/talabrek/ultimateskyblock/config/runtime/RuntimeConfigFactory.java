@@ -30,6 +30,7 @@ public final class RuntimeConfigFactory {
         return new RuntimeConfig(
             configuredLanguage,
             loadLocale(configuredLanguage),
+            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(config.getLong("init.initDelay", 50L))),
             new RuntimeConfig.General(
                 maxPartySize,
                 config.getString("options.general.worldName", "skyworld"),
@@ -83,18 +84,44 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.protection.enabled", true),
                 config.getBoolean("options.protection.item-drops", true),
                 config.getBoolean("options.protection.visitors.item-drops", true),
+                config.getBoolean("options.protection.creepers", true),
+                config.getBoolean("options.protection.withers", true),
                 config.getBoolean("options.protection.protect-lava", true),
+                config.getBoolean("options.protection.visitors.trampling", true),
+                config.getBoolean("options.protection.visitors.kill-animals", true),
+                config.getBoolean("options.protection.visitors.kill-monsters", true),
+                config.getBoolean("options.protection.visitors.shearing", true),
+                config.getBoolean("options.protection.visitors.hatching", true),
                 config.getBoolean("options.protection.visitors.fall", true),
                 config.getBoolean("options.protection.visitors.fire-damage", true),
                 config.getBoolean("options.protection.visitors.monster-damage", false),
                 config.getBoolean("options.protection.visitors.warn-on-warp", true),
+                config.getBoolean("options.protection.visitors.villager-trading", true),
+                config.getBoolean("options.protection.villager-trading-enabled", false),
+                config.getBoolean("options.protection.visitors.use-portals", false),
+                config.getBoolean("options.protection.visitors.vehicle-enter", false),
+                config.getBoolean("options.protection.visitors.vehicle-break", false),
                 config.getBoolean("options.protection.visitors.block-banned-entry", true)
             ),
             new RuntimeConfig.Nether(
                 config.getBoolean("nether.enabled", false),
                 config.getInt("nether.lava_level", config.getInt("nether.lava-level", 32)),
                 config.getInt("nether.height", islandHeight / 2),
-                config.getString("nether.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator")
+                config.getString("nether.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator"),
+                new RuntimeConfig.Terraform(
+                    config.getBoolean("nether.terraform-enabled", true),
+                    config.getDouble("nether.terraform-min-pitch", -70d),
+                    config.getDouble("nether.terraform-max-pitch", 90d),
+                    Math.max(0, config.getInt("nether.terraform-distance", 7)),
+                    loadStringLists(config.getConfigurationSection("nether.terraform")),
+                    loadDoubleMap(config.getConfigurationSection("nether.terraform-weight"), 1d)
+                ),
+                new RuntimeConfig.SpawnChances(
+                    config.getBoolean("nether.spawn-chances.enabled", true),
+                    config.getDouble("nether.spawn-chances.blaze", 0.2d),
+                    config.getDouble("nether.spawn-chances.wither", 0.4d),
+                    config.getDouble("nether.spawn-chances.skeleton", 0.1d)
+                )
             ),
             new RuntimeConfig.Restart(
                 config.getBoolean("options.restart.clearInventory", true),
@@ -245,6 +272,19 @@ public final class RuntimeConfigFactory {
             if (section.isString(key)) {
                 values.put(key, section.getString(key));
             }
+        }
+        return Collections.unmodifiableMap(values);
+    }
+
+    @NotNull
+    private static Map<String, Double> loadDoubleMap(ConfigurationSection section, double defaultValue) {
+        if (section == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, Double> values = new LinkedHashMap<>();
+        for (String key : section.getKeys(false)) {
+            values.put(key, section.getDouble(key, defaultValue));
         }
         return Collections.unmodifiableMap(values);
     }

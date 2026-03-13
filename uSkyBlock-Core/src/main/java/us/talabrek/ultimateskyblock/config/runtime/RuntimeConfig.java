@@ -12,6 +12,7 @@ import java.util.Set;
 public record RuntimeConfig(
     @NotNull String configuredLanguage,
     @NotNull Locale locale,
+    @NotNull Init init,
     @NotNull General general,
     @NotNull Island island,
     @NotNull Extras extras,
@@ -40,6 +41,11 @@ public record RuntimeConfig(
 
     public @Nullable IslandScheme islandScheme(@NotNull String schemeName) {
         return islandSchemes.get(schemeName);
+    }
+
+    public record Init(
+        @NotNull Duration initDelay
+    ) {
     }
 
     public record General(
@@ -107,11 +113,23 @@ public record RuntimeConfig(
         boolean enabled,
         boolean itemDrops,
         boolean visitorItemDrops,
+        boolean creepers,
+        boolean withers,
         boolean protectLava,
+        boolean visitorTramplingProtected,
+        boolean visitorKillAnimalsProtected,
+        boolean visitorKillMonstersProtected,
+        boolean visitorShearingProtected,
+        boolean visitorHatchingProtected,
         boolean visitorFallProtected,
         boolean visitorFireProtected,
         boolean visitorMonsterProtected,
         boolean visitorWarnOnWarp,
+        boolean visitorVillagerTradingProtected,
+        boolean anyVillagerTradingAllowed,
+        boolean visitorUsePortalsAllowed,
+        boolean visitorVehicleEnterAllowed,
+        boolean visitorVehicleBreakAllowed,
         boolean blockBannedEntry
     ) {
     }
@@ -120,7 +138,27 @@ public record RuntimeConfig(
         boolean enabled,
         int lavaLevel,
         int height,
-        @NotNull String chunkGenerator
+        @NotNull String chunkGenerator,
+        @NotNull Terraform terraform,
+        @NotNull SpawnChances spawnChances
+    ) {
+    }
+
+    public record Terraform(
+        boolean enabled,
+        double minPitch,
+        double maxPitch,
+        int distance,
+        @NotNull Map<String, List<String>> blocks,
+        @NotNull Map<String, Double> toolWeights
+    ) {
+    }
+
+    public record SpawnChances(
+        boolean enabled,
+        double blaze,
+        double wither,
+        double skeleton
     ) {
     }
 

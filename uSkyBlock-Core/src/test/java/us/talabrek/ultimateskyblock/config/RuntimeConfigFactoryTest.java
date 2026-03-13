@@ -16,6 +16,7 @@ public class RuntimeConfigFactoryTest {
     public void loadsTypedRuntimeConfigSections() {
         YamlConfiguration config = new YamlConfiguration();
         config.set("language", "en");
+        config.set("init.initDelay", 80L);
         config.set("general.maxSpam", 1500);
         config.set("plugin-updates.branch", "STAGING");
         config.set("options.general.maxPartySize", 6);
@@ -45,6 +46,18 @@ public class RuntimeConfigFactoryTest {
         config.set("options.extras.sendToSpawn", true);
         config.set("options.extras.respawnAtIsland", true);
         config.set("options.extras.obsidianToLava", true);
+        config.set("options.protection.creepers", false);
+        config.set("options.protection.withers", false);
+        config.set("options.protection.visitors.trampling", false);
+        config.set("options.protection.visitors.kill-animals", false);
+        config.set("options.protection.visitors.kill-monsters", false);
+        config.set("options.protection.visitors.shearing", false);
+        config.set("options.protection.visitors.hatching", false);
+        config.set("options.protection.visitors.villager-trading", false);
+        config.set("options.protection.villager-trading-enabled", true);
+        config.set("options.protection.visitors.use-portals", true);
+        config.set("options.protection.visitors.vehicle-enter", true);
+        config.set("options.protection.visitors.vehicle-break", true);
         config.set("options.advanced.confirmTimeout", "12s");
         config.set("options.party.invite-timeout", "3m");
         config.set("options.spawning.guardians.enabled", false);
@@ -53,6 +66,16 @@ public class RuntimeConfigFactoryTest {
         config.set("nether.enabled", true);
         config.set("nether.lava_level", 11);
         config.set("nether.height", 80);
+        config.set("nether.terraform-enabled", false);
+        config.set("nether.terraform-min-pitch", -50d);
+        config.set("nether.terraform-max-pitch", 30d);
+        config.set("nether.terraform-distance", 9);
+        config.set("nether.terraform.COBBLESTONE", java.util.List.of("NETHERRACK:1.0"));
+        config.set("nether.terraform-weight.pickaxe", 1.5d);
+        config.set("nether.spawn-chances.enabled", false);
+        config.set("nether.spawn-chances.blaze", 0.3d);
+        config.set("nether.spawn-chances.wither", 0.5d);
+        config.set("nether.spawn-chances.skeleton", 0.2d);
         config.set("island-schemes.default.enabled", true);
         config.set("island-schemes.default.schematic", "default.schematic");
         config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
@@ -61,6 +84,7 @@ public class RuntimeConfigFactoryTest {
         RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
 
         assertEquals(6, runtimeConfig.general().maxPartySize());
+        assertEquals(Duration.ofSeconds(4), runtimeConfig.init().initDelay());
         assertEquals(Duration.ofSeconds(30), runtimeConfig.general().cooldownRestart());
         assertEquals("plains", runtimeConfig.general().defaultBiomeKey());
         assertEquals(1500, runtimeConfig.general().maxSpam());
@@ -70,6 +94,18 @@ public class RuntimeConfigFactoryTest {
         assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
         assertFalse(runtimeConfig.island().spawnLimits().enabled());
         assertTrue(runtimeConfig.extras().sendToSpawn());
+        assertFalse(runtimeConfig.protection().creepers());
+        assertFalse(runtimeConfig.protection().withers());
+        assertFalse(runtimeConfig.protection().visitorTramplingProtected());
+        assertFalse(runtimeConfig.protection().visitorKillAnimalsProtected());
+        assertFalse(runtimeConfig.protection().visitorKillMonstersProtected());
+        assertFalse(runtimeConfig.protection().visitorShearingProtected());
+        assertFalse(runtimeConfig.protection().visitorHatchingProtected());
+        assertFalse(runtimeConfig.protection().visitorVillagerTradingProtected());
+        assertTrue(runtimeConfig.protection().anyVillagerTradingAllowed());
+        assertTrue(runtimeConfig.protection().visitorUsePortalsAllowed());
+        assertTrue(runtimeConfig.protection().visitorVehicleEnterAllowed());
+        assertTrue(runtimeConfig.protection().visitorVehicleBreakAllowed());
         assertEquals(Duration.ofSeconds(12), runtimeConfig.advanced().confirmTimeout());
         assertEquals(Duration.ofMinutes(3), runtimeConfig.party().inviteTimeout());
         assertEquals("STAGING", runtimeConfig.pluginUpdates().branch());
@@ -77,6 +113,12 @@ public class RuntimeConfigFactoryTest {
         assertEquals(4, runtimeConfig.spawning().guardians().maxPerIsland());
         assertEquals(0.25d, runtimeConfig.spawning().guardians().spawnChance());
         assertTrue(runtimeConfig.nether().enabled());
+        assertFalse(runtimeConfig.nether().terraform().enabled());
+        assertEquals(9, runtimeConfig.nether().terraform().distance());
+        assertEquals(java.util.List.of("NETHERRACK:1.0"), runtimeConfig.nether().terraform().blocks().get("COBBLESTONE"));
+        assertEquals(1.5d, runtimeConfig.nether().terraform().toolWeights().get("pickaxe"));
+        assertFalse(runtimeConfig.nether().spawnChances().enabled());
+        assertEquals(0.3d, runtimeConfig.nether().spawnChances().blaze());
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
