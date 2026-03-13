@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.gameobject;
 
 import dk.lockfuglsang.minecraft.util.FormatUtil;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,13 +26,20 @@ public final class ItemStackSpec {
 
     @NotNull
     public ItemStack create(@Nullable String name, @Nullable String description) {
-        ItemStackUtil.Builder builder = ItemStackUtil.builder(prototype);
+        ItemStack itemStack = prototype.clone();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return itemStack;
+        }
         if (name != null) {
-            builder.displayName(FormatUtil.normalize(name));
+            itemMeta.setDisplayName(FormatUtil.normalize(name));
         }
         if (description != null) {
-            builder.lore(List.copyOf(FormatUtil.wordWrap(FormatUtil.normalize(description), 30, 30)));
+            itemMeta.setLore(List.copyOf(FormatUtil.wordWrap(FormatUtil.normalize(description), 30, 30)));
+        } else {
+            itemMeta.setLore(List.of());
         }
-        return builder.build();
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }
