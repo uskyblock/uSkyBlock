@@ -984,10 +984,6 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         getServer().getServicesManager().unregister(api);
     }
 
-    public PluginConfig getPluginConfig() {
-        return config;
-    }
-
     public RuntimeConfigs getRuntimeConfigs() {
         return runtimeConfigs;
     }
