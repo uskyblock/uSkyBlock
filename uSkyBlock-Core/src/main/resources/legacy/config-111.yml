@@ -367,7 +367,7 @@ asyncworldedit:
   progressEveryPct: 20
   watchDog:
 
-    # The maximum time to wait for AWE paste to complete (2m, 3m20s, etc.)
+    # [duration] The maximum time to wait for AWE paste to complete. Use ms, s, m, h, or d.
     timeout: 15s
 
     # The number of ms between each heartbeat
