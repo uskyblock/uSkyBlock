@@ -89,7 +89,7 @@ public class GuardianHabitatEvents implements Listener {
         }
 
         event.setCancelled(true);
-        boolean generalMonsterLimitAllowsSpawn = !runtimeConfig.island().spawnLimitsEnabled()
+        boolean generalMonsterLimitAllowsSpawn = !runtimeConfig.island().spawnLimits().enabled()
             || limitLogic.canSpawn(EntityType.GUARDIAN, islandInfo);
         if (!policy.shouldSpawnGuardian(countGuardians(world, islandRegion), generalMonsterLimitAllowsSpawn,
             ThreadLocalRandom.current().nextDouble())) {

@@ -4,13 +4,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 public class PlaceholderModule {
 
     private final PlaceholderHandler placeholderHandler;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final ChatReplaceListener chatReplaceListener;
     private final ServerCommandReplaceListener serverCommandListener;
     private final TextPlaceholder textPlaceholder;
@@ -19,14 +20,14 @@ public class PlaceholderModule {
     @Inject
     public PlaceholderModule(
         @NotNull PlaceholderHandler placeholderHandler,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull ChatReplaceListener chatReplaceListener,
         @NotNull ServerCommandReplaceListener serverCommandListener,
         @NotNull TextPlaceholder textPlaceholder,
         @NotNull Provider<MVdWPlaceholderAPI> mvdwPlaceholderProvider
     ) {
         this.placeholderHandler = placeholderHandler;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.chatReplaceListener = chatReplaceListener;
         this.serverCommandListener = serverCommandListener;
         this.textPlaceholder = textPlaceholder;
@@ -34,14 +35,15 @@ public class PlaceholderModule {
     }
 
     public void startup(uSkyBlock plugin) {
-        if (config.getYamlConfig().getBoolean("placeholder.chatplaceholder", false)) {
+        RuntimeConfig.Placeholder placeholder = runtimeConfigs.current().placeholder();
+        if (placeholder.chatPlaceholder()) {
             plugin.getServer().getPluginManager().registerEvents(chatReplaceListener, plugin);
         }
-        if (config.getYamlConfig().getBoolean("placeholder.servercommandplaceholder", false)) {
+        if (placeholder.serverCommandPlaceholder()) {
             plugin.getServer().getPluginManager().registerEvents(serverCommandListener, plugin);
         }
 
-        if (config.getYamlConfig().getBoolean("placeholder.mvdwplaceholderapi", false)
+        if (placeholder.mvdwPlaceholderApi()
             && Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null) {
             MVdWPlaceholderAPI mvdwPlaceholder = mvdwPlaceholderProvider.get();
             mvdwPlaceholder.setup(plugin);

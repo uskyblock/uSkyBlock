@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,9 +21,9 @@ public class MemoryPlayerDB implements PlayerDB {
     private final LoadingCache<UUID, OfflinePlayer> uuidCache;
     private static final OfflinePlayer NULL_PLAYER = NullPlayer.INSTANCE;
 
-    public MemoryPlayerDB(PluginConfig config) {
+    public MemoryPlayerDB(RuntimeConfig.PlayerDb config) {
         nameCache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.playerdb.nameCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"))
+            .from(config.nameCacheSpec())
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull OfflinePlayer load(@NotNull String name) {
@@ -34,7 +34,7 @@ public class MemoryPlayerDB implements PlayerDB {
                 }
             });
         uuidCache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.playerdb.uuidCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"))
+            .from(config.uuidCacheSpec())
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull OfflinePlayer load(@NotNull UUID uuid) {

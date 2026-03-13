@@ -9,8 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.async.Callback;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.task.ChunkSnapShotTask;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
 
     private final Plugin plugin;
-    private final PluginConfig pluginConfig;
+    private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Logger logger;
 
@@ -37,13 +38,13 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
         @NotNull LevelConfigLoader levelConfigLoader,
-        @NotNull PluginConfig pluginConfig,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Scheduler scheduler,
         @NotNull Logger logger
     ) {
         super(levelConfigLoader.load(), worldManager);
         this.plugin = plugin;
-        this.pluginConfig = pluginConfig;
+        this.runtimeConfigs = runtimeConfigs;
         this.scheduler = scheduler;
         this.logger = logger;
     }
@@ -57,13 +58,14 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         if (region == null) {
             return;
         }
-        scheduler.sync(new ChunkSnapShotTask(scheduler, pluginConfig, l, region, new Callback<>() {
+        RuntimeConfig.Async asyncConfig = runtimeConfigs.current().async();
+        scheduler.sync(new ChunkSnapShotTask(scheduler, asyncConfig, l, region, new Callback<>() {
             @Override
             public void run() {
                 final List<ChunkSnapshot> snapshotsOverworld = getState();
                 Location netherLoc = getNetherLocation(l);
                 final ProtectedRegion netherRegion = WorldGuardHandler.getNetherRegionAt(netherLoc);
-                scheduler.sync(new ChunkSnapShotTask(scheduler, pluginConfig, netherLoc, netherRegion, new Callback<>() {
+                scheduler.sync(new ChunkSnapShotTask(scheduler, asyncConfig, netherLoc, netherRegion, new Callback<>() {
                     @Override
                     public void run() {
                         final List<ChunkSnapshot> snapshotsNether = getState();

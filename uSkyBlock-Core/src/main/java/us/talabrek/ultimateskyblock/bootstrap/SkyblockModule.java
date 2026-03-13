@@ -7,9 +7,9 @@ import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI;
 import us.talabrek.ultimateskyblock.handler.placeholder.MvdwPlacehoderProvider;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderAPI;
@@ -51,12 +51,12 @@ public class SkyblockModule extends AbstractModule {
     @Provides
     @Singleton
     public static
-    @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
-        String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
+    @NotNull PlayerDB providePlayerDB(RuntimeConfigs runtimeConfigs, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
+        String playerDbStorage = runtimeConfigs.current().advanced().playerDb().storage();
         if (playerDbStorage.equalsIgnoreCase("yml")) {
             return new FilePlayerDB(plugin, scheduler, logger);
         } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-            return new MemoryPlayerDB(config);
+            return new MemoryPlayerDB(runtimeConfigs.current().advanced().playerDb());
         } else {
             return new BukkitPlayerDB();
         }

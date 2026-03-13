@@ -15,12 +15,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
@@ -71,7 +72,6 @@ public class IslandLogic {
     private final WorldManager worldManager;
     private final TeleportLogic teleportLogic;
     private final Scheduler scheduler;
-    private final PluginConfig config;
     private final Path directoryIslands;
     private final OrphanLogic orphanLogic;
     private final PlayerDB playerDB;
@@ -92,7 +92,7 @@ public class IslandLogic {
         @NotNull WorldManager worldManager,
         @NotNull TeleportLogic teleportLogic,
         @NotNull Scheduler scheduler,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull @PluginDataDir Path dataPath,
         @NotNull OrphanLogic orphanLogic,
         @NotNull PlayerDB playerDB
@@ -102,7 +102,6 @@ public class IslandLogic {
         this.worldManager = worldManager;
         this.teleportLogic = teleportLogic;
         this.scheduler = scheduler;
-        this.config = config;
         this.playerDB = playerDB;
         Path islandDirectory = dataPath.resolve("islands");
         try {
@@ -112,12 +111,12 @@ public class IslandLogic {
         }
         this.directoryIslands = islandDirectory;
         this.orphanLogic = orphanLogic;
-        this.showMembers = config.getYamlConfig().getBoolean("options.island.topTenShowMembers", true);
-        this.useDisplayNames = config.getYamlConfig().getBoolean("options.advanced.useDisplayNames", false);
-        topTenCutoff = config.getYamlConfig().getDouble("options.advanced.topTenCutoff", config.getYamlConfig().getDouble("options.advanced.purgeLevel", 10));
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        this.showMembers = runtimeConfig.island().topTenShowMembers();
+        this.useDisplayNames = runtimeConfig.advanced().useDisplayNames();
+        topTenCutoff = runtimeConfig.advanced().topTenCutoff();
         cache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.islandCache",
-                "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .from(runtimeConfig.advanced().islandCacheSpec())
             .removalListener((RemovalListener<String, IslandInfo>) removal -> {
                 logger.fine("Removing island-info " + removal.getKey() + " from cache");
                 removal.getValue().saveToFile();
@@ -129,7 +128,7 @@ public class IslandLogic {
                     return new IslandInfo(islandName, plugin, directoryIslands);
                 }
             });
-        Duration every = Duration.ofSeconds(config.getYamlConfig().getInt("options.advanced.island.saveEvery", 30));
+        Duration every = runtimeConfig.advanced().islandSaveEvery();
         saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 

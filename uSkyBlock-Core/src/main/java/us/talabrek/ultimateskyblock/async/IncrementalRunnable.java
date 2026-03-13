@@ -1,10 +1,9 @@
 package us.talabrek.ultimateskyblock.async;
 
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.Timer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.time.Duration;
@@ -73,15 +72,15 @@ public abstract class IncrementalRunnable implements Runnable {
      */
     private final AtomicInteger ticksConsumed = new AtomicInteger(0);
 
-    public IncrementalRunnable(@NotNull Scheduler scheduler, @NotNull PluginConfig config) {
-        this(scheduler, config, null);
+    public IncrementalRunnable(@NotNull Scheduler scheduler, @NotNull RuntimeConfig.Async asyncConfig) {
+        this(scheduler, asyncConfig, null);
     }
 
-    public IncrementalRunnable(@NotNull Scheduler scheduler, @NotNull PluginConfig config, @Nullable Runnable onCompletion) {
+    public IncrementalRunnable(@NotNull Scheduler scheduler, @NotNull RuntimeConfig.Async asyncConfig, @Nullable Runnable onCompletion) {
         this(scheduler, onCompletion,
-            Duration.ofMillis(config.getYamlConfig().getInt("async.maxMs", 15)),
-            config.getYamlConfig().getLong("async.maxConsecutiveTicks", 20),
-            TimeUtil.ticksAsDuration(config.getYamlConfig().getLong("async.yieldDelay", 2))
+            asyncConfig.maxIterationTime(),
+            asyncConfig.maxConsecutiveTicks(),
+            asyncConfig.yieldDelay()
         );
     }
 

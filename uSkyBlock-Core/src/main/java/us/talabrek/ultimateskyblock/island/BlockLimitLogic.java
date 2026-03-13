@@ -4,10 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
 
 import java.util.Collections;
@@ -29,17 +29,16 @@ public class BlockLimitLogic {
 
     @Inject
     public BlockLimitLogic(
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Logger logger
     ) {
-        limitsEnabled = config.getYamlConfig().getBoolean("options.island.block-limits.enabled", false);
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        limitsEnabled = !runtimeConfig.island().blockLimits().isEmpty();
         if (limitsEnabled) {
-            ConfigurationSection section = config.getYamlConfig().getConfigurationSection("options.island.block-limits");
-            Set<String> keys = section.getKeys(false);
-            keys.remove("enabled");
+            Set<String> keys = runtimeConfig.island().blockLimits().keySet();
             for (String key : keys) {
                 Material material = Material.matchMaterial(key.toUpperCase());
-                int limit = section.getInt(key, -1);
+                int limit = runtimeConfig.island().blockLimits().getOrDefault(key, -1);
                 if (material != null && limit >= 0) {
                     blockLimits.put(material, limit);
                 } else {

@@ -68,7 +68,7 @@ public class RuntimeConfigFactoryTest {
         assertEquals(48, runtimeConfig.island().radius());
         assertEquals(Duration.ofSeconds(5), runtimeConfig.island().teleportDelay());
         assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
-        assertFalse(runtimeConfig.island().spawnLimitsEnabled());
+        assertFalse(runtimeConfig.island().spawnLimits().enabled());
         assertTrue(runtimeConfig.extras().sendToSpawn());
         assertEquals(Duration.ofSeconds(12), runtimeConfig.advanced().confirmTimeout());
         assertEquals(Duration.ofMinutes(3), runtimeConfig.party().inviteTimeout());

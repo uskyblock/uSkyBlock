@@ -8,9 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
@@ -28,7 +29,7 @@ public class PluginInfo {
 
     private final Plugin plugin;
     private final IslandLogic islandLogic;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final UpdateChecker updateChecker;
     private final PlayerLogic playerLogic;
     private final Logger logger;
@@ -37,13 +38,13 @@ public class PluginInfo {
     public PluginInfo(
         @NotNull Plugin plugin,
         @NotNull IslandLogic islandLogic,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull UpdateChecker updateChecker,
         @NotNull PlayerLogic playerLogic, Logger logger
     ) {
         this.plugin = plugin;
         this.islandLogic = islandLogic;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.updateChecker = updateChecker;
         this.playerLogic = playerLogic;
         this.logger = logger;
@@ -54,6 +55,7 @@ public class PluginInfo {
     }
 
     public String getVersionInfo(boolean checkEnabled) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         PluginDescriptionFile description = plugin.getDescription();
         StringBuilder msg = new StringBuilder(miniToLegacy("<muted>Name: <primary><name><newline>",
             unparsed("name", description.getName())));
@@ -62,7 +64,7 @@ public class PluginInfo {
         msg.append(miniToLegacy("<muted>Description: <primary><description><newline>",
             unparsed("description", description.getDescription())));
         msg.append(miniToLegacy("<muted>Language: <primary><language> (<locale>)<newline>",
-            unparsed("language", config.getYamlConfig().getString("language", "en")),
+            unparsed("language", runtimeConfig.configuredLanguage()),
             unparsed("locale", String.valueOf(I18nUtil.getI18n().getLocale()))));
         msg.append(miniToLegacy("<primary>  State: d=<distance>, r=<radius>, i=<islands>, p=<players>, n=<nether>, awe=<awe><newline>",
             number("distance", Settings.island_distance),
@@ -101,7 +103,7 @@ public class PluginInfo {
         }
         msg.append(miniToLegacy("<muted>------------------------------<newline>"));
 
-        if (config.getYamlConfig().getBoolean("plugin-updates.check", true) && updateChecker.isUpdateAvailable()) {
+        if (runtimeConfig.pluginUpdates().check() && updateChecker.isUpdateAvailable()) {
             msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
                 unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
             msg.append(miniToLegacy("<muted>Visit <url> to download.<newline>",

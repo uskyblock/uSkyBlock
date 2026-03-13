@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 /**
@@ -17,15 +17,12 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 @Singleton
 public class PhantomSpawnEvents implements Listener {
     private final WorldManager worldManager;
-
-    private boolean phantomsInOverworld;
-    private boolean phantomsInNether;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public PhantomSpawnEvents(@NotNull PluginConfig config, @NotNull WorldManager worldManager) {
+    public PhantomSpawnEvents(@NotNull RuntimeConfigs runtimeConfigs, @NotNull WorldManager worldManager) {
+        this.runtimeConfigs = runtimeConfigs;
         this.worldManager = worldManager;
-        phantomsInOverworld = config.getYamlConfig().getBoolean("options.spawning.phantoms.overworld", true);
-        phantomsInNether = config.getYamlConfig().getBoolean("options.spawning.phantoms.nether", false);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -36,20 +33,12 @@ public class PhantomSpawnEvents implements Listener {
         }
 
         World spawnWorld = event.getEntity().getWorld();
-        if (!phantomsInOverworld && worldManager.isSkyWorld(spawnWorld)) {
+        if (!runtimeConfigs.current().spawning().phantoms().overworld() && worldManager.isSkyWorld(spawnWorld)) {
             event.setCancelled(true);
         }
 
-        if (!phantomsInNether && worldManager.isSkyNether(spawnWorld)) {
+        if (!runtimeConfigs.current().spawning().phantoms().nether() && worldManager.isSkyNether(spawnWorld)) {
             event.setCancelled(true);
         }
-    }
-
-    void setPhantomsInOverworld(boolean state) {
-        this.phantomsInOverworld = state;
-    }
-
-    void setPhantomsInNether(boolean state) {
-        this.phantomsInNether = state;
     }
 }

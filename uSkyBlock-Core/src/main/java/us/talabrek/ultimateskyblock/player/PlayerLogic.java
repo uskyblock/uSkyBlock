@@ -9,8 +9,9 @@ import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
@@ -53,7 +54,7 @@ public class PlayerLogic {
     @Inject
     public PlayerLogic(
         @NotNull uSkyBlock plugin,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PlayerDB playerDB,
         @NotNull Logger logger,
         @NotNull PerkLogic perkLogic,
@@ -80,8 +81,9 @@ public class PlayerLogic {
             logger.log(Level.SEVERE, "Failed to create player data directory", e);
         }
 
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         this.playerCache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .from(runtimeConfig.advanced().playerCacheSpec())
             .removalListener((RemovalListener<UUID, PlayerInfo>) removal -> {
                 logger.fine("Removing player-info for " + removal.getKey() + " from cache");
                 PlayerInfo playerInfo = removal.getValue();
@@ -97,7 +99,7 @@ public class PlayerLogic {
                        }
                    }
             );
-        Duration every = Duration.ofSeconds(plugin.getConfig().getInt("options.advanced.player.saveEvery", 2 * 60));
+        Duration every = runtimeConfig.advanced().playerSaveEvery();
         this.saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 

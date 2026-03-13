@@ -19,8 +19,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -40,6 +41,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -79,7 +81,7 @@ public class SkyBlockMenu {
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final PerkLogic perkLogic;
     private final SchematicHandler schematicHandler;
     private final LimitLogic limitLogic;
@@ -116,7 +118,7 @@ public class SkyBlockMenu {
     public SkyBlockMenu(
         @NotNull uSkyBlock plugin,
         @NotNull ChallengeLogic challengeLogic,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PerkLogic perkLogic,
         @NotNull SchematicHandler schematicHandler,
         @NotNull LimitLogic limitLogic,
@@ -125,7 +127,7 @@ public class SkyBlockMenu {
     ) {
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.perkLogic = perkLogic;
         this.schematicHandler = schematicHandler;
         this.limitLogic = limitLogic;
@@ -266,21 +268,18 @@ public class SkyBlockMenu {
     }
 
     private void addExtraMenus(Player player, Inventory menu) {
-        ConfigurationSection extras = config.getYamlConfig().getConfigurationSection("options.extra-menus");
-        if (extras == null) {
+        Map<Integer, RuntimeConfig.ExtraMenu> extras = runtimeConfigs.current().extraMenus();
+        if (extras.isEmpty()) {
             return;
         }
-        for (String sIndex : extras.getKeys(false)) {
-            ConfigurationSection menuSection = extras.getConfigurationSection(sIndex);
-            if (menuSection == null) {
-                continue;
-            }
+        for (var entry : extras.entrySet()) {
             try {
-                int index = Integer.parseInt(sIndex, 10);
-                String title = menuSection.getString("title", "\u00a9Unknown");
-                String icon = menuSection.getString("displayItem", "CHEST");
+                int index = entry.getKey();
+                RuntimeConfig.ExtraMenu extraMenu = entry.getValue();
+                String title = extraMenu.title();
+                String icon = extraMenu.displayItem();
                 List<Component> lores = new ArrayList<>();
-                for (String l : menuSection.getStringList("lore")) {
+                for (String l : extraMenu.lore()) {
                     Matcher matcher = PERM_VALUE_PATTERN.matcher(l);
                     if (matcher.matches()) {
                         String perm = matcher.group("perm");
@@ -301,29 +300,25 @@ public class SkyBlockMenu {
                 ItemStackUtil.setComponentLore(item, lores);
                 menu.setItem(index, item);
             } catch (Exception e) {
-                log(Level.INFO, "Unable to add extra-menu " + sIndex + ": " + e);
+                log(Level.INFO, "Unable to add extra-menu " + entry.getKey() + ": " + e);
             }
         }
     }
 
     private boolean isExtraMenuAction(Player player, ItemStack currentItem) {
-        ConfigurationSection extras = config.getYamlConfig().getConfigurationSection("options.extra-menus");
-        if (extras == null || currentItem == null || currentItem.getItemMeta() == null) {
+        Map<Integer, RuntimeConfig.ExtraMenu> extras = runtimeConfigs.current().extraMenus();
+        if (extras.isEmpty() || currentItem == null || currentItem.getItemMeta() == null) {
             return false;
         }
         Material itemType = currentItem.getType();
         String itemTitle = requireNonNull(currentItem.getItemMeta()).getDisplayName();
-        for (String sIndex : extras.getKeys(false)) {
-            ConfigurationSection menuSection = extras.getConfigurationSection(sIndex);
-            if (menuSection == null) {
-                continue;
-            }
+        for (RuntimeConfig.ExtraMenu extraMenu : extras.values()) {
             try {
-                String title = menuSection.getString("title", "\u00a9Unknown");
-                String icon = menuSection.getString("displayItem", "CHEST");
+                String title = extraMenu.title();
+                String icon = extraMenu.displayItem();
                 Material material = Material.matchMaterial(icon);
                 if (title.equals(itemTitle) && material == itemType) {
-                    for (String command : menuSection.getStringList("commands")) {
+                    for (String command : extraMenu.commands()) {
                         Matcher matcher = PERM_VALUE_PATTERN.matcher(command);
                         if (matcher.matches()) {
                             String perm = matcher.group("perm");
@@ -344,7 +339,7 @@ public class SkyBlockMenu {
                     return true;
                 }
             } catch (Exception e) {
-                log(Level.INFO, "Unable to execute commands for extra-menu " + sIndex + ": " + e);
+                log(Level.INFO, "Unable to execute commands for extra-menu " + extraMenu.title() + ": " + e);
             }
         }
         return false;
@@ -420,15 +415,16 @@ public class SkyBlockMenu {
         menu.addItem(menuItem);
         lores.clear();
 
-        if (config.getYamlConfig().getBoolean("island-schemes-enabled", true) && schemeNames.size() > 1) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        if (runtimeConfig.island().schemesEnabled() && schemeNames.size() > 1) {
             int index = 1;
             for (String schemeName : schemeNames) {
                 IslandPerk islandPerk = perkLogic.getIslandPerk(schemeName);
-                boolean enabled = config.getYamlConfig().getBoolean("island-schemes." + islandPerk.getSchemeName() + ".enabled", true);
-                if (!enabled) {
+                RuntimeConfig.IslandScheme scheme = runtimeConfig.islandScheme(islandPerk.getSchemeName());
+                if (scheme == null || !scheme.enabled()) {
                     continue; // Skip
                 }
-                index = Math.max(config.getYamlConfig().getInt("island-schemes." + islandPerk.getSchemeName() + ".index", index), 1);
+                index = Math.max(scheme.index(), index);
                 menuItem = islandPerk.getDisplayItem();
                 ItemMeta meta = requireNonNull(requireNonNull(menuItem.getItemMeta()));
                 List<String> oldLore = meta.getLore();
@@ -465,9 +461,11 @@ public class SkyBlockMenu {
     }
 
     private int getMaxSchemeIndex(List<String> schemeNames) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         int index = 1;
         for (String schemeName : schemeNames) {
-            int nextIndex = config.getYamlConfig().getInt("island-schemes." + schemeName + ".index", index);
+            RuntimeConfig.IslandScheme scheme = runtimeConfig.islandScheme(schemeName);
+            int nextIndex = scheme != null ? scheme.index() : index;
             if (nextIndex > index) {
                 index = nextIndex;
             } else {
@@ -618,7 +616,7 @@ public class SkyBlockMenu {
         menu.setItem(15, menuItem);
         lores.clear();
         if (islandInfo.isLeader(player)) {
-            if (config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
+            if (runtimeConfigs.current().island().schemesEnabled()) {
                 menuItem = new ItemStack(Material.PODZOL, 1);
                 addLore(lores, tr("Restarts your island.<newline><error>Warning! This will remove your items and island!</error>"));
                 ItemStackUtil.setComponentDisplayName(menuItem, tr("Restart Island", ERROR));
@@ -760,7 +758,7 @@ public class SkyBlockMenu {
             player.performCommand("island lock");
             player.performCommand("island");
         } else if (slotIndex == 17) {
-            if (islandInfo.isLeader(player) && config.getYamlConfig().getBoolean("island-schemes-enabled", true)) {
+            if (islandInfo.isLeader(player) && runtimeConfigs.current().island().schemesEnabled()) {
                 player.openInventory(createRestartGUI(player));
             } else {
                 if (confirmHandler.durationLeft(player, "/is leave").isPositive()) {
@@ -834,13 +832,14 @@ public class SkyBlockMenu {
         ItemMeta meta;
         List<Component> lores;
         int index = 1;
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         for (String schemeName : schemeNames) {
             IslandPerk islandPerk = perkLogic.getIslandPerk(schemeName);
-            boolean enabled = config.getYamlConfig().getBoolean("island-schemes." + islandPerk.getSchemeName() + ".enabled", true);
-            if (!enabled) {
+            RuntimeConfig.IslandScheme scheme = runtimeConfig.islandScheme(islandPerk.getSchemeName());
+            if (scheme == null || !scheme.enabled()) {
                 continue; // Skip
             }
-            index = config.getYamlConfig().getInt("island-schemes." + islandPerk.getSchemeName() + ".index", index);
+            index = scheme.index();
             menuItem = islandPerk.getDisplayItem();
             meta = requireNonNull(menuItem.getItemMeta());
             List<String> oldLore = meta.getLore();

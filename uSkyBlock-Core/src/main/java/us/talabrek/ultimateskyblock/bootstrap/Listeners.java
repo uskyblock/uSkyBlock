@@ -6,8 +6,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
 import us.talabrek.ultimateskyblock.command.InviteHandler;
 import us.talabrek.ultimateskyblock.event.ExploitEvents;
@@ -30,8 +31,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 @Singleton
 public class Listeners {
-
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
 
     private final GuiListener guiListener;
     private final InternalEvents internalEvents;
@@ -55,7 +55,7 @@ public class Listeners {
 
     @Inject
     public Listeners(
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull GuiListener guiListener,
         @NotNull InternalEvents internalEvents,
         @NotNull PlayerEvents playerEvents,
@@ -76,7 +76,7 @@ public class Listeners {
         @NotNull InviteHandler inviteHandler,
         @NotNull PlayerDB playerDB
     ) {
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.guiListener = guiListener;
         this.internalEvents = internalEvents;
         this.playerEvents = playerEvents;
@@ -100,6 +100,7 @@ public class Listeners {
 
     public void registerListeners(Plugin plugin) {
         PluginManager manager = plugin.getServer().getPluginManager();
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
 
         manager.registerEvents(internalEvents, plugin);
         manager.registerEvents(playerEvents, plugin);
@@ -113,29 +114,29 @@ public class Listeners {
         manager.registerEvents(playerDB, plugin);
 
         // TODO minoneer 06.02.2025: Move this logic. Either into the appropriate listener, or into submodules if we don't want all features active (e.g., the nether)
-        if (config.getYamlConfig().getBoolean("options.protection.enabled", true)) {
+        if (runtimeConfig.protection().enabled()) {
             manager.registerEvents(griefEvents, plugin);
-            if (config.getYamlConfig().getBoolean("options.protection.item-drops", true)) {
+            if (runtimeConfig.protection().itemDrops()) {
                 manager.registerEvents(itemDropEvents, plugin);
             }
         }
-        if (config.getYamlConfig().getBoolean("options.island.spawn-limits.enabled", true)) {
+        if (runtimeConfig.island().spawnLimits().enabled()) {
             manager.registerEvents(spawnEvents, plugin);
         }
-        if (config.getYamlConfig().getBoolean("options.spawning.guardians.enabled", true)) {
+        if (runtimeConfig.spawning().guardians().enabled()) {
             manager.registerEvents(guardianHabitatEvents, plugin);
         }
         manager.registerEvents(phantomSpawnEvents, plugin);
-        if (config.getYamlConfig().getBoolean("options.protection.visitors.block-banned-entry", true)) {
+        if (runtimeConfig.protection().blockBannedEntry()) {
             manager.registerEvents(worldGuardEvents, plugin);
         }
         if (Settings.nether_enabled) {
             manager.registerEvents(netherTerraFormEvents, plugin);
         }
-        if (config.getYamlConfig().getBoolean("tool-menu.enabled", true)) {
+        if (runtimeConfig.toolMenu().enabled()) {
             manager.registerEvents(toolMenuEvents, plugin);
         }
-        if (config.getYamlConfig().getBoolean("signs.enabled", true)) {
+        if (runtimeConfig.signs().enabled()) {
             manager.registerEvents(signEvents, plugin);
         }
     }

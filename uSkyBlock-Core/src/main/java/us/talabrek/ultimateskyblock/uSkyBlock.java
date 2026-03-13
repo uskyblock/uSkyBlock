@@ -47,6 +47,7 @@ import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -165,6 +166,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private SkyUpdateChecker updateChecker;
     @Inject
     private Scheduler scheduler;
+    @Inject
+    private RuntimeConfigs runtimeConfigs;
 
     private UltimateSkyblockApi api;
 
@@ -1031,6 +1034,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public PluginConfig getPluginConfig() {
         return config;
+    }
+
+    public RuntimeConfigs getRuntimeConfigs() {
+        return runtimeConfigs;
     }
 
     public Scheduler getScheduler() {

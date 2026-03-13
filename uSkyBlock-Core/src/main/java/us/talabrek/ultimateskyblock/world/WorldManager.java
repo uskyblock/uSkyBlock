@@ -17,8 +17,9 @@ import org.bukkit.entity.Monster;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -38,7 +39,7 @@ import static us.talabrek.ultimateskyblock.config.Settings.island_height;
 public class WorldManager {
     private final Path schematicPath;
     private final HookManager hookManager;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Logger logger;
 
@@ -53,13 +54,13 @@ public class WorldManager {
     public WorldManager(
         @NotNull uSkyBlock plugin,
         @NotNull Logger logger,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull HookManager hookManager,
         @NotNull Scheduler scheduler
     ) {
         this.schematicPath = plugin.getDataFolder().toPath().resolve("schematics").resolve("spawn.schem");
         this.hookManager = hookManager;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.logger = logger;
         this.scheduler = scheduler;
     }
@@ -111,7 +112,7 @@ public class WorldManager {
     private void setupWorld(@NotNull World world, int islandHeight) {
         Validate.notNull(world, "World cannot be null");
 
-        if (!config.getYamlConfig().getBoolean("options.advanced.manageSpawn")) {
+        if (!runtimeConfigs.current().advanced().manageSpawn()) {
             return;
         }
 
@@ -140,7 +141,7 @@ public class WorldManager {
 
         World world = spawnLocation.getWorld();
 
-        if (config.getYamlConfig().getInt("options.general.spawnSize", 0) > 32 && Files.exists(schematicPath)) {
+        if (runtimeConfigs.current().general().spawnSize() > 32 && Files.exists(schematicPath)) {
             AsyncWorldEditHandler.loadIslandSchematic(schematicPath.toFile(), spawnLocation);
         } else {
             Block spawnBlock = world.getBlockAt(spawnLocation).getRelative(BlockFace.DOWN);
@@ -159,8 +160,7 @@ public class WorldManager {
     @NotNull
     private ChunkGenerator getOverworldGenerator() {
         try {
-            String clazz = config.getYamlConfig().getString("options.advanced.chunk-generator",
-                "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator");
+            String clazz = runtimeConfigs.current().advanced().chunkGenerator();
             Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
@@ -182,8 +182,7 @@ public class WorldManager {
     @NotNull
     private ChunkGenerator getNetherGenerator() {
         try {
-            String clazz = config.getYamlConfig().getString("nether.chunk-generator",
-                "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator");
+            String clazz = runtimeConfigs.current().nether().chunkGenerator();
             Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
