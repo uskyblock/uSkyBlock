@@ -150,4 +150,32 @@ public class RuntimeConfigFactoryTest {
         assertEquals("en", runtimeConfig.configuredLanguage());
         assertEquals(Locale.ENGLISH, runtimeConfig.locale());
     }
+
+    @Test
+    public void usesCodeDefaultsForHiddenExpertOnlyKeysMissingFromTemplate() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+
+        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+
+        assertEquals(Duration.ofMillis(2500), runtimeConfig.init().initDelay());
+        assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().playerCacheSpec());
+        assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().islandCacheSpec());
+        assertEquals("maximumSize=200,expireAfterWrite=20s", runtimeConfig.advanced().placeholderCacheSpec());
+        assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().completionCacheSpec());
+        assertEquals(Duration.ofSeconds(30), runtimeConfig.advanced().islandSaveEvery());
+        assertEquals(Duration.ofSeconds(120), runtimeConfig.advanced().playerSaveEvery());
+        assertEquals("us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator", runtimeConfig.advanced().chunkGenerator());
+        assertEquals(Duration.ofSeconds(30), runtimeConfig.advanced().feedbackEvery());
+        assertEquals(Duration.ofMinutes(10), runtimeConfig.advanced().purgeTimeout());
+        assertEquals("us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator", runtimeConfig.nether().chunkGenerator());
+        assertEquals("maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m", runtimeConfig.advanced().playerDb().nameCacheSpec());
+        assertEquals("maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m", runtimeConfig.advanced().playerDb().uuidCacheSpec());
+        assertEquals(Duration.ofSeconds(10), runtimeConfig.advanced().playerDb().saveDelay());
+        assertEquals(Duration.ofMillis(15), runtimeConfig.async().maxIterationTime());
+        assertEquals(20L, runtimeConfig.async().maxConsecutiveTicks());
+        assertEquals(Duration.ofMillis(100), runtimeConfig.async().yieldDelay());
+        assertEquals(10d, runtimeConfig.importer().progressEveryPct());
+        assertEquals(Duration.ofSeconds(10), runtimeConfig.importer().progressEvery());
+    }
 }

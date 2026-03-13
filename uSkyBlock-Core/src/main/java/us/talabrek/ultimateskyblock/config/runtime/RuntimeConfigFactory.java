@@ -16,14 +16,35 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class RuntimeConfigFactory {
+    private static final long DEFAULT_INIT_DELAY_TICKS = 50L;
+    private static final String DEFAULT_PLAYER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
+    private static final String DEFAULT_ISLAND_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
+    private static final String DEFAULT_PLACEHOLDER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=20s";
+    private static final String DEFAULT_COMPLETION_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
+    private static final long DEFAULT_ISLAND_SAVE_EVERY_SECONDS = 30L;
+    private static final long DEFAULT_PLAYER_SAVE_EVERY_SECONDS = 120L;
+    private static final String DEFAULT_OVERWORLD_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator";
+    private static final String DEFAULT_NETHER_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator";
+    private static final long DEFAULT_LONG_FEEDBACK_EVERY_MS = 30000L;
+    private static final long DEFAULT_PURGE_TIMEOUT_MS = 600000L;
+    private static final String DEFAULT_PLAYERDB_NAME_CACHE_SPEC = "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m";
+    private static final String DEFAULT_PLAYERDB_UUID_CACHE_SPEC = "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m";
+    private static final long DEFAULT_PLAYERDB_SAVE_DELAY_MS = 10000L;
+    private static final long DEFAULT_ASYNC_MAX_MS = 15L;
+    private static final long DEFAULT_ASYNC_MAX_CONSECUTIVE_TICKS = 20L;
+    private static final long DEFAULT_ASYNC_YIELD_DELAY_TICKS = 2L;
+    private static final double DEFAULT_IMPORTER_PROGRESS_EVERY_PCT = 10d;
+    private static final long DEFAULT_IMPORTER_PROGRESS_EVERY_MS = 10000L;
+
     private RuntimeConfigFactory() {
     }
 
     @NotNull
     public static RuntimeConfig load(@NotNull FileConfiguration config) {
         // Nominal defaults come from the bundled config.yml attached by PluginConfigLoader.
-        // Keep inline fallbacks here only for malformed values or legacy compatibility paths,
-        // not as a second source of truth for ordinary defaults.
+        // Keep code defaults here only for hidden expert-only knobs that are intentionally not
+        // shipped in config.yml by default. Everything normal/admin-facing should come from the
+        // bundled config plus migration, not a duplicated Java fallback.
         String configuredLanguage = normalizeConfiguredLanguage(config.getString("language"));
         int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize"));
         int distance = Math.max(50, config.getInt("options.island.distance"));
@@ -33,7 +54,7 @@ public final class RuntimeConfigFactory {
         return new RuntimeConfig(
             configuredLanguage,
             loadLocale(configuredLanguage),
-            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(config.getLong("init.initDelay"))),
+            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(getLong(config, "init.initDelay", DEFAULT_INIT_DELAY_TICKS))),
             new RuntimeConfig.General(
                 maxPartySize,
                 config.getString("options.general.worldName"),
@@ -110,7 +131,7 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("nether.enabled", false),
                 config.getInt("nether.lava_level", config.getInt("nether.lava-level", 32)),
                 config.getInt("nether.height", islandHeight / 2),
-                config.getString("nether.chunk-generator"),
+                getString(config, "nether.chunk-generator", DEFAULT_NETHER_CHUNK_GENERATOR),
                 new RuntimeConfig.Terraform(
                     config.getBoolean("nether.terraform-enabled"),
                     config.getDouble("nether.terraform-min-pitch"),
@@ -141,29 +162,29 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.advanced.useDisplayNames"),
                 config.getDouble("options.advanced.topTenCutoff", config.getDouble("options.advanced.purgeLevel")),
                 config.getBoolean("options.advanced.manageSpawn"),
-                config.getString("options.advanced.playerCache"),
-                config.getString("options.advanced.islandCache"),
-                config.getString("options.advanced.placeholderCache"),
-                config.getString("options.advanced.completionCache"),
-                Duration.ofSeconds(config.getInt("options.advanced.island.saveEvery")),
-                Duration.ofSeconds(config.getInt("options.advanced.player.saveEvery")),
-                config.getString("options.advanced.chunk-generator"),
+                getString(config, "options.advanced.playerCache", DEFAULT_PLAYER_CACHE_SPEC),
+                getString(config, "options.advanced.islandCache", DEFAULT_ISLAND_CACHE_SPEC),
+                getString(config, "options.advanced.placeholderCache", DEFAULT_PLACEHOLDER_CACHE_SPEC),
+                getString(config, "options.advanced.completionCache", DEFAULT_COMPLETION_CACHE_SPEC),
+                Duration.ofSeconds(getLong(config, "options.advanced.island.saveEvery", DEFAULT_ISLAND_SAVE_EVERY_SECONDS)),
+                Duration.ofSeconds(getLong(config, "options.advanced.player.saveEvery", DEFAULT_PLAYER_SAVE_EVERY_SECONDS)),
+                getString(config, "options.advanced.chunk-generator", DEFAULT_OVERWORLD_CHUNK_GENERATOR),
                 Math.max(0, config.getInt("options.advanced.chunkRegenSpeed")),
-                Duration.ofMillis(config.getLong("async.long.feedbackEvery")),
+                Duration.ofMillis(getLong(config, "async.long.feedbackEvery", DEFAULT_LONG_FEEDBACK_EVERY_MS)),
                 config.getDouble("options.advanced.purgeLevel"),
-                Duration.ofMillis(config.getLong("options.advanced.purgeTimeout")),
+                Duration.ofMillis(getLong(config, "options.advanced.purgeTimeout", DEFAULT_PURGE_TIMEOUT_MS)),
                 normalizeBlank(config.getString("options.advanced.debugLevel")),
                 new RuntimeConfig.PlayerDb(
                     config.getString("options.advanced.playerdb.storage"),
-                    config.getString("options.advanced.playerdb.nameCache"),
-                    config.getString("options.advanced.playerdb.uuidCache"),
-                    Duration.ofMillis(config.getInt("playerdb.saveDelay"))
+                    getString(config, "options.advanced.playerdb.nameCache", DEFAULT_PLAYERDB_NAME_CACHE_SPEC),
+                    getString(config, "options.advanced.playerdb.uuidCache", DEFAULT_PLAYERDB_UUID_CACHE_SPEC),
+                    Duration.ofMillis(getLong(config, "playerdb.saveDelay", DEFAULT_PLAYERDB_SAVE_DELAY_MS))
                 )
             ),
             new RuntimeConfig.Async(
-                Duration.ofMillis(config.getInt("async.maxMs")),
-                config.getLong("async.maxConsecutiveTicks"),
-                TimeUtil.ticksAsDuration(config.getLong("async.yieldDelay"))
+                Duration.ofMillis(getLong(config, "async.maxMs", DEFAULT_ASYNC_MAX_MS)),
+                getLong(config, "async.maxConsecutiveTicks", DEFAULT_ASYNC_MAX_CONSECUTIVE_TICKS),
+                TimeUtil.ticksAsDuration(getLong(config, "async.yieldDelay", DEFAULT_ASYNC_YIELD_DELAY_TICKS))
             ),
             new RuntimeConfig.AsyncWorldEdit(
                 config.getBoolean("asyncworldedit.enabled"),
@@ -208,8 +229,8 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("worldguard.exit-message")
             ),
             new RuntimeConfig.Importer(
-                config.getDouble("importer.progressEveryPct"),
-                Duration.ofMillis(config.getLong("importer.progressEveryMs"))
+                getDouble(config, "importer.progressEveryPct", DEFAULT_IMPORTER_PROGRESS_EVERY_PCT),
+                Duration.ofMillis(getLong(config, "importer.progressEveryMs", DEFAULT_IMPORTER_PROGRESS_EVERY_MS))
             ),
             loadIslandSchemes(config),
             loadExtraMenus(config.getConfigurationSection("options.extra-menus")),
@@ -230,6 +251,39 @@ public final class RuntimeConfigFactory {
             return "en";
         }
         return I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse("en");
+    }
+
+    @NotNull
+    private static String getString(@NotNull FileConfiguration config, @NotNull String path, @NotNull String fallbackValue) {
+        if (config.contains(path)) {
+            String configuredValue = config.getString(path);
+            return configuredValue != null ? configuredValue : fallbackValue;
+        }
+        if (config.getDefaults() != null && config.getDefaults().contains(path)) {
+            String defaultValue = config.getDefaults().getString(path);
+            return defaultValue != null ? defaultValue : fallbackValue;
+        }
+        return fallbackValue;
+    }
+
+    private static long getLong(@NotNull FileConfiguration config, @NotNull String path, long fallbackValue) {
+        if (config.contains(path)) {
+            return config.getLong(path);
+        }
+        if (config.getDefaults() != null && config.getDefaults().contains(path)) {
+            return config.getDefaults().getLong(path);
+        }
+        return fallbackValue;
+    }
+
+    private static double getDouble(@NotNull FileConfiguration config, @NotNull String path, double fallbackValue) {
+        if (config.contains(path)) {
+            return config.getDouble(path);
+        }
+        if (config.getDefaults() != null && config.getDefaults().contains(path)) {
+            return config.getDefaults().getDouble(path);
+        }
+        return fallbackValue;
     }
 
     @NotNull
