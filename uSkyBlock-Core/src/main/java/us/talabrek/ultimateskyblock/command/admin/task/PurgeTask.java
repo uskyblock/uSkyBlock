@@ -4,6 +4,7 @@ import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
@@ -22,17 +23,19 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class PurgeTask extends BukkitRunnable {
     private final List<String> purgeList;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final CommandSender sender;
     private final ProgressTracker tracker;
     private final Timer timer;
     private boolean active;
 
-    public PurgeTask(uSkyBlock plugin, List<String> purgeList, CommandSender sender) {
+    public PurgeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, List<String> purgeList, CommandSender sender) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.sender = sender;
         this.purgeList = purgeList;
         this.timer = Timer.start();
-        Duration feedbackEvery = plugin.getRuntimeConfigs().current().advanced().feedbackEvery();
+        Duration feedbackEvery = runtimeConfigs.current().advanced().feedbackEvery();
         tracker = new ProgressTracker(sender,
             marktr("- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
             25,

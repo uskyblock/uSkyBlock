@@ -128,7 +128,7 @@ public class BiomeCommand extends RequireIslandCommand {
                 return true;
             }
 
-            scheduler.sync(new SetBiomeTask(plugin, player.getWorld(), minP, maxP, biome, () -> {
+            scheduler.sync(new SetBiomeTask(plugin, runtimeConfigs, player.getWorld(), minP, maxP, biome, () -> {
                 String biomeName = biome.getKey().getKey();
                 if (changeEntireIslandBiome) {
                     island.setBiome(biome);

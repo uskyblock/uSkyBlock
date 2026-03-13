@@ -543,7 +543,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     public void setBiome(Location loc, Biome biome) {
-        scheduler.sync(new SetBiomeTask(this, loc, biome, null));
+        scheduler.sync(new SetBiomeTask(this, runtimeConfigs, loc, biome, null));
     }
 
     public void createIsland(final Player player, String cSchem) {
@@ -578,7 +578,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
         final PlayerPerk playerPerk = new PlayerPerk(pi, perkLogic.getPerk(player));
         sendTr(player, "Getting your island ready. Please be patient, this can take a while.");
-        BukkitRunnable createTask = new CreateIslandTask(this, player, playerPerk, next, cSchem);
+        BukkitRunnable createTask = new CreateIslandTask(this, runtimeConfigs, player, playerPerk, next, cSchem);
         IslandInfo tempInfo = islandLogic.createIslandInfo(LocationUtil.getIslandName(next), pi.getPlayerName());
         WorldGuardHandler.protectIsland(this, player, tempInfo);
         islandLogic.clearIsland(next, createTask);
@@ -843,7 +843,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public USBImporterExecutor getImporter() {
         if (importer == null) {
-            importer = new USBImporterExecutor(this);
+            importer = new USBImporterExecutor(this, runtimeConfigs);
         }
         return importer;
     }

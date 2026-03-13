@@ -70,7 +70,7 @@ public class WorldManager {
      */
     @NotNull
     public ChunkRegenerator getChunkRegenerator(@NotNull World world) {
-        return new ChunkRegenerator(world);
+        return new ChunkRegenerator(uSkyBlock.getInstance(), runtimeConfigs, world);
     }
 
     /**

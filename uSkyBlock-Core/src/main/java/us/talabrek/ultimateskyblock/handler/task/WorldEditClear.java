@@ -10,6 +10,7 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.World;
 import us.talabrek.ultimateskyblock.async.IncrementalRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -29,8 +30,8 @@ public class WorldEditClear extends IncrementalRunnable {
     private final World world;
     private final List<Region> regions;
 
-    public WorldEditClear(uSkyBlock plugin, World world, Set<Region> borderRegions, Runnable onCompletion) {
-        super(plugin.getScheduler(), plugin.getRuntimeConfigs().current().async(), onCompletion);
+    public WorldEditClear(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, World world, Set<Region> borderRegions, Runnable onCompletion) {
+        super(plugin.getScheduler(), runtimeConfigs.current().async(), onCompletion);
         this.world = world;
         log.log(Level.FINE, "Planning regen of borders: " + borderRegions);
         regions = createRegions(borderRegions);

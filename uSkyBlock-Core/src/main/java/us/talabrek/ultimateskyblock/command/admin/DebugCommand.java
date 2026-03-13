@@ -6,6 +6,7 @@ import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.PluginInfo;
 
@@ -34,14 +35,16 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 public class DebugCommand extends CompositeCommand {
 
     private final PluginInfo pluginInfo;
+    private final RuntimeConfigs runtimeConfigs;
 
     public static final Logger log = Logger.getLogger("us.talabrek.ultimateskyblock");
     private static Handler logHandler = null;
 
     @Inject
-    public DebugCommand(@NotNull uSkyBlock plugin, @NotNull PluginInfo pluginInfo) {
+    public DebugCommand(@NotNull uSkyBlock plugin, @NotNull PluginInfo pluginInfo, @NotNull RuntimeConfigs runtimeConfigs) {
         super("debug", "usb.admin.debug", marktr("control debugging"));
         this.pluginInfo = pluginInfo;
+        this.runtimeConfigs = runtimeConfigs;
 
         add(new AbstractCommand("setlevel", null, "level", marktr("set debug-level")) {
             @Override
@@ -78,7 +81,7 @@ public class DebugCommand extends CompositeCommand {
                 return true;
             }
         });
-        String debugLevel = plugin.getRuntimeConfigs().current().advanced().debugLevel();
+        String debugLevel = runtimeConfigs.current().advanced().debugLevel();
         if (debugLevel != null) {
             setLogLevel(plugin.getServer().getConsoleSender(), debugLevel);
         }

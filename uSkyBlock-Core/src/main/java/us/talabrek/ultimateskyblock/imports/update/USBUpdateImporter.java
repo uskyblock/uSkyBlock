@@ -14,8 +14,12 @@ import java.util.Objects;
  * file updating.
  */
 public class USBUpdateImporter implements USBImporter {
+    private final RuntimeConfigs runtimeConfigs;
     private uSkyBlock plugin;
-    private RuntimeConfigs runtimeConfigs;
+
+    public USBUpdateImporter(RuntimeConfigs runtimeConfigs) {
+        this.runtimeConfigs = runtimeConfigs;
+    }
 
     @Override
     public String getName() {
@@ -25,7 +29,6 @@ public class USBUpdateImporter implements USBImporter {
     @Override
     public void init(uSkyBlock plugin) {
         this.plugin = plugin;
-        this.runtimeConfigs = plugin.getRuntimeConfigs();
     }
 
     @Override

@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.island.task;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -22,6 +23,7 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
  */
 public class GenerateTask extends BukkitRunnable {
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Player player;
     private final PlayerInfo pi;
@@ -31,8 +33,9 @@ public class GenerateTask extends BukkitRunnable {
     boolean hasRun = false;
     private Location chestLocation;
 
-    public GenerateTask(uSkyBlock plugin, final Player player, final PlayerInfo pi, final Location next, PlayerPerk playerPerk, String schematicName) {
+    public GenerateTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, final Player player, final PlayerInfo pi, final Location next, PlayerPerk playerPerk, String schematicName) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.scheduler = plugin.getScheduler();
         this.player = player;
         this.pi = pi;
@@ -62,7 +65,7 @@ public class GenerateTask extends BukkitRunnable {
         IslandInfo islandInfo = plugin.setNewPlayerIsland(pi, next);
         islandInfo.setSchematicName(schematicName);
         WorldGuardHandler.updateRegion(islandInfo);
-        plugin.getCooldownHandler().resetCooldown(player, "restart", plugin.getRuntimeConfigs().current().general().cooldownRestart());
+        plugin.getCooldownHandler().resetCooldown(player, "restart", runtimeConfigs.current().general().cooldownRestart());
 
         scheduler.sync(() -> {
                 if (pi != null) {
@@ -70,7 +73,7 @@ public class GenerateTask extends BukkitRunnable {
                 }
                 plugin.clearPlayerInventory(player);
                 if (player != null && player.isOnline()) {
-                    if (plugin.getRuntimeConfigs().current().restart().teleportWhenReady()) {
+                    if (runtimeConfigs.current().restart().teleportWhenReady()) {
                         sendTr(player, "<success>Congratulations!</success> Your island is ready.");
                         if (AsyncWorldEditHandler.isAWE()) {
                             sendTr(player, "Note: Construction may still be in progress.", MUTED);
@@ -82,10 +85,10 @@ public class GenerateTask extends BukkitRunnable {
                         sendTr(player, "Note: Construction may still be in progress.", MUTED);
                     }
                 }
-                for (String command : plugin.getRuntimeConfigs().current().restart().extraCommands()) {
+                for (String command : runtimeConfigs.current().restart().extraCommands()) {
                     plugin.execCommand(player, command, true);
                 }
-            }, plugin.getRuntimeConfigs().current().restart().teleportDelay()
+            }, runtimeConfigs.current().restart().teleportDelay()
         );
     }
 }

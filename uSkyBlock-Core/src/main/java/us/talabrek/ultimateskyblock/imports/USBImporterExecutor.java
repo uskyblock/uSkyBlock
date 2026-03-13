@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.imports.fixuuidleader.UUIDLeaderImporter;
 import us.talabrek.ultimateskyblock.imports.update.USBUpdateImporter;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -31,6 +32,7 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class USBImporterExecutor {
     private final uSkyBlock plugin;
     private final ProgressTracker progressTracker;
+    private final RuntimeConfigs runtimeConfigs;
     private List<USBImporter> importers;
     private volatile Timer timer;
     private volatile int countSuccess;
@@ -38,10 +40,11 @@ public class USBImporterExecutor {
     private volatile int countFailed;
 
     @Inject
-    public USBImporterExecutor(uSkyBlock plugin) {
+    public USBImporterExecutor(uSkyBlock plugin, RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        double progressEveryPct = plugin.getRuntimeConfigs().current().importer().progressEveryPct();
-        Duration progressInterval = plugin.getRuntimeConfigs().current().importer().progressEvery();
+        this.runtimeConfigs = runtimeConfigs;
+        double progressEveryPct = runtimeConfigs.current().importer().progressEveryPct();
+        Duration progressInterval = runtimeConfigs.current().importer().progressEvery();
         progressTracker = new ProgressTracker(Bukkit.getConsoleSender(),
             marktr("Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             progressEveryPct,
@@ -60,7 +63,7 @@ public class USBImporterExecutor {
         if (importers == null) {
             importers = new ArrayList<>();
             importers.add(new UUIDLeaderImporter());
-            importers.add(new USBUpdateImporter());
+            importers.add(new USBUpdateImporter(runtimeConfigs));
             ServiceLoader<USBImporter> serviceLoader = ServiceLoader.load(USBImporter.class, getClass().getClassLoader());
             for (USBImporter usbImporter : serviceLoader) {
                 importers.add(usbImporter);

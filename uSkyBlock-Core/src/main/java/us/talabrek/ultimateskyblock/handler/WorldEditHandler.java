@@ -256,7 +256,7 @@ public class WorldEditHandler {
         for (BlockVector2 vector : innerChunks) {
             chunkList.add(islandWorld.getChunkAt(vector.getBlockX(), vector.getBlockZ()));
         }
-        WorldEditClear weClear = new WorldEditClear(plugin, islandWorld, borderRegions, onCompletion);
+        WorldEditClear weClear = new WorldEditClear(plugin, plugin.getRuntimeConfigs(), islandWorld, borderRegions, onCompletion);
         plugin.getWorldManager().getChunkRegenerator(islandWorld).regenerateChunks(chunkList, weClear);
     }
 

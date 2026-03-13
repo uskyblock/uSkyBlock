@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import us.talabrek.ultimateskyblock.async.IncrementalRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -25,8 +26,8 @@ public class SetBiomeTask extends IncrementalRunnable {
     private final BlockVector3 maxP;
     private final Set<BlockVector2> chunks;
 
-    public SetBiomeTask(uSkyBlock plugin, Location loc, Biome biome, Runnable onCompletion) {
-        super(plugin.getScheduler(), plugin.getRuntimeConfigs().current().async(), onCompletion);
+    public SetBiomeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, Location loc, Biome biome, Runnable onCompletion) {
+        super(plugin.getScheduler(), runtimeConfigs.current().async(), onCompletion);
         this.biome = biome;
         ProtectedRegion region = WorldGuardHandler.getIslandRegionAt(loc);
         if (region != null) {
@@ -40,8 +41,8 @@ public class SetBiomeTask extends IncrementalRunnable {
         chunks = WorldEditHandler.getChunks(new CuboidRegion(minP, maxP));
     }
 
-    public SetBiomeTask(uSkyBlock plugin, World world, BlockVector3 minP, BlockVector3 maxP, Biome biome, Runnable onCompletion) {
-        super(plugin.getScheduler(), plugin.getRuntimeConfigs().current().async(), onCompletion);
+    public SetBiomeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, World world, BlockVector3 minP, BlockVector3 maxP, Biome biome, Runnable onCompletion) {
+        super(plugin.getScheduler(), runtimeConfigs.current().async(), onCompletion);
         this.biome = biome;
         this.minP = minP;
         this.maxP = maxP;

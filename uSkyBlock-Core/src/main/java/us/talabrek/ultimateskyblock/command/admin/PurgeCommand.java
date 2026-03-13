@@ -117,7 +117,7 @@ public class PurgeCommand extends AbstractCommand {
 
     private void doPurge(CommandSender sender) {
         sendErrorTr(sender, "Starting purge...");
-        purgeTask = new PurgeTask(plugin, scanTask.getPurgeList(), sender);
+        purgeTask = new PurgeTask(plugin, runtimeConfigs, scanTask.getPurgeList(), sender);
         purgeTask.runTaskAsynchronously(plugin);
         scanTask.stop(); // Mark as inactive
     }

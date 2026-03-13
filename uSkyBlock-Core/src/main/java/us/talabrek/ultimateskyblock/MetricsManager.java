@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.util.logging.Level;
 
@@ -14,10 +15,12 @@ public class MetricsManager {
     private static final int BSTATS_RLF_ID = 2801;
 
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public MetricsManager(uSkyBlock plugin) {
+    public MetricsManager(uSkyBlock plugin, RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     public void setup() {
@@ -32,12 +35,12 @@ public class MetricsManager {
     private void setupMetrics(int pluginId) {
         Metrics bStats = new Metrics(plugin, pluginId);
         bStats.addCustomChart(new SimplePie("language",
-            () -> plugin.getRuntimeConfigs().current().configuredLanguage()));
+            () -> runtimeConfigs.current().configuredLanguage()));
         bStats.addCustomChart(new SimplePie("radius_and_distance",
-            () -> String.format("(%d,%d)", plugin.getRuntimeConfigs().current().island().radius(), plugin.getRuntimeConfigs().current().island().distance())));
+            () -> String.format("(%d,%d)", runtimeConfigs.current().island().radius(), runtimeConfigs.current().island().distance())));
 
         // Temp. chart to measure storage usage for (legacy) uuid.PlayerDB.
         bStats.addCustomChart(new SimplePie("playerdb_type",
-            () -> plugin.getRuntimeConfigs().current().advanced().playerDb().storage()));
+            () -> runtimeConfigs.current().advanced().playerDb().storage()));
     }
 }

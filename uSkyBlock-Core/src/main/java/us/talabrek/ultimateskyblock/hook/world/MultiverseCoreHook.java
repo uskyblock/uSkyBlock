@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.core.world.options.ImportWorldOptions;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.hook.HookFailedException;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -21,10 +22,12 @@ public class MultiverseCoreHook extends WorldHook {
     private static final String GENERATOR_NAME = "uSkyBlock";
 
     private final Logger logger;
+    private final RuntimeConfigs runtimeConfigs;
 
-    public MultiverseCoreHook(@NotNull uSkyBlock plugin) {
+    public MultiverseCoreHook(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "Multiverse-Core");
         this.logger = plugin.getLogger();
+        this.runtimeConfigs = runtimeConfigs;
         setupCore();
     }
 
@@ -37,7 +40,7 @@ public class MultiverseCoreHook extends WorldHook {
 
     @Override
     public void registerOverworld(@NotNull World world) {
-        RuntimeConfig runtimeConfig = plugin.getRuntimeConfigs().current();
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
@@ -74,7 +77,7 @@ public class MultiverseCoreHook extends WorldHook {
 
     @Override
     public void registerNetherworld(@NotNull World world) {
-        RuntimeConfig runtimeConfig = plugin.getRuntimeConfigs().current();
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
