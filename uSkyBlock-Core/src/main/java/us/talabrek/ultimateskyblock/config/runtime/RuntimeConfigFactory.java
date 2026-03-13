@@ -43,7 +43,7 @@ public final class RuntimeConfigFactory {
                 config.getString("options.general.defaultBiome"),
                 config.getString("options.general.defaultNetherBiome"),
                 config.getInt("options.general.spawnSize"),
-                config.getInt("general.maxSpam")
+                config.getInt("options.general.maxSpam")
             ),
             new RuntimeConfig.Island(
                 distance,
@@ -103,7 +103,7 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.protection.villager-trading-enabled"),
                 config.getBoolean("options.protection.visitors.use-portals"),
                 config.getBoolean("options.protection.visitors.vehicle-enter"),
-                config.getBoolean("options.protection.visitors.vehicle-break"),
+                config.getBoolean("options.protection.visitors.vehicle-damage"),
                 config.getBoolean("options.protection.visitors.block-banned-entry")
             ),
             new RuntimeConfig.Nether(

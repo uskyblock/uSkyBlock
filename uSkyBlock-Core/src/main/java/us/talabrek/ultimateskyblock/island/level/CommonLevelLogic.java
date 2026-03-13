@@ -19,6 +19,8 @@ public abstract class CommonLevelLogic implements LevelLogic {
 
     CommonLevelLogic(FileConfiguration levelConfig, WorldManager worldManager, int netherHeight) {
         this.levelConfig = levelConfig;
+        // TODO 4.0: Either make this an explicit levelConfig.yml key again or hardcode/remove the threshold entirely.
+        // It does not belong in config.yml; it controls when nether score starts counting toward island level.
         activateNetherAtLevel = levelConfig.getInt("nether.activate-at.level", 100);
         pointsPerLevel = levelConfig.getInt("general.pointsPerLevel");
         this.worldManager = worldManager;

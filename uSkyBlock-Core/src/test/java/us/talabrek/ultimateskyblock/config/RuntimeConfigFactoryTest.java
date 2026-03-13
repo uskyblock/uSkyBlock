@@ -19,7 +19,7 @@ public class RuntimeConfigFactoryTest {
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "en");
         config.set("init.initDelay", 80L);
-        config.set("general.maxSpam", 1500);
+        config.set("options.general.maxSpam", 1500);
         config.set("plugin-updates.branch", "STAGING");
         config.set("options.general.maxPartySize", 6);
         config.set("options.general.worldName", "skyworld");
@@ -59,7 +59,7 @@ public class RuntimeConfigFactoryTest {
         config.set("options.protection.villager-trading-enabled", true);
         config.set("options.protection.visitors.use-portals", true);
         config.set("options.protection.visitors.vehicle-enter", true);
-        config.set("options.protection.visitors.vehicle-break", true);
+        config.set("options.protection.visitors.vehicle-damage", true);
         config.set("options.advanced.confirmTimeout", "12s");
         config.set("options.party.invite-timeout", "3m");
         config.set("options.spawning.guardians.enabled", false);
@@ -124,6 +124,19 @@ public class RuntimeConfigFactoryTest {
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
+    }
+
+    @Test
+    public void ignoresLegacyMiskeyedRuntimePathsWithoutMigration() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+        config.set("general.maxSpam", 1700);
+        config.set("options.protection.visitors.vehicle-break", true);
+
+        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+
+        assertEquals(2000, runtimeConfig.general().maxSpam());
+        assertFalse(runtimeConfig.protection().visitorVehicleBreakAllowed());
     }
 
     @Test

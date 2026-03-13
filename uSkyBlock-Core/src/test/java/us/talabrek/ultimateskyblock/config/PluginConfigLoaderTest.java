@@ -265,6 +265,35 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void movesLegacyMiskeyedRuntimePathsDuringMigration117() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(116);
+        config.set("options.general.maxSpam", null);
+        config.set("general.maxSpam", 1700);
+        config.set("options.protection.visitors.vehicle-damage", null);
+        config.set("options.protection.visitors.vehicle-break", true);
+        config.set("options.protection.nether-roof", true);
+        config.set("asyncworldedit.progressEveryMs", 5000);
+        config.set("asyncworldedit.progressEveryPct", 20);
+        config.set("nether.activate-at.level", 100);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals(1700, migrated.getInt("options.general.maxSpam"));
+        assertTrue(migrated.getBoolean("options.protection.visitors.vehicle-damage"));
+        assertFalse(migrated.contains("general.maxSpam"));
+        assertFalse(migrated.contains("options.protection.visitors.vehicle-break"));
+        assertFalse(migrated.contains("options.protection.nether-roof"));
+        assertFalse(migrated.contains("asyncworldedit.progressEveryMs"));
+        assertFalse(migrated.contains("asyncworldedit.progressEveryPct"));
+        assertFalse(migrated.contains("nether.activate-at"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();
