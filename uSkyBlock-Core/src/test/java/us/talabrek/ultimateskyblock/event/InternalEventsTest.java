@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.event;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import us.talabrek.ultimateskyblock.api.event.uSkyBlockScoreChangedEvent;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
@@ -34,7 +36,8 @@ public class InternalEventsTest {
     private InternalEvents internalEvents;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
         fakePlugin = mock(uSkyBlock.class);
 
         YamlConfiguration config = new YamlConfiguration();
@@ -67,7 +70,7 @@ public class InternalEventsTest {
         doReturn(config).when(fakePlugin).getConfig();
 
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
-        doReturn(RuntimeConfigFactory.load(config)).when(runtimeConfigs).current();
+        doReturn(new RuntimeConfigFactory(new GameObjectFactory()).load(config)).when(runtimeConfigs).current();
         internalEvents = new InternalEvents(fakePlugin, runtimeConfigs);
 
         fakeBlockLimitLogic = mock(BlockLimitLogic.class);

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,10 +21,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ChallengeFactoryTest {
+    private ChallengeFactory challengeFactory;
 
     @BeforeEach
     public void beforeEach() throws NoSuchFieldException, IllegalAccessException {
         BukkitServerMock.setupServerMock();
+        challengeFactory = new ChallengeFactory(new GameObjectFactory());
     }
 
     @Test
@@ -33,8 +36,8 @@ public class ChallengeFactoryTest {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(resourceAsStream));
         ChallengeDefaults defaults = ChallengeFactory.createDefaults(config.getRoot());
         ConfigurationSection rankSection = config.getConfigurationSection("ranks.Tier1");
-        Rank rank = new Rank(rankSection, null, defaults);
-        Challenge challenge = ChallengeFactory.createChallenge(rank, rankSection.getConfigurationSection("challenges.villageguard"), defaults);
+        Rank rank = new Rank(rankSection, null, defaults, new GameObjectFactory(), challengeFactory);
+        Challenge challenge = challengeFactory.createChallenge(rank, rankSection.getConfigurationSection("challenges.villageguard"), defaults);
 
         assertThat(challenge, notNullValue());
         assertThat(challenge.getRequiredEntities().size(), is(2));
@@ -49,8 +52,8 @@ public class ChallengeFactoryTest {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(resourceAsStream));
         ChallengeDefaults defaults = ChallengeFactory.createDefaults(config.getRoot());
         ConfigurationSection rankSection = config.getConfigurationSection("ranks.Tier1");
-        Rank rank = new Rank(rankSection, null, defaults);
-        Challenge challenge = ChallengeFactory.createChallenge(rank, rankSection.getConfigurationSection("challenges.villageguard"), defaults);
+        Rank rank = new Rank(rankSection, null, defaults, new GameObjectFactory(), challengeFactory);
+        Challenge challenge = challengeFactory.createChallenge(rank, rankSection.getConfigurationSection("challenges.villageguard"), defaults);
 
         assertThat(challenge, notNullValue());
         Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(0);

@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.island;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -108,9 +107,13 @@ public class IslandGenerator {
         if (block.getType() == Material.CHEST) {
             final Chest chest = (Chest) block.getState();
             final Inventory inventory = chest.getInventory();
-            inventory.addItem(ItemStackUtil.createItemArray(ItemStackUtil.createItemList(runtimeConfigs.current().island().chestItemSpecs())));
+            inventory.addItem(runtimeConfigs.current().island().chestItems().stream()
+                .flatMap(item -> item.stacks().stream())
+                .toArray(ItemStack[]::new));
             if (runtimeConfigs.current().island().addExtraItems()) {
-                inventory.addItem(ItemStackUtil.createItemArray(perk.getExtraItems()));
+                inventory.addItem(perk.getExtraItems().stream()
+                    .map(ItemStack::clone)
+                    .toArray(ItemStack[]::new));
             }
             return true;
         }

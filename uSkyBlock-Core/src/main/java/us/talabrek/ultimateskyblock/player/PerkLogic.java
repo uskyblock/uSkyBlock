@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountSpec;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 
 import java.util.Arrays;
@@ -66,13 +67,9 @@ public class PerkLogic {
                     .villagers(scheme.villagers())
                     .golems(scheme.golems())
                     .copperGolems(scheme.copperGolems())
-                    .extraItems(ItemStackUtil.createItemList(scheme.extraItemSpecs()))
+                    .extraItems(createItems(scheme.extraItems()))
                     .build();
-                ItemStack itemStack = ItemStackUtil.createItemStack(
-                    scheme.displayItem(),
-                    schemeName,
-                    scheme.description()
-                );
+                ItemStack itemStack = scheme.displayItem().create(schemeName, scheme.description());
                 islandPerks.put(schemeName, new IslandPerk(schemeName, perm, itemStack, perk,
                     scheme.scoreMultiply(), scheme.scoreOffset()));
         }
@@ -126,7 +123,7 @@ public class PerkLogic {
         for (var entry : configuredPerks.entrySet()) {
             RuntimeConfig.PerkSpec perk = entry.getValue();
             donorPerks.put(entry.getKey(), new Perk(
-                ItemStackUtil.createItemList(perk.extraItemSpecs()),
+                createItems(perk.extraItems()),
                 perk.maxPartySize() > 0 ? perk.maxPartySize() : defaultPerk.getMaxPartySize(),
                 perk.animals() > 0 ? perk.animals() : defaultPerk.getAnimals(),
                 perk.monsters() > 0 ? perk.monsters() : defaultPerk.getMonsters(),
@@ -139,10 +136,10 @@ public class PerkLogic {
         }
     }
 
-    private void addExtraPermissionPerks(Map<String, List<String>> extraPermissionItems) {
+    private void addExtraPermissionPerks(Map<String, List<ItemStackAmountSpec>> extraPermissionItems) {
         for (var entry : extraPermissionItems.entrySet()) {
             String key = entry.getKey();
-            List<ItemStack> items = ItemStackUtil.createItemList(entry.getValue());
+            List<ItemStack> items = createItems(entry.getValue());
             if (items != null && !items.isEmpty()) {
                 String perm = "usb." + key;
                 donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
@@ -206,6 +203,10 @@ public class PerkLogic {
 
     public Map<String, Perk> getPerkMap() {
         return Collections.unmodifiableMap(donorPerks);
+    }
+
+    private static List<ItemStack> createItems(List<ItemStackAmountSpec> specs) {
+        return specs.stream().flatMap(spec -> spec.stacks().stream()).toList();
     }
 
     public static class PerkBuilder {

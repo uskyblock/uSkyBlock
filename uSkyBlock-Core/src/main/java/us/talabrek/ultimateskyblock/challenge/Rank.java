@@ -4,6 +4,8 @@ import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -22,15 +24,17 @@ public class Rank {
     private final ChallengeDefaults defaults;
     private final List<Challenge> challenges;
     private final ConfigurationSection config;
+    private final ItemStackSpec displayItem;
 
-    public Rank(ConfigurationSection section, Rank previousRank, ChallengeDefaults defaults) {
+    public Rank(ConfigurationSection section, Rank previousRank, ChallengeDefaults defaults, GameObjectFactory gameObjects, ChallengeFactory challengeFactory) {
         this.challenges = new ArrayList<>();
         this.previousRank = previousRank;
         this.defaults = defaults;
         this.config = section;
+        this.displayItem = gameObjects.itemStack(section.getString("displayItem", "DIRT"));
         ConfigurationSection challengeSection = section.getConfigurationSection("challenges");
         for (String challengeName : challengeSection.getKeys(false)) {
-            Challenge challenge = ChallengeFactory.createChallenge(this, challengeSection.getConfigurationSection(challengeName), defaults);
+            Challenge challenge = challengeFactory.createChallenge(this, challengeSection.getConfigurationSection(challengeName), defaults);
             if (challenge != null) {
                 challenges.add(challenge);
             }
@@ -46,8 +50,7 @@ public class Rank {
     }
 
     public ItemStack getDisplayItem() {
-        String displayItem = config.getString("displayItem", "DIRT");
-        return ItemStackUtil.asDisplayItem(ItemStackUtil.createItemStack(displayItem, getName(), null));
+        return ItemStackUtil.asDisplayItem(displayItem.create(getName(), null));
     }
 
     public String getName() {

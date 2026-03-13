@@ -2,6 +2,8 @@ package us.talabrek.ultimateskyblock.config.runtime;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountSpec;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
 import java.time.Duration;
 import java.util.List;
@@ -66,9 +68,9 @@ public record RuntimeConfig(
         boolean removeCreaturesByTeleport,
         int protectionRange,
         int radius,
-        @NotNull List<String> chestItemSpecs,
+        @NotNull List<ItemStackAmountSpec> chestItems,
         boolean addExtraItems,
-        @NotNull Map<String, List<String>> extraPermissionItems,
+        @NotNull Map<String, List<ItemStackAmountSpec>> extraPermissionItems,
         boolean allowIslandLock,
         boolean useIslandLevel,
         boolean useTopTen,
@@ -256,8 +258,14 @@ public record RuntimeConfig(
 
     public record ToolMenu(
         boolean enabled,
-        @NotNull String toolSpec,
-        @NotNull Map<String, String> commands
+        @NotNull ItemStackSpec tool,
+        @NotNull List<ToolMenuCommand> commands
+    ) {
+    }
+
+    public record ToolMenuCommand(
+        @NotNull ItemStackSpec item,
+        @NotNull String command
     ) {
     }
 
@@ -284,9 +292,9 @@ public record RuntimeConfig(
         @Nullable String netherSchematic,
         @NotNull String permission,
         @Nullable String description,
-        @NotNull String displayItem,
+        @NotNull ItemStackSpec displayItem,
         int index,
-        @NotNull List<String> extraItemSpecs,
+        @NotNull List<ItemStackAmountSpec> extraItems,
         int maxPartySize,
         int animals,
         int monsters,
@@ -300,14 +308,14 @@ public record RuntimeConfig(
 
     public record ExtraMenu(
         @NotNull String title,
-        @NotNull String displayItem,
+        @NotNull ItemStackSpec displayItem,
         @NotNull List<String> lore,
         @NotNull List<String> commands
     ) {
     }
 
     public record PerkSpec(
-        @NotNull List<String> extraItemSpecs,
+        @NotNull List<ItemStackAmountSpec> extraItems,
         int maxPartySize,
         int animals,
         int monsters,

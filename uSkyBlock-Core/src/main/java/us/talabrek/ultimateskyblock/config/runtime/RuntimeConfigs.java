@@ -10,11 +10,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public class RuntimeConfigs {
     private final PluginConfig pluginConfig;
+    private final RuntimeConfigFactory runtimeConfigFactory;
     private final AtomicReference<RuntimeConfig> current = new AtomicReference<>();
 
     @Inject
-    public RuntimeConfigs(@NotNull PluginConfig pluginConfig) {
+    public RuntimeConfigs(@NotNull PluginConfig pluginConfig, @NotNull RuntimeConfigFactory runtimeConfigFactory) {
         this.pluginConfig = pluginConfig;
+        this.runtimeConfigFactory = runtimeConfigFactory;
         reload();
     }
 
@@ -26,7 +28,7 @@ public class RuntimeConfigs {
 
     @NotNull
     public RuntimeConfig reload() {
-        RuntimeConfig snapshot = RuntimeConfigFactory.load(pluginConfig.getYamlConfig());
+        RuntimeConfig snapshot = runtimeConfigFactory.load(pluginConfig.getYamlConfig());
         current.set(snapshot);
         return snapshot;
     }

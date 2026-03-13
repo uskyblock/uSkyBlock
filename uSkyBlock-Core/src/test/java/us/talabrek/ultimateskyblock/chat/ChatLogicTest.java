@@ -2,6 +2,8 @@ package us.talabrek.ultimateskyblock.chat;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Msg;
@@ -116,7 +119,7 @@ public class ChatLogicTest {
                 new RuntimeConfig.Phantoms(true, false)
             ),
             new RuntimeConfig.Placeholder(true, false, false),
-            new RuntimeConfig.ToolMenu(true, "STICK", Map.of()),
+            new RuntimeConfig.ToolMenu(true, new ItemStackSpec(new ItemStack(Material.STICK)), List.of()),
             new RuntimeConfig.Signs(true),
             new RuntimeConfig.WorldGuard(false, false),
             new RuntimeConfig.Importer(10.0d, Duration.ofSeconds(10)),

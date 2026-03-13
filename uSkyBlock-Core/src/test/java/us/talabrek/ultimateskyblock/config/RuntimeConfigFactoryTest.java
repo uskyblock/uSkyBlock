@@ -1,9 +1,13 @@
 package us.talabrek.ultimateskyblock.config;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -13,6 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuntimeConfigFactoryTest {
+    private RuntimeConfigFactory runtimeConfigFactory;
+
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
+        runtimeConfigFactory = new RuntimeConfigFactory(new GameObjectFactory());
+    }
+
     @Test
     public void loadsTypedRuntimeConfigSections() {
         YamlConfiguration config = new YamlConfiguration();
@@ -85,7 +97,7 @@ public class RuntimeConfigFactoryTest {
         config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
         config.set("confirmation.is restart", false);
 
-        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
 
         assertEquals(6, runtimeConfig.general().maxPartySize());
         assertEquals(Duration.ofSeconds(4), runtimeConfig.init().initDelay());
@@ -95,6 +107,8 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofMillis(1500), runtimeConfig.general().maxSpam());
         assertEquals(96, runtimeConfig.island().protectionRange());
         assertEquals(48, runtimeConfig.island().radius());
+        assertEquals(Material.ICE, runtimeConfig.island().chestItems().get(0).prototype().create().getType());
+        assertEquals(2, runtimeConfig.island().chestItems().get(0).amount());
         assertEquals(Duration.ofSeconds(5), runtimeConfig.island().teleportDelay());
         assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
         assertEquals(Duration.ofMinutes(5), runtimeConfig.island().autoRefreshScore());
@@ -128,6 +142,7 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofMillis(2500), runtimeConfig.asyncWorldEdit().heartBeat());
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
+        assertEquals(Material.OAK_SAPLING, runtimeConfig.islandScheme("default").displayItem().create().getType());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
     }
 
@@ -138,7 +153,7 @@ public class RuntimeConfigFactoryTest {
         config.set("general.maxSpam", 1700);
         config.set("options.protection.visitors.vehicle-break", true);
 
-        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
 
         assertEquals(Duration.ofSeconds(2), runtimeConfig.general().maxSpam());
         assertFalse(runtimeConfig.protection().visitorVehicleBreakAllowed());
@@ -150,7 +165,7 @@ public class RuntimeConfigFactoryTest {
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "definitely-not-a-real-locale");
 
-        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
 
         assertEquals("en", runtimeConfig.configuredLanguage());
         assertEquals(Locale.ENGLISH, runtimeConfig.locale());
@@ -161,7 +176,7 @@ public class RuntimeConfigFactoryTest {
         YamlConfiguration config = new YamlConfiguration();
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
 
-        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
 
         assertEquals(Duration.ofMillis(2500), runtimeConfig.init().initDelay());
         assertEquals(Duration.ofSeconds(20), runtimeConfig.general().cooldownInfo());

@@ -277,7 +277,6 @@ public class SkyBlockMenu {
                 int index = entry.getKey();
                 RuntimeConfig.ExtraMenu extraMenu = entry.getValue();
                 String title = extraMenu.title();
-                String icon = extraMenu.displayItem();
                 List<Component> lores = new ArrayList<>();
                 for (String l : extraMenu.lore()) {
                     Matcher matcher = PERM_VALUE_PATTERN.matcher(l);
@@ -296,7 +295,7 @@ public class SkyBlockMenu {
                     }
                 }
                 // Only SIMPLE icons supported...
-                ItemStack item = GuiItemUtil.createGuiDisplayItem(icon, title);
+                ItemStack item = extraMenu.displayItem().create(title, null);
                 ItemStackUtil.setComponentLore(item, lores);
                 menu.setItem(index, item);
             } catch (Exception e) {
@@ -315,8 +314,7 @@ public class SkyBlockMenu {
         for (RuntimeConfig.ExtraMenu extraMenu : extras.values()) {
             try {
                 String title = extraMenu.title();
-                String icon = extraMenu.displayItem();
-                Material material = Material.matchMaterial(icon);
+                Material material = extraMenu.displayItem().create().getType();
                 if (title.equals(itemTitle) && material == itemType) {
                     for (String command : extraMenu.commands()) {
                         Matcher matcher = PERM_VALUE_PATTERN.matcher(command);

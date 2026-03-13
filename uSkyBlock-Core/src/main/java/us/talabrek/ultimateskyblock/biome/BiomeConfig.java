@@ -3,16 +3,16 @@ package us.talabrek.ultimateskyblock.biome;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +22,15 @@ import static java.util.Objects.requireNonNull;
 
 @Singleton
 public class BiomeConfig {
-
     private final Logger logger;
+    private final GameObjectFactory gameObjects;
     private final List<BiomeEntry> configuredBiomeEntries;
     private final List<String> configuredBiomeKeys;
 
     @Inject
-    public BiomeConfig(Logger logger) {
+    public BiomeConfig(Logger logger, GameObjectFactory gameObjects) {
         this.logger = logger;
+        this.gameObjects = gameObjects;
         this.configuredBiomeEntries = loadBiomes();
         this.configuredBiomeKeys = configuredBiomeEntries.stream()
             .map(entry -> entry.biome().getKey().getKey())
@@ -78,12 +79,12 @@ public class BiomeConfig {
             return null;
         }
 
-        ItemStack displayItem;
+        ItemStackSpec displayItem;
         try {
-            displayItem = ItemStackUtil.createItemStack(itemSpecification);
+            displayItem = gameObjects.itemStack(itemSpecification);
         } catch (IllegalArgumentException e) {
             logger.warning("Invalid item specification for biome " + biomeKey + ": " + itemSpecification);
-            displayItem = new ItemStack(Material.GRASS_BLOCK);
+            displayItem = new ItemStackSpec(new org.bukkit.inventory.ItemStack(Material.GRASS_BLOCK));
         }
 
         if (name == null) {

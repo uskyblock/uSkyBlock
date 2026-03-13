@@ -1,16 +1,20 @@
 package us.talabrek.ultimateskyblock.island;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -36,6 +40,11 @@ import static org.mockito.Mockito.when;
 public class IslandLocatorLogicTest {
     @TempDir
     Path tempDir;
+
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
+    }
 
     @Test
     public void testNextIslandLocation() throws Exception {
@@ -130,7 +139,7 @@ public class IslandLocatorLogicTest {
         config.set("options.advanced.playerCacheSpec", "maximumSize=100");
         config.set("options.advanced.islandCacheSpec", "maximumSize=100");
         config.set("plugin-updates.branch", "LATEST");
-        RuntimeConfig runtimeConfig = us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(config);
 
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
