@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.event;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -34,7 +35,8 @@ public class InternalEventsTest {
     private InternalEvents internalEvents;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
         fakePlugin = mock(uSkyBlock.class);
 
         YamlConfiguration config = new YamlConfiguration();

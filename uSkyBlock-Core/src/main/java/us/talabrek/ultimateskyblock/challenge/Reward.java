@@ -1,7 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.inventory.ItemStack;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountProbabilitySpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +13,14 @@ import java.util.Random;
 public class Reward {
     private static final Random RND = new Random();
 
-    private final List<ItemStackUtil.ItemProbability> itemReward;
+    private final List<ItemStackAmountProbabilitySpec> itemReward;
     private final String permissionReward;
     private final int currencyReward;
     private final int xpReward;
     private final String rewardText;
     private final List<String> commands;
 
-    public Reward(String rewardText, List<ItemStackUtil.ItemProbability> itemReward, String permissionReward, int currencyReward, int xpReward, List<String> commands) {
+    public Reward(String rewardText, List<ItemStackAmountProbabilitySpec> itemReward, String permissionReward, int currencyReward, int xpReward, List<String> commands) {
         this.itemReward = itemReward;
         this.permissionReward = permissionReward;
         this.currencyReward = currencyReward;
@@ -31,9 +31,9 @@ public class Reward {
 
     public List<ItemStack> getItemReward() {
         List<ItemStack> copy = new ArrayList<>();
-        for (ItemStackUtil.ItemProbability e : itemReward) {
+        for (ItemStackAmountProbabilitySpec e : itemReward) {
             if (RND.nextDouble() < e.probability()) {
-                copy.add(e.item().clone());
+                copy.addAll(e.item().stacks());
             }
         }
         return copy;
@@ -71,4 +71,3 @@ public class Reward {
             '}';
     }
 }
-

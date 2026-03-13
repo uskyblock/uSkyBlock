@@ -1,6 +1,8 @@
 package us.talabrek.ultimateskyblock.handler;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
@@ -23,6 +25,11 @@ import static org.mockito.Mockito.when;
 public class SchematicHandlerTest {
     @TempDir
     Path tempDir;
+
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
+    }
 
     @Test
     public void resolveTargetAcceptsNormalEntry() throws Exception {
@@ -97,8 +104,9 @@ public class SchematicHandlerTest {
 
     private static RuntimeConfigs runtimeConfigs(YamlConfiguration yamlConfig) {
         yamlConfig.setDefaults(PluginConfigLoader.loadBundledConfig());
+        var runtimeConfig = RuntimeConfigFactory.load(yamlConfig);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
-        when(runtimeConfigs.current()).thenReturn(RuntimeConfigFactory.load(yamlConfig));
+        when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;
     }
 }

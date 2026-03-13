@@ -38,7 +38,7 @@ public class ToolMenuEvents implements Listener {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
         RuntimeConfig.ToolMenu toolMenu = runtimeConfigs.current().toolMenu();
-        tool = ItemStackUtil.createItemStack(toolMenu.toolSpec());
+        tool = toolMenu.tool().create();
         registerChallenges();
         registerCommands();
     }

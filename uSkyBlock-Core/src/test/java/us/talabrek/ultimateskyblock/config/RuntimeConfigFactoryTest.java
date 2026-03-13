@@ -1,6 +1,9 @@
 package us.talabrek.ultimateskyblock.config;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
@@ -13,6 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuntimeConfigFactoryTest {
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
+    }
+
     @Test
     public void loadsTypedRuntimeConfigSections() {
         YamlConfiguration config = new YamlConfiguration();
@@ -95,6 +103,8 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofMillis(1500), runtimeConfig.general().maxSpam());
         assertEquals(96, runtimeConfig.island().protectionRange());
         assertEquals(48, runtimeConfig.island().radius());
+        assertEquals(Material.ICE, runtimeConfig.island().chestItems().get(0).prototype().create().getType());
+        assertEquals(2, runtimeConfig.island().chestItems().get(0).amount());
         assertEquals(Duration.ofSeconds(5), runtimeConfig.island().teleportDelay());
         assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
         assertEquals(Duration.ofMinutes(5), runtimeConfig.island().autoRefreshScore());
@@ -128,6 +138,7 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofMillis(2500), runtimeConfig.asyncWorldEdit().heartBeat());
         assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
         assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
+        assertEquals(Material.OAK_SAPLING, runtimeConfig.islandScheme("default").displayItem().create().getType());
         assertFalse(runtimeConfig.confirmationRequired("is restart", true));
     }
 

@@ -7,6 +7,7 @@ import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.util.MetaUtil;
 
 import java.time.Duration;
@@ -29,6 +30,7 @@ import static dk.lockfuglsang.minecraft.util.ItemStackUtil.createItemStack;
 public class ChallengeFactory {
     private static final Pattern ENTITY_PATTERN = Pattern.compile("(?<type>[a-zA-Z0-9_]+)(?<meta>:\\{.*\\})?(:(?<count>[0-9]+))?");
     private static Logger log = Logger.getLogger(ChallengeFactory.class.getName());
+    private static final GameObjectFactory GAME_OBJECTS = new GameObjectFactory();
 
     public static void setLogger(Logger log) {
         ChallengeFactory.log = log;
@@ -118,7 +120,7 @@ public class ChallengeFactory {
         }
         return new Reward(
             section.getString("text", "\u00a74Unknown"),
-            ItemStackUtil.createItemsWithProbability(items),
+            GAME_OBJECTS.itemStackAmountProbabilities(items),
             section.getString("permission"),
             section.getInt("currency", 0),
             section.getInt("xp", 0),

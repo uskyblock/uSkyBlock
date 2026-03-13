@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.ConfigDuration;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountSpec;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -48,6 +50,7 @@ public final class RuntimeConfigFactory {
         // Keep code defaults here only for hidden expert-only knobs that are intentionally not
         // shipped in config.yml by default. Everything normal/admin-facing should come from the
         // bundled config plus migration, not a duplicated Java fallback.
+        GameObjectFactory gameObjects = new GameObjectFactory();
         String configuredLanguage = normalizeConfiguredLanguage(config.getString("language"));
         int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize"));
         int distance = Math.max(50, config.getInt("options.island.distance"));
@@ -75,9 +78,9 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.island.removeCreaturesByTeleport"),
                 protectionRange,
                 protectionRange / 2,
-                List.copyOf(config.getStringList("options.island.chestItems")),
+                gameObjects.itemStackAmounts(config.getStringList("options.island.chestItems")),
                 config.getBoolean("options.island.addExtraItems"),
-                loadStringLists(config.getConfigurationSection("options.island.extraPermissions")),
+                loadItemStackAmountLists(config.getConfigurationSection("options.island.extraPermissions"), gameObjects),
                 config.getBoolean("options.island.allowIslandLock"),
                 config.getBoolean("options.island.useIslandLevel"),
                 config.getBoolean("options.island.useTopTen"),
@@ -223,7 +226,7 @@ public final class RuntimeConfigFactory {
             ),
             new RuntimeConfig.ToolMenu(
                 config.getBoolean("tool-menu.enabled"),
-                config.getString("tool-menu.tool"),
+                gameObjects.itemStack(config.getString("tool-menu.tool")),
                 loadStringMap(config.getConfigurationSection("tool-menu.commands"))
             ),
             new RuntimeConfig.Signs(config.getBoolean("signs.enabled")),
@@ -235,9 +238,9 @@ public final class RuntimeConfigFactory {
                 getDouble(config, "importer.progressEveryPct", DEFAULT_IMPORTER_PROGRESS_EVERY_PCT),
                 parseDuration(config, "importer.progressEveryMs", DEFAULT_IMPORTER_PROGRESS_EVERY, true)
             ),
-            loadIslandSchemes(config),
-            loadExtraMenus(config.getConfigurationSection("options.extra-menus")),
-            loadDonorPerks(config.getConfigurationSection("donor-perks")),
+            loadIslandSchemes(config, gameObjects),
+            loadExtraMenus(config.getConfigurationSection("options.extra-menus"), gameObjects),
+            loadDonorPerks(config.getConfigurationSection("donor-perks"), gameObjects),
             loadConfirmations(config)
         );
     }
@@ -320,6 +323,19 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
+    private static Map<String, List<ItemStackAmountSpec>> loadItemStackAmountLists(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
+        if (section == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, List<ItemStackAmountSpec>> values = new LinkedHashMap<>();
+        for (String key : section.getKeys(false)) {
+            values.put(key, gameObjects.itemStackAmounts(section.getStringList(key)));
+        }
+        return Collections.unmodifiableMap(values);
+    }
+
+    @NotNull
     private static Map<String, Integer> loadIntMap(ConfigurationSection section, String... ignoredKeys) {
         if (section == null) {
             return Collections.emptyMap();
@@ -370,7 +386,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, RuntimeConfig.IslandScheme> loadIslandSchemes(@NotNull FileConfiguration config) {
+    private static Map<String, RuntimeConfig.IslandScheme> loadIslandSchemes(@NotNull FileConfiguration config, @NotNull GameObjectFactory gameObjects) {
         ConfigurationSection section = config.getConfigurationSection("island-schemes");
         if (section == null) {
             return Collections.emptyMap();
@@ -388,9 +404,9 @@ public final class RuntimeConfigFactory {
                 normalizeBlank(schemeSection.getString("nether-schematic")),
                 schemeSection.getString("permission", "usb.schematic." + schemeName),
                 normalizeBlank(schemeSection.getString("description")),
-                schemeSection.getString("displayItem", "OAK_SAPLING"),
+                gameObjects.itemStack(schemeSection.getString("displayItem", "OAK_SAPLING")),
                 Math.max(1, schemeSection.getInt("index", 1)),
-                List.copyOf(schemeSection.getStringList("extraItems")),
+                gameObjects.itemStackAmounts(schemeSection.getStringList("extraItems")),
                 schemeSection.getInt("maxPartySize", 0),
                 schemeSection.getInt("animals", 0),
                 schemeSection.getInt("monsters", 0),
@@ -405,7 +421,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<Integer, RuntimeConfig.ExtraMenu> loadExtraMenus(ConfigurationSection section) {
+    private static Map<Integer, RuntimeConfig.ExtraMenu> loadExtraMenus(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
         if (section == null) {
             return Collections.emptyMap();
         }
@@ -420,7 +436,7 @@ public final class RuntimeConfigFactory {
                 int index = Integer.parseInt(key, 10);
                 menus.put(index, new RuntimeConfig.ExtraMenu(
                     menuSection.getString("title", "\u00a9Unknown"),
-                    menuSection.getString("displayItem", "CHEST"),
+                    gameObjects.itemStack(menuSection.getString("displayItem", "CHEST")),
                     List.copyOf(menuSection.getStringList("lore")),
                     List.copyOf(menuSection.getStringList("commands"))
                 ));
@@ -431,20 +447,20 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, RuntimeConfig.PerkSpec> loadDonorPerks(ConfigurationSection section) {
+    private static Map<String, RuntimeConfig.PerkSpec> loadDonorPerks(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
         if (section == null) {
             return Collections.emptyMap();
         }
 
         Map<String, RuntimeConfig.PerkSpec> perks = new LinkedHashMap<>();
-        loadDonorPerks(section, null, perks);
+        loadDonorPerks(section, null, perks, gameObjects);
         return Collections.unmodifiableMap(perks);
     }
 
-    private static void loadDonorPerks(ConfigurationSection section, String permission, Map<String, RuntimeConfig.PerkSpec> perks) {
+    private static void loadDonorPerks(ConfigurationSection section, String permission, Map<String, RuntimeConfig.PerkSpec> perks, @NotNull GameObjectFactory gameObjects) {
         if (isLeafSection(section)) {
             perks.put(permission, new RuntimeConfig.PerkSpec(
-                List.copyOf(section.getStringList("extraItems")),
+                gameObjects.itemStackAmounts(section.getStringList("extraItems")),
                 section.getInt("maxPartySize", 0),
                 section.getInt("animals", 0),
                 section.getInt("monsters", 0),
@@ -463,7 +479,7 @@ public final class RuntimeConfigFactory {
                 continue;
             }
             ConfigurationSection child = section.getConfigurationSection(key);
-            loadDonorPerks(child, permission != null ? permission + "." + key : key, perks);
+            loadDonorPerks(child, permission != null ? permission + "." + key : key, perks, gameObjects);
         }
     }
 

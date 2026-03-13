@@ -1,10 +1,12 @@
 package us.talabrek.ultimateskyblock.event;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
@@ -19,6 +21,11 @@ import static org.mockito.Mockito.when;
 
 public class PhantomSpawnEventsTest {
     private final WorldManager worldManager = mock(WorldManager.class);
+
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
+    }
 
     @Test
     public void onPhantomSpawn_noPhantom() {
@@ -128,8 +135,9 @@ public class PhantomSpawnEventsTest {
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("options.spawning.phantoms.overworld", overworld);
         config.set("options.spawning.phantoms.nether", nether);
+        var runtimeConfig = RuntimeConfigFactory.load(config);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
-        when(runtimeConfigs.current()).thenReturn(RuntimeConfigFactory.load(config));
+        when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;
     }
 }
