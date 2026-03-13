@@ -6,8 +6,8 @@ import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.util.MetaUtil;
 
 import java.time.Duration;
@@ -65,10 +65,9 @@ public class ChallengeFactory {
         List<EntityMatch> requiredEntities = createEntities(section.getStringList("requiredEntities"));
         Duration resetDuration = Duration.ofHours(section.getLong("resetInHours", rank.getResetDuration().toHours()));
         String description = section.getString("description");
-        ItemStack displayItem = createItemStack(
-            section.getString("displayItem", defaults.displayItem),
-            normalize(displayName), description);
-        ItemStack lockedItem = section.isString("lockedDisplayItem") ? createItemStack(section.getString("lockedDisplayItem", "BARRIER"), displayName, description) : null;
+        ItemStackSpec displayItem = GAME_OBJECTS.itemStack(section.getString("displayItem", defaults.displayItem));
+        ItemStackSpec lockedItem = section.isString("lockedDisplayItem") ? GAME_OBJECTS.itemStack(section.getString("lockedDisplayItem", "BARRIER")) : null;
+        ItemStackSpec tool = section.isString("tool") ? GAME_OBJECTS.itemStack(section.getString("tool")) : null;
         boolean takeItems = section.getBoolean("takeItems", true);
         int radius = section.getInt("radius", 10);
         Reward reward = createReward(section.getConfigurationSection("reward"));
@@ -81,7 +80,7 @@ public class ChallengeFactory {
         int repeatLimit = section.getInt("repeatLimit", 0);
         return new Challenge(id, displayName, description, type,
             requiredItems, requiredBlocks, requiredEntities, requiredChallenges, section.getDouble("requiredLevel", 0d),
-            rank, resetDuration, displayItem, section.getString("tool", null), lockedItem, offset, takeItems,
+            rank, resetDuration, displayItem, tool, lockedItem, offset, takeItems,
             radius, reward, repeatReward, repeatLimit);
     }
 

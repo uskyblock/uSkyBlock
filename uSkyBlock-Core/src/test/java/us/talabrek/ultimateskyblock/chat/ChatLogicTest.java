@@ -119,7 +119,7 @@ public class ChatLogicTest {
                 new RuntimeConfig.Phantoms(true, false)
             ),
             new RuntimeConfig.Placeholder(true, false, false),
-            new RuntimeConfig.ToolMenu(true, new ItemStackSpec(new ItemStack(Material.STICK)), Map.of()),
+            new RuntimeConfig.ToolMenu(true, new ItemStackSpec(new ItemStack(Material.STICK)), List.of()),
             new RuntimeConfig.Signs(true),
             new RuntimeConfig.WorldGuard(false, false),
             new RuntimeConfig.Importer(10.0d, Duration.ofSeconds(10)),

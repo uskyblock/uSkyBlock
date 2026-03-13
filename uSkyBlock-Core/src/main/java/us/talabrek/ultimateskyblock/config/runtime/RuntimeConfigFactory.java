@@ -227,7 +227,7 @@ public final class RuntimeConfigFactory {
             new RuntimeConfig.ToolMenu(
                 config.getBoolean("tool-menu.enabled"),
                 gameObjects.itemStack(config.getString("tool-menu.tool")),
-                loadStringMap(config.getConfigurationSection("tool-menu.commands"))
+                loadToolMenuCommands(config.getConfigurationSection("tool-menu.commands"), gameObjects)
             ),
             new RuntimeConfig.Signs(config.getBoolean("signs.enabled")),
             new RuntimeConfig.WorldGuard(
@@ -353,18 +353,15 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, String> loadStringMap(ConfigurationSection section) {
+    private static List<RuntimeConfig.ToolMenuCommand> loadToolMenuCommands(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
         if (section == null) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
 
-        Map<String, String> values = new LinkedHashMap<>();
-        for (String key : section.getKeys(false)) {
-            if (section.isString(key)) {
-                values.put(key, section.getString(key));
-            }
-        }
-        return Collections.unmodifiableMap(values);
+        return section.getKeys(false).stream()
+            .filter(section::isString)
+            .map(key -> new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack(key), section.getString(key)))
+            .toList();
     }
 
     @NotNull

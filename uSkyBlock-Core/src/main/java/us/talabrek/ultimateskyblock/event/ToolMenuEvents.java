@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.event;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,10 +43,10 @@ public class ToolMenuEvents implements Listener {
     }
 
     private void registerCommands() {
-        for (Map.Entry<String, String> entry : runtimeConfigs.current().toolMenu().commands().entrySet()) {
-            ItemStack item = ItemStackUtil.createItemStack(entry.getKey());
+        for (RuntimeConfig.ToolMenuCommand entry : runtimeConfigs.current().toolMenu().commands()) {
+            ItemStack item = entry.item().create();
             if (item.getType().isBlock()) {
-                commandMap.put(ItemStackUtil.asString(item), entry.getValue());
+                commandMap.put(item.getType().toString(), entry.command());
             }
         }
     }
@@ -56,11 +55,11 @@ public class ToolMenuEvents implements Listener {
         for (ChallengeKey challengeId : plugin.getChallengeLogic().getAllChallengeIds()) {
             Challenge challenge = plugin.getChallengeLogic().getChallengeById(challengeId).orElseThrow();
             ItemStack displayItem = challenge.getDisplayItem();
-            ItemStack toolItem = challenge.getTool() != null ? ItemStackUtil.createItemStack(challenge.getTool()) : null;
+            ItemStack toolItem = challenge.getTool();
             if (toolItem != null) {
-                commandMap.put(ItemStackUtil.asString(toolItem), COMPLETE_CHALLENGE_CMD + challengeId.id());
+                commandMap.put(toolItem.getType().toString(), COMPLETE_CHALLENGE_CMD + challengeId.id());
             } else if (displayItem != null && displayItem.getType().isBlock()) {
-                commandMap.put(ItemStackUtil.asString(displayItem), COMPLETE_CHALLENGE_CMD + challengeId.id());
+                commandMap.put(displayItem.getType().toString(), COMPLETE_CHALLENGE_CMD + challengeId.id());
             }
         }
     }

@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -64,9 +65,9 @@ public class Challenge {
     private final double requiredLevel;
     private final Rank rank;
     private final Duration resetDuration;
-    private final ItemStack displayItem;
-    private final String tool;
-    private final ItemStack lockedItem;
+    private final ItemStackSpec displayItem;
+    private final ItemStackSpec tool;
+    private final ItemStackSpec lockedItem;
     private final int offset;
     private final boolean takeItems;
     private final int radius;
@@ -77,7 +78,7 @@ public class Challenge {
     public Challenge(ChallengeKey id, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
                      @NotNull List<BlockRequirement> requiredBlocks, List<EntityMatch> requiredEntities,
                      List<String> requiredChallenges, double requiredLevel, Rank rank,
-                     Duration resetDuration, ItemStack displayItem, String tool, ItemStack lockedItem, int offset,
+                     Duration resetDuration, ItemStackSpec displayItem, ItemStackSpec tool, ItemStackSpec lockedItem, int offset,
                      boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
         this.id = id;
         this.displayName = displayName;
@@ -307,15 +308,19 @@ public class Challenge {
     }
 
     public ItemStack getDisplayItem() {
-        return ItemStackUtil.asDisplayItem(displayItem); // Copy
+        return ItemStackUtil.asDisplayItem(displayItem.create(getDisplayName(), getDescription()));
     }
 
-    public String getTool() {
+    public ItemStack getTool() {
+        return tool != null ? tool.create() : null;
+    }
+
+    public ItemStackSpec getToolSpec() {
         return tool;
     }
 
     public ItemStack getLockedDisplayItem() {
-        return lockedItem != null ? new ItemStack(lockedItem) : null;
+        return lockedItem != null ? lockedItem.create(getDisplayName(), getDescription()) : null;
     }
 
     public boolean isTakeItems() {

@@ -259,7 +259,13 @@ public record RuntimeConfig(
     public record ToolMenu(
         boolean enabled,
         @NotNull ItemStackSpec tool,
-        @NotNull Map<String, String> commands
+        @NotNull List<ToolMenuCommand> commands
+    ) {
+    }
+
+    public record ToolMenuCommand(
+        @NotNull ItemStackSpec item,
+        @NotNull String command
     ) {
     }
 
