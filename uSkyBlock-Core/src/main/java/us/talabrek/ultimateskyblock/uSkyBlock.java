@@ -405,7 +405,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         final PlayerInfo pi = playerLogic.getPlayerInfo(player);
 
         String islandName = WorldGuardHandler.getIslandNameAt(l);
-        Location islandLocation = IslandUtil.getIslandLocation(islandName);
+        Location islandLocation = IslandUtil.getIslandLocation(
+            islandName,
+            getWorldManager().getWorld(),
+            runtimeConfigs.current().island().height()
+        );
         final Location newLoc = LocationUtil.alignToDistance(islandLocation, runtimeConfigs.current().island().distance());
         if (newLoc == null) {
             return false;

@@ -2,8 +2,6 @@ package us.talabrek.ultimateskyblock.util;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import us.talabrek.ultimateskyblock.config.Settings;
-import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -13,24 +11,23 @@ import java.io.FilenameFilter;
  */
 public enum IslandUtil {;
 
-    public static FilenameFilter createIslandFilenameFilter() {
+    public static FilenameFilter createIslandFilenameFilter(int spawnSize) {
         return new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name != null
                         && name.matches("-?[0-9]+,-?[0-9]+.yml")
                         && !"null.yml".equalsIgnoreCase(name)
-                        && (Settings.general_spawnSize == 0  || !"0,0.yml".equalsIgnoreCase(name));
+                        && (spawnSize == 0  || !"0,0.yml".equalsIgnoreCase(name));
             }
         };
     }
 
-    public static Location getIslandLocation(String islandName) {
+    public static Location getIslandLocation(String islandName, World world, int islandHeight) {
         if (islandName == null || islandName.isEmpty()) {
             return null;
         }
-        World world = uSkyBlock.getInstance().getWorldManager().getWorld();
         String[] cords = islandName.split(",");
-        return new Location(world, Long.parseLong(cords[0], 10), Settings.island_height, Long.parseLong(cords[1], 10));
+        return new Location(world, Long.parseLong(cords[0], 10), islandHeight, Long.parseLong(cords[1], 10));
     }
 }

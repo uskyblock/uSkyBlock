@@ -86,6 +86,10 @@ public class IslandLogic {
     private volatile Instant lastUpdated = Instant.MIN;
     private final List<IslandLevel> ranks = new ArrayList<>();
 
+    private RuntimeConfig runtimeConfig() {
+        return plugin.getRuntimeConfigs().current();
+    }
+
     @Inject
     public IslandLogic(
         @NotNull Logger logger,
@@ -308,7 +312,7 @@ public class IslandLogic {
 
     public void generateTopTen(final CommandSender sender) {
         List<IslandLevel> topTen = new ArrayList<>();
-        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter());
+        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter(runtimeConfig().general().spawnSize()));
         for (String file : listOfFiles) {
             String islandName = FileUtil.getBasename(file);
             try {

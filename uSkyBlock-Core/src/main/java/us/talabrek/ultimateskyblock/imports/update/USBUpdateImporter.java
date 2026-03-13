@@ -35,9 +35,10 @@ public class USBUpdateImporter implements USBImporter {
 
     @Override
     public File[] getFiles() {
+        int spawnSize = plugin.getRuntimeConfigs().current().general().spawnSize();
         var result = plugin.getDataFolder().toPath()
             .resolve("islands").toFile()
-            .listFiles(IslandUtil.createIslandFilenameFilter());
+            .listFiles(IslandUtil.createIslandFilenameFilter(spawnSize));
         return Objects.requireNonNullElseGet(result, () -> new File[0]);
     }
 

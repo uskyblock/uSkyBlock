@@ -1042,7 +1042,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     @Override
     public Location getIslandLocation() {
-        return IslandUtil.getIslandLocation(name);
+        return IslandUtil.getIslandLocation(name, plugin.getWorldManager().getWorld(), runtimeConfig().island().height());
     }
 
     @Override

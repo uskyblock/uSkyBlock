@@ -49,7 +49,8 @@ public class PurgeScanTask extends BukkitRunnable {
         this.sender = sender;
         this.callback = callback;
         this.cutOff = Instant.now().minus(time);
-        String[] islandList = islandDir.list(IslandUtil.createIslandFilenameFilter());
+        int spawnSize = plugin.getRuntimeConfigs().current().general().spawnSize();
+        String[] islandList = islandDir.list(IslandUtil.createIslandFilenameFilter(spawnSize));
         this.islandList = new ArrayList<>(Arrays.asList(islandList));
         purgeList = new ArrayList<>();
         this.purgeLevel = purgeLevel;

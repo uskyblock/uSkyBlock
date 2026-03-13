@@ -59,7 +59,8 @@ public class ProtectAllTask extends BukkitRunnable {
         long skipped = 0;
         Instant tStart = Instant.now();
         try {
-            String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter());
+            int spawnSize = plugin.getRuntimeConfigs().current().general().spawnSize();
+            String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter(spawnSize));
             long total = list != null ? list.length : 0;
             if (list != null) {
                 for (String fileName : list) {
