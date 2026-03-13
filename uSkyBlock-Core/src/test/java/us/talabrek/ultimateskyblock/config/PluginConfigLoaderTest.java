@@ -236,6 +236,35 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void addsExplicitSchemePathsDuringMigration116() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        Files.createDirectories(tempDir.resolve("schematics"));
+        Files.writeString(tempDir.resolve("schematics/default.schematic"), "default");
+        Files.writeString(tempDir.resolve("schematics/skySMP.schematic"), "sky");
+        Files.writeString(tempDir.resolve("schematics/uSkyBlockNether.schem"), "nether");
+
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(115);
+        config.set("nether.enabled", true);
+        config.set("nether.schematicName", "uSkyBlockNether");
+        config.set("island-schemes.default.enabled", true);
+        config.set("island-schemes.skySMP.enabled", false);
+        config.set("island-schemes.spawn.enabled", false);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals("default.schematic", migrated.getString("island-schemes.default.schematic"));
+        assertEquals("uSkyBlockNether.schem", migrated.getString("island-schemes.default.nether-schematic"));
+        assertEquals("skySMP.schematic", migrated.getString("island-schemes.skySMP.schematic"));
+        assertEquals("uSkyBlockNether.schem", migrated.getString("island-schemes.skySMP.nether-schematic"));
+        assertFalse(migrated.contains("island-schemes.spawn"));
+        assertFalse(migrated.contains("nether.schematicName"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();
@@ -320,6 +349,13 @@ public class PluginConfigLoaderTest {
             config.set("options.spawning.guardians.enabled", true);
             config.set("options.spawning.guardians.max-per-island", 10);
             config.set("options.spawning.guardians.spawn-chance", 0.1d);
+        }
+        config.set("island-schemes.default.enabled", true);
+        if (version >= 116) {
+            config.set("island-schemes.default.schematic", "default.schematic");
+            config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
+        } else {
+            config.set("nether.schematicName", "uSkyBlockNether");
         }
         config.set("nether.enabled", false);
         return config;

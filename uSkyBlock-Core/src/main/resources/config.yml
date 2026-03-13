@@ -42,8 +42,7 @@ options:
     # and MUST be divisible by 32 if you intend to use nether.
     protectionRange: 128
 
-    # [filename] The schematic to use for island generation.
-    # Put your schematic in the 'uSkyBlock/schematics' folder, you don't need to add the '.schematic' part below.
+    # [name] The default island scheme to use for island generation.
     schematicName: default
 
     # [true/false] If true, remove all hostile mobs when a player teleports back to their island.
@@ -300,11 +299,18 @@ donor-perks:
 island-schemes-enabled: true
 
 # List of selections for /is create and /is restart
-# the nodes under island-schemes must match the schematic-names from the schematics folder.
+# Each scheme needs an explicit overworld schematic path under 'uSkyBlock/schematics/'.
+# If nether is enabled, each enabled scheme also needs an explicit nether-schematic path.
 island-schemes:
 
-  # name of the schematic
+  # name of the island scheme
   default:
+
+    # Required relative path under 'uSkyBlock/schematics/' for the overworld island schematic.
+    schematic: default.schematic
+
+    # Required relative path under 'uSkyBlock/schematics/' when nether is enabled.
+    nether-schematic: uSkyBlockNether.schem
 
     # permission needed to use island
     permission: usb.island.create
@@ -335,6 +341,8 @@ island-schemes:
     # But start with no offset
     scoreOffset: 0
   skySMP:
+    schematic: skySMP.schematic
+    nether-schematic: uSkyBlockNether.schem
     permission: usb.schematic.skysmp
     description: The original SkySMP island
     displayItem: oak_leaves
@@ -350,9 +358,6 @@ island-schemes:
     golems: 5
     scoreMultiply: 0.9
     scoreOffset: 40
-  spawn:
-    description: The default spawn schematic
-    enabled: false
 confirmation:
 
   # [true/false] Whether to require confirmation (i.e. repeating the command twice).
@@ -386,7 +391,6 @@ nether:
   lava_level: 7
   activate-at:
     level: 100
-  schematicName: uSkyBlockNether
   terraform-enabled: true
 
   # The distance to search for valid terra-form location.
@@ -470,4 +474,4 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 115
+version: 116

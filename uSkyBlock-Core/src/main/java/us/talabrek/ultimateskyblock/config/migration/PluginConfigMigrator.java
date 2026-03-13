@@ -71,11 +71,12 @@ public class PluginConfigMigrator {
     private void applyExplicitMigrations(@NotNull Path configPath, @NotNull YamlConfiguration config,
                                          int version, int currentVersion) {
         backupConfig(configPath, "before explicit migration");
+        Path pluginDataDir = requireParent(configPath);
         int nextVersion = version;
         while (nextVersion < currentVersion) {
             ConfigMigration migration = migrations.find(nextVersion);
             logger.info("Applying explicit config.yml migration " + migration.fromVersion() + " -> " + migration.toVersion() + ".");
-            migration.apply(config);
+            migration.apply(config, pluginDataDir);
             config.set("version", migration.toVersion());
             saveUnchecked(configPath, config, migration.fromVersion(), migration.toVersion());
             nextVersion = migration.toVersion();
