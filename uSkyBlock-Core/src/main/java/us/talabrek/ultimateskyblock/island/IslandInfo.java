@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.api.event.island.IslandBanPlayerEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandLockEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandTrustPlayerEvent;
@@ -79,6 +80,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private static final int YML_VERSION = 3;
 
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private File file;
     private FileConfiguration config;
     private final String name;
@@ -86,14 +88,15 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private boolean toBeDeleted = false;
 
     private RuntimeConfig runtimeConfig() {
-        return plugin.getRuntimeConfigs().current();
+        return runtimeConfigs.current();
     }
 
-    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin, @NotNull Path islandDirectory) {
+    public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs, @NotNull Path islandDirectory) {
         Validate.notNull(islandName, "IslandName cannot be null");
         Validate.notEmpty(islandName, "IslandName cannot be empty");
 
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         config = new YamlConfiguration();
         file = islandDirectory.resolve(islandName + ".yml").toFile();
         name = islandName;

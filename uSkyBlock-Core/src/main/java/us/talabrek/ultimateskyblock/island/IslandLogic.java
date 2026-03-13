@@ -68,6 +68,7 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 public class IslandLogic {
     private final Logger logger;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final WorldManager worldManager;
     private final TeleportLogic teleportLogic;
     private final Scheduler scheduler;
@@ -87,7 +88,7 @@ public class IslandLogic {
     private final List<IslandLevel> ranks = new ArrayList<>();
 
     private RuntimeConfig runtimeConfig() {
-        return plugin.getRuntimeConfigs().current();
+        return runtimeConfigs.current();
     }
 
     @Inject
@@ -104,6 +105,7 @@ public class IslandLogic {
     ) {
         this.logger = logger;
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.worldManager = worldManager;
         this.teleportLogic = teleportLogic;
         this.scheduler = scheduler;
@@ -132,7 +134,7 @@ public class IslandLogic {
                 @Override
                 public @NotNull IslandInfo load(@NotNull String islandName) {
                     logger.fine("Loading island-info " + islandName + " to cache!");
-                    return new IslandInfo(islandName, plugin, directoryIslands);
+                    return new IslandInfo(islandName, plugin, runtimeConfigs, directoryIslands);
                 }
             });
         Duration every = runtimeConfig.advanced().islandSaveEvery();

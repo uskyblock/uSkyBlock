@@ -12,7 +12,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.material.Directional;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 
 import java.util.Locale;
@@ -227,14 +226,14 @@ public enum LocationUtil {
         return null;
     }
 
-    public static Location alignToDistance(Location loc, int distance) {
+    public static Location alignToDistance(Location loc, int distance, int height) {
         if (loc == null) {
             return null;
         }
         int x = (int) (Math.round(loc.getX() / distance) * distance);
         int z = (int) (Math.round(loc.getZ() / distance) * distance);
         loc.setX(x);
-        loc.setY(Settings.island_height);
+        loc.setY(height);
         loc.setZ(z);
         return loc;
     }

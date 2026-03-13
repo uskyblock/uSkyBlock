@@ -43,7 +43,7 @@ public class IslandLocatorLogicTest {
         File csvFile = File.createTempFile("newislands", ".csv");
         PrintWriter writer = new PrintWriter(new FileWriter(csvFile));
         for (int i = 0; i < 49; i++) {
-            p = IslandLocatorLogic.nextIslandLocation(p, 1);
+            p = IslandLocatorLogic.nextIslandLocation(p, 1, 120);
             writer.println(p.getBlockX() + ";" + p.getBlockZ());
         }
         System.out.println("Wrote first 49 island locations to " + csvFile);

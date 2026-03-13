@@ -57,7 +57,7 @@ public class ProtectAllCommand extends AbstractCommand {
             marktr("- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             10,
             feedbackFrequency);
-        task = new ProtectAllTask(plugin, sender, islandLogic.getIslandDirectory(), tracker);
+        task = new ProtectAllTask(plugin, runtimeConfigs, sender, islandLogic.getIslandDirectory(), tracker);
         task.runTaskAsynchronously(plugin);
         return true;
     }

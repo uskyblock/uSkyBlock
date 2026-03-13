@@ -84,7 +84,7 @@ public class IslandLocatorLogic {
                 config.getInt("options.general.lastIslandX", 0), islandHeight,
                 config.getInt("options.general.lastIslandZ", 0));
         }
-        return LocationUtil.alignToDistance(lastIsland, islandDistance);
+        return LocationUtil.alignToDistance(lastIsland, islandDistance, islandHeight);
     }
 
     public synchronized Location getNextIslandLocation(Player player) {
@@ -108,16 +108,17 @@ public class IslandLocatorLogic {
     }
 
     private synchronized Location getNext(Player player) {
+        int islandHeight = runtimeConfigs.current().island().height();
         int islandDistance = runtimeConfigs.current().island().distance();
         Location last = getLastIsland();
         if (worldManager.isSkyWorld(player.getWorld()) && !plugin.islandInSpawn(player.getLocation())) {
-            Location location = LocationUtil.alignToDistance(player.getLocation(), islandDistance);
+            Location location = LocationUtil.alignToDistance(player.getLocation(), islandDistance, islandHeight);
             if (isAvailableLocation(location)) {
                 sendTr(player, "Creating an island at your location", PRIMARY);
                 return location;
             }
             Vector v = player.getLocation().getDirection().normalize();
-            location = LocationUtil.alignToDistance(location.add(v.multiply(islandDistance)), islandDistance);
+            location = LocationUtil.alignToDistance(location.add(v.multiply(islandDistance)), islandDistance, islandHeight);
             if (isAvailableLocation(location)) {
                 sendTr(player, "Creating an island <direction> of you",
                     component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw()), PRIMARY)));
@@ -129,7 +130,7 @@ public class IslandLocatorLogic {
             next = last;
             // Ensure the found location is valid (or find one that is).
             while (!isAvailableLocation(next)) {
-                next = nextIslandLocation(next, islandDistance);
+                next = nextIslandLocation(next, islandDistance, islandHeight);
             }
         }
         lastIsland = next;
@@ -181,8 +182,8 @@ public class IslandLocatorLogic {
      *                            v
      * </pre>
      */
-    static Location nextIslandLocation(final Location lastIsland, int d) {
-        LocationUtil.alignToDistance(lastIsland, d);
+    static Location nextIslandLocation(final Location lastIsland, int d, int islandHeight) {
+        LocationUtil.alignToDistance(lastIsland, d, islandHeight);
         int x = lastIsland.getBlockX();
         int z = lastIsland.getBlockZ();
         if (x < z) {

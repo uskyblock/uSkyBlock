@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.io.File;
@@ -98,7 +99,7 @@ public class IslandInfoLogFormatTest {
         config.set("version", 3);
         customizer.apply(config);
         config.save(islandConfigFile);
-        return new IslandInfo(islandName, mock(uSkyBlock.class), islandDir.toPath());
+        return new IslandInfo(islandName, mock(uSkyBlock.class), mock(RuntimeConfigs.class), islandDir.toPath());
     }
 
     @FunctionalInterface

@@ -68,7 +68,7 @@ public class PurgeCommand extends AbstractCommand {
         sendTr(sender, "Finding all islands abandoned for more than <days> days below level <level>.",
             unparsed("days", args[0], PRIMARY),
             unparsed("level", String.valueOf(purgeLevel), PRIMARY));
-        scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
+        scanTask = new PurgeScanTask(plugin, runtimeConfigs, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {

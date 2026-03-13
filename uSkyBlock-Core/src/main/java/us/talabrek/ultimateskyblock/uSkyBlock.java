@@ -410,7 +410,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             getWorldManager().getWorld(),
             runtimeConfigs.current().island().height()
         );
-        final Location newLoc = LocationUtil.alignToDistance(islandLocation, runtimeConfigs.current().island().distance());
+        final Location newLoc = LocationUtil.alignToDistance(
+            islandLocation,
+            runtimeConfigs.current().island().distance(),
+            runtimeConfigs.current().island().height()
+        );
         if (newLoc == null) {
             return false;
         }
