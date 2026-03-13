@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -19,18 +20,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * Lists and configures plugin locale.
  */
 public class LanguageCommand extends AbstractCommand {
-    private static final String DEFAULT_LOCALE_KEY = "en";
     private static final int LOCALES_PER_LINE = 10;
     private final uSkyBlock plugin;
     private final PluginConfig pluginConfig;
@@ -72,7 +72,7 @@ public class LanguageCommand extends AbstractCommand {
             return true;
         }
 
-        String previousLocale = pluginConfig.getYamlConfig().getString("language", DEFAULT_LOCALE_KEY);
+        String previousLocale = pluginConfig.getYamlConfig().getString("language", ConfigBootstrap.DEFAULT_LANGUAGE);
         pluginConfig.getYamlConfig().set("language", localeKey);
         try {
             pluginConfig.save();

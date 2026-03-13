@@ -7,7 +7,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -43,10 +42,9 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
-import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
@@ -67,6 +65,7 @@ import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.island.task.CreateIslandTask;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
+import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -76,18 +75,15 @@ import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.ServerUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -97,16 +93,15 @@ import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
-    private static final String DEFAULT_LOCALE_KEY = "en";
     public static final String[][] depends = new String[][]{
         new String[]{"Vault", "1.7.1", "optional"},
         new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
@@ -157,9 +152,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private CooldownHandler cooldownHandler;
     @Inject
     private PlayerLogic playerLogic;
-    // TODO: don't assign value directly, but use injection instead. Currently, legacy code in PlaceholderHandler accesses it too early for injection to work.
-    @Inject
-    private PluginConfig config = new PluginConfig(new PluginConfigLoader(getDataFolder().toPath(), new PluginConfigMigrator(getLogger())));
+    private PluginConfig config;
     @Inject
     private BlockLimitLogic blockLimitLogic;
     @Inject
@@ -680,7 +673,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
         WorldManager.skyBlockNetherWorld = null;
 
-        Injector injector = Guice.createInjector(new SkyblockModule(this));
+        Injector injector = Guice.createInjector(new SkyblockModule(this, config));
         this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
         Msg.configure((sender, message) -> playerLogic.getNotificationManager().sendMessage(sender, message));
@@ -698,63 +691,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
      */
     private void reloadLegacyStuff() {
         createDataFolder();
-        boolean isFirstSetup = !new File(getDataFolder(), "config.yml").exists();
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
-        FileConfiguration pluginConfig = config.reload();
+        config = new ConfigBootstrap(getDataFolder().toPath(), getLogger()).bootstrap();
+        FileConfiguration pluginConfig = config.getYamlConfig();
         Settings.loadPluginConfig(pluginConfig);
-        applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);
-        I18nUtil.initialize(getDataFolder(), Settings.locale);
-        logLocaleSuggestionIfUsingDefaultLanguage(pluginConfig);
-        saveConfig();
         // Update all of the loaded configs.
         FileUtil.reload();
-    }
-
-    private void applyFirstSetupLocaleSelection(@NotNull FileConfiguration pluginConfig, boolean isFirstSetup) {
-        if (!isFirstSetup) {
-            return;
-        }
-        String configuredLocale = pluginConfig.getString("language", DEFAULT_LOCALE_KEY);
-        String effectiveConfiguredLocale = I18nUtil.findSupportedLocaleKey(configuredLocale).orElse(
-            configuredLocale != null ? configuredLocale : DEFAULT_LOCALE_KEY
-        );
-        Locale systemLocale = Locale.getDefault();
-        Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
-        if (supportedSystemLocale.isPresent() && !supportedSystemLocale.get().equalsIgnoreCase(effectiveConfiguredLocale)) {
-            String selectedLocale = supportedSystemLocale.get();
-            pluginConfig.set("language", selectedLocale);
-            Locale parsed = I18nUtil.getLocale(selectedLocale);
-            if (parsed != null) {
-                Settings.locale = parsed;
-            }
-            log(Level.INFO, "First setup: selected language '" + selectedLocale + "' from system locale '" + systemLocale + "'.");
-        } else if (supportedSystemLocale.isPresent()) {
-            log(Level.INFO, "First setup: keeping configured language '" + effectiveConfiguredLocale + "' (matches system locale).");
-        } else {
-            log(Level.INFO, "First setup: keeping configured language '" + effectiveConfiguredLocale + "' (system locale '" + systemLocale + "' not supported).");
-        }
-        log(Level.INFO, "Use '/usb lang [locale]' to change language. Help improve translations: " + I18nUtil.getTranslationSupportUrl());
-    }
-
-    private void logLocaleSuggestionIfUsingDefaultLanguage(@NotNull FileConfiguration pluginConfig) {
-        String configuredLocale = pluginConfig.getString("language", DEFAULT_LOCALE_KEY);
-        String effectiveConfiguredLocale = I18nUtil.findSupportedLocaleKey(configuredLocale).orElse(
-            configuredLocale != null ? configuredLocale : DEFAULT_LOCALE_KEY
-        );
-        if (!DEFAULT_LOCALE_KEY.equalsIgnoreCase(effectiveConfiguredLocale)) {
-            return;
-        }
-
-        Locale systemLocale = Locale.getDefault();
-        Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
-        if (supportedSystemLocale.isPresent() && !DEFAULT_LOCALE_KEY.equalsIgnoreCase(supportedSystemLocale.get())) {
-            String suggestedLocale = supportedSystemLocale.get();
-            log(Level.INFO, "Language hint: configured language is '" + DEFAULT_LOCALE_KEY
-                + "', but system locale '" + systemLocale + "' is supported as '" + suggestedLocale + "'.");
-            log(Level.INFO, "Use '/usb lang " + suggestedLocale + "' to switch. Help improve translations: "
-                + I18nUtil.getTranslationSupportUrl());
-        }
     }
 
     public IslandLogic getIslandLogic() {
