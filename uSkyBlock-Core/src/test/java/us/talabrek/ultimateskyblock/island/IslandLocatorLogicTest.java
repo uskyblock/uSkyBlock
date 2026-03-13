@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -51,7 +50,6 @@ public class IslandLocatorLogicTest {
 
     @Test
     public void testNextIslandLocationReservation() throws Exception {
-        Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
         IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-1")), mock(), mock(), mock(), mock(), createRuntimeConfigs(10));
         Player player = createPlayerMock();
@@ -64,7 +62,6 @@ public class IslandLocatorLogicTest {
 
     @Test
     public void testNextIslandLocationReservationConcurrency() throws Exception {
-        Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
         final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-2")), mock(), mock(), mock(), mock(), createRuntimeConfigs(10));
         final List<Location> locations = new ArrayList<>();
@@ -115,7 +112,7 @@ public class IslandLocatorLogicTest {
         config.set("options.advanced.playerDB.storage", "file");
         config.set("options.party.invite-timeout", "1m");
         config.set("options.island.distance", islandDistance);
-        config.set("options.island.height", Settings.island_height);
+        config.set("options.island.height", 120);
         config.set("options.island.topTenTimeout", "15m");
         config.set("options.island.islandTeleportDelay", "0s");
         config.set("options.island.chatFormat", "default");

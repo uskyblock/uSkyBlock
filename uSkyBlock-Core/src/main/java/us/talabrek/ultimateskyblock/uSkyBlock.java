@@ -42,7 +42,6 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -685,17 +684,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     /**
-     * Initializes/reloads the legacy static services. This has to be done before the object-oriented services are
-     * created, as some use the static services in their constructors. This should be refactored and integrated with
-     * the new system in the future.
+     * Initializes/reloads the remaining pre-DI bootstrap state.
      */
     private void reloadLegacyStuff() {
         createDataFolder();
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         config = new ConfigBootstrap(getDataFolder().toPath(), getLogger()).bootstrap();
-        FileConfiguration pluginConfig = config.getYamlConfig();
-        Settings.loadPluginConfig(pluginConfig);
         // Update all of the loaded configs.
         FileUtil.reload();
     }
