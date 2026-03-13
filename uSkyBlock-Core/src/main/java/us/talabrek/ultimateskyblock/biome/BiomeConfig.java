@@ -22,15 +22,15 @@ import static java.util.Objects.requireNonNull;
 
 @Singleton
 public class BiomeConfig {
-    private static final GameObjectFactory GAME_OBJECTS = new GameObjectFactory();
-
     private final Logger logger;
+    private final GameObjectFactory gameObjects;
     private final List<BiomeEntry> configuredBiomeEntries;
     private final List<String> configuredBiomeKeys;
 
     @Inject
-    public BiomeConfig(Logger logger) {
+    public BiomeConfig(Logger logger, GameObjectFactory gameObjects) {
         this.logger = logger;
+        this.gameObjects = gameObjects;
         this.configuredBiomeEntries = loadBiomes();
         this.configuredBiomeKeys = configuredBiomeEntries.stream()
             .map(entry -> entry.biome().getKey().getKey())
@@ -81,7 +81,7 @@ public class BiomeConfig {
 
         ItemStackSpec displayItem;
         try {
-            displayItem = GAME_OBJECTS.itemStack(itemSpecification);
+            displayItem = gameObjects.itemStack(itemSpecification);
         } catch (IllegalArgumentException e) {
             logger.warning("Invalid item specification for biome " + biomeKey + ": " + itemSpecification);
             displayItem = new ItemStackSpec(new org.bukkit.inventory.ItemStack(Material.GRASS_BLOCK));

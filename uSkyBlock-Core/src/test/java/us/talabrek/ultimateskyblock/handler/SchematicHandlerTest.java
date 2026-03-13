@@ -8,6 +8,7 @@ import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,7 +105,7 @@ public class SchematicHandlerTest {
 
     private static RuntimeConfigs runtimeConfigs(YamlConfiguration yamlConfig) {
         yamlConfig.setDefaults(PluginConfigLoader.loadBundledConfig());
-        var runtimeConfig = RuntimeConfigFactory.load(yamlConfig);
+        var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(yamlConfig);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;

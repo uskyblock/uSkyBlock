@@ -82,7 +82,6 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
  */
 @Singleton
 public class ChallengeLogic implements Listener {
-    private static final GameObjectFactory GAME_OBJECTS = new GameObjectFactory();
     public static final int COLS_PER_ROW = 9;
     public static final int ROWS_OF_RANKS = 5;
     public static final int CHALLENGE_PAGE_SIZE = ROWS_OF_RANKS * COLS_PER_ROW;
@@ -92,6 +91,7 @@ public class ChallengeLogic implements Listener {
     private final uSkyBlock plugin;
     private final PerkLogic perkLogic;
     private final HookManager hookManager;
+    private final GameObjectFactory gameObjects;
 
     private final Map<String, Rank> ranks;
     // Fast O(1) lookup for challenges by canonical id
@@ -108,27 +108,30 @@ public class ChallengeLogic implements Listener {
         @NotNull uSkyBlock plugin,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PerkLogic perkLogic,
-        @NotNull HookManager hookManager
+        @NotNull HookManager hookManager,
+        @NotNull GameObjectFactory gameObjects,
+        @NotNull ChallengeFactory challengeFactory
     ) {
         this.logger = logger;
         this.perkLogic = perkLogic;
         this.hookManager = hookManager;
+        this.gameObjects = gameObjects;
         this.config = FileUtil.getYmlConfiguration("challenges.yml");
         this.plugin = plugin;
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
-        ranks = ChallengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
+        ranks = challengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
         rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(plugin, runtimeConfigs, config);
         String displayItemForLocked = config.getString("lockedDisplayItem", null);
         if (displayItemForLocked != null) {
-            lockedItem = GAME_OBJECTS.itemStack(displayItemForLocked).create();
+            lockedItem = gameObjects.itemStack(displayItemForLocked).create();
         } else {
             lockedItem = null;
         }
         for (Challenge.Type type : Challenge.Type.values()) {
             String itemName = config.getString(type.name() + ".lockedDisplayItem", null);
             if (itemName != null) {
-                lockedItemMap.put(type, GAME_OBJECTS.itemStack(itemName).create());
+                lockedItemMap.put(type, gameObjects.itemStack(itemName).create());
             } else {
                 lockedItemMap.put(type, lockedItem);
             }

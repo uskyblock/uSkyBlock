@@ -1,11 +1,14 @@
 package us.talabrek.ultimateskyblock.challenge;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.util.MetaUtil;
@@ -22,18 +25,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.util.FormatUtil.normalize;
-import static dk.lockfuglsang.minecraft.util.ItemStackUtil.createItemStack;
-
 /**
  * Builder for Challenges (Note:
  */
+@Singleton
 public class ChallengeFactory {
     private static final Pattern ENTITY_PATTERN = Pattern.compile("(?<type>[a-zA-Z0-9_]+)(?<meta>:\\{.*\\})?(:(?<count>[0-9]+))?");
-    private static Logger log = Logger.getLogger(ChallengeFactory.class.getName());
-    private static final GameObjectFactory GAME_OBJECTS = new GameObjectFactory();
+    private final Logger log;
+    private final GameObjectFactory gameObjects;
 
-    public static void setLogger(Logger log) {
-        ChallengeFactory.log = log;
+    @Inject
+    public ChallengeFactory(@NotNull Logger log, @NotNull GameObjectFactory gameObjects) {
+        this.log = log;
+        this.gameObjects = gameObjects;
     }
 
     public static ChallengeDefaults createDefaults(ConfigurationSection section) {
@@ -51,7 +55,7 @@ public class ChallengeFactory {
             section.getInt("repeatLimit", 0));
     }
 
-    public static Challenge createChallenge(Rank rank, ConfigurationSection section, ChallengeDefaults defaults) {
+    public Challenge createChallenge(Rank rank, ConfigurationSection section, ChallengeDefaults defaults) {
         ChallengeKey id = ChallengeKey.of(section.getName());
         if (section.getBoolean("disabled", false)) {
             return null; // Skip this challenge
@@ -65,9 +69,9 @@ public class ChallengeFactory {
         List<EntityMatch> requiredEntities = createEntities(section.getStringList("requiredEntities"));
         Duration resetDuration = Duration.ofHours(section.getLong("resetInHours", rank.getResetDuration().toHours()));
         String description = section.getString("description");
-        ItemStackSpec displayItem = GAME_OBJECTS.itemStack(section.getString("displayItem", defaults.displayItem));
-        ItemStackSpec lockedItem = section.isString("lockedDisplayItem") ? GAME_OBJECTS.itemStack(section.getString("lockedDisplayItem", "BARRIER")) : null;
-        ItemStackSpec tool = section.isString("tool") ? GAME_OBJECTS.itemStack(section.getString("tool")) : null;
+        ItemStackSpec displayItem = gameObjects.itemStack(section.getString("displayItem", defaults.displayItem));
+        ItemStackSpec lockedItem = section.isString("lockedDisplayItem") ? gameObjects.itemStack(section.getString("lockedDisplayItem", "BARRIER")) : null;
+        ItemStackSpec tool = section.isString("tool") ? gameObjects.itemStack(section.getString("tool")) : null;
         boolean takeItems = section.getBoolean("takeItems", true);
         int radius = section.getInt("radius", 10);
         Reward reward = createReward(section.getConfigurationSection("reward"));
@@ -107,7 +111,7 @@ public class ChallengeFactory {
         return entities;
     }
 
-    private static Reward createReward(ConfigurationSection section) {
+    private Reward createReward(ConfigurationSection section) {
         if (section == null) {
             return null;
         }
@@ -119,7 +123,7 @@ public class ChallengeFactory {
         }
         return new Reward(
             section.getString("text", "\u00a74Unknown"),
-            GAME_OBJECTS.itemStackAmountProbabilities(items),
+            gameObjects.itemStackAmountProbabilities(items),
             section.getString("permission"),
             section.getInt("currency", 0),
             section.getInt("xp", 0),
@@ -127,11 +131,11 @@ public class ChallengeFactory {
     }
 
 
-    public static Map<String, Rank> createRankMap(ConfigurationSection ranksSection, ChallengeDefaults defaults) {
+    public Map<String, Rank> createRankMap(ConfigurationSection ranksSection, ChallengeDefaults defaults) {
         LinkedHashMap<String, Rank> ranks = new LinkedHashMap<>();
         Rank previous = null;
         for (String rankName : ranksSection.getKeys(false)) {
-            Rank rank = new Rank(ranksSection.getConfigurationSection(rankName), previous, defaults);
+            Rank rank = new Rank(ranksSection.getConfigurationSection(rankName), previous, defaults, gameObjects, this);
             ranks.put(rankName, rank);
             previous = rank;
         }

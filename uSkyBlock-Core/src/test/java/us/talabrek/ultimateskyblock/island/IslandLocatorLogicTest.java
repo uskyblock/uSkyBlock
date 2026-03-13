@@ -12,7 +12,9 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -137,7 +139,7 @@ public class IslandLocatorLogicTest {
         config.set("options.advanced.playerCacheSpec", "maximumSize=100");
         config.set("options.advanced.islandCacheSpec", "maximumSize=100");
         config.set("plugin-updates.branch", "LATEST");
-        RuntimeConfig runtimeConfig = us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory.load(config);
+        RuntimeConfig runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(config);
 
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);

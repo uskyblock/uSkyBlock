@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.config.runtime;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@Singleton
 public final class RuntimeConfigFactory {
     private static final Duration DEFAULT_INIT_DELAY = Duration.ofMillis(2500);
     private static final Duration DEFAULT_COOLDOWN_INFO = Duration.ofSeconds(20);
@@ -41,16 +44,19 @@ public final class RuntimeConfigFactory {
     private static final double DEFAULT_IMPORTER_PROGRESS_EVERY_PCT = 10d;
     private static final Duration DEFAULT_IMPORTER_PROGRESS_EVERY = Duration.ofSeconds(10);
 
-    private RuntimeConfigFactory() {
+    private final GameObjectFactory gameObjects;
+
+    @Inject
+    public RuntimeConfigFactory(@NotNull GameObjectFactory gameObjects) {
+        this.gameObjects = gameObjects;
     }
 
     @NotNull
-    public static RuntimeConfig load(@NotNull FileConfiguration config) {
+    public RuntimeConfig load(@NotNull FileConfiguration config) {
         // Nominal defaults come from the bundled config.yml attached by PluginConfigLoader.
         // Keep code defaults here only for hidden expert-only knobs that are intentionally not
         // shipped in config.yml by default. Everything normal/admin-facing should come from the
         // bundled config plus migration, not a duplicated Java fallback.
-        GameObjectFactory gameObjects = new GameObjectFactory();
         String configuredLanguage = normalizeConfiguredLanguage(config.getString("language"));
         int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize"));
         int distance = Math.max(50, config.getInt("options.island.distance"));

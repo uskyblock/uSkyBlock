@@ -1,5 +1,7 @@
 package us.talabrek.ultimateskyblock.gameobject;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +14,12 @@ import java.util.List;
  * <p>Parsing currently delegates to the existing {@link ItemStackUtil} helpers so the
  * behavior stays aligned while the value objects in core become more explicit.</p>
  */
+@Singleton
 public class GameObjectFactory {
+    @Inject
+    public GameObjectFactory() {
+    }
+
     @NotNull
     public ItemStackSpec itemStack(@NotNull String specification) {
         return new ItemStackSpec(ItemStackUtil.createItemStack(specification));

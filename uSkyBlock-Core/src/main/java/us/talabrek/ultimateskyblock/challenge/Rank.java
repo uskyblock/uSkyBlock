@@ -20,22 +20,21 @@ import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class Rank {
-    private static final GameObjectFactory GAME_OBJECTS = new GameObjectFactory();
     private final Rank previousRank;
     private final ChallengeDefaults defaults;
     private final List<Challenge> challenges;
     private final ConfigurationSection config;
     private final ItemStackSpec displayItem;
 
-    public Rank(ConfigurationSection section, Rank previousRank, ChallengeDefaults defaults) {
+    public Rank(ConfigurationSection section, Rank previousRank, ChallengeDefaults defaults, GameObjectFactory gameObjects, ChallengeFactory challengeFactory) {
         this.challenges = new ArrayList<>();
         this.previousRank = previousRank;
         this.defaults = defaults;
         this.config = section;
-        this.displayItem = GAME_OBJECTS.itemStack(section.getString("displayItem", "DIRT"));
+        this.displayItem = gameObjects.itemStack(section.getString("displayItem", "DIRT"));
         ConfigurationSection challengeSection = section.getConfigurationSection("challenges");
         for (String challengeName : challengeSection.getKeys(false)) {
-            Challenge challenge = ChallengeFactory.createChallenge(this, challengeSection.getConfigurationSection(challengeName), defaults);
+            Challenge challenge = challengeFactory.createChallenge(this, challengeSection.getConfigurationSection(challengeName), defaults);
             if (challenge != null) {
                 challenges.add(challenge);
             }
