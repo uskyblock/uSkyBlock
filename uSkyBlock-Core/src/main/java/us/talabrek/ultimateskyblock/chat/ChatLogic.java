@@ -2,12 +2,11 @@ package us.talabrek.ultimateskyblock.chat;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
+import us.talabrek.ultimateskyblock.message.Placeholder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
-import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
@@ -16,15 +15,14 @@ import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.Type;
@@ -44,9 +42,9 @@ public class ChatLogic {
         marktr("But you are talking to yourself!")
     );
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final WorldManager worldManager;
     private final PlaceholderHandler placeholderHandler;
-    private final Map<Type, String> formats = new EnumMap<>(Type.class);
     private final Map<UUID, Type> toggled = new HashMap<>();
 
     @Inject
@@ -57,13 +55,9 @@ public class ChatLogic {
         @NotNull PlaceholderHandler placeholderHandler
     ) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.worldManager = worldManager;
         this.placeholderHandler = placeholderHandler;
-        RuntimeConfig runtimeConfig = runtimeConfigs.current();
-        formats.put(Type.PARTY,
-            runtimeConfig.party().chatFormat());
-        formats.put(Type.ISLAND,
-            runtimeConfig.island().chatFormat());
     }
 
     /**
@@ -98,9 +92,9 @@ public class ChatLogic {
      */
     public void sendMessage(Player sender, Type type, String message) {
         String format = getFormat(type);
-        format = FormatUtil.normalize(format);
-        format = format.replaceAll("\\{DISPLAYNAME}", Matcher.quoteReplacement(sender.getDisplayName()));
-        String msg = format.replaceAll("\\{MESSAGE}", Matcher.quoteReplacement(message));
+        String msg = miniToLegacy(format,
+            Placeholder.legacy("display-name", sender.getDisplayName()),
+            Placeholder.unparsed("message", message));
         msg = placeholderHandler.replacePlaceholders(sender, msg);
         List<Player> onlineMembers = getRecipients(sender, type);
         if (onlineMembers.size() <= 1) {
@@ -121,7 +115,10 @@ public class ChatLogic {
      * @return Message format.
      */
     public @NotNull String getFormat(Type type) {
-        return formats.get(type);
+        return switch (type) {
+            case PARTY -> runtimeConfigs.current().party().chatFormat();
+            case ISLAND -> runtimeConfigs.current().island().chatFormat();
+        };
     }
 
     /**

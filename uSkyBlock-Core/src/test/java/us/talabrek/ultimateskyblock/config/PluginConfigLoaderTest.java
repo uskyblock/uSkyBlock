@@ -353,6 +353,25 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void convertsLegacyChatFormatsDuringMigration119() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(118);
+        config.set("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}");
+        config.set("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&b {MESSAGE}");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals("<blue>SKY </blue><display-name> <white>></white><light_purple> <message>",
+            migrated.getString("options.island.chat-format"));
+        assertEquals("<blue>PARTY </blue><display-name> <white>></white><aqua> <message>",
+            migrated.getString("options.party.chat-format"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();
@@ -428,8 +447,10 @@ public class PluginConfigLoaderTest {
         config.set("options.island.islandTeleportDelay", "2s");
         config.set("options.island.topTenTimeout", "20m");
         config.set("options.island.schematicName", "default");
+        config.set("options.island.chat-format", "<blue>SKY </blue><display-name> <white>></white><light_purple> <message>");
         config.set("options.extras.obsidianToLava", true);
         config.set("options.party.invite-timeout", "2m");
+        config.set("options.party.chat-format", "<blue>PARTY </blue><display-name> <white>></white><aqua> <message>");
         config.set("options.advanced.confirmTimeout", "10s");
         config.set("options.advanced.manageSpawn", true);
         config.set("options.restart.teleportDelay", "1000ms");
