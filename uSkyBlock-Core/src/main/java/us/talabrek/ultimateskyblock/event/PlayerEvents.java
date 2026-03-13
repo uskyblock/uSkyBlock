@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -29,9 +28,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -60,12 +60,8 @@ public class PlayerEvents implements Listener {
     private static final Duration OBSIDIAN_SPAM = Duration.ofSeconds(10);
 
     private final uSkyBlock plugin;
-    private final boolean visitorFallProtected;
-    private final boolean visitorFireProtected;
-    private final boolean visitorMonsterProtected;
-    private final boolean protectLava;
+    private final RuntimeConfigs runtimeConfigs;
     private final Map<UUID, Instant> obsidianClick = new HashMap<>();
-    private final boolean blockLimitsEnabled;
     private final Map<Material, Material> leafSaplings = Map.of(
         Material.OAK_LEAVES, Material.OAK_SAPLING,
         Material.SPRUCE_LEAVES, Material.SPRUCE_SAPLING,
@@ -75,14 +71,9 @@ public class PlayerEvents implements Listener {
         Material.DARK_OAK_LEAVES, Material.DARK_OAK_SAPLING);
 
     @Inject
-    public PlayerEvents(@NotNull uSkyBlock plugin) {
+    public PlayerEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        FileConfiguration config = plugin.getConfig();
-        visitorFallProtected = config.getBoolean("options.protection.visitors.fall", true);
-        visitorFireProtected = config.getBoolean("options.protection.visitors.fire-damage", true);
-        visitorMonsterProtected = config.getBoolean("options.protection.visitors.monster-damage", false);
-        protectLava = config.getBoolean("options.protection.protect-lava", true);
-        blockLimitsEnabled = config.getBoolean("options.island.block-limits.enabled", false);
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -100,8 +91,9 @@ public class PlayerEvents implements Listener {
     public void onClickOnObsidian(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         if (plugin.playerIsOnIsland(player)
-            && Settings.extras_obsidianToLava
+            && runtimeConfig.extras().obsidianToLava()
             && event.hasBlock()
             && event.hasItem()
             && event.getAction() == Action.RIGHT_CLICK_BLOCK
@@ -156,7 +148,7 @@ public class PlayerEvents implements Listener {
     // Prevent re-placing lava that was picked up in the last tick
     @EventHandler(ignoreCancelled = true)
     public void onLavaPlace(final PlayerBucketEmptyEvent event) {
-        if (Settings.extras_obsidianToLava && event.getBucket() == Material.LAVA_BUCKET) {
+        if (runtimeConfigs.current().extras().obsidianToLava() && event.getBucket() == Material.LAVA_BUCKET) {
             Instant now = Instant.now();
             Instant lastClick = obsidianClick.get(event.getPlayer().getUniqueId());
             if (lastClick != null && lastClick.plus(Duration.ofMillis(50)).isAfter(now)) {
@@ -167,7 +159,10 @@ public class PlayerEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onLavaReplace(BlockPlaceEvent event) {
-        if (!protectLava || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
+        if (!runtimeConfigs.current().protection().enabled() || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
+            return;
+        }
+        if (!protectLava() || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
             return;
         }
         if (isLavaSource(event.getBlockReplacedState().getBlockData())) {
@@ -186,7 +181,7 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onLavaAbsorption(EntityChangeBlockEvent event) {
         Block block = event.getBlock();
-        if (!protectLava || !plugin.getWorldManager().isSkyAssociatedWorld(block.getWorld())) {
+        if (!protectLava() || !plugin.getWorldManager().isSkyAssociatedWorld(block.getWorld())) {
             return;
         }
         if (isLavaSource(block.getBlockData())) {
@@ -203,8 +198,8 @@ public class PlayerEvents implements Listener {
         if (event.getEntity() instanceof Player player
             && plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())
             && !plugin.playerIsOnIsland(player)) {
-            if ((visitorFireProtected && FIRE_TRAP.contains(event.getCause()))
-                || (visitorFallProtected && (event.getCause() == EntityDamageEvent.DamageCause.FALL))) {
+            if ((visitorFireProtected() && FIRE_TRAP.contains(event.getCause()))
+                || (visitorFallProtected() && (event.getCause() == EntityDamageEvent.DamageCause.FALL))) {
                 event.setDamage(-event.getDamage());
                 event.setCancelled(true);
             }
@@ -216,8 +211,8 @@ public class PlayerEvents implements Listener {
         if (event.getEntity() instanceof Player player
             && plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())
             && !plugin.playerIsOnIsland(player)
-            && !(event.getDamager() instanceof Player && Settings.island_allowPvP)) {
-            if (visitorMonsterProtected &&
+            && !(event.getDamager() instanceof Player && runtimeConfigs.current().island().allowPvP())) {
+            if (visitorMonsterProtected() &&
                 (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK
                     || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK
                     || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
@@ -271,7 +266,8 @@ public class PlayerEvents implements Listener {
             return;
         }
 
-        if (Settings.extras_respawnAtIsland) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        if (runtimeConfig.extras().respawnAtIsland()) {
             PlayerInfo playerInfo = plugin.getPlayerInfo(event.getPlayer());
             if (playerInfo.getHasIsland()) {
                 Location homeLocation = LocationUtil.findNearestSafeLocation(playerInfo.getHomeLocation(), null);
@@ -285,7 +281,7 @@ public class PlayerEvents implements Listener {
                 }
             }
         }
-        if (!Settings.extras_sendToSpawn && wm.isSkyWorld(pWorld)) {
+        if (!runtimeConfig.extras().sendToSpawn() && wm.isSkyWorld(pWorld)) {
             event.setRespawnLocation(plugin.getWorldManager().getWorld().getSpawnLocation());
         }
     }
@@ -333,7 +329,7 @@ public class PlayerEvents implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlaceEvent(BlockPlaceEvent event) {
         final Player player = event.getPlayer();
-        if (!blockLimitsEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
+        if (runtimeConfigs.current().island().blockLimits().isEmpty() || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
             return; // Skip
         }
 
@@ -370,9 +366,29 @@ public class PlayerEvents implements Listener {
         plugin.getBlockLimitLogic().incBlockCount(islandInfo.getIslandLocation(), type);
     }
 
+    private boolean visitorFallProtected() {
+        return runtimeConfigs.current().protection().enabled()
+            && runtimeConfigs.current().protection().visitorFallProtected();
+    }
+
+    private boolean visitorFireProtected() {
+        return runtimeConfigs.current().protection().enabled()
+            && runtimeConfigs.current().protection().visitorFireProtected();
+    }
+
+    private boolean visitorMonsterProtected() {
+        return runtimeConfigs.current().protection().enabled()
+            && runtimeConfigs.current().protection().visitorMonsterProtected();
+    }
+
+    private boolean protectLava() {
+        return runtimeConfigs.current().protection().enabled()
+            && runtimeConfigs.current().protection().protectLava();
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!blockLimitsEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(event.getBlock().getWorld())) {
+        if (runtimeConfigs.current().island().blockLimits().isEmpty() || !plugin.getWorldManager().isSkyAssociatedWorld(event.getBlock().getWorld())) {
             return; // Skip
         }
         IslandInfo islandInfo = plugin.getIslandInfo(event.getBlock().getLocation());
@@ -384,7 +400,7 @@ public class PlayerEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockExplode(EntityExplodeEvent event) {
-        if (blockLimitsEnabled && plugin.getWorldManager().isSkyAssociatedWorld(event.getLocation().getWorld())) {
+        if (!runtimeConfigs.current().island().blockLimits().isEmpty() && plugin.getWorldManager().isSkyAssociatedWorld(event.getLocation().getWorld())) {
             IslandInfo islandInfo = plugin.getIslandInfo(event.getLocation());
             if (islandInfo != null) {
                 for (Block block : event.blockList()) {
@@ -396,7 +412,7 @@ public class PlayerEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockExplodeUnknown(BlockExplodeEvent event) {
-        if (blockLimitsEnabled && plugin.getWorldManager().isSkyAssociatedWorld(event.getBlock().getWorld())) {
+        if (!runtimeConfigs.current().island().blockLimits().isEmpty() && plugin.getWorldManager().isSkyAssociatedWorld(event.getBlock().getWorld())) {
             IslandInfo islandInfo = plugin.getIslandInfo(event.getBlock().getLocation());
             if (islandInfo != null) {
                 for (Block block : event.blockList()) {

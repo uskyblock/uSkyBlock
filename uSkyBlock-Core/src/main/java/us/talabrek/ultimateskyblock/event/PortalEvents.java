@@ -11,8 +11,8 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -21,11 +21,13 @@ public class PortalEvents implements Listener {
 
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public PortalEvents(@NotNull uSkyBlock plugin, @NotNull WorldManager worldManager) {
+    public PortalEvents(@NotNull uSkyBlock plugin, @NotNull WorldManager worldManager, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
         this.worldManager = worldManager;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -40,9 +42,9 @@ public class PortalEvents implements Listener {
         if (toWorld != null) {
             Location to = getTargetLocation(event.getFrom(), toWorld);
             event.setTo(to);
-            event.setSearchRadius(Settings.island_radius);
+            event.setSearchRadius(runtimeConfigs.current().island().radius());
             event.setCanCreatePortal(true);
-            event.setCreationRadius(Math.max(1, Settings.island_radius - 4));
+            event.setCreationRadius(Math.max(1, runtimeConfigs.current().island().radius() - 4));
         }
     }
 
@@ -54,9 +56,9 @@ public class PortalEvents implements Listener {
         if (toWorld != null) {
             Location to = getTargetLocation(event.getFrom(), toWorld);
             event.setTo(to);
-            event.setSearchRadius(Settings.island_radius);
+            event.setSearchRadius(runtimeConfigs.current().island().radius());
             event.setCanCreatePortal(false); // Only players should be able to create portals
-            event.setCreationRadius(Math.max(1, Settings.island_radius - 4));
+            event.setCreationRadius(Math.max(1, runtimeConfigs.current().island().radius() - 4));
         }
     }
 

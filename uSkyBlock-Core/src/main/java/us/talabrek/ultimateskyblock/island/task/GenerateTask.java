@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.config.ConfigDuration;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -64,7 +63,7 @@ public class GenerateTask extends BukkitRunnable {
         IslandInfo islandInfo = plugin.setNewPlayerIsland(pi, next);
         islandInfo.setSchematicName(schematicName);
         WorldGuardHandler.updateRegion(islandInfo);
-        plugin.getCooldownHandler().resetCooldown(player, "restart", Settings.general_cooldownRestart);
+        plugin.getCooldownHandler().resetCooldown(player, "restart", plugin.getRuntimeConfigs().current().general().cooldownRestart());
 
         scheduler.sync(() -> {
                 if (pi != null) {

@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -67,11 +66,11 @@ public class PluginInfo {
             unparsed("language", runtimeConfig.configuredLanguage()),
             unparsed("locale", String.valueOf(I18nUtil.getI18n().getLocale()))));
         msg.append(miniToLegacy("<primary>  State: d=<distance>, r=<radius>, i=<islands>, p=<players>, n=<nether>, awe=<awe><newline>",
-            number("distance", Settings.island_distance),
-            number("radius", Settings.island_radius),
+            number("distance", runtimeConfig.island().distance()),
+            number("radius", runtimeConfig.island().radius()),
             number("islands", islandLogic.getSize()),
             number("players", playerLogic.getSize()),
-            unparsed("nether", String.valueOf(Settings.nether_enabled)),
+            unparsed("nether", String.valueOf(runtimeConfig.nether().enabled())),
             unparsed("awe", String.valueOf(AsyncWorldEditHandler.isAWE()))));
         msg.append(miniToLegacy("<muted>Server: <primary><name> <version></primary><newline>",
             unparsed("name", Bukkit.getName()),

@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.command.completion.AllPlayerTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.BiomeTabCompleter;
 import us.talabrek.ultimateskyblock.command.completion.MemberTabCompleter;
@@ -40,6 +39,7 @@ import us.talabrek.ultimateskyblock.command.island.TopCommand;
 import us.talabrek.ultimateskyblock.command.island.TrustCommand;
 import us.talabrek.ultimateskyblock.command.island.WarpCommand;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
@@ -53,11 +53,13 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 public class IslandCommand extends BaseCommandExecutor {
     private final uSkyBlock plugin;
     private final SkyBlockMenu menu;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
     public IslandCommand(
         @NotNull uSkyBlock plugin,
         @NotNull SkyBlockMenu menu,
+        @NotNull RuntimeConfigs runtimeConfigs,
 
         @NotNull OnlinePlayerTabCompleter onlinePlayerTabCompleter,
         @NotNull AllPlayerTabCompleter allPlayerTabCompleter,
@@ -95,6 +97,7 @@ public class IslandCommand extends BaseCommandExecutor {
         super("island|is", "usb.island.create", marktr("general island command"));
         this.plugin = plugin;
         this.menu = menu;
+        this.runtimeConfigs = runtimeConfigs;
 
         addFeaturePermission("usb.mod.bypasscooldowns", trLegacy("allows users to bypass cooldowns"));
         addFeaturePermission("usb.mod.bypassprotection", trLegacy("allows users to bypass visitor protections"));
@@ -120,7 +123,7 @@ public class IslandCommand extends BaseCommandExecutor {
         add(toggleWarpCommand);
         add(banCommand);
         add(lockUnlockCommand);
-        if (Settings.island_useTopTen) {
+        if (runtimeConfigs.current().island().useTopTen()) {
             add(topCommand);
         }
         add(biomeCommand);

@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -132,8 +131,9 @@ public class TeleportLogic implements Listener {
 
         Location spawnLocation = LocationUtil.centerOnBlock(worldManager.getWorld().getSpawnLocation());
         Duration teleportDelay = teleportDelay();
+        boolean sendToSpawn = runtimeConfigs.current().extras().sendToSpawn();
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
-            if (Settings.extras_sendToSpawn) {
+            if (sendToSpawn) {
                 plugin.execCommand(player, "op:spawn", false);
             } else {
                 PaperLib.teleportAsync(player, spawnLocation);
@@ -144,7 +144,7 @@ public class TeleportLogic implements Listener {
                 SECONDARY, number("seconds", teleportDelay.toSeconds()));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
-                if (Settings.extras_sendToSpawn) {
+                if (sendToSpawn) {
                     plugin.execCommand(player, "op:spawn", false);
                 } else {
                     PaperLib.teleportAsync(player, spawnLocation);

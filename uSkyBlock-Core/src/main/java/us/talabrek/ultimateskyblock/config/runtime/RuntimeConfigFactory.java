@@ -80,6 +80,10 @@ public final class RuntimeConfigFactory {
             new RuntimeConfig.Protection(
                 config.getBoolean("options.protection.enabled", true),
                 config.getBoolean("options.protection.item-drops", true),
+                config.getBoolean("options.protection.protect-lava", true),
+                config.getBoolean("options.protection.visitors.fall", true),
+                config.getBoolean("options.protection.visitors.fire-damage", true),
+                config.getBoolean("options.protection.visitors.monster-damage", false),
                 config.getBoolean("options.protection.visitors.block-banned-entry", true)
             ),
             new RuntimeConfig.Nether(

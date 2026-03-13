@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
@@ -79,6 +78,8 @@ public class IslandLogic {
     private final LoadingCache<String, IslandInfo> cache;
     private final boolean showMembers;
     private final boolean useDisplayNames;
+    private final boolean useTopTen;
+    private final Duration topTenTimeout;
     private final BukkitTask saveTask;
     private final double topTenCutoff;
 
@@ -114,6 +115,8 @@ public class IslandLogic {
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
         this.showMembers = runtimeConfig.island().topTenShowMembers();
         this.useDisplayNames = runtimeConfig.advanced().useDisplayNames();
+        this.useTopTen = runtimeConfig.island().useTopTen();
+        this.topTenTimeout = runtimeConfig.island().topTenTimeout();
         topTenCutoff = runtimeConfig.advanced().topTenCutoff();
         cache = CacheBuilder
             .from(runtimeConfig.advanced().islandCacheSpec())
@@ -214,7 +217,7 @@ public class IslandLogic {
                 number("page", page, PRIMARY),
                 number("max-page", maxpage, PRIMARY));
             if (ranks.isEmpty()) {
-                if (Settings.island_useTopTen) {
+                if (useTopTen) {
                     // I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
                     sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered.",
                         number("level", topTenCutoff));
@@ -282,7 +285,7 @@ public class IslandLogic {
 
     public void showTopTen(final CommandSender sender, final int page) {
         Instant now = Instant.now();
-        if (now.isAfter(lastUpdated.plus(Settings.island_topTenTimeout)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
+        if (now.isAfter(lastUpdated.plus(topTenTimeout)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
             lastUpdated = now;
             scheduler.async(() -> {
                 generateTopTen(sender);

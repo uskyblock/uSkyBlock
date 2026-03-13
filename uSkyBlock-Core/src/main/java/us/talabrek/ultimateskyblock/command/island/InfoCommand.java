@@ -6,10 +6,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.api.model.IslandScore;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -33,17 +33,19 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 public class InfoCommand extends RequireIslandCommand {
 
     private final Logger logger;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public InfoCommand(@NotNull uSkyBlock plugin, @NotNull Logger logger) {
+    public InfoCommand(@NotNull uSkyBlock plugin, @NotNull Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "info", "usb.island.info", "?island", marktr("check your or another's island info"));
         this.logger = logger;
+        this.runtimeConfigs = runtimeConfigs;
         addFeaturePermission("usb.island.info.other", trLegacy("allows users to see others' island info"));
     }
 
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
-        if (!Settings.island_useIslandLevel) {
+        if (!runtimeConfigs.current().island().useIslandLevel()) {
             sendErrorTr(player, "Island level has been disabled, contact an administrator.");
             return true;
         }

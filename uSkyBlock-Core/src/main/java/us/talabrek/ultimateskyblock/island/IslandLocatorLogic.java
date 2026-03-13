@@ -9,8 +9,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -40,6 +41,7 @@ public class IslandLocatorLogic {
     private final Scheduler scheduler;
     private final OrphanLogic orphanLogic;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final File configFile;
     private final FileConfiguration config;
     private final Map<String, Instant> reservations = new ConcurrentHashMap<>();
@@ -53,7 +55,8 @@ public class IslandLocatorLogic {
         @NotNull Logger logger,
         @NotNull WorldManager worldManager,
         @NotNull Scheduler scheduler,
-        @NotNull OrphanLogic orphanLogic
+        @NotNull OrphanLogic orphanLogic,
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.plugin = plugin;
         this.configFile = pluginDir.resolve("lastIslandConfig.yml").toFile();
@@ -61,6 +64,7 @@ public class IslandLocatorLogic {
         this.worldManager = worldManager;
         this.scheduler = scheduler;
         this.orphanLogic = orphanLogic;
+        this.runtimeConfigs = runtimeConfigs;
         this.config = new YamlConfiguration();
         FileUtil.readConfig(config, configFile);
         // Backward compatibility
@@ -74,12 +78,14 @@ public class IslandLocatorLogic {
     }
 
     private Location getLastIsland() {
+        int islandHeight = runtimeConfigs.current().island().height();
+        int islandDistance = runtimeConfigs.current().island().distance();
         if (lastIsland == null) {
             lastIsland = new Location(worldManager.getWorld(),
-                config.getInt("options.general.lastIslandX", 0), Settings.island_height,
+                config.getInt("options.general.lastIslandX", 0), islandHeight,
                 config.getInt("options.general.lastIslandZ", 0));
         }
-        return LocationUtil.alignToDistance(lastIsland, Settings.island_distance);
+        return LocationUtil.alignToDistance(lastIsland, islandDistance);
     }
 
     public synchronized Location getNextIslandLocation(Player player) {
@@ -103,15 +109,16 @@ public class IslandLocatorLogic {
     }
 
     private synchronized Location getNext(Player player) {
+        int islandDistance = runtimeConfigs.current().island().distance();
         Location last = getLastIsland();
         if (worldManager.isSkyWorld(player.getWorld()) && !plugin.islandInSpawn(player.getLocation())) {
-            Location location = LocationUtil.alignToDistance(player.getLocation(), Settings.island_distance);
+            Location location = LocationUtil.alignToDistance(player.getLocation(), islandDistance);
             if (isAvailableLocation(location)) {
                 sendTr(player, "Creating an island at your location", PRIMARY);
                 return location;
             }
             Vector v = player.getLocation().getDirection().normalize();
-            location = LocationUtil.alignToDistance(location.add(v.multiply(Settings.island_distance)), Settings.island_distance);
+            location = LocationUtil.alignToDistance(location.add(v.multiply(islandDistance)), islandDistance);
             if (isAvailableLocation(location)) {
                 sendTr(player, "Creating an island <direction> of you",
                     component("direction", tr(LocationUtil.getCardinalDirection(player.getLocation().getYaw()), PRIMARY)));

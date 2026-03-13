@@ -9,7 +9,7 @@ import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.core.world.options.ImportWorldOptions;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.hook.HookFailedException;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -37,6 +37,7 @@ public class MultiverseCoreHook extends WorldHook {
 
     @Override
     public void registerOverworld(@NotNull World world) {
+        RuntimeConfig runtimeConfig = plugin.getRuntimeConfigs().current();
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
@@ -58,21 +59,22 @@ public class MultiverseCoreHook extends WorldHook {
         MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
         mvWorld.setScale(1.0);
 
-        if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
+        if (runtimeConfig.general().spawnSize() > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
-                new Location(world, 0.5, Settings.island_height + 0.1, 0.5));
+                new Location(world, 0.5, runtimeConfig.island().height() + 0.1, 0.5));
             mvWorld.setAdjustSpawn(false);
             mvWorld.setSpawnLocation(spawn);
             world.setSpawnLocation(spawn);
         }
 
-        if (!Settings.extras_sendToSpawn) {
+        if (!runtimeConfig.extras().sendToSpawn()) {
             mvWorld.setRespawnWorld(mvWorld);
         }
     }
 
     @Override
     public void registerNetherworld(@NotNull World world) {
+        RuntimeConfig runtimeConfig = plugin.getRuntimeConfigs().current();
         WorldManager mvWorldManager = MultiverseCoreApi.get().getWorldManager();
 
         if (!mvWorldManager.isWorld(world.getName())) {
@@ -95,15 +97,15 @@ public class MultiverseCoreHook extends WorldHook {
         MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
         mvWorld.setScale(1.0);
 
-        if (Settings.general_spawnSize > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
+        if (runtimeConfig.general().spawnSize() > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
             Location spawn = LocationUtil.centerOnBlock(
-                new Location(world, 0.5, Settings.island_height / 2.0 + 0.1, 0.5));
+                new Location(world, 0.5, runtimeConfig.island().height() / 2.0 + 0.1, 0.5));
             mvWorld.setAdjustSpawn(false);
             mvWorld.setSpawnLocation(spawn);
             world.setSpawnLocation(spawn);
         }
 
-        if (!Settings.extras_sendToSpawn) {
+        if (!runtimeConfig.extras().sendToSpawn()) {
             mvWorld.setRespawnWorld(plugin.getWorldManager().getWorld().getName());
         }
     }

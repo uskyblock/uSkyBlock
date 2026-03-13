@@ -100,6 +100,10 @@ public record RuntimeConfig(
     public record Protection(
         boolean enabled,
         boolean itemDrops,
+        boolean protectLava,
+        boolean visitorFallProtected,
+        boolean visitorFireProtected,
+        boolean visitorMonsterProtected,
         boolean blockBannedEntry
     ) {
     }

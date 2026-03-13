@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -34,10 +34,12 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
  * Manages player cooldowns
  */
 public class CooldownCommand extends CompositeCommand {
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public CooldownCommand(@NotNull uSkyBlock plugin) {
+    public CooldownCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         super("cooldown|cd", "usb.admin.cooldown", marktr("controls player cooldowns"));
+        this.runtimeConfigs = runtimeConfigs;
         add(new AbstractCommand("clear|c", null, "player command", marktr("clears the cooldown on a command (* = all)")) {
             @Override
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
@@ -132,8 +134,8 @@ public class CooldownCommand extends CompositeCommand {
 
     private Duration getCooldown(String cmd) {
         return switch (cmd) {
-            case "restart" -> Settings.general_cooldownRestart;
-            case "biome" -> Settings.general_biomeChange;
+            case "restart" -> runtimeConfigs.current().general().cooldownRestart();
+            case "biome" -> runtimeConfigs.current().general().biomeChange();
             default -> Duration.ZERO;
         };
     }

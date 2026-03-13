@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.chat.ChatEvents;
@@ -130,7 +129,7 @@ public class Listeners {
         if (runtimeConfig.protection().blockBannedEntry()) {
             manager.registerEvents(worldGuardEvents, plugin);
         }
-        if (Settings.nether_enabled) {
+        if (runtimeConfig.nether().enabled()) {
             manager.registerEvents(netherTerraFormEvents, plugin);
         }
         if (runtimeConfig.toolMenu().enabled()) {

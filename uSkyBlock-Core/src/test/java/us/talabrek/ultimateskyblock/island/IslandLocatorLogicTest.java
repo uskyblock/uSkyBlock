@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -52,7 +54,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservation() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-1")), mock(), mock(), mock(), mock());
+        IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-1")), mock(), mock(), mock(), mock(), createRuntimeConfigs(10));
         Player player = createPlayerMock();
         Location location1 = locator.getNextIslandLocation(player);
         assertThat(location1, notNullValue());
@@ -65,7 +67,7 @@ public class IslandLocatorLogicTest {
     public void testNextIslandLocationReservationConcurrency() throws Exception {
         Settings.island_distance = 10;
         uSkyBlock plugin = createPluginMock();
-        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-2")), mock(), mock(), mock(), mock());
+        final IslandLocatorLogic locator = new IslandLocatorLogic(plugin, Files.createDirectory(tempDir.resolve("reservation-2")), mock(), mock(), mock(), mock(), createRuntimeConfigs(10));
         final List<Location> locations = new ArrayList<>();
         ThreadGroup threadGroup = new ThreadGroup("My");
         for (int i = 0; i < 10; i++) {
@@ -100,5 +102,40 @@ public class IslandLocatorLogicTest {
         when(worldManager.isSkyWorld(any(World.class))).thenReturn(true);
         when(plugin.getWorldManager()).thenReturn(worldManager);
         return plugin;
+    }
+
+    private RuntimeConfigs createRuntimeConfigs(int islandDistance) {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("language", "en");
+        config.set("options.general.worldName", "skyworld");
+        config.set("options.general.cooldownRestart", "1m");
+        config.set("options.general.biomeChange", "1m");
+        config.set("options.general.defaultBiome", "plains");
+        config.set("options.general.defaultNetherBiome", "nether_wastes");
+        config.set("options.advanced.confirmTimeout", "30s");
+        config.set("options.advanced.playerDB.storage", "file");
+        config.set("options.party.invite-timeout", "1m");
+        config.set("options.island.distance", islandDistance);
+        config.set("options.island.height", Settings.island_height);
+        config.set("options.island.topTenTimeout", "15m");
+        config.set("options.island.islandTeleportDelay", "0s");
+        config.set("options.island.chatFormat", "default");
+        config.set("options.party.chatFormat", "default");
+        config.set("nether.chunkgenerator", "default");
+        config.set("options.advanced.islandSaveEvery", "1m");
+        config.set("options.advanced.playerSaveEvery", "1m");
+        config.set("options.async.maxIterationTime", "50ms");
+        config.set("options.async.maxConsecutiveTicks", 1L);
+        config.set("options.async.yieldDelay", "1t");
+        config.set("options.advanced.playerDB.nameCacheSpec", "maximumSize=100");
+        config.set("options.advanced.playerDB.uuidCacheSpec", "maximumSize=100");
+        config.set("options.advanced.playerCacheSpec", "maximumSize=100");
+        config.set("options.advanced.islandCacheSpec", "maximumSize=100");
+        config.set("plugin-updates.branch", "LATEST");
+        RuntimeConfig runtimeConfig = us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory.load(config);
+
+        RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+        when(runtimeConfigs.current()).thenReturn(runtimeConfig);
+        return runtimeConfigs;
     }
 }

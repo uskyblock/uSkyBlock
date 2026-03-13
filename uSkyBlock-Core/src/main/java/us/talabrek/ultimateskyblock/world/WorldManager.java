@@ -17,7 +17,6 @@ import org.bukkit.entity.Monster;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
@@ -32,8 +31,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static us.talabrek.ultimateskyblock.config.Settings.island_height;
 
 @Singleton
 public class WorldManager {
@@ -82,7 +79,7 @@ public class WorldManager {
      * @param target Location to remove unnamed monsters.
      */
     public void removeCreatures(@Nullable final Location target) {
-        if (!Settings.island_removeCreaturesByTeleport || target == null || target.getWorld() == null) {
+        if (!runtimeConfigs.current().island().removeCreaturesByTeleport() || target == null || target.getWorld() == null) {
             return;
         }
 
@@ -208,7 +205,7 @@ public class WorldManager {
         Validate.notNull(worldName, "WorldName cannot be null");
 
         return ((id != null && id.endsWith("nether")) || (worldName.endsWith("nether")))
-            && Settings.nether_enabled
+            && runtimeConfigs.current().nether().enabled()
             ? getNetherGenerator()
             : getOverworldGenerator();
     }
@@ -221,7 +218,8 @@ public class WorldManager {
     @NotNull
     public synchronized World getWorld() {
         if (skyBlockWorld == null) {
-            skyBlockWorld = Bukkit.getWorld(Settings.general_worldName);
+            String worldName = runtimeConfigs.current().general().worldName();
+            skyBlockWorld = Bukkit.getWorld(worldName);
             ChunkGenerator skyGenerator = getOverworldGenerator();
             ChunkGenerator worldGenerator = skyBlockWorld != null ? skyBlockWorld.getGenerator() : null;
             if (skyBlockWorld == null
@@ -229,7 +227,7 @@ public class WorldManager {
                 || worldGenerator == null
                 || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
                 skyBlockWorld = WorldCreator
-                    .name(Settings.general_worldName)
+                    .name(worldName)
                     .type(WorldType.NORMAL)
                     .generateStructures(false)
                     .environment(World.Environment.NORMAL)
@@ -252,12 +250,14 @@ public class WorldManager {
      */
     @Nullable
     public synchronized World getNetherWorld() {
-        if (!Settings.nether_enabled) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        if (!runtimeConfig.nether().enabled()) {
             return null;
         }
 
         if (skyBlockNetherWorld == null) {
-            skyBlockNetherWorld = Bukkit.getWorld(Settings.general_worldName + "_nether");
+            String worldName = runtimeConfig.general().worldName();
+            skyBlockNetherWorld = Bukkit.getWorld(worldName + "_nether");
             ChunkGenerator skyGenerator = getNetherGenerator();
             ChunkGenerator worldGenerator = skyBlockNetherWorld != null ? skyBlockNetherWorld.getGenerator() : null;
             if (skyBlockNetherWorld == null
@@ -265,7 +265,7 @@ public class WorldManager {
                 || worldGenerator == null
                 || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
                 skyBlockNetherWorld = WorldCreator
-                    .name(Settings.general_worldName + "_nether")
+                    .name(worldName + "_nether")
                     .type(WorldType.NORMAL)
                     .generateStructures(false)
                     .environment(World.Environment.NETHER)
@@ -312,7 +312,7 @@ public class WorldManager {
     private void scheduleOverworldSetup(@NotNull World world) {
         scheduler.sync(() -> {
             hookManager.getWorldHook().ifPresent(hook -> hook.registerOverworld(world));
-            setupWorld(world, Settings.island_height);
+            setupWorld(world, runtimeConfigs.current().island().height());
         });
     }
 
@@ -320,7 +320,7 @@ public class WorldManager {
         scheduler.sync(() -> {
             hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(world));
             hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), world));
-            setupWorld(world, island_height / 2);
+            setupWorld(world, runtimeConfigs.current().island().height() / 2);
         });
     }
 
@@ -336,7 +336,7 @@ public class WorldManager {
         }
 
         return world.getName().startsWith(WorldManager.skyBlockWorld.getName())
-            && !(world.getEnvironment() == World.Environment.NETHER && !Settings.nether_enabled)
+            && !(world.getEnvironment() == World.Environment.NETHER && !runtimeConfigs.current().nether().enabled())
             && !(world.getEnvironment() == World.Environment.THE_END);
     }
 }

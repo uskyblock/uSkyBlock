@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
@@ -35,7 +34,7 @@ public class PerkLogic {
         @NotNull RuntimeConfigs runtimeConfigs
     ) {
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
-        defaultPerk = new Perk(Collections.emptyList(), Settings.general_maxPartySize,
+        defaultPerk = new Perk(Collections.emptyList(), runtimeConfig.general().maxPartySize(),
             runtimeConfig.island().spawnLimits().animals(),
             runtimeConfig.island().spawnLimits().monsters(),
             runtimeConfig.island().spawnLimits().villagers(),
