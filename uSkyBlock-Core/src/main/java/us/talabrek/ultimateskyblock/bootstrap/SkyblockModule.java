@@ -7,9 +7,10 @@ import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.command.DocumentCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI;
 import us.talabrek.ultimateskyblock.handler.placeholder.MvdwPlacehoderProvider;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderAPI;
@@ -30,9 +31,11 @@ import java.util.logging.Logger;
 public class SkyblockModule extends AbstractModule {
 
     private final uSkyBlock plugin;
+    private final PluginConfig pluginConfig;
 
-    public SkyblockModule(uSkyBlock plugin) {
+    public SkyblockModule(uSkyBlock plugin, PluginConfig pluginConfig) {
         this.plugin = plugin;
+        this.pluginConfig = pluginConfig;
     }
 
     @Override
@@ -40,6 +43,7 @@ public class SkyblockModule extends AbstractModule {
         // TODO: this should not be injected, but it is here fore legacy reasons. Move all functionality out of the plugin class and into the appropriate classes.
         bind(uSkyBlock.class).toInstance(plugin);
         bind(Plugin.class).toInstance(plugin);
+        bind(PluginConfig.class).toInstance(pluginConfig);
         bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
         bind(UpdateChecker.class).to(SkyUpdateChecker.class);
@@ -51,12 +55,12 @@ public class SkyblockModule extends AbstractModule {
     @Provides
     @Singleton
     public static
-    @NotNull PlayerDB providePlayerDB(PluginConfig config, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
-        String playerDbStorage = config.getYamlConfig().getString("options.advanced.playerdb.storage", "yml");
+    @NotNull PlayerDB providePlayerDB(RuntimeConfigs runtimeConfigs, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
+        String playerDbStorage = runtimeConfigs.current().advanced().playerDb().storage();
         if (playerDbStorage.equalsIgnoreCase("yml")) {
-            return new FilePlayerDB(plugin, scheduler, logger);
+            return new FilePlayerDB(plugin, scheduler, logger, runtimeConfigs.current().advanced().playerDb());
         } else if (playerDbStorage.equalsIgnoreCase("memory")) {
-            return new MemoryPlayerDB(config);
+            return new MemoryPlayerDB(runtimeConfigs.current().advanced().playerDb());
         } else {
             return new BukkitPlayerDB();
         }

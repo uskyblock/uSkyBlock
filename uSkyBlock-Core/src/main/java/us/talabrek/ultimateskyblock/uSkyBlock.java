@@ -7,8 +7,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.command.Command;
 import dk.lockfuglsang.minecraft.command.CommandManager;
 import dk.lockfuglsang.minecraft.file.FileUtil;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import dk.lockfuglsang.minecraft.util.VersionUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -44,9 +42,9 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
-import us.talabrek.ultimateskyblock.config.Settings;
-import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
+import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -66,6 +64,7 @@ import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.island.task.CreateIslandTask;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
+import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -75,18 +74,15 @@ import us.talabrek.ultimateskyblock.player.PlayerPerk;
 import us.talabrek.ultimateskyblock.player.TeleportLogic;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
-import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.ServerUtil;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -96,16 +92,15 @@ import java.util.regex.Pattern;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static java.util.Objects.requireNonNull;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManager.RequirementChecker {
     private static final String CN = uSkyBlock.class.getName();
-    private static final String DEFAULT_LOCALE_KEY = "en";
     public static final String[][] depends = new String[][]{
         new String[]{"Vault", "1.7.1", "optional"},
         new String[]{"WorldEdit", "7.2.12", "optionalIf", "FastAsyncWorldEdit"},
@@ -156,15 +151,15 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private CooldownHandler cooldownHandler;
     @Inject
     private PlayerLogic playerLogic;
-    // TODO: don't assign value directly, but use injection instead. Currently, legacy code in PlaceholderHandler accesses it too early for injection to work.
-    @Inject
-    private PluginConfig config = new PluginConfig(new PluginConfigLoader(getDataFolder().toPath(), new PluginConfigMigrator(getLogger())));
+    private PluginConfig config;
     @Inject
     private BlockLimitLogic blockLimitLogic;
     @Inject
     private SkyUpdateChecker updateChecker;
     @Inject
     private Scheduler scheduler;
+    @Inject
+    private RuntimeConfigs runtimeConfigs;
 
     private UltimateSkyblockApi api;
 
@@ -227,7 +222,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             delayedEnable();
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
-        }, TimeUtil.ticksAsDuration(getConfig().getLong("init.initDelay", 50L)));
+        }, getRuntimeConfigs().current().init().initDelay());
 
         getScheduler().async(() -> getUpdateChecker().checkForUpdates(), Duration.ZERO, Duration.ofHours(4));
     }
@@ -367,6 +362,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public void clearPlayerInventory(Player player) {
         getLogger().entering(CN, "clearPlayerInventory", player);
+        RuntimeConfig.Restart restartConfig = runtimeConfigs.current().restart();
         PlayerInfo playerInfo = getPlayerInfo(player);
         if (!getWorldManager().isSkyWorld(player.getWorld())) {
             getLogger().finer("not clearing, since player is not in skyworld, marking for clear on next entry");
@@ -378,20 +374,20 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (playerInfo != null) {
             playerInfo.setClearInventoryOnNextEntry(false);
         }
-        if (getConfig().getBoolean("options.restart.clearInventory", true)) {
+        if (restartConfig.clearInventory()) {
             player.getInventory().clear();
         }
-        if (getConfig().getBoolean("options.restart.clearPerms", true)) {
+        if (restartConfig.clearPerms()) {
             playerInfo.clearPerms(player);
         }
-        if (getConfig().getBoolean("options.restart.clearArmor", true)) {
+        if (restartConfig.clearArmor()) {
             ItemStack[] armor = player.getEquipment().getArmorContents();
             player.getEquipment().setArmorContents(new ItemStack[armor.length]);
         }
-        if (getConfig().getBoolean("options.restart.clearEnderChest", true)) {
+        if (restartConfig.clearEnderChest()) {
             player.getEnderChest().clear();
         }
-        if (getConfig().getBoolean("options.restart.clearCurrency", false)) {
+        if (restartConfig.clearCurrency()) {
             getHookManager().getEconomyHook().ifPresent((hook) -> hook.withdrawPlayer(player, hook.getBalance(player)));
         }
         getLogger().exiting(CN, "clearPlayerInventory");
@@ -401,8 +397,16 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         final PlayerInfo pi = playerLogic.getPlayerInfo(player);
 
         String islandName = WorldGuardHandler.getIslandNameAt(l);
-        Location islandLocation = IslandUtil.getIslandLocation(islandName);
-        final Location newLoc = LocationUtil.alignToDistance(islandLocation, Settings.island_distance);
+        Location islandLocation = IslandUtil.getIslandLocation(
+            islandName,
+            getWorldManager().getWorld(),
+            runtimeConfigs.current().island().height()
+        );
+        final Location newLoc = LocationUtil.alignToDistance(
+            islandLocation,
+            runtimeConfigs.current().island().distance(),
+            runtimeConfigs.current().island().height()
+        );
         if (newLoc == null) {
             return false;
         }
@@ -531,7 +535,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     public void setBiome(Location loc, Biome biome) {
-        scheduler.sync(new SetBiomeTask(this, loc, biome, null));
+        scheduler.sync(new SetBiomeTask(this, runtimeConfigs, loc, biome, null));
     }
 
     public void createIsland(final Player player, String cSchem) {
@@ -566,7 +570,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
         final PlayerPerk playerPerk = new PlayerPerk(pi, perkLogic.getPerk(player));
         sendTr(player, "Getting your island ready. Please be patient, this can take a while.");
-        BukkitRunnable createTask = new CreateIslandTask(this, player, playerPerk, next, cSchem);
+        BukkitRunnable createTask = new CreateIslandTask(this, runtimeConfigs, player, playerPerk, next, cSchem);
         IslandInfo tempInfo = islandLogic.createIslandInfo(LocationUtil.getIslandName(next), pi.getPlayerName());
         WorldGuardHandler.protectIsland(this, player, tempInfo);
         islandLogic.clearIsland(next, createTask);
@@ -668,7 +672,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         WorldManager.skyBlockWorld = null; // Force a re-import or what-ever...
         WorldManager.skyBlockNetherWorld = null;
 
-        Injector injector = Guice.createInjector(new SkyblockModule(this));
+        Injector injector = Guice.createInjector(new SkyblockModule(this, config));
         this.skyBlock = injector.getInstance(SkyblockApp.class);
         injector.injectMembers(this);
         Msg.configure((sender, message) -> playerLogic.getNotificationManager().sendMessage(sender, message));
@@ -680,69 +684,15 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     /**
-     * Initializes/reloads the legacy static services. This has to be done before the object-oriented services are
-     * created, as some use the static services in their constructors. This should be refactored and integrated with
-     * the new system in the future.
+     * Initializes/reloads the remaining pre-DI bootstrap state.
      */
     private void reloadLegacyStuff() {
         createDataFolder();
-        boolean isFirstSetup = !new File(getDataFolder(), "config.yml").exists();
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
-        FileConfiguration pluginConfig = config.reload();
-        Settings.loadPluginConfig(pluginConfig);
-        applyFirstSetupLocaleSelection(pluginConfig, isFirstSetup);
-        I18nUtil.initialize(getDataFolder(), Settings.locale);
-        logLocaleSuggestionIfUsingDefaultLanguage(pluginConfig);
-        saveConfig();
+        config = new ConfigBootstrap(getDataFolder().toPath(), getLogger()).bootstrap();
         // Update all of the loaded configs.
         FileUtil.reload();
-    }
-
-    private void applyFirstSetupLocaleSelection(@NotNull FileConfiguration pluginConfig, boolean isFirstSetup) {
-        if (!isFirstSetup) {
-            return;
-        }
-        String configuredLocale = pluginConfig.getString("language", DEFAULT_LOCALE_KEY);
-        String effectiveConfiguredLocale = I18nUtil.findSupportedLocaleKey(configuredLocale).orElse(
-            configuredLocale != null ? configuredLocale : DEFAULT_LOCALE_KEY
-        );
-        Locale systemLocale = Locale.getDefault();
-        Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
-        if (supportedSystemLocale.isPresent() && !supportedSystemLocale.get().equalsIgnoreCase(effectiveConfiguredLocale)) {
-            String selectedLocale = supportedSystemLocale.get();
-            pluginConfig.set("language", selectedLocale);
-            Locale parsed = I18nUtil.getLocale(selectedLocale);
-            if (parsed != null) {
-                Settings.locale = parsed;
-            }
-            log(Level.INFO, "First setup: selected language '" + selectedLocale + "' from system locale '" + systemLocale + "'.");
-        } else if (supportedSystemLocale.isPresent()) {
-            log(Level.INFO, "First setup: keeping configured language '" + effectiveConfiguredLocale + "' (matches system locale).");
-        } else {
-            log(Level.INFO, "First setup: keeping configured language '" + effectiveConfiguredLocale + "' (system locale '" + systemLocale + "' not supported).");
-        }
-        log(Level.INFO, "Use '/usb lang [locale]' to change language. Help improve translations: " + I18nUtil.getTranslationSupportUrl());
-    }
-
-    private void logLocaleSuggestionIfUsingDefaultLanguage(@NotNull FileConfiguration pluginConfig) {
-        String configuredLocale = pluginConfig.getString("language", DEFAULT_LOCALE_KEY);
-        String effectiveConfiguredLocale = I18nUtil.findSupportedLocaleKey(configuredLocale).orElse(
-            configuredLocale != null ? configuredLocale : DEFAULT_LOCALE_KEY
-        );
-        if (!DEFAULT_LOCALE_KEY.equalsIgnoreCase(effectiveConfiguredLocale)) {
-            return;
-        }
-
-        Locale systemLocale = Locale.getDefault();
-        Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
-        if (supportedSystemLocale.isPresent() && !DEFAULT_LOCALE_KEY.equalsIgnoreCase(supportedSystemLocale.get())) {
-            String suggestedLocale = supportedSystemLocale.get();
-            log(Level.INFO, "Language hint: configured language is '" + DEFAULT_LOCALE_KEY
-                + "', but system locale '" + systemLocale + "' is supported as '" + suggestedLocale + "'.");
-            log(Level.INFO, "Use '/usb lang " + suggestedLocale + "' to switch. Help improve translations: "
-                + I18nUtil.getTranslationSupportUrl());
-        }
     }
 
     public IslandLogic getIslandLogic() {
@@ -831,7 +781,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public USBImporterExecutor getImporter() {
         if (importer == null) {
-            importer = new USBImporterExecutor(this);
+            importer = new USBImporterExecutor(this, runtimeConfigs);
         }
         return importer;
     }
@@ -842,7 +792,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             return false;
         }
         Location spawnCenter = new Location(WorldManager.skyBlockWorld, 0, pLoc.getBlockY(), 0);
-        return spawnCenter.distance(pLoc) <= Settings.general_spawnSize;
+        return spawnCenter.distance(pLoc) <= runtimeConfigs.current().general().spawnSize();
     }
 
     /**
@@ -1029,8 +979,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         getServer().getServicesManager().unregister(api);
     }
 
-    public PluginConfig getPluginConfig() {
-        return config;
+    public RuntimeConfigs getRuntimeConfigs() {
+        return runtimeConfigs;
     }
 
     public Scheduler getScheduler() {

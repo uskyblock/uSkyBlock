@@ -1,9 +1,10 @@
 package us.talabrek.ultimateskyblock.island.task;
 
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -26,12 +27,12 @@ public class LocateChestTask extends BukkitRunnable {
 
     private Instant start;
 
-    public LocateChestTask(uSkyBlock plugin, Player player, Location islandLocation, GenerateTask onCompletion) {
+    public LocateChestTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, Player player, Location islandLocation, GenerateTask onCompletion) {
         this.scheduler = plugin.getScheduler();
         this.player = player;
         this.islandLocation = islandLocation;
         this.onCompletion = onCompletion;
-        this.timeout = Instant.now().plus(TimeUtil.stringAsDuration(plugin.getConfig().getString("asyncworldedit.watchDog.timeout", "5m")));
+        this.timeout = Instant.now().plus(runtimeConfigs.current().asyncWorldEdit().timeout());
     }
 
     @Override

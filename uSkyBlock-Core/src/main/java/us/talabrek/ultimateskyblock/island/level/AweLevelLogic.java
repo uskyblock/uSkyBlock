@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
@@ -15,7 +14,7 @@ public class AweLevelLogic extends CommonLevelLogic {
     private Set<Location> running = new HashSet<>();
 
     public AweLevelLogic(WorldManager worldManager, FileConfiguration config) {
-        super(config, worldManager);
+        super(config, worldManager, uSkyBlock.getInstance().getRuntimeConfigs().current().nether().height());
     }
 
     @Override

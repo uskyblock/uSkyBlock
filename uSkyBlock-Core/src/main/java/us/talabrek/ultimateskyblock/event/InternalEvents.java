@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
@@ -23,10 +24,12 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 @Singleton
 public class InternalEvents implements Listener {
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public InternalEvents(@NotNull uSkyBlock plugin) {
+    public InternalEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -42,13 +45,13 @@ public class InternalEvents implements Listener {
     @EventHandler
     public void onMemberJoin(MemberJoinedEvent e) {
         PlayerInfo playerInfo = (PlayerInfo) e.getPlayerInfo();
-        playerInfo.execCommands(plugin.getConfig().getStringList("options.party.join-commands"));
+        playerInfo.execCommands(runtimeConfigs.current().party().joinCommands());
     }
 
     @EventHandler
     public void onMemberLeft(MemberLeftEvent e) {
         PlayerInfo playerInfo = (PlayerInfo) e.getPlayerInfo();
-        playerInfo.execCommands(plugin.getConfig().getStringList("options.party.leave-commands"));
+        playerInfo.execCommands(runtimeConfigs.current().party().leaveCommands());
     }
 
     @EventHandler

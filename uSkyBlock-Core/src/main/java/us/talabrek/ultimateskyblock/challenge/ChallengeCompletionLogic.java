@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -32,11 +33,11 @@ public class ChallengeCompletionLogic {
     private final boolean storeOnIsland;
     private final LoadingCache<String, Map<ChallengeKey, ChallengeCompletion>> completionCache;
 
-    public ChallengeCompletionLogic(uSkyBlock plugin, FileConfiguration config) {
+    public ChallengeCompletionLogic(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, FileConfiguration config) {
         this.plugin = plugin;
         storeOnIsland = config.getString("challengeSharing", "island").equalsIgnoreCase("island");
         completionCache = CacheBuilder
-            .from(plugin.getConfig().getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .from(runtimeConfigs.current().advanced().completionCacheSpec())
             .removalListener((RemovalListener<String, Map<ChallengeKey, ChallengeCompletion>>) removal -> saveToFile(removal.getKey(), removal.getValue()))
             .build(new CacheLoader<>() {
                        @Override

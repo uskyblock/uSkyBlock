@@ -6,6 +6,7 @@ import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
 import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
@@ -26,12 +27,14 @@ import java.util.logging.Logger;
 public class HookManager {
     private final uSkyBlock plugin;
     private final Logger logger;
+    private final RuntimeConfigs runtimeConfigs;
     private final Map<String, PluginHook> hooks = new ConcurrentHashMap<>();
 
     @Inject
-    public HookManager(@NotNull uSkyBlock plugin, @NotNull Logger logger) {
+    public HookManager(@NotNull uSkyBlock plugin, @NotNull Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
         this.logger = logger;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     /**
@@ -138,7 +141,7 @@ public class HookManager {
                 logger.info("Requires Multiverse-Core version 5 - found version " + mvVersion + ". Skipping multi world setup.");
                 return;
             }
-            WorldHook mvHook = new MultiverseCoreHook(plugin);
+            WorldHook mvHook = new MultiverseCoreHook(plugin, runtimeConfigs);
             registerHook(mvHook);
             logger.info("Hooked into Multiverse-Core");
         } catch (HookFailedException ex) {

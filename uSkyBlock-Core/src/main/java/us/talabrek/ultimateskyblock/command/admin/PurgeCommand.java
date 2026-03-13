@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeScanTask;
 import us.talabrek.ultimateskyblock.command.admin.task.PurgeTask;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
@@ -27,16 +28,18 @@ public class PurgeCommand extends AbstractCommand {
     private final uSkyBlock plugin;
     private final IslandLogic islandLogic;
     private final Scheduler scheduler;
+    private final RuntimeConfigs runtimeConfigs;
 
     private PurgeScanTask scanTask;
     private PurgeTask purgeTask;
 
     @Inject
-    public PurgeCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic, Scheduler scheduler) {
+    public PurgeCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic, Scheduler scheduler, @NotNull RuntimeConfigs runtimeConfigs) {
         super("purge", "usb.admin.purge", "time-in-days|stop|confirm ?level ?force", marktr("purges all abandoned islands"));
         this.plugin = plugin;
         this.islandLogic = islandLogic;
         this.scheduler = scheduler;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class PurgeCommand extends AbstractCommand {
             return false;
         }
         String days = args[0];
-        double purgeLevel = plugin.getConfig().getDouble("options.advanced.purgeLevel", 10);
+        double purgeLevel = runtimeConfigs.current().advanced().purgeLevel();
         if (args.length > 1 && args[1].matches("[0-9]+([.,][0-9]+)?")) {
             try {
                 purgeLevel = Double.parseDouble(args[1]);
@@ -65,11 +68,11 @@ public class PurgeCommand extends AbstractCommand {
         sendTr(sender, "Finding all islands abandoned for more than <days> days below level <level>.",
             unparsed("days", args[0], PRIMARY),
             unparsed("level", String.valueOf(purgeLevel), PRIMARY));
-        scanTask = new PurgeScanTask(plugin, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
+        scanTask = new PurgeScanTask(plugin, runtimeConfigs, islandLogic.getIslandDirectory().toFile(), time, purgeLevel, sender, () -> {
             if (force) {
                 doPurge(sender);
             } else {
-                Duration timeout = Duration.ofMillis(plugin.getConfig().getLong("options.advanced.purgeTimeout", 600000)); // TODO: this option does not have an entry in plugin.yml
+                Duration timeout = runtimeConfigs.current().advanced().purgeTimeout(); // TODO: this option does not have an entry in plugin.yml
                 sendErrorTr(sender, "PURGE: <muted>Run <cmd>/usb purge confirm</cmd> within <timeout> to confirm.",
                     unparsed("timeout", TimeUtil.durationAsString(timeout), PRIMARY));
                 scheduler.async(() -> {
@@ -114,7 +117,7 @@ public class PurgeCommand extends AbstractCommand {
 
     private void doPurge(CommandSender sender) {
         sendErrorTr(sender, "Starting purge...");
-        purgeTask = new PurgeTask(plugin, scanTask.getPurgeList(), sender);
+        purgeTask = new PurgeTask(plugin, runtimeConfigs, scanTask.getPurgeList(), sender);
         purgeTask.runTaskAsynchronously(plugin);
         scanTask.stop(); // Mark as inactive
     }

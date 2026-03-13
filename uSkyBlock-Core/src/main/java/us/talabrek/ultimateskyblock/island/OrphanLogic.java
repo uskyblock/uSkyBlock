@@ -8,8 +8,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
@@ -34,6 +34,7 @@ public class OrphanLogic {
 
     private final Logger logger;
     private final WorldManager worldManager;
+    private final RuntimeConfigs runtimeConfigs;
     private final FileConfiguration config;
     private final File configFile;
     private final SortedSet<Orphan> orphaned = new TreeSet<>(new OrphanComparator());
@@ -42,10 +43,12 @@ public class OrphanLogic {
     public OrphanLogic(
         @NotNull @PluginDataDir Path pluginDir,
         @NotNull Logger logger,
-        @NotNull WorldManager worldManager
+        @NotNull WorldManager worldManager,
+        @NotNull RuntimeConfigs runtimeConfigs
         ) {
         this.logger = logger;
         this.worldManager = worldManager;
+        this.runtimeConfigs = runtimeConfigs;
         configFile = pluginDir.resolve("orphans.yml").toFile();
         config = FileUtil.getYmlConfiguration("orphans.yml");
         readOrphans();
@@ -106,7 +109,7 @@ public class OrphanLogic {
                 Orphan candidate = it.next();
                 if (candidate != null) {
                     it.remove();
-                    Location loc = new Location(world, candidate.getX(), Settings.island_height, candidate.getZ(), ORPHAN_YAW, ORPHAN_PITCH);
+                    Location loc = new Location(world, candidate.getX(), runtimeConfigs.current().island().height(), candidate.getZ(), ORPHAN_YAW, ORPHAN_PITCH);
                     if (islandLocatorLogic.isAvailableLocation(loc)) {
                         return loc;
                     }

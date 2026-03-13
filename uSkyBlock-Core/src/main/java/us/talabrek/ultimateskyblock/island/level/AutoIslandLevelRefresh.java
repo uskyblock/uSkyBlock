@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.task.RecalculateRunnable;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -15,7 +15,7 @@ import java.time.Duration;
 public class AutoIslandLevelRefresh {
 
     private final uSkyBlock plugin;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
 
     private BukkitTask autoRecalculateTask = null;
@@ -23,16 +23,16 @@ public class AutoIslandLevelRefresh {
     @Inject
     public AutoIslandLevelRefresh(
         @NotNull uSkyBlock plugin,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Scheduler scheduler
     ) {
         this.plugin = plugin;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.scheduler = scheduler;
     }
 
     public void startup() {
-        int refreshEveryMinute = config.getYamlConfig().getInt("options.island.autoRefreshScore", 0);
+        int refreshEveryMinute = runtimeConfigs.current().island().autoRefreshScore();
         if (refreshEveryMinute > 0) {
             Duration refreshRate = Duration.ofMinutes(refreshEveryMinute);
             autoRecalculateTask = scheduler.sync(new RecalculateRunnable(plugin), refreshRate, refreshRate);

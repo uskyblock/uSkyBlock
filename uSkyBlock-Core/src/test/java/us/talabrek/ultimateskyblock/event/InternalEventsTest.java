@@ -12,6 +12,9 @@ import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.api.event.MemberLeftEvent;
 import us.talabrek.ultimateskyblock.api.event.RestartIslandEvent;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockScoreChangedEvent;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
@@ -33,12 +36,39 @@ public class InternalEventsTest {
     @BeforeEach
     public void setUp() {
         fakePlugin = mock(uSkyBlock.class);
-        internalEvents = new InternalEvents(fakePlugin);
 
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("options.party.join-commands", Arrays.asList("lets", "test", "this"));
         config.set("options.party.leave-commands", Arrays.asList("dont", "stop", "me", "now"));
+        config.set("language", "en");
+        config.set("options.general.worldName", "skyworld");
+        config.set("options.general.cooldownRestart", "1m");
+        config.set("options.general.biomeChange", "1m");
+        config.set("options.general.defaultBiome", "plains");
+        config.set("options.general.defaultNetherBiome", "nether_wastes");
+        config.set("options.advanced.confirmTimeout", "30s");
+        config.set("options.advanced.playerdb.storage", "file");
+        config.set("options.advanced.playerdb.nameCache", "maximumSize=100");
+        config.set("options.advanced.playerdb.uuidCache", "maximumSize=100");
+        config.set("options.advanced.playerCache", "maximumSize=100");
+        config.set("options.advanced.islandCache", "maximumSize=100");
+        config.set("options.advanced.island.saveEvery", 60);
+        config.set("options.advanced.player.saveEvery", 60);
+        config.set("options.party.invite-timeout", "1m");
+        config.set("options.island.distance", 110);
+        config.set("options.island.height", 120);
+        config.set("options.island.topTenTimeout", "15m");
+        config.set("options.island.islandTeleportDelay", "2s");
+        config.set("options.island.chat-format", "default");
+        config.set("options.party.chat-format", "default");
+        config.set("nether.chunk-generator", "default");
+        config.set("plugin-updates.branch", "LATEST");
         doReturn(config).when(fakePlugin).getConfig();
+
+        RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+        doReturn(RuntimeConfigFactory.load(config)).when(runtimeConfigs).current();
+        internalEvents = new InternalEvents(fakePlugin, runtimeConfigs);
 
         fakeBlockLimitLogic = mock(BlockLimitLogic.class);
         doNothing().when(fakeBlockLimitLogic).updateBlockCount(any(), any());

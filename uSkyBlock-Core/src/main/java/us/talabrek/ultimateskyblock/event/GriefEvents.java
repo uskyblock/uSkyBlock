@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -32,6 +31,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.LimitLogic;
@@ -46,30 +47,21 @@ import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 public class GriefEvents implements Listener {
 
     private final uSkyBlock plugin;
-    private final boolean creeperEnabled;
-    private final boolean shearingEnabled;
-    private final boolean killMonstersEnabled;
-    private final boolean killAnimalsEnabled;
-    private final boolean tramplingEnabled;
-    private final boolean witherEnabled;
-    private final boolean hatchingEnabled;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public GriefEvents(@NotNull uSkyBlock plugin) {
+    public GriefEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        FileConfiguration config = plugin.getConfig();
-        creeperEnabled = config.getBoolean("options.protection.creepers", true);
-        witherEnabled = config.getBoolean("options.protection.withers", true);
-        shearingEnabled = config.getBoolean("options.protection.visitors.shearing", true);
-        killMonstersEnabled = config.getBoolean("options.protection.visitors.kill-monsters", true);
-        killAnimalsEnabled = config.getBoolean("options.protection.visitors.kill-animals", true);
-        tramplingEnabled = config.getBoolean("options.protection.visitors.trampling", true);
-        hatchingEnabled = config.getBoolean("options.protection.visitors.hatching", true);
+        this.runtimeConfigs = runtimeConfigs;
+    }
+
+    private RuntimeConfig.Protection protection() {
+        return runtimeConfigs.current().protection();
     }
 
     @EventHandler
     public void onCreeperExplode(ExplosionPrimeEvent event) {
-        if (!creeperEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(event.getEntity().getWorld())) {
+        if (!protection().creepers() || !plugin.getWorldManager().isSkyAssociatedWorld(event.getEntity().getWorld())) {
             return;
         }
         if (event.getEntity() instanceof Creeper
@@ -94,7 +86,7 @@ public class GriefEvents implements Listener {
     @EventHandler
     public void onShearEvent(PlayerShearEntityEvent event) {
         Player player = event.getPlayer();
-        if (!shearingEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
+        if (!protection().visitorShearingProtected() || !plugin.getWorldManager().isSkyAssociatedWorld(player.getWorld())) {
             return; // Not our concern
         }
         if (player.hasPermission("usb.mod.bypassprotection")) {
@@ -107,7 +99,8 @@ public class GriefEvents implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if ((!killAnimalsEnabled && !killMonstersEnabled)
+        RuntimeConfig.Protection protection = protection();
+        if ((!protection.visitorKillAnimalsProtected() && !protection.visitorKillMonstersProtected())
                 || !plugin.getWorldManager().isSkyAssociatedWorld(event.getDamager().getWorld())) {
             return;
         }
@@ -119,7 +112,7 @@ public class GriefEvents implements Listener {
             if (event.getDamager().hasPermission("usb.mod.bypassprotection")) {
                 return;
             }
-            cancelMobDamage(event);
+            cancelMobDamage(event, protection);
         } else if (event.getDamager() instanceof Projectile) {
             ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
             if (!(shooter instanceof Player)) {
@@ -129,20 +122,20 @@ public class GriefEvents implements Listener {
             if (player.hasPermission("usb.mod.bypassprotection") || plugin.playerIsOnIsland(player)) {
                 return;
             }
-            cancelMobDamage(event);
+            cancelMobDamage(event, protection);
         }
     }
 
-    private void cancelMobDamage(EntityDamageByEntityEvent event) {
+    private void cancelMobDamage(EntityDamageByEntityEvent event, RuntimeConfig.Protection protection) {
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
             return;
         }
         LimitLogic.CreatureType type = plugin.getLimitLogic().getCreatureType(livingEntity);
-        if (killAnimalsEnabled && type == LimitLogic.CreatureType.ANIMAL) {
+        if (protection.visitorKillAnimalsProtected() && type == LimitLogic.CreatureType.ANIMAL) {
             event.setCancelled(true);
-        } else if (killMonstersEnabled && type == LimitLogic.CreatureType.MONSTER) {
+        } else if (protection.visitorKillMonstersProtected() && type == LimitLogic.CreatureType.MONSTER) {
             event.setCancelled(true);
-        } else if (killMonstersEnabled && event.getEntity() instanceof Shulker) {
+        } else if (protection.visitorKillMonstersProtected() && event.getEntity() instanceof Shulker) {
             // Shulker is a Golem, but should probably be protected if killMonsters is enabled
             event.setCancelled(true);
         }
@@ -150,7 +143,7 @@ public class GriefEvents implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onTrampling(PlayerInteractEvent event) {
-        if (!tramplingEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
+        if (!protection().visitorTramplingProtected() || !plugin.getWorldManager().isSkyAssociatedWorld(event.getPlayer().getWorld())) {
             return;
         }
         if (event.getAction() == Action.PHYSICAL
@@ -164,7 +157,7 @@ public class GriefEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onTargeting(EntityTargetLivingEntityEvent e) {
-        if (!witherEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(e.getEntity().getWorld())) {
+        if (!protection().withers() || !plugin.getWorldManager().isSkyAssociatedWorld(e.getEntity().getWorld())) {
             return;
         }
         if (e.getEntity() instanceof Wither && e.getTarget() != null) {
@@ -174,7 +167,7 @@ public class GriefEvents implements Listener {
 
     @EventHandler
     public void onWitherSkullExplosion(EntityDamageByEntityEvent e) {
-        if (!witherEnabled
+        if (!protection().withers()
                 || !(e.getEntity() instanceof WitherSkull)
                 || !plugin.getWorldManager().isSkyAssociatedWorld(e.getEntity().getWorld())) {
             return;
@@ -218,7 +211,7 @@ public class GriefEvents implements Listener {
 
     @EventHandler
     public void onEgg(PlayerEggThrowEvent e) {
-        if (!hatchingEnabled || !plugin.getWorldManager().isSkyAssociatedWorld(e.getPlayer().getWorld())) {
+        if (!protection().visitorHatchingProtected() || !plugin.getWorldManager().isSkyAssociatedWorld(e.getPlayer().getWorld())) {
             return;
         }
         if (!plugin.playerIsOnIsland(e.getPlayer())) {

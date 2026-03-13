@@ -17,8 +17,8 @@ import org.bukkit.entity.Monster;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -32,13 +32,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static us.talabrek.ultimateskyblock.config.Settings.island_height;
-
 @Singleton
 public class WorldManager {
     private final Path schematicPath;
     private final HookManager hookManager;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Logger logger;
 
@@ -53,13 +51,13 @@ public class WorldManager {
     public WorldManager(
         @NotNull uSkyBlock plugin,
         @NotNull Logger logger,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull HookManager hookManager,
         @NotNull Scheduler scheduler
     ) {
         this.schematicPath = plugin.getDataFolder().toPath().resolve("schematics").resolve("spawn.schem");
         this.hookManager = hookManager;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.logger = logger;
         this.scheduler = scheduler;
     }
@@ -72,7 +70,7 @@ public class WorldManager {
      */
     @NotNull
     public ChunkRegenerator getChunkRegenerator(@NotNull World world) {
-        return new ChunkRegenerator(world);
+        return new ChunkRegenerator(uSkyBlock.getInstance(), runtimeConfigs, world);
     }
 
     /**
@@ -81,7 +79,7 @@ public class WorldManager {
      * @param target Location to remove unnamed monsters.
      */
     public void removeCreatures(@Nullable final Location target) {
-        if (!Settings.island_removeCreaturesByTeleport || target == null || target.getWorld() == null) {
+        if (!runtimeConfigs.current().island().removeCreaturesByTeleport() || target == null || target.getWorld() == null) {
             return;
         }
 
@@ -111,7 +109,7 @@ public class WorldManager {
     private void setupWorld(@NotNull World world, int islandHeight) {
         Validate.notNull(world, "World cannot be null");
 
-        if (!config.getYamlConfig().getBoolean("options.advanced.manageSpawn")) {
+        if (!runtimeConfigs.current().advanced().manageSpawn()) {
             return;
         }
 
@@ -140,7 +138,7 @@ public class WorldManager {
 
         World world = spawnLocation.getWorld();
 
-        if (config.getYamlConfig().getInt("options.general.spawnSize", 0) > 32 && Files.exists(schematicPath)) {
+        if (runtimeConfigs.current().general().spawnSize() > 32 && Files.exists(schematicPath)) {
             AsyncWorldEditHandler.loadIslandSchematic(schematicPath.toFile(), spawnLocation);
         } else {
             Block spawnBlock = world.getBlockAt(spawnLocation).getRelative(BlockFace.DOWN);
@@ -159,8 +157,7 @@ public class WorldManager {
     @NotNull
     private ChunkGenerator getOverworldGenerator() {
         try {
-            String clazz = config.getYamlConfig().getString("options.advanced.chunk-generator",
-                "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator");
+            String clazz = runtimeConfigs.current().advanced().chunkGenerator();
             Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
@@ -182,8 +179,7 @@ public class WorldManager {
     @NotNull
     private ChunkGenerator getNetherGenerator() {
         try {
-            String clazz = config.getYamlConfig().getString("nether.chunk-generator",
-                "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator");
+            String clazz = runtimeConfigs.current().nether().chunkGenerator();
             Object generator = Class.forName(clazz).getDeclaredConstructor().newInstance();
             if (generator instanceof ChunkGenerator) {
                 return (ChunkGenerator) generator;
@@ -209,7 +205,7 @@ public class WorldManager {
         Validate.notNull(worldName, "WorldName cannot be null");
 
         return ((id != null && id.endsWith("nether")) || (worldName.endsWith("nether")))
-            && Settings.nether_enabled
+            && runtimeConfigs.current().nether().enabled()
             ? getNetherGenerator()
             : getOverworldGenerator();
     }
@@ -222,7 +218,8 @@ public class WorldManager {
     @NotNull
     public synchronized World getWorld() {
         if (skyBlockWorld == null) {
-            skyBlockWorld = Bukkit.getWorld(Settings.general_worldName);
+            String worldName = runtimeConfigs.current().general().worldName();
+            skyBlockWorld = Bukkit.getWorld(worldName);
             ChunkGenerator skyGenerator = getOverworldGenerator();
             ChunkGenerator worldGenerator = skyBlockWorld != null ? skyBlockWorld.getGenerator() : null;
             if (skyBlockWorld == null
@@ -230,7 +227,7 @@ public class WorldManager {
                 || worldGenerator == null
                 || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
                 skyBlockWorld = WorldCreator
-                    .name(Settings.general_worldName)
+                    .name(worldName)
                     .type(WorldType.NORMAL)
                     .generateStructures(false)
                     .environment(World.Environment.NORMAL)
@@ -253,12 +250,14 @@ public class WorldManager {
      */
     @Nullable
     public synchronized World getNetherWorld() {
-        if (!Settings.nether_enabled) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        if (!runtimeConfig.nether().enabled()) {
             return null;
         }
 
         if (skyBlockNetherWorld == null) {
-            skyBlockNetherWorld = Bukkit.getWorld(Settings.general_worldName + "_nether");
+            String worldName = runtimeConfig.general().worldName();
+            skyBlockNetherWorld = Bukkit.getWorld(worldName + "_nether");
             ChunkGenerator skyGenerator = getNetherGenerator();
             ChunkGenerator worldGenerator = skyBlockNetherWorld != null ? skyBlockNetherWorld.getGenerator() : null;
             if (skyBlockNetherWorld == null
@@ -266,7 +265,7 @@ public class WorldManager {
                 || worldGenerator == null
                 || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
                 skyBlockNetherWorld = WorldCreator
-                    .name(Settings.general_worldName + "_nether")
+                    .name(worldName + "_nether")
                     .type(WorldType.NORMAL)
                     .generateStructures(false)
                     .environment(World.Environment.NETHER)
@@ -313,7 +312,7 @@ public class WorldManager {
     private void scheduleOverworldSetup(@NotNull World world) {
         scheduler.sync(() -> {
             hookManager.getWorldHook().ifPresent(hook -> hook.registerOverworld(world));
-            setupWorld(world, Settings.island_height);
+            setupWorld(world, runtimeConfigs.current().island().height());
         });
     }
 
@@ -321,7 +320,7 @@ public class WorldManager {
         scheduler.sync(() -> {
             hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(world));
             hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), world));
-            setupWorld(world, island_height / 2);
+            setupWorld(world, runtimeConfigs.current().island().height() / 2);
         });
     }
 
@@ -337,7 +336,7 @@ public class WorldManager {
         }
 
         return world.getName().startsWith(WorldManager.skyBlockWorld.getName())
-            && !(world.getEnvironment() == World.Environment.NETHER && !Settings.nether_enabled)
+            && !(world.getEnvironment() == World.Environment.NETHER && !runtimeConfigs.current().nether().enabled())
             && !(world.getEnvironment() == World.Environment.THE_END);
     }
 }

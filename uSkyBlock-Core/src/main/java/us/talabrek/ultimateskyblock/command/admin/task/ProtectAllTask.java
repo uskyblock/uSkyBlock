@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -31,13 +32,15 @@ public class ProtectAllTask extends BukkitRunnable {
     private static final Logger log = Logger.getLogger(ProtectAllTask.class.getName());
     private final CommandSender sender;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final ProgressTracker tracker;
     private final Path islandDirectory;
-
+    
     private volatile boolean active;
 
-    public ProtectAllTask(final uSkyBlock plugin, final CommandSender sender, Path islandDirectory, ProgressTracker tracker) {
+    public ProtectAllTask(final uSkyBlock plugin, final RuntimeConfigs runtimeConfigs, final CommandSender sender, Path islandDirectory, ProgressTracker tracker) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.tracker = tracker;
         this.sender = sender;
         this.islandDirectory = islandDirectory;
@@ -59,7 +62,8 @@ public class ProtectAllTask extends BukkitRunnable {
         long skipped = 0;
         Instant tStart = Instant.now();
         try {
-            String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter());
+            int spawnSize = runtimeConfigs.current().general().spawnSize();
+            String[] list = islandDirectory.toFile().list(IslandUtil.createIslandFilenameFilter(spawnSize));
             long total = list != null ? list.length : 0;
             if (list != null) {
                 for (String fileName : list) {

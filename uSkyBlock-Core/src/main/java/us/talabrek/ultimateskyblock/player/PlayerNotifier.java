@@ -8,7 +8,7 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,7 +24,7 @@ import static us.talabrek.ultimateskyblock.message.Msg.send;
  */
 @Singleton
 public class PlayerNotifier {
-    private final Duration spawnThreshold;
+    private final RuntimeConfigs runtimeConfigs;
     private final LoadingCache<UUID, NotifyMessage> cache = CacheBuilder
         .newBuilder()
         .expireAfterAccess(10, TimeUnit.SECONDS)
@@ -39,11 +39,12 @@ public class PlayerNotifier {
         );
 
     @Inject
-    public PlayerNotifier(@NotNull PluginConfig config) {
-        spawnThreshold = Duration.ofMillis(config.getYamlConfig().getInt("general.maxSpam", 3000)); // every 3 seconds.
+    public PlayerNotifier(@NotNull RuntimeConfigs runtimeConfigs) {
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     public synchronized void notifyPlayer(Player player, Component message) {
+        Duration spawnThreshold = spawnThreshold();
         UUID uuid = player.getUniqueId();
         try {
             NotifyMessage last = cache.get(uuid);
@@ -59,5 +60,10 @@ public class PlayerNotifier {
     }
 
     private record NotifyMessage(String message, Instant time) {
+    }
+
+    @NotNull
+    private Duration spawnThreshold() {
+        return Duration.ofMillis(runtimeConfigs.current().general().maxSpam());
     }
 }

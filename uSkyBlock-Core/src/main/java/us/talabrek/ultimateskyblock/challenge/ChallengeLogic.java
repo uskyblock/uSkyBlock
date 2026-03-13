@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.hook.HookManager;
@@ -103,6 +104,7 @@ public class ChallengeLogic implements Listener {
     public ChallengeLogic(
         @NotNull Logger logger,
         @NotNull uSkyBlock plugin,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PerkLogic perkLogic,
         @NotNull HookManager hookManager
     ) {
@@ -114,7 +116,7 @@ public class ChallengeLogic implements Listener {
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
         ranks = ChallengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
         rebuildIndex();
-        completionLogic = new ChallengeCompletionLogic(plugin, config);
+        completionLogic = new ChallengeCompletionLogic(plugin, runtimeConfigs, config);
         String displayItemForLocked = config.getString("lockedDisplayItem", null);
         if (displayItemForLocked != null) {
             lockedItem = ItemStackUtil.createItemStack(displayItemForLocked);

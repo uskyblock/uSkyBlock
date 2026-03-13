@@ -6,8 +6,9 @@ import dk.lockfuglsang.minecraft.util.FormatUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -51,17 +52,18 @@ public class ChatLogic {
     @Inject
     public ChatLogic(
         @NotNull uSkyBlock plugin,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull WorldManager worldManager,
         @NotNull PlaceholderHandler placeholderHandler
     ) {
         this.plugin = plugin;
         this.worldManager = worldManager;
         this.placeholderHandler = placeholderHandler;
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
         formats.put(Type.PARTY,
-            config.getYamlConfig().getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&d {MESSAGE}"));
+            runtimeConfig.party().chatFormat());
         formats.put(Type.ISLAND,
-            config.getYamlConfig().getString("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&b {MESSAGE}"));
+            runtimeConfig.island().chatFormat());
     }
 
     /**

@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.ConfigDuration;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.time.Duration;
@@ -27,20 +27,19 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 public class ConfirmHandler {
     private final Map<UUID, ConfirmCommand> confirmMap = new WeakHashMap<>();
     private final Scheduler scheduler;
-    private final PluginConfig config;
-    private final Duration timeout;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
     public ConfirmHandler(
         @NotNull Scheduler scheduler,
-        @NotNull PluginConfig config
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.scheduler = scheduler;
-        this.config = config;
-        this.timeout = ConfigDuration.parse(config.getYamlConfig().getString("options.advanced.confirmTimeout", "10s"));
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     public @NotNull Duration durationLeft(@NotNull Player player, @NotNull String cmd) {
+        Duration timeout = timeout();
         UUID uuid = player.getUniqueId();
         if (confirmMap.containsKey(uuid)) {
             ConfirmCommand command = confirmMap.get(uuid);
@@ -55,6 +54,7 @@ public class ConfirmHandler {
         if (!confirmationsActiveFor(command)) {
             return true;
         }
+        Duration timeout = timeout();
         UUID uuid = player.getUniqueId();
         if (confirmMap.containsKey(uuid)) {
             ConfirmCommand confirmCommand = confirmMap.get(uuid);
@@ -78,7 +78,13 @@ public class ConfirmHandler {
     }
 
     private boolean confirmationsActiveFor(@NotNull String command) {
-        return config.getYamlConfig().getBoolean("confirmation." + command.replaceAll("[^a-z\\ ]", ""), true);
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        return runtimeConfig.confirmationRequired(command.replaceAll("[^a-z\\ ]", ""), true);
+    }
+
+    @NotNull
+    private Duration timeout() {
+        return runtimeConfigs.current().advanced().confirmTimeout();
     }
 
     private static class ConfirmCommand {

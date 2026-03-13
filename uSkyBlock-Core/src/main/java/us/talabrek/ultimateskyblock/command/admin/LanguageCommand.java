@@ -7,34 +7,41 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * Lists and configures plugin locale.
  */
 public class LanguageCommand extends AbstractCommand {
-    private static final String DEFAULT_LOCALE_KEY = "en";
     private static final int LOCALES_PER_LINE = 10;
     private final uSkyBlock plugin;
+    private final PluginConfig pluginConfig;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public LanguageCommand(@NotNull uSkyBlock plugin) {
+    public LanguageCommand(@NotNull uSkyBlock plugin, @NotNull PluginConfig pluginConfig, @NotNull RuntimeConfigs runtimeConfigs) {
         super("lang|language", "usb.admin.config", "?locale", marktr("shows or sets the plugin language"));
         this.plugin = plugin;
+        this.pluginConfig = pluginConfig;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class LanguageCommand extends AbstractCommand {
         }
 
         String localeKey = resolvedLocale.get();
-        String current = plugin.getConfig().getString("language", DEFAULT_LOCALE_KEY);
+        String current = runtimeConfigs.current().configuredLanguage();
         if (I18nUtil.findSupportedLocaleKey(current).orElse(current).equalsIgnoreCase(localeKey)) {
             sendTr(sender, "Language is already set to <locale>.",
                 MUTED, unparsed("locale", localeKey, PRIMARY));
@@ -65,10 +72,18 @@ public class LanguageCommand extends AbstractCommand {
             return true;
         }
 
-        plugin.getConfig().set("language", localeKey);
-        plugin.saveConfig();
-        Settings.locale = I18nUtil.getLocale(localeKey);
-        I18nUtil.setLocale(Settings.locale);
+        String previousLocale = pluginConfig.getYamlConfig().getString("language", ConfigBootstrap.DEFAULT_LANGUAGE);
+        pluginConfig.getYamlConfig().set("language", localeKey);
+        try {
+            pluginConfig.save();
+        } catch (IOException e) {
+            pluginConfig.getYamlConfig().set("language", previousLocale);
+            sendErrorTr(sender, "Unable to save config.yml: <reason>", unparsed("reason", e.getMessage()));
+            plugin.getLogger().warning("Unable to save config.yml after language change: " + e.getMessage());
+            return true;
+        }
+        RuntimeConfig runtimeConfig = runtimeConfigs.reload();
+        I18nUtil.setLocale(runtimeConfig.locale());
         sendTr(sender, "Language updated to <locale>.",
             MUTED, unparsed("locale", localeKey, PRIMARY));
         sendTr(sender, "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.", MUTED);
@@ -79,7 +94,7 @@ public class LanguageCommand extends AbstractCommand {
 
     private void showLanguageOverview(@NotNull CommandSender sender) {
         List<String> supported = I18nUtil.getSupportedLocaleKeys();
-        String current = plugin.getConfig().getString("language", DEFAULT_LOCALE_KEY);
+        String current = runtimeConfigs.current().configuredLanguage();
         Optional<String> systemSupported = I18nUtil.resolveSupportedLocaleKey(Locale.getDefault());
         String currentSupported = I18nUtil.findSupportedLocaleKey(current).orElse(current);
 

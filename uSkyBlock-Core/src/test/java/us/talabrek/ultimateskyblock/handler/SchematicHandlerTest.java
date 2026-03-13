@@ -3,7 +3,9 @@ package us.talabrek.ultimateskyblock.handler;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +54,7 @@ public class SchematicHandlerTest {
         config.set("island-schemes.default.schematic", "default.schematic");
         config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
 
-        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), pluginConfig(config), tempDir);
+        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), runtimeConfigs(config), tempDir);
         SchematicHandler.SchematicPair pair = handler.getScheme("default");
 
         assertNotNull(pair);
@@ -72,7 +74,7 @@ public class SchematicHandlerTest {
         config.set("island-schemes.default.schematic", "default.schematic");
         config.set("island-schemes.default.nether-schematic", "missing.schem");
 
-        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), pluginConfig(config), tempDir);
+        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), runtimeConfigs(config), tempDir);
         SchematicHandler.SchematicPair pair = handler.getScheme("default");
 
         assertNotNull(pair);
@@ -86,15 +88,17 @@ public class SchematicHandlerTest {
         config.set("nether.enabled", true);
         config.set("island-schemes.default.enabled", true);
         config.set("island-schemes.default.schematic", "default.schematic");
+        config.set("island-schemes.default.nether-schematic", "");
 
-        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), pluginConfig(config), tempDir);
+        SchematicHandler handler = new SchematicHandler(Logger.getAnonymousLogger(), runtimeConfigs(config), tempDir);
 
         assertTrue(handler.getSchemeNames().isEmpty());
     }
 
-    private static PluginConfig pluginConfig(YamlConfiguration yamlConfig) {
-        PluginConfig pluginConfig = mock(PluginConfig.class);
-        when(pluginConfig.getYamlConfig()).thenReturn(yamlConfig);
-        return pluginConfig;
+    private static RuntimeConfigs runtimeConfigs(YamlConfiguration yamlConfig) {
+        yamlConfig.setDefaults(PluginConfigLoader.loadBundledConfig());
+        RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+        when(runtimeConfigs.current()).thenReturn(RuntimeConfigFactory.load(yamlConfig));
+        return runtimeConfigs;
     }
 }

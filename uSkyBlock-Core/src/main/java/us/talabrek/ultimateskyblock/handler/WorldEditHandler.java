@@ -23,7 +23,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.handler.task.WorldEditClear;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LogUtil;
@@ -241,8 +240,10 @@ public class WorldEditHandler {
         };
         Set<BlockVector2> innerChunks;
         Set<Region> borderRegions = new HashSet<>();
+        int islandDistance = plugin.getRuntimeConfigs().current().island().distance();
+        int protectionRange = plugin.getRuntimeConfigs().current().island().protectionRange();
         if (isOuterPossible()) {
-            if (Settings.island_protectionRange == Settings.island_distance) {
+            if (protectionRange == islandDistance) {
                 innerChunks = getInnerChunks(cube);
             } else {
                 innerChunks = getOuterChunks(cube);
@@ -255,7 +256,7 @@ public class WorldEditHandler {
         for (BlockVector2 vector : innerChunks) {
             chunkList.add(islandWorld.getChunkAt(vector.getBlockX(), vector.getBlockZ()));
         }
-        WorldEditClear weClear = new WorldEditClear(plugin, islandWorld, borderRegions, onCompletion);
+        WorldEditClear weClear = new WorldEditClear(plugin, plugin.getRuntimeConfigs(), islandWorld, borderRegions, onCompletion);
         plugin.getWorldManager().getChunkRegenerator(islandWorld).regenerateChunks(chunkList, weClear);
     }
 
@@ -264,8 +265,10 @@ public class WorldEditHandler {
     }
 
     public static boolean isOuterPossible() {
-        return Settings.island_distance >= Settings.island_protectionRange &&
-            ((Settings.island_distance % 32) == 0 || (Settings.island_distance - Settings.island_protectionRange) > 32);
+        int islandDistance = uSkyBlock.getInstance().getRuntimeConfigs().current().island().distance();
+        int protectionRange = uSkyBlock.getInstance().getRuntimeConfigs().current().island().protectionRange();
+        return islandDistance >= protectionRange &&
+            ((islandDistance % 32) == 0 || (islandDistance - protectionRange) > 32);
     }
 
     public static void loadRegion(Location location) {

@@ -2,12 +2,12 @@ package us.talabrek.ultimateskyblock.handler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ public class SchematicHandler {
     private static final String NETHER_SCHEMATIC_PATH_KEY = "nether-schematic";
 
     private final Logger logger;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final Path directorySchematics;
 
     private boolean initialized = false;
@@ -40,11 +40,11 @@ public class SchematicHandler {
     @Inject
     public SchematicHandler(
         @NotNull Logger logger,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull @PluginDataDir Path dataFolder
     ) {
         this.logger = logger;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.directorySchematics = dataFolder.toAbsolutePath().resolve("schematics").normalize();
     }
 
@@ -71,29 +71,30 @@ public class SchematicHandler {
      * Returns a list of configured, enabled scheme names.
      */
     public List<String> getSchemeNames() {
-        ConfigurationSection islandSchemes = getIslandSchemes();
-        if (islandSchemes == null) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        if (runtimeConfig.islandSchemes().isEmpty()) {
             return Collections.emptyList();
         }
 
-        boolean netherEnabled = isNetherEnabled();
+        boolean netherEnabled = runtimeConfig.nether().enabled();
         List<String> names = new ArrayList<>();
-        for (String schemeName : islandSchemes.getKeys(false)) {
-            ConfigurationSection scheme = islandSchemes.getConfigurationSection(schemeName);
-            if (scheme == null || !scheme.getBoolean("enabled", true)) {
+        for (var entry : runtimeConfig.islandSchemes().entrySet()) {
+            String schemeName = entry.getKey();
+            RuntimeConfig.IslandScheme scheme = entry.getValue();
+            if (!scheme.enabled()) {
                 continue;
             }
-            if (!hasConfiguredPath(scheme, SCHEMATIC_PATH_KEY)) {
+            if (!hasConfiguredPath(scheme.schematic())) {
                 continue;
             }
-            if (netherEnabled && !hasConfiguredPath(scheme, NETHER_SCHEMATIC_PATH_KEY)) {
+            if (netherEnabled && !hasConfiguredPath(scheme.netherSchematic())) {
                 continue;
             }
-            if (initialized && resolveConfiguredSchematicPath(scheme.getString(SCHEMATIC_PATH_KEY)).isEmpty()) {
+            if (initialized && resolveConfiguredSchematicPath(scheme.schematic()).isEmpty()) {
                 continue;
             }
             if (initialized && netherEnabled
-                && resolveConfiguredSchematicPath(scheme.getString(NETHER_SCHEMATIC_PATH_KEY)).isEmpty()) {
+                && resolveConfiguredSchematicPath(scheme.netherSchematic()).isEmpty()) {
                 continue;
             }
             names.add(schemeName);
@@ -108,21 +109,22 @@ public class SchematicHandler {
     @Nullable
     public SchematicPair getScheme(@Nullable String scheme) {
         String schemeName = scheme != null ? scheme : DEFAULT_SCHEME_NAME;
-        ConfigurationSection schemeConfig = getIslandScheme(schemeName);
-        if (schemeConfig == null || !schemeConfig.getBoolean("enabled", true)) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        RuntimeConfig.IslandScheme schemeConfig = runtimeConfig.islandScheme(schemeName);
+        if (schemeConfig == null || !schemeConfig.enabled()) {
             return null;
         }
 
-        Optional<Path> overworld = resolveConfiguredSchematicPath(schemeConfig.getString(SCHEMATIC_PATH_KEY));
+        Optional<Path> overworld = resolveConfiguredSchematicPath(schemeConfig.schematic());
         if (overworld.isEmpty()) {
             return null;
         }
 
-        if (!isNetherEnabled()) {
+        if (!runtimeConfig.nether().enabled()) {
             return new SchematicPair(overworld.get(), Optional.empty());
         }
 
-        Optional<Path> nether = resolveConfiguredSchematicPath(schemeConfig.getString(NETHER_SCHEMATIC_PATH_KEY));
+        Optional<Path> nether = resolveConfiguredSchematicPath(schemeConfig.netherSchematic());
         if (nether.isEmpty()) {
             return null;
         }
@@ -196,20 +198,17 @@ public class SchematicHandler {
     }
 
     private void validateConfiguredSchemes() {
-        ConfigurationSection islandSchemes = getIslandSchemes();
-        if (islandSchemes == null) {
-            return;
-        }
-
-        boolean netherEnabled = isNetherEnabled();
-        for (String schemeName : islandSchemes.getKeys(false)) {
-            ConfigurationSection scheme = islandSchemes.getConfigurationSection(schemeName);
-            if (scheme == null || !scheme.getBoolean("enabled", true)) {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        boolean netherEnabled = runtimeConfig.nether().enabled();
+        for (var entry : runtimeConfig.islandSchemes().entrySet()) {
+            String schemeName = entry.getKey();
+            RuntimeConfig.IslandScheme scheme = entry.getValue();
+            if (!scheme.enabled()) {
                 continue;
             }
-            validateConfiguredPath(schemeName, SCHEMATIC_PATH_KEY, scheme.getString(SCHEMATIC_PATH_KEY));
+            validateConfiguredPath(schemeName, SCHEMATIC_PATH_KEY, scheme.schematic());
             if (netherEnabled) {
-                validateConfiguredPath(schemeName, NETHER_SCHEMATIC_PATH_KEY, scheme.getString(NETHER_SCHEMATIC_PATH_KEY));
+                validateConfiguredPath(schemeName, NETHER_SCHEMATIC_PATH_KEY, scheme.netherSchematic());
             }
         }
     }
@@ -231,23 +230,8 @@ public class SchematicHandler {
             logger.warning("Island scheme '" + schemeName + "' points '" + key + "' to a missing or unreadable file: " + configuredPath);
         }
     }
-
-    private boolean isNetherEnabled() {
-        return config.getYamlConfig().getBoolean("nether.enabled", false);
-    }
-
-    private boolean hasConfiguredPath(@NotNull ConfigurationSection scheme, @NotNull String key) {
-        String configuredPath = scheme.getString(key);
+    private boolean hasConfiguredPath(@Nullable String configuredPath) {
         return configuredPath != null && !configuredPath.trim().isEmpty();
-    }
-
-    private @Nullable ConfigurationSection getIslandSchemes() {
-        return config.getYamlConfig().getConfigurationSection("island-schemes");
-    }
-
-    private @Nullable ConfigurationSection getIslandScheme(@NotNull String schemeName) {
-        ConfigurationSection islandSchemes = getIslandSchemes();
-        return islandSchemes != null ? islandSchemes.getConfigurationSection(schemeName) : null;
     }
 
     private Optional<Path> resolveConfiguredSchematicPath(@Nullable String configuredPath) {

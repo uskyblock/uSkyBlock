@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.player.Perk;
@@ -31,14 +31,17 @@ import java.util.logging.Logger;
 public class IslandGenerator {
     private final Logger logger;
     private final SchematicHandler schematicHandler;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
     public IslandGenerator(
         @NotNull Logger logger,
-        @NotNull SchematicHandler schematicHandler
+        @NotNull SchematicHandler schematicHandler,
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.logger = logger;
         this.schematicHandler = schematicHandler;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     /**
@@ -52,7 +55,7 @@ public class IslandGenerator {
         // Hacky, but clear the Orphan info
         next.setYaw(0);
         next.setPitch(0);
-        next.setY(Settings.island_height);
+        next.setY(runtimeConfigs.current().island().height());
         SchematicHandler.SchematicPair pair = schematicHandler.getScheme(cSchem);
         if (pair == null) {
             logger.warning("No schematic configured for '" + (cSchem != null ? cSchem : "default") + "'");
@@ -70,7 +73,7 @@ public class IslandGenerator {
         AsyncWorldEditHandler.loadIslandSchematic(overworldPath.toFile(), next);
         World skyBlockNetherWorld = uSkyBlock.getInstance().getWorldManager().getNetherWorld();
         if (skyBlockNetherWorld != null && netherPath.isPresent() && Files.isRegularFile(netherPath.get())) {
-            Location netherHome = new Location(skyBlockNetherWorld, next.getBlockX(), Settings.nether_height, next.getBlockZ());
+            Location netherHome = new Location(skyBlockNetherWorld, next.getBlockX(), runtimeConfigs.current().nether().height(), next.getBlockZ());
             AsyncWorldEditHandler.loadIslandSchematic(netherPath.get().toFile(), netherHome);
         }
         return true;
@@ -105,8 +108,8 @@ public class IslandGenerator {
         if (block.getType() == Material.CHEST) {
             final Chest chest = (Chest) block.getState();
             final Inventory inventory = chest.getInventory();
-            inventory.addItem(Settings.getIslandChestItems().toArray(new ItemStack[0]));
-            if (Settings.island_addExtraItems) {
+            inventory.addItem(ItemStackUtil.createItemArray(ItemStackUtil.createItemList(runtimeConfigs.current().island().chestItemSpecs())));
+            if (runtimeConfigs.current().island().addExtraItems()) {
                 inventory.addItem(ItemStackUtil.createItemArray(perk.getExtraItems()));
             }
             return true;

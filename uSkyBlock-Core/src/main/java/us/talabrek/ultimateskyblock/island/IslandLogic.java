@@ -15,12 +15,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.level.IslandScore;
@@ -68,10 +68,10 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 public class IslandLogic {
     private final Logger logger;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final WorldManager worldManager;
     private final TeleportLogic teleportLogic;
     private final Scheduler scheduler;
-    private final PluginConfig config;
     private final Path directoryIslands;
     private final OrphanLogic orphanLogic;
     private final PlayerDB playerDB;
@@ -79,11 +79,17 @@ public class IslandLogic {
     private final LoadingCache<String, IslandInfo> cache;
     private final boolean showMembers;
     private final boolean useDisplayNames;
+    private final boolean useTopTen;
+    private final Duration topTenTimeout;
     private final BukkitTask saveTask;
     private final double topTenCutoff;
 
     private volatile Instant lastUpdated = Instant.MIN;
     private final List<IslandLevel> ranks = new ArrayList<>();
+
+    private RuntimeConfig runtimeConfig() {
+        return runtimeConfigs.current();
+    }
 
     @Inject
     public IslandLogic(
@@ -92,17 +98,17 @@ public class IslandLogic {
         @NotNull WorldManager worldManager,
         @NotNull TeleportLogic teleportLogic,
         @NotNull Scheduler scheduler,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull @PluginDataDir Path dataPath,
         @NotNull OrphanLogic orphanLogic,
         @NotNull PlayerDB playerDB
     ) {
         this.logger = logger;
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.worldManager = worldManager;
         this.teleportLogic = teleportLogic;
         this.scheduler = scheduler;
-        this.config = config;
         this.playerDB = playerDB;
         Path islandDirectory = dataPath.resolve("islands");
         try {
@@ -112,12 +118,14 @@ public class IslandLogic {
         }
         this.directoryIslands = islandDirectory;
         this.orphanLogic = orphanLogic;
-        this.showMembers = config.getYamlConfig().getBoolean("options.island.topTenShowMembers", true);
-        this.useDisplayNames = config.getYamlConfig().getBoolean("options.advanced.useDisplayNames", false);
-        topTenCutoff = config.getYamlConfig().getDouble("options.advanced.topTenCutoff", config.getYamlConfig().getDouble("options.advanced.purgeLevel", 10));
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        this.showMembers = runtimeConfig.island().topTenShowMembers();
+        this.useDisplayNames = runtimeConfig.advanced().useDisplayNames();
+        this.useTopTen = runtimeConfig.island().useTopTen();
+        this.topTenTimeout = runtimeConfig.island().topTenTimeout();
+        topTenCutoff = runtimeConfig.advanced().topTenCutoff();
         cache = CacheBuilder
-            .from(config.getYamlConfig().getString("options.advanced.islandCache",
-                "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .from(runtimeConfig.advanced().islandCacheSpec())
             .removalListener((RemovalListener<String, IslandInfo>) removal -> {
                 logger.fine("Removing island-info " + removal.getKey() + " from cache");
                 removal.getValue().saveToFile();
@@ -126,10 +134,10 @@ public class IslandLogic {
                 @Override
                 public @NotNull IslandInfo load(@NotNull String islandName) {
                     logger.fine("Loading island-info " + islandName + " to cache!");
-                    return new IslandInfo(islandName, plugin, directoryIslands);
+                    return new IslandInfo(islandName, plugin, runtimeConfigs, directoryIslands);
                 }
             });
-        Duration every = Duration.ofSeconds(config.getYamlConfig().getInt("options.advanced.island.saveEvery", 30));
+        Duration every = runtimeConfig.advanced().islandSaveEvery();
         saveTask = scheduler.async(this::saveDirtyToFiles, every, every);
     }
 
@@ -215,7 +223,7 @@ public class IslandLogic {
                 number("page", page, PRIMARY),
                 number("max-page", maxpage, PRIMARY));
             if (ranks.isEmpty()) {
-                if (Settings.island_useTopTen) {
+                if (useTopTen) {
                     // I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
                     sendErrorTr(sender, "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered.",
                         number("level", topTenCutoff));
@@ -283,7 +291,7 @@ public class IslandLogic {
 
     public void showTopTen(final CommandSender sender, final int page) {
         Instant now = Instant.now();
-        if (now.isAfter(lastUpdated.plus(Settings.island_topTenTimeout)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
+        if (now.isAfter(lastUpdated.plus(topTenTimeout)) || (sender.hasPermission("usb.admin.topten") || sender.isOp())) {
             lastUpdated = now;
             scheduler.async(() -> {
                 generateTopTen(sender);
@@ -306,7 +314,7 @@ public class IslandLogic {
 
     public void generateTopTen(final CommandSender sender) {
         List<IslandLevel> topTen = new ArrayList<>();
-        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter());
+        final String[] listOfFiles = directoryIslands.toFile().list(IslandUtil.createIslandFilenameFilter(runtimeConfig().general().spawnSize()));
         for (String file : listOfFiles) {
             String islandName = FileUtil.getBasename(file);
             try {

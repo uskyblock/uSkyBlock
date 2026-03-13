@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandRank;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.island.LimitLogic;
@@ -70,7 +71,8 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
         @NotNull uSkyBlock plugin,
         @NotNull PlayerLogic playerLogic,
         @NotNull IslandLogic islandLogic,
-        @NotNull LimitLogic limitLogic
+        @NotNull LimitLogic limitLogic,
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.plugin = plugin;
         this.playerLogic = playerLogic;
@@ -78,8 +80,7 @@ public class PlaceholderReplacerImpl implements PlaceholderAPI.PlaceholderReplac
         this.limitLogic = limitLogic;
 
         this.cache = CacheBuilder
-            .from(plugin.getConfig().getString("options.advanced.placeholderCache",
-                "maximumSize=200,expireAfterWrite=20s"))
+            .from(runtimeConfigs.current().advanced().placeholderCacheSpec())
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull String load(@NotNull CacheEntry cacheEntry) throws Exception {

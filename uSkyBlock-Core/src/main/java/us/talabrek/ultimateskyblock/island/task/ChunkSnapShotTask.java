@@ -6,9 +6,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.async.IncrementalRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -23,8 +23,8 @@ public class ChunkSnapShotTask extends IncrementalRunnable {
     private final List<BlockVector2> chunks;
     private final List<ChunkSnapshot> snapshots = new ArrayList<>();
 
-    public ChunkSnapShotTask(Scheduler scheduler, PluginConfig config, Location location, ProtectedRegion region, final Callback<List<ChunkSnapshot>> callback) {
-        super(scheduler, config, callback);
+    public ChunkSnapShotTask(Scheduler scheduler, RuntimeConfig.Async asyncConfig, Location location, ProtectedRegion region, final Callback<List<ChunkSnapshot>> callback) {
+        super(scheduler, asyncConfig, callback);
         this.location = location;
         if (region != null) {
             chunks = new ArrayList<>(WorldEditHandler.getChunks(new CuboidRegion(region.getMinimumPoint(), region.getMaximumPoint())));

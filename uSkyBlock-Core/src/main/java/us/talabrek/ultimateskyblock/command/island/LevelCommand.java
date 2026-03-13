@@ -3,9 +3,9 @@ package us.talabrek.ultimateskyblock.command.island;
 import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.async.Callback;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -25,16 +25,18 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 public class LevelCommand extends RequireIslandCommand {
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public LevelCommand(@NotNull uSkyBlock plugin) {
+    public LevelCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "level", "usb.island.level", "?island", marktr("check your or another's island level"));
+        this.runtimeConfigs = runtimeConfigs;
         addFeaturePermission("usb.island.level.other", trLegacy("allows users to query others' levels"));
     }
 
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
-        if (!Settings.island_useIslandLevel) {
+        if (!runtimeConfigs.current().island().useIslandLevel()) {
             sendErrorTr(player, "Island level has been disabled, contact an administrator.");
             return true;
         }

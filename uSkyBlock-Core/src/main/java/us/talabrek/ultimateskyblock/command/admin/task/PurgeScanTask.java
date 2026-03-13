@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
@@ -35,6 +36,7 @@ public class PurgeScanTask extends BukkitRunnable {
     private final List<String> purgeList;
     private final Instant cutOff;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final CommandSender sender;
     private final Runnable callback;
     private final double purgeLevel;
@@ -44,16 +46,18 @@ public class PurgeScanTask extends BukkitRunnable {
     private volatile boolean active;
     private boolean done;
 
-    public PurgeScanTask(uSkyBlock plugin, File islandDir, Duration time, double purgeLevel, CommandSender sender, Runnable callback) {
+    public PurgeScanTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, File islandDir, Duration time, double purgeLevel, CommandSender sender, Runnable callback) {
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.sender = sender;
         this.callback = callback;
         this.cutOff = Instant.now().minus(time);
-        String[] islandList = islandDir.list(IslandUtil.createIslandFilenameFilter());
+        int spawnSize = runtimeConfigs.current().general().spawnSize();
+        String[] islandList = islandDir.list(IslandUtil.createIslandFilenameFilter(spawnSize));
         this.islandList = new ArrayList<>(Arrays.asList(islandList));
         purgeList = new ArrayList<>();
         this.purgeLevel = purgeLevel;
-        Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
+        Duration feedbackEvery = runtimeConfigs.current().advanced().feedbackEvery();
         timer = Timer.start();
         tracker = new ProgressTracker(sender,
             marktr("- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"),

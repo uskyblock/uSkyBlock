@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.Arrays;
@@ -24,14 +25,16 @@ import java.util.Random;
  */
 public class ChunkRegenerator {
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final ChunkGenerator chunkGen;
     private final World world;
     private BukkitTask task;
 
-    ChunkRegenerator(@NotNull World world) {
+    ChunkRegenerator(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs, @NotNull World world) {
         Validate.notNull(world, "World cannot be null");
 
-        this.plugin = uSkyBlock.getInstance();
+        this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.world = world;
         this.chunkGen = plugin.getDefaultWorldGenerator(world.getName(), "");
     }
@@ -44,10 +47,10 @@ public class ChunkRegenerator {
     public void regenerateChunks(@NotNull List<Chunk> chunkList, @Nullable Runnable onCompletion) {
         Validate.notNull(chunkList, "ChunkList cannot be empty");
 
-        final int CHUNKS_PER_TICK = plugin.getConfig().getInt("options.advanced.chunkRegenSpeed", 4);
+        final int chunksPerTick = runtimeConfigs.current().advanced().chunkRegenSpeed();
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
         task = scheduler.runTaskTimer(plugin, () -> {
-            for (int i = 0; i <= CHUNKS_PER_TICK; i++) {
+            for (int i = 0; i <= chunksPerTick; i++) {
                 if (!chunkList.isEmpty()) {
                     Chunk chunk = chunkList.removeFirst();
                     regenerateChunk(chunk);

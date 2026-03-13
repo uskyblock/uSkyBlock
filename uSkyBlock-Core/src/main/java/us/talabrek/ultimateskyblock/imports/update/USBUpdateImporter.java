@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.imports.update;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.imports.USBImporter;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
@@ -13,7 +14,12 @@ import java.util.Objects;
  * file updating.
  */
 public class USBUpdateImporter implements USBImporter {
+    private final RuntimeConfigs runtimeConfigs;
     private uSkyBlock plugin;
+
+    public USBUpdateImporter(RuntimeConfigs runtimeConfigs) {
+        this.runtimeConfigs = runtimeConfigs;
+    }
 
     @Override
     public String getName() {
@@ -35,9 +41,10 @@ public class USBUpdateImporter implements USBImporter {
 
     @Override
     public File[] getFiles() {
+        int spawnSize = runtimeConfigs.current().general().spawnSize();
         var result = plugin.getDataFolder().toPath()
             .resolve("islands").toFile()
-            .listFiles(IslandUtil.createIslandFilenameFilter());
+            .listFiles(IslandUtil.createIslandFilenameFilter(spawnSize));
         return Objects.requireNonNullElseGet(result, () -> new File[0]);
     }
 

@@ -9,9 +9,9 @@ import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
@@ -36,13 +36,15 @@ public class BiomeCommand extends RequireIslandCommand {
     private final Biomes biomes;
     private final BiomeConfig biomeConfig;
     private final Scheduler scheduler;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig, @NotNull Scheduler scheduler) {
+    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig, @NotNull Scheduler scheduler, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "biome|b", null, "biome ?radius", marktr("change the biome of the island"));
         this.biomes = biomes;
         this.biomeConfig = biomeConfig;
         this.scheduler = scheduler;
+        this.runtimeConfigs = runtimeConfigs;
         addFeaturePermission("usb.exempt.cooldown.biome", trLegacy("exempt player from biome-cooldown"));
         for (String biome : biomeConfig.getConfiguredBiomeKeys()) {
             addFeaturePermission("usb.biome." + biome,
@@ -90,8 +92,10 @@ public class BiomeCommand extends RequireIslandCommand {
             }
             BlockVector3 minP = region.getMinimumPoint();
             BlockVector3 maxP = region.getMaximumPoint();
-            if (Settings.island_distance > Settings.island_protectionRange) {
-                int buffer = (Settings.island_distance - Settings.island_protectionRange) / 2;
+            int islandDistance = runtimeConfigs.current().island().distance();
+            int protectionRange = runtimeConfigs.current().island().protectionRange();
+            if (islandDistance > protectionRange) {
+                int buffer = (islandDistance - protectionRange) / 2;
                 minP.subtract(buffer, 0, buffer);
                 maxP.add(buffer, 0, buffer);
             }
@@ -124,7 +128,7 @@ public class BiomeCommand extends RequireIslandCommand {
                 return true;
             }
 
-            scheduler.sync(new SetBiomeTask(plugin, player.getWorld(), minP, maxP, biome, () -> {
+            scheduler.sync(new SetBiomeTask(plugin, runtimeConfigs, player.getWorld(), minP, maxP, biome, () -> {
                 String biomeName = biome.getKey().getKey();
                 if (changeEntireIslandBiome) {
                     island.setBiome(biome);
@@ -132,7 +136,7 @@ public class BiomeCommand extends RequireIslandCommand {
                     island.sendMessageToIslandGroup(tr("<player> changed the island biome to <biome>",
                         unparsed("player", player.getName()),
                         unparsed("biome", biomeName)));
-                    plugin.getCooldownHandler().resetCooldown(player, "biome", Settings.general_biomeChange);
+                    plugin.getCooldownHandler().resetCooldown(player, "biome", runtimeConfigs.current().general().biomeChange());
                 } else {
                     sendTr(player, "You have changed <blocks> blocks around you to the <biome> biome",
                         SECONDARY,

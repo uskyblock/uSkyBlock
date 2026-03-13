@@ -134,9 +134,6 @@ options:
     # Whether or not the plugin will try to protect the player from accidentally extinguishing lava
     protect-lava: true
 
-    # Whether or not portalling to the nether roof should be blocked.
-    nether-roof: true
-
     # Whether or not anyone can trade i skyblock
     # default: false - since it goes against the core of skyblock
     villager-trading-enabled: false
@@ -370,11 +367,6 @@ asyncworldedit:
   # Supports disabling the detection of AWE
   enabled: true
 
-  # Show progress to the user every 5 seconds
-  progressEveryMs: 5000
-
-  # Or 20pct (what-ever comes first)
-  progressEveryPct: 20
   watchDog:
 
     # The maximum time to wait for AWE paste to complete (2m, 3m20s, etc.)
@@ -389,8 +381,6 @@ nether:
   enabled: true
   height: 75
   lava_level: 7
-  activate-at:
-    level: 100
   terraform-enabled: true
 
   # The distance to search for valid terra-form location.
@@ -474,4 +464,4 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 116
+version: 117

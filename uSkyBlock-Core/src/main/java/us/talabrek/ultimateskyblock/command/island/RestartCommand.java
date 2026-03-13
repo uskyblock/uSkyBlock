@@ -3,8 +3,8 @@ package us.talabrek.ultimateskyblock.command.island;
 import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.api.event.RestartIslandEvent;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -18,10 +18,12 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class RestartCommand extends RequireIslandCommand {
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public RestartCommand(@NotNull uSkyBlock plugin) {
+    public RestartCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "restart|reset", "usb.island.restart", "?schematic", marktr("delete your island and start a new one."));
+        this.runtimeConfigs = runtimeConfigs;
         addFeaturePermission("usb.exempt.cooldown.restart", trLegacy("exempt player from restart-cooldown"));
     }
 
@@ -46,14 +48,14 @@ public class RestartCommand extends RequireIslandCommand {
                 sendErrorTr(player, "Your island is in the process of generating, you cannot restart now.");
                 return true;
             }
-            if (plugin.getConfig().getBoolean("island-schemes-enabled", true)) {
+            if (runtimeConfigs.current().island().schemesEnabled()) {
                 if (args == null || args.length == 0) {
                     player.openInventory(plugin.getMenu().createRestartGUI(player));
                     return true;
                 }
             }
             if (plugin.getConfirmHandler().checkCommand(player, "/is restart")) {
-                plugin.getCooldownHandler().resetCooldown(player, "restart", Settings.general_cooldownRestart);
+                plugin.getCooldownHandler().resetCooldown(player, "restart", runtimeConfigs.current().general().cooldownRestart());
                 String cSchem = args != null && args.length > 0 ? args[0] : island.getSchematicName();
                 plugin.getServer().getPluginManager().callEvent(new RestartIslandEvent(player, pi.getIslandLocation(), cSchem));
                 return true;

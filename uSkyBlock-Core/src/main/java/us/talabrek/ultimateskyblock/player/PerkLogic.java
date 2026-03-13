@@ -4,12 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 
 import java.util.Arrays;
@@ -32,21 +31,22 @@ public class PerkLogic {
     @Inject
     public PerkLogic(
         @NotNull SchematicHandler schematicHandler,
-        @NotNull PluginConfig config
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
-        defaultPerk = new Perk(Collections.emptyList(), Settings.general_maxPartySize,
-            config.getYamlConfig().getInt("options.island.spawn-limits.animals", 30),
-            config.getYamlConfig().getInt("options.island.spawn-limits.monsters", 50),
-            config.getYamlConfig().getInt("options.island.spawn-limits.villagers", 16),
-            config.getYamlConfig().getInt("options.island.spawn-limits.golems", 5),
-            config.getYamlConfig().getInt("options.island.spawn-limits.copper-golems", 5),
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        defaultPerk = new Perk(Collections.emptyList(), runtimeConfig.general().maxPartySize(),
+            runtimeConfig.island().spawnLimits().animals(),
+            runtimeConfig.island().spawnLimits().monsters(),
+            runtimeConfig.island().spawnLimits().villagers(),
+            runtimeConfig.island().spawnLimits().golems(),
+            runtimeConfig.island().spawnLimits().copperGolems(),
             0,
             0,
             null, null);
         donorPerks = new ConcurrentHashMap<>();
-        addDonorPerks(null, config.getYamlConfig().getConfigurationSection("donor-perks"));
-        addExtraPermissionPerks(config.getYamlConfig().getConfigurationSection("options.island.extraPermissions"));
-        addPartyPermissionPerks(null, config.getYamlConfig().getConfigurationSection("options.party.maxPartyPermissions"));
+        addDonorPerks(runtimeConfig.donorPerks());
+        addExtraPermissionPerks(runtimeConfig.island().extraPermissionItems());
+        addPartyPermissionPerks(runtimeConfig.party().maxPartyPermissions());
         addHungerPerms();
         addDonorRewardPerks();
         List<String> schemeNames = schematicHandler.getSchemeNames();
@@ -54,31 +54,27 @@ public class PerkLogic {
 
         islandPerks = new ConcurrentHashMap<>();
 
-        ConfigurationSection islandSchemes = config.getYamlConfig().getConfigurationSection("island-schemes");
-        if (islandSchemes != null) {
-            for (String schemeName : islandSchemes.getKeys(false)) {
-                ConfigurationSection configSection = islandSchemes.getConfigurationSection(schemeName);
-                String perm = configSection.getString("permission", "usb.schematic." + schemeName);
+        for (var entry : runtimeConfig.islandSchemes().entrySet()) {
+            String schemeName = entry.getKey();
+            RuntimeConfig.IslandScheme scheme = entry.getValue();
+            String perm = scheme.permission();
                 Perk perk = new PerkBuilder()
                     .schematics(schemeName)
-                    .maxPartySize(configSection.getInt("maxPartySize", 0))
-                    .animals(configSection.getInt("animals", 0))
-                    .monsters(configSection.getInt("monsters", 0))
-                    .villagers(configSection.getInt("villagers", 0))
-                    .golems(configSection.getInt("golems", 0))
-                    .copperGolems(configSection.getInt("copper-golems", 0))
-                    .rewBonus(configSection.getInt("rewardBonus", 0))
-                    .hungerReduction(configSection.getInt("hungerReduction", 0))
-                    .extraItems(ItemStackUtil.createItemList(configSection.getStringList("extraItems")))
+                    .maxPartySize(scheme.maxPartySize())
+                    .animals(scheme.animals())
+                    .monsters(scheme.monsters())
+                    .villagers(scheme.villagers())
+                    .golems(scheme.golems())
+                    .copperGolems(scheme.copperGolems())
+                    .extraItems(ItemStackUtil.createItemList(scheme.extraItemSpecs()))
                     .build();
                 ItemStack itemStack = ItemStackUtil.createItemStack(
-                    configSection.getString("displayItem", Material.OAK_SAPLING.toString()),
+                    scheme.displayItem(),
                     schemeName,
-                    configSection.getString("description", null)
+                    scheme.description()
                 );
                 islandPerks.put(schemeName, new IslandPerk(schemeName, perm, itemStack, perk,
-                    configSection.getDouble("scoreMultiply", 1d), configSection.getDouble("scoreOffset", 0d)));
-            }
+                    scheme.scoreMultiply(), scheme.scoreOffset()));
         }
         for (String schemeName : schemeNames) {
             Perk perk = new PerkBuilder(defaultPerk).schematics(schemeName).build();
@@ -126,36 +122,27 @@ public class PerkLogic {
         return builder.build();
     }
 
-    private void addDonorPerks(String perm, ConfigurationSection config) {
-        if (config == null) {
-            return;
-        }
-        for (String key : config.getKeys(false)) {
-            if (config.isConfigurationSection(key)) {
-                addDonorPerks((perm != null ? perm + "." : "") + key, config.getConfigurationSection(key));
-            } else {
-                // Read leaf
-                donorPerks.put(perm, new Perk(
-                    ItemStackUtil.createItemList(config.getStringList("extraItems")),
-                    config.getInt("maxPartySize", defaultPerk.getMaxPartySize()),
-                    config.getInt("animals", defaultPerk.getAnimals()),
-                    config.getInt("monsters", defaultPerk.getMonsters()),
-                    config.getInt("villagers", defaultPerk.getVillagers()),
-                    config.getInt("golems", defaultPerk.getGolems()),
-                    config.getInt("copper-golems", defaultPerk.getCopperGolems()),
-                    config.getDouble("rewardBonus", defaultPerk.getRewBonus()),
-                    config.getDouble("hungerReduction", defaultPerk.getHungerReduction()),
-                    config.getStringList("schematics"), null));
-            }
+    private void addDonorPerks(Map<String, RuntimeConfig.PerkSpec> configuredPerks) {
+        for (var entry : configuredPerks.entrySet()) {
+            RuntimeConfig.PerkSpec perk = entry.getValue();
+            donorPerks.put(entry.getKey(), new Perk(
+                ItemStackUtil.createItemList(perk.extraItemSpecs()),
+                perk.maxPartySize() > 0 ? perk.maxPartySize() : defaultPerk.getMaxPartySize(),
+                perk.animals() > 0 ? perk.animals() : defaultPerk.getAnimals(),
+                perk.monsters() > 0 ? perk.monsters() : defaultPerk.getMonsters(),
+                perk.villagers() > 0 ? perk.villagers() : defaultPerk.getVillagers(),
+                perk.golems() > 0 ? perk.golems() : defaultPerk.getGolems(),
+                perk.copperGolems() > 0 ? perk.copperGolems() : defaultPerk.getCopperGolems(),
+                perk.rewardBonus(),
+                perk.hungerReduction(),
+                perk.schematics(), null));
         }
     }
 
-    private void addExtraPermissionPerks(ConfigurationSection config) {
-        if (config == null) {
-            return;
-        }
-        for (String key : config.getKeys(false)) {
-            List<ItemStack> items = ItemStackUtil.createItemList(config.getStringList(key));
+    private void addExtraPermissionPerks(Map<String, List<String>> extraPermissionItems) {
+        for (var entry : extraPermissionItems.entrySet()) {
+            String key = entry.getKey();
+            List<ItemStack> items = ItemStackUtil.createItemList(entry.getValue());
             if (items != null && !items.isEmpty()) {
                 String perm = "usb." + key;
                 donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
@@ -165,7 +152,7 @@ public class PerkLogic {
         }
     }
 
-    private void addPartyPermissionPerks(String perm, ConfigurationSection config) {
+    private void addPartyPermissionPerks(Map<String, Integer> partyPermissionOverrides) {
         int[] values = {5, 6, 7, 8};
         String[] perms = {"usb.extra.partysize1", "usb.extra.partysize2", "usb.extra.partysize3", "usb.extra.partysize"};
         for (int i = 0; i < values.length; i++) {
@@ -175,18 +162,10 @@ public class PerkLogic {
                     .build());
         }
 
-        if (config == null) {
-            return;
-        }
-        for (String key : config.getKeys(false)) {
-            if (config.isConfigurationSection(key)) {
-                addPartyPermissionPerks((perm != null ? perm + "." : "") + key, config.getConfigurationSection(key));
-            } else if (config.isInt(key)) {
-                // Read leaf
-                donorPerks.put(perm, new PerkBuilder(donorPerks.get(perm))
-                    .maxPartySize(config.getInt(key, 0))
+        for (var entry : partyPermissionOverrides.entrySet()) {
+            donorPerks.put(entry.getKey(), new PerkBuilder(donorPerks.get(entry.getKey()))
+                    .maxPartySize(entry.getValue())
                     .build());
-            }
         }
     }
 
