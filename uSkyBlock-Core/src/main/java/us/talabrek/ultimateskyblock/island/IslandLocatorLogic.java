@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
-import us.talabrek.ultimateskyblock.config.Settings;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -130,7 +129,7 @@ public class IslandLocatorLogic {
             next = last;
             // Ensure the found location is valid (or find one that is).
             while (!isAvailableLocation(next)) {
-                next = nextIslandLocation(next);
+                next = nextIslandLocation(next, islandDistance);
             }
         }
         lastIsland = next;
@@ -182,8 +181,7 @@ public class IslandLocatorLogic {
      *                            v
      * </pre>
      */
-    static Location nextIslandLocation(final Location lastIsland) {
-        int d = Settings.island_distance;
+    static Location nextIslandLocation(final Location lastIsland, int d) {
         LocationUtil.alignToDistance(lastIsland, d);
         int x = lastIsland.getBlockX();
         int z = lastIsland.getBlockZ();
