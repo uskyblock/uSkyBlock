@@ -36,8 +36,9 @@ public class PluginConfigLoader {
         validateNoLocalizedConfigFiles();
         ensureConfigExists(configPath);
 
-        int currentVersion = loadBundledConfig().getInt("version", PluginConfigMigrator.LEGACY_BASELINE_VERSION);
-        YamlConfiguration config = loadFromDisk(configPath);
+        YamlConfiguration bundledConfig = loadBundledConfig();
+        int currentVersion = bundledConfig.getInt("version", PluginConfigMigrator.LEGACY_BASELINE_VERSION);
+        YamlConfiguration config = loadFromDisk(configPath, bundledConfig);
         int version = config.getInt("version", 0);
 
         if (version > currentVersion) {
@@ -47,7 +48,7 @@ public class PluginConfigLoader {
 
         if (version < currentVersion) {
             migrator.migrate(configPath, currentVersion);
-            return loadFromDisk(configPath);
+            return loadFromDisk(configPath, bundledConfig);
         }
 
         return config;
@@ -68,20 +69,17 @@ public class PluginConfigLoader {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to create config directory " + parent);
         }
-        try (Reader reader = new InputStreamReader(Objects.requireNonNull(
-            getClass().getClassLoader().getResourceAsStream(CONFIG_NAME)), StandardCharsets.UTF_8)) {
-            YamlConfiguration config = new YamlConfiguration();
-            config.load(reader);
-            config.save(configPath.toFile());
+        try {
+            loadBundledConfig().save(configPath.toFile());
         } catch (Exception e) {
             throw new IllegalStateException("Unable to create initial config.yml", e);
         }
     }
 
     @NotNull
-    private YamlConfiguration loadBundledConfig() {
+    public static YamlConfiguration loadBundledConfig() {
         try (Reader reader = new InputStreamReader(Objects.requireNonNull(
-            getClass().getClassLoader().getResourceAsStream(CONFIG_NAME)), StandardCharsets.UTF_8)) {
+            PluginConfigLoader.class.getClassLoader().getResourceAsStream(CONFIG_NAME)), StandardCharsets.UTF_8)) {
             YamlConfiguration config = new YamlConfiguration();
             config.load(reader);
             return config;
@@ -91,10 +89,11 @@ public class PluginConfigLoader {
     }
 
     @NotNull
-    private YamlConfiguration loadFromDisk(@NotNull Path configPath) {
+    private YamlConfiguration loadFromDisk(@NotNull Path configPath, @NotNull YamlConfiguration bundledDefaults) {
         YamlConfiguration config = new YamlConfiguration();
         try (Reader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
             config.load(reader);
+            config.setDefaults(bundledDefaults);
             return config;
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load config.yml from " + configPath, e);

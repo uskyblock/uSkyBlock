@@ -12,6 +12,7 @@ import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.api.event.MemberLeftEvent;
 import us.talabrek.ultimateskyblock.api.event.RestartIslandEvent;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockScoreChangedEvent;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
@@ -37,6 +38,7 @@ public class InternalEventsTest {
         fakePlugin = mock(uSkyBlock.class);
 
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("options.party.join-commands", Arrays.asList("lets", "test", "this"));
         config.set("options.party.leave-commands", Arrays.asList("dont", "stop", "me", "now"));
         config.set("language", "en");

@@ -324,7 +324,7 @@ public class PluginConfigLoaderTest {
         YamlConfiguration loaded = loader.load();
 
         assertEquals(loadBundledVersion(), loaded.getInt("version"));
-        assertFalse(loaded.contains("options.advanced.manageSpawn"));
+        assertFalse(loaded.isSet("options.advanced.manageSpawn"));
     }
 
     private YamlConfiguration createValidConfig(int version) {

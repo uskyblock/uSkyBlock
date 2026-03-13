@@ -21,26 +21,29 @@ public final class RuntimeConfigFactory {
 
     @NotNull
     public static RuntimeConfig load(@NotNull FileConfiguration config) {
+        // Nominal defaults come from the bundled config.yml attached by PluginConfigLoader.
+        // Keep inline fallbacks here only for malformed values or legacy compatibility paths,
+        // not as a second source of truth for ordinary defaults.
         String configuredLanguage = normalizeConfiguredLanguage(config.getString("language"));
-        int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize", 4));
-        int distance = Math.max(50, config.getInt("options.island.distance", 110));
-        int protectionRange = Math.min(distance, config.getInt("options.island.protectionRange", 128));
-        int islandHeight = Math.max(20, config.getInt("options.island.height", 120));
+        int maxPartySize = Math.max(0, config.getInt("options.general.maxPartySize"));
+        int distance = Math.max(50, config.getInt("options.island.distance"));
+        int protectionRange = Math.min(distance, config.getInt("options.island.protectionRange"));
+        int islandHeight = Math.max(20, config.getInt("options.island.height"));
 
         return new RuntimeConfig(
             configuredLanguage,
             loadLocale(configuredLanguage),
-            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(config.getLong("init.initDelay", 50L))),
+            new RuntimeConfig.Init(TimeUtil.ticksAsDuration(config.getLong("init.initDelay"))),
             new RuntimeConfig.General(
                 maxPartySize,
-                config.getString("options.general.worldName", "skyworld"),
-                Math.max(0, config.getInt("options.general.cooldownInfo", 60)),
-                parseDuration(config.getString("options.general.cooldownRestart"), Duration.ofHours(1), true),
-                parseDuration(config.getString("options.general.biomeChange"), Duration.ofHours(1), true),
-                config.getString("options.general.defaultBiome", "ocean"),
-                config.getString("options.general.defaultNetherBiome", "nether_wastes"),
-                config.getInt("options.general.spawnSize", 50),
-                config.getInt("general.maxSpam", 3000)
+                config.getString("options.general.worldName"),
+                Math.max(0, config.getInt("options.general.cooldownInfo")),
+                parseDuration(config, "options.general.cooldownRestart", Duration.ofHours(1), true),
+                parseDuration(config, "options.general.biomeChange", Duration.ofHours(1), true),
+                config.getString("options.general.defaultBiome"),
+                config.getString("options.general.defaultNetherBiome"),
+                config.getInt("options.general.spawnSize"),
+                config.getInt("general.maxSpam")
             ),
             new RuntimeConfig.Island(
                 distance,
@@ -54,159 +57,159 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.island.allowIslandLock"),
                 config.getBoolean("options.island.useIslandLevel"),
                 config.getBoolean("options.island.useTopTen"),
-                config.getString("options.island.schematicName", "default"),
-                parseDuration(config.getString("options.island.topTenTimeout", "7m"), Duration.ofMinutes(7), false),
-                parseDuration(config.getString("options.island.reservationTimeout"), Duration.ofMinutes(5), true),
+                config.getString("options.island.schematicName"),
+                parseDuration(config, "options.island.topTenTimeout", Duration.ofMinutes(7), false),
+                parseDuration(config, "options.island.reservationTimeout", Duration.ofMinutes(5), true),
                 isAllowPvP(config),
-                parseDuration(config.getString("options.island.islandTeleportDelay", "2s"), Duration.ofSeconds(2), false),
-                config.getDouble("options.island.teleportCancelDistance", 0.2d),
-                Math.max(0, config.getInt("options.island.autoRefreshScore", 0)),
-                config.getBoolean("options.island.topTenShowMembers", true),
-                Math.max(0, config.getInt("options.island.log-size", 10)),
-                config.getBoolean("island-schemes-enabled", true),
-                config.getString("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}"),
+                parseDuration(config, "options.island.islandTeleportDelay", Duration.ofSeconds(2), false),
+                config.getDouble("options.island.teleportCancelDistance"),
+                Math.max(0, config.getInt("options.island.autoRefreshScore")),
+                config.getBoolean("options.island.topTenShowMembers"),
+                Math.max(0, config.getInt("options.island.log-size")),
+                config.getBoolean("island-schemes-enabled"),
+                config.getString("options.island.chat-format"),
                 new RuntimeConfig.SpawnLimits(
-                    config.getBoolean("options.island.spawn-limits.enabled", true),
-                    config.getInt("options.island.spawn-limits.animals", 30),
-                    config.getInt("options.island.spawn-limits.monsters", 50),
-                    config.getInt("options.island.spawn-limits.villagers", 16),
-                    config.getInt("options.island.spawn-limits.golems", 5),
-                    config.getInt("options.island.spawn-limits.copper-golems", 5)
+                    config.getBoolean("options.island.spawn-limits.enabled"),
+                    config.getInt("options.island.spawn-limits.animals"),
+                    config.getInt("options.island.spawn-limits.monsters"),
+                    config.getInt("options.island.spawn-limits.villagers"),
+                    config.getInt("options.island.spawn-limits.golems"),
+                    config.getInt("options.island.spawn-limits.copper-golems")
                 ),
                 loadIntMap(config.getConfigurationSection("options.island.block-limits"), "enabled")
             ),
             new RuntimeConfig.Extras(
                 config.getBoolean("options.extras.sendToSpawn"),
                 config.getBoolean("options.extras.respawnAtIsland"),
-                config.getBoolean("options.extras.obsidianToLava", true)
+                config.getBoolean("options.extras.obsidianToLava")
             ),
             new RuntimeConfig.Protection(
-                config.getBoolean("options.protection.enabled", true),
-                config.getBoolean("options.protection.item-drops", true),
-                config.getBoolean("options.protection.visitors.item-drops", true),
-                config.getBoolean("options.protection.creepers", true),
-                config.getBoolean("options.protection.withers", true),
-                config.getBoolean("options.protection.protect-lava", true),
-                config.getBoolean("options.protection.visitors.trampling", true),
-                config.getBoolean("options.protection.visitors.kill-animals", true),
-                config.getBoolean("options.protection.visitors.kill-monsters", true),
-                config.getBoolean("options.protection.visitors.shearing", true),
-                config.getBoolean("options.protection.visitors.hatching", true),
-                config.getBoolean("options.protection.visitors.fall", true),
-                config.getBoolean("options.protection.visitors.fire-damage", true),
-                config.getBoolean("options.protection.visitors.monster-damage", false),
-                config.getBoolean("options.protection.visitors.warn-on-warp", true),
-                config.getBoolean("options.protection.visitors.villager-trading", true),
-                config.getBoolean("options.protection.villager-trading-enabled", false),
-                config.getBoolean("options.protection.visitors.use-portals", false),
-                config.getBoolean("options.protection.visitors.vehicle-enter", false),
-                config.getBoolean("options.protection.visitors.vehicle-break", false),
-                config.getBoolean("options.protection.visitors.block-banned-entry", true)
+                config.getBoolean("options.protection.enabled"),
+                config.getBoolean("options.protection.item-drops"),
+                config.getBoolean("options.protection.visitors.item-drops"),
+                config.getBoolean("options.protection.creepers"),
+                config.getBoolean("options.protection.withers"),
+                config.getBoolean("options.protection.protect-lava"),
+                config.getBoolean("options.protection.visitors.trampling"),
+                config.getBoolean("options.protection.visitors.kill-animals"),
+                config.getBoolean("options.protection.visitors.kill-monsters"),
+                config.getBoolean("options.protection.visitors.shearing"),
+                config.getBoolean("options.protection.visitors.hatching"),
+                config.getBoolean("options.protection.visitors.fall"),
+                config.getBoolean("options.protection.visitors.fire-damage"),
+                config.getBoolean("options.protection.visitors.monster-damage"),
+                config.getBoolean("options.protection.visitors.warn-on-warp"),
+                config.getBoolean("options.protection.visitors.villager-trading"),
+                config.getBoolean("options.protection.villager-trading-enabled"),
+                config.getBoolean("options.protection.visitors.use-portals"),
+                config.getBoolean("options.protection.visitors.vehicle-enter"),
+                config.getBoolean("options.protection.visitors.vehicle-break"),
+                config.getBoolean("options.protection.visitors.block-banned-entry")
             ),
             new RuntimeConfig.Nether(
                 config.getBoolean("nether.enabled", false),
                 config.getInt("nether.lava_level", config.getInt("nether.lava-level", 32)),
                 config.getInt("nether.height", islandHeight / 2),
-                config.getString("nether.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator"),
+                config.getString("nether.chunk-generator"),
                 new RuntimeConfig.Terraform(
-                    config.getBoolean("nether.terraform-enabled", true),
-                    config.getDouble("nether.terraform-min-pitch", -70d),
-                    config.getDouble("nether.terraform-max-pitch", 90d),
-                    Math.max(0, config.getInt("nether.terraform-distance", 7)),
+                    config.getBoolean("nether.terraform-enabled"),
+                    config.getDouble("nether.terraform-min-pitch"),
+                    config.getDouble("nether.terraform-max-pitch"),
+                    Math.max(0, config.getInt("nether.terraform-distance")),
                     loadStringLists(config.getConfigurationSection("nether.terraform")),
                     loadDoubleMap(config.getConfigurationSection("nether.terraform-weight"), 1d)
                 ),
                 new RuntimeConfig.SpawnChances(
-                    config.getBoolean("nether.spawn-chances.enabled", true),
-                    config.getDouble("nether.spawn-chances.blaze", 0.2d),
-                    config.getDouble("nether.spawn-chances.wither", 0.4d),
-                    config.getDouble("nether.spawn-chances.skeleton", 0.1d)
+                    config.getBoolean("nether.spawn-chances.enabled"),
+                    config.getDouble("nether.spawn-chances.blaze"),
+                    config.getDouble("nether.spawn-chances.wither"),
+                    config.getDouble("nether.spawn-chances.skeleton")
                 )
             ),
             new RuntimeConfig.Restart(
-                config.getBoolean("options.restart.clearInventory", true),
-                config.getBoolean("options.restart.clearPerms", true),
-                config.getBoolean("options.restart.clearArmor", true),
-                config.getBoolean("options.restart.clearEnderChest", true),
-                config.getBoolean("options.restart.clearCurrency", false),
-                config.getBoolean("options.restart.teleportWhenReady", true),
-                parseDuration(config.getString("options.restart.teleportDelay", "2000ms"), Duration.ofSeconds(2), false),
+                config.getBoolean("options.restart.clearInventory"),
+                config.getBoolean("options.restart.clearPerms"),
+                config.getBoolean("options.restart.clearArmor"),
+                config.getBoolean("options.restart.clearEnderChest"),
+                config.getBoolean("options.restart.clearCurrency"),
+                config.getBoolean("options.restart.teleportWhenReady"),
+                parseDuration(config, "options.restart.teleportDelay", Duration.ofSeconds(2), false),
                 List.copyOf(config.getStringList("options.restart.extra-commands"))
             ),
             new RuntimeConfig.Advanced(
-                parseDuration(config.getString("options.advanced.confirmTimeout", "10s"), Duration.ofSeconds(10), false),
-                config.getBoolean("options.advanced.useDisplayNames", false),
-                config.getDouble("options.advanced.topTenCutoff", config.getDouble("options.advanced.purgeLevel", 10)),
-                config.getBoolean("options.advanced.manageSpawn", true),
-                config.getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
-                config.getString("options.advanced.islandCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
-                config.getString("options.advanced.placeholderCache", "maximumSize=200,expireAfterWrite=20s"),
-                config.getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
-                Duration.ofSeconds(config.getInt("options.advanced.island.saveEvery", 30)),
-                Duration.ofSeconds(config.getInt("options.advanced.player.saveEvery", 2 * 60)),
-                config.getString("options.advanced.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator"),
-                Math.max(0, config.getInt("options.advanced.chunkRegenSpeed", 4)),
-                Duration.ofMillis(config.getLong("async.long.feedbackEvery", 30000)),
-                config.getDouble("options.advanced.purgeLevel", 10),
-                Duration.ofMillis(config.getLong("options.advanced.purgeTimeout", 600000)),
+                parseDuration(config, "options.advanced.confirmTimeout", Duration.ofSeconds(10), false),
+                config.getBoolean("options.advanced.useDisplayNames"),
+                config.getDouble("options.advanced.topTenCutoff", config.getDouble("options.advanced.purgeLevel")),
+                config.getBoolean("options.advanced.manageSpawn"),
+                config.getString("options.advanced.playerCache"),
+                config.getString("options.advanced.islandCache"),
+                config.getString("options.advanced.placeholderCache"),
+                config.getString("options.advanced.completionCache"),
+                Duration.ofSeconds(config.getInt("options.advanced.island.saveEvery")),
+                Duration.ofSeconds(config.getInt("options.advanced.player.saveEvery")),
+                config.getString("options.advanced.chunk-generator"),
+                Math.max(0, config.getInt("options.advanced.chunkRegenSpeed")),
+                Duration.ofMillis(config.getLong("async.long.feedbackEvery")),
+                config.getDouble("options.advanced.purgeLevel"),
+                Duration.ofMillis(config.getLong("options.advanced.purgeTimeout")),
                 normalizeBlank(config.getString("options.advanced.debugLevel")),
                 new RuntimeConfig.PlayerDb(
-                    config.getString("options.advanced.playerdb.storage", "yml"),
-                    config.getString("options.advanced.playerdb.nameCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"),
-                    config.getString("options.advanced.playerdb.uuidCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"),
-                    Duration.ofMillis(config.getInt("playerdb.saveDelay", 10000))
+                    config.getString("options.advanced.playerdb.storage"),
+                    config.getString("options.advanced.playerdb.nameCache"),
+                    config.getString("options.advanced.playerdb.uuidCache"),
+                    Duration.ofMillis(config.getInt("playerdb.saveDelay"))
                 )
             ),
             new RuntimeConfig.Async(
-                Duration.ofMillis(config.getInt("async.maxMs", 15)),
-                config.getLong("async.maxConsecutiveTicks", 20),
-                TimeUtil.ticksAsDuration(config.getLong("async.yieldDelay", 2))
+                Duration.ofMillis(config.getInt("async.maxMs")),
+                config.getLong("async.maxConsecutiveTicks"),
+                TimeUtil.ticksAsDuration(config.getLong("async.yieldDelay"))
             ),
             new RuntimeConfig.AsyncWorldEdit(
-                config.getBoolean("asyncworldedit.enabled", true),
-                Duration.ofMillis(config.getInt("asyncworldedit.watchDog.heartBeatMs", 2000)),
-                parseDuration(config.getString("asyncworldedit.watchDog.timeout", "5m"), Duration.ofMinutes(5), false)
+                config.getBoolean("asyncworldedit.enabled"),
+                Duration.ofMillis(config.getInt("asyncworldedit.watchDog.heartBeatMs")),
+                parseDuration(config, "asyncworldedit.watchDog.timeout", Duration.ofMinutes(5), false)
             ),
             new RuntimeConfig.Party(
-                parseDuration(config.getString("options.party.invite-timeout", "2m"), Duration.ofMinutes(2), false),
-                config.getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&b {MESSAGE}"),
+                parseDuration(config, "options.party.invite-timeout", Duration.ofMinutes(2), false),
+                config.getString("options.party.chat-format"),
                 List.copyOf(config.getStringList("options.party.join-commands")),
                 List.copyOf(config.getStringList("options.party.leave-commands")),
                 loadPartyPermissionOverrides(config.getConfigurationSection("options.party.maxPartyPermissions"))
             ),
             new RuntimeConfig.PluginUpdates(
-                config.getBoolean("plugin-updates.check", true),
-                config.getString("plugin-updates.branch", "RELEASE")
+                config.getBoolean("plugin-updates.check"),
+                config.getString("plugin-updates.branch")
             ),
             new RuntimeConfig.Spawning(
                 new RuntimeConfig.Guardians(
-                    config.getBoolean("options.spawning.guardians.enabled", true),
-                    Math.max(0, config.getInt("options.spawning.guardians.max-per-island", 10)),
-                    config.getDouble("options.spawning.guardians.spawn-chance", 0.10d)
+                    config.getBoolean("options.spawning.guardians.enabled"),
+                    Math.max(0, config.getInt("options.spawning.guardians.max-per-island")),
+                    config.getDouble("options.spawning.guardians.spawn-chance")
                 ),
                 new RuntimeConfig.Phantoms(
-                    config.getBoolean("options.spawning.phantoms.overworld", true),
-                    config.getBoolean("options.spawning.phantoms.nether", false)
+                    config.getBoolean("options.spawning.phantoms.overworld"),
+                    config.getBoolean("options.spawning.phantoms.nether")
                 )
             ),
             new RuntimeConfig.Placeholder(
-                config.getBoolean("placeholder.chatplaceholder", false),
-                config.getBoolean("placeholder.servercommandplaceholder", false),
-                config.getBoolean("placeholder.mvdwplaceholderapi", false)
+                config.getBoolean("placeholder.chatplaceholder"),
+                config.getBoolean("placeholder.servercommandplaceholder"),
+                config.getBoolean("placeholder.mvdwplaceholderapi")
             ),
             new RuntimeConfig.ToolMenu(
-                config.getBoolean("tool-menu.enabled", true),
-                config.getString("tool-menu.tool", "OAK_SAPLING"),
+                config.getBoolean("tool-menu.enabled"),
+                config.getString("tool-menu.tool"),
                 loadStringMap(config.getConfigurationSection("tool-menu.commands"))
             ),
-            new RuntimeConfig.Signs(config.getBoolean("signs.enabled", true)),
+            new RuntimeConfig.Signs(config.getBoolean("signs.enabled")),
             new RuntimeConfig.WorldGuard(
-                config.getBoolean("worldguard.entry-message", true),
-                config.getBoolean("worldguard.exit-message", true)
+                config.getBoolean("worldguard.entry-message"),
+                config.getBoolean("worldguard.exit-message")
             ),
             new RuntimeConfig.Importer(
-                config.getDouble("importer.progressEveryPct", 10),
-                Duration.ofMillis(config.getLong("importer.progressEveryMs", 10000))
+                config.getDouble("importer.progressEveryPct"),
+                Duration.ofMillis(config.getLong("importer.progressEveryMs"))
             ),
             loadIslandSchemes(config),
             loadExtraMenus(config.getConfigurationSection("options.extra-menus")),
@@ -230,7 +233,14 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Duration parseDuration(String rawValue, @NotNull Duration defaultValue, boolean clampNegative) {
+    private static Duration parseDuration(@NotNull FileConfiguration config, @NotNull String path, @NotNull Duration fallbackValue, boolean clampNegative) {
+        String defaultRawValue = config.getDefaults() != null ? config.getDefaults().getString(path) : null;
+        Duration defaultValue = parseDurationValue(defaultRawValue, fallbackValue, clampNegative);
+        return parseDurationValue(config.getString(path), defaultValue, clampNegative);
+    }
+
+    @NotNull
+    private static Duration parseDurationValue(String rawValue, @NotNull Duration defaultValue, boolean clampNegative) {
         try {
             Duration parsed = ConfigDuration.parse(rawValue);
             return clampNegative && parsed.isNegative() ? Duration.ZERO : parsed;

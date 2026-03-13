@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -102,6 +103,7 @@ public class IslandLocatorLogicTest {
 
     private RuntimeConfigs createRuntimeConfigs(int islandDistance) {
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "en");
         config.set("options.general.worldName", "skyworld");
         config.set("options.general.cooldownRestart", "1m");

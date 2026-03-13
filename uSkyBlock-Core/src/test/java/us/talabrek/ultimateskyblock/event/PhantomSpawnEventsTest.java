@@ -6,6 +6,7 @@ import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.world.WorldManager;
@@ -124,6 +125,7 @@ public class PhantomSpawnEventsTest {
 
     private RuntimeConfigs runtimeConfigs(boolean overworld, boolean nether) {
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("options.spawning.phantoms.overworld", overworld);
         config.set("options.spawning.phantoms.nether", nether);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);

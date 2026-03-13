@@ -16,6 +16,7 @@ public class RuntimeConfigFactoryTest {
     @Test
     public void loadsTypedRuntimeConfigSections() {
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "en");
         config.set("init.initDelay", 80L);
         config.set("general.maxSpam", 1500);
@@ -128,6 +129,7 @@ public class RuntimeConfigFactoryTest {
     @Test
     public void fallsBackToEnglishForInvalidLanguage() {
         YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("language", "definitely-not-a-real-locale");
 
         RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
