@@ -59,6 +59,7 @@ public class SchematicHandler {
             Files.createDirectories(directorySchematics);
             copySchematicsFromJar(plugin);
             validateConfiguredSchemes();
+            validateDefaultScheme();
             List<String> schemeNames = getSchemeNames();
             logger.info(schemeNames.isEmpty() ? "No island schemes configured." : schemeNames.size() + " island schemes configured.");
             initialized = true;
@@ -230,6 +231,29 @@ public class SchematicHandler {
             logger.warning("Island scheme '" + schemeName + "' points '" + key + "' to a missing or unreadable file: " + configuredPath);
         }
     }
+
+    private void validateDefaultScheme() {
+        RuntimeConfig runtimeConfig = runtimeConfigs.current();
+        String defaultScheme = runtimeConfig.island().defaultScheme();
+        if (defaultScheme == null || defaultScheme.isBlank()) {
+            logger.warning("Configured default island scheme is missing.");
+            return;
+        }
+
+        RuntimeConfig.IslandScheme scheme = runtimeConfig.islandScheme(defaultScheme);
+        if (scheme == null) {
+            logger.warning("Configured default island scheme '" + defaultScheme + "' does not exist.");
+            return;
+        }
+        if (!scheme.enabled()) {
+            logger.warning("Configured default island scheme '" + defaultScheme + "' is disabled.");
+            return;
+        }
+        if (getScheme(defaultScheme) == null) {
+            logger.warning("Configured default island scheme '" + defaultScheme + "' is not usable.");
+        }
+    }
+
     private boolean hasConfiguredPath(@Nullable String configuredPath) {
         return configuredPath != null && !configuredPath.trim().isEmpty();
     }

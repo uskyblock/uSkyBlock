@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.handler;
 
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -12,7 +13,12 @@ import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,11 +109,74 @@ public class SchematicHandlerTest {
         assertTrue(handler.getSchemeNames().isEmpty());
     }
 
+    @Test
+    public void initializeWarnsWhenDefaultSchemeDoesNotExist() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("options.island.schematicName", "missing");
+        config.set("island-schemes.default.enabled", true);
+        config.set("island-schemes.default.schematic", "default.schematic");
+
+        TestLogHandler logHandler = new TestLogHandler();
+        Logger logger = testLogger(logHandler);
+        SchematicHandler handler = new SchematicHandler(logger, runtimeConfigs(config), tempDir);
+
+        handler.initialize(mock(Plugin.class));
+
+        assertTrue(logHandler.messages().stream()
+            .anyMatch(message -> message.contains("Configured default island scheme 'missing' does not exist.")));
+    }
+
+    @Test
+    public void initializeWarnsWhenDefaultSchemeIsDisabled() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("options.island.schematicName", "default");
+        config.set("island-schemes.default.enabled", false);
+        config.set("island-schemes.default.schematic", "default.schematic");
+
+        TestLogHandler logHandler = new TestLogHandler();
+        Logger logger = testLogger(logHandler);
+        SchematicHandler handler = new SchematicHandler(logger, runtimeConfigs(config), tempDir);
+
+        handler.initialize(mock(Plugin.class));
+
+        assertTrue(logHandler.messages().stream()
+            .anyMatch(message -> message.contains("Configured default island scheme 'default' is disabled.")));
+    }
+
     private static RuntimeConfigs runtimeConfigs(YamlConfiguration yamlConfig) {
         yamlConfig.setDefaults(PluginConfigLoader.loadBundledConfig());
         var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(yamlConfig);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;
+    }
+
+    private static Logger testLogger(TestLogHandler handler) {
+        Logger logger = Logger.getAnonymousLogger();
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.ALL);
+        logger.addHandler(handler);
+        return logger;
+    }
+
+    private static final class TestLogHandler extends Handler {
+        private final List<String> messages = new ArrayList<>();
+
+        @Override
+        public void publish(LogRecord record) {
+            messages.add(record.getMessage());
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public void close() {
+        }
+
+        private List<String> messages() {
+            return messages;
+        }
     }
 }
