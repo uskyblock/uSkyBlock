@@ -13,8 +13,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.ConfigDuration;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -42,23 +42,22 @@ public class TeleportLogic implements Listener {
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
     private final Scheduler scheduler;
-    private final Duration teleportDelay;
+    private final RuntimeConfigs runtimeConfigs;
     private final Map<UUID, PendingTeleport> pendingTeleports = new ConcurrentHashMap<>();
-    private final double cancelDistance;
 
     @Inject
     public TeleportLogic(
         @NotNull Logger logger,
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
-        @NotNull Scheduler scheduler
+        @NotNull Scheduler scheduler,
+        @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.logger = logger;
         this.plugin = plugin;
-        teleportDelay = ConfigDuration.parse(plugin.getConfig().getString("options.island.islandTeleportDelay", "2s"));
-        cancelDistance = plugin.getConfig().getDouble("options.island.teleportCancelDistance", 0.2);
         this.worldManager = worldManager;
         this.scheduler = scheduler;
+        this.runtimeConfigs = runtimeConfigs;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -106,6 +105,7 @@ public class TeleportLogic implements Listener {
 
         logger.log(Level.FINER, "safeTeleport " + player + " to " + targetLocation + (force ? " with force" : ""));
         final Location targetLoc = LocationUtil.centerOnBlock(targetLocation.clone());
+        Duration teleportDelay = teleportDelay();
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             PaperLib.teleportAsync(player, targetLoc);
         } else {
@@ -131,6 +131,7 @@ public class TeleportLogic implements Listener {
         Validate.notNull(player, "Player cannot be null");
 
         Location spawnLocation = LocationUtil.centerOnBlock(worldManager.getWorld().getSpawnLocation());
+        Duration teleportDelay = teleportDelay();
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
             if (Settings.extras_sendToSpawn) {
                 plugin.execCommand(player, "op:spawn", false);
@@ -209,12 +210,21 @@ public class TeleportLogic implements Listener {
             Location newLocation = player.getLocation();
             if (location != null && location.getWorld() != null && location.getWorld().equals(newLocation.getWorld())) {
                 double distance = location.distance(newLocation);
-                if (distance > cancelDistance) {
+                if (distance > teleportCancelDistance()) {
                     task.cancel();
                     pendingTeleports.remove(player.getUniqueId());
                     sendTr(player, "Teleport cancelled");
                 }
             }
         }
+    }
+
+    @NotNull
+    private Duration teleportDelay() {
+        return runtimeConfigs.current().island().teleportDelay();
+    }
+
+    private double teleportCancelDistance() {
+        return runtimeConfigs.current().island().teleportCancelDistance();
     }
 }

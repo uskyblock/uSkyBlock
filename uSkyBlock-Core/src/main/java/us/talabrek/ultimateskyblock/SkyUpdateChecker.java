@@ -13,7 +13,7 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
-import us.talabrek.ultimateskyblock.config.PluginConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class SkyUpdateChecker implements UpdateChecker {
 
     private final Logger logger;
-    private final PluginConfig config;
+    private final RuntimeConfigs runtimeConfigs;
     private final uSkyBlock plugin;
 
     private String latestVersion;
@@ -33,11 +33,11 @@ public class SkyUpdateChecker implements UpdateChecker {
     @Inject
     public SkyUpdateChecker(
         @NotNull uSkyBlock plugin,
-        @NotNull PluginConfig config,
+        @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Logger logger
     ) {
         this.plugin = plugin;
-        this.config = config;
+        this.runtimeConfigs = runtimeConfigs;
         this.logger = logger;
     }
 
@@ -48,7 +48,7 @@ public class SkyUpdateChecker implements UpdateChecker {
     public void checkForUpdates() {
         URI uri = URL_RELEASE;
 
-        if (config.getYamlConfig().getString("plugin-updates.branch", "RELEASE").equalsIgnoreCase("STAGING")) {
+        if (runtimeConfigs.current().pluginUpdates().branch().equalsIgnoreCase("STAGING")) {
             uri = URL_STAGING;
         }
 

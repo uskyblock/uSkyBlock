@@ -1,0 +1,84 @@
+package us.talabrek.ultimateskyblock.config;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
+
+import java.time.Duration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class RuntimeConfigFactoryTest {
+    @Test
+    public void loadsTypedRuntimeConfigSections() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("language", "en");
+        config.set("general.maxSpam", 1500);
+        config.set("plugin-updates.branch", "STAGING");
+        config.set("options.general.maxPartySize", 6);
+        config.set("options.general.worldName", "skyworld");
+        config.set("options.general.cooldownInfo", -5);
+        config.set("options.general.cooldownRestart", "30s");
+        config.set("options.general.biomeChange", "2m");
+        config.set("options.general.defaultBiome", "plains");
+        config.set("options.general.defaultNetherBiome", "nether_wastes");
+        config.set("options.general.spawnSize", 64);
+        config.set("options.island.distance", 120);
+        config.set("options.island.height", 150);
+        config.set("options.island.removeCreaturesByTeleport", true);
+        config.set("options.island.protectionRange", 96);
+        config.set("options.island.chestItems", java.util.List.of("ice:2"));
+        config.set("options.island.addExtraItems", true);
+        config.set("options.island.allowIslandLock", true);
+        config.set("options.island.useIslandLevel", true);
+        config.set("options.island.useTopTen", true);
+        config.set("options.island.schematicName", "default");
+        config.set("options.island.topTenTimeout", "15m");
+        config.set("options.island.allowPvP", "allow");
+        config.set("options.island.islandTeleportDelay", "5s");
+        config.set("options.island.teleportCancelDistance", 0.5d);
+        config.set("options.island.spawn-limits.enabled", false);
+        config.set("options.island.extraPermissions.warp", java.util.List.of("diamond:1"));
+        config.set("options.extras.sendToSpawn", true);
+        config.set("options.extras.respawnAtIsland", true);
+        config.set("options.extras.obsidianToLava", true);
+        config.set("options.advanced.confirmTimeout", "12s");
+        config.set("options.party.invite-timeout", "3m");
+        config.set("options.spawning.guardians.enabled", false);
+        config.set("options.spawning.guardians.max-per-island", 4);
+        config.set("options.spawning.guardians.spawn-chance", 0.25d);
+        config.set("nether.enabled", true);
+        config.set("nether.lava_level", 11);
+        config.set("nether.height", 80);
+        config.set("island-schemes.default.enabled", true);
+        config.set("island-schemes.default.schematic", "default.schematic");
+        config.set("island-schemes.default.nether-schematic", "uSkyBlockNether.schem");
+        config.set("confirmation.is restart", false);
+
+        RuntimeConfig runtimeConfig = RuntimeConfigFactory.load(config);
+
+        assertEquals(6, runtimeConfig.general().maxPartySize());
+        assertEquals(Duration.ofSeconds(30), runtimeConfig.general().cooldownRestart());
+        assertEquals("plains", runtimeConfig.general().defaultBiomeKey());
+        assertEquals(1500, runtimeConfig.general().maxSpam());
+        assertEquals(96, runtimeConfig.island().protectionRange());
+        assertEquals(48, runtimeConfig.island().radius());
+        assertEquals(Duration.ofSeconds(5), runtimeConfig.island().teleportDelay());
+        assertEquals(0.5d, runtimeConfig.island().teleportCancelDistance());
+        assertFalse(runtimeConfig.island().spawnLimitsEnabled());
+        assertTrue(runtimeConfig.extras().sendToSpawn());
+        assertEquals(Duration.ofSeconds(12), runtimeConfig.advanced().confirmTimeout());
+        assertEquals(Duration.ofMinutes(3), runtimeConfig.party().inviteTimeout());
+        assertEquals("STAGING", runtimeConfig.pluginUpdates().branch());
+        assertFalse(runtimeConfig.spawning().guardians().enabled());
+        assertEquals(4, runtimeConfig.spawning().guardians().maxPerIsland());
+        assertEquals(0.25d, runtimeConfig.spawning().guardians().spawnChance());
+        assertTrue(runtimeConfig.nether().enabled());
+        assertEquals("default.schematic", runtimeConfig.islandScheme("default").schematic());
+        assertEquals("uSkyBlockNether.schem", runtimeConfig.islandScheme("default").netherSchematic());
+        assertFalse(runtimeConfig.confirmationRequired("is restart", true));
+    }
+}
