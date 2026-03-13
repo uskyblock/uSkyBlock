@@ -12,7 +12,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -116,8 +115,7 @@ public class PluginConfigLoader {
             Path localizedConfig = configFiles
                 .filter(Files::isRegularFile)
                 .filter(path -> path.getFileName().toString().matches("config_.+\\.yml"))
-                .sorted(Comparator.comparing(path -> path.getFileName().toString()))
-                .findFirst()
+                .findAny()
                 .orElse(null);
             if (localizedConfig != null) {
                 throw new IllegalStateException("Localized config file '" + localizedConfig.getFileName()

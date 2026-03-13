@@ -7,7 +7,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public record RuntimeConfig(
     @NotNull String configuredLanguage,
@@ -87,9 +86,6 @@ public record RuntimeConfig(
         @NotNull SpawnLimits spawnLimits,
         @NotNull Map<String, Integer> blockLimits
     ) {
-        public @NotNull Set<String> extraPermissions() {
-            return extraPermissionItems.keySet();
-        }
     }
 
     public record SpawnLimits(

@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.config;
 
 import com.google.inject.Inject;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,10 +28,6 @@ public class PluginConfig {
     public synchronized YamlConfiguration reload() {
         yamlConfig = loader.load();
         return yamlConfig;
-    }
-
-    public synchronized void setYamlConfig(@NotNull FileConfiguration yamlConfig) {
-        this.yamlConfig = (YamlConfiguration) yamlConfig;
     }
 
     public synchronized void save() throws IOException {
