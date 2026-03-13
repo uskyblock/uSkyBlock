@@ -86,7 +86,7 @@ public final class RuntimeConfigFactory {
                 protectionRange / 2,
                 gameObjects.itemStackAmounts(config.getStringList("options.island.chestItems")),
                 config.getBoolean("options.island.addExtraItems"),
-                loadItemStackAmountLists(config.getConfigurationSection("options.island.extraPermissions"), gameObjects),
+                loadItemStackAmountLists(config.getConfigurationSection("options.island.extraPermissions")),
                 config.getBoolean("options.island.allowIslandLock"),
                 config.getBoolean("options.island.useIslandLevel"),
                 config.getBoolean("options.island.useTopTen"),
@@ -233,7 +233,7 @@ public final class RuntimeConfigFactory {
             new RuntimeConfig.ToolMenu(
                 config.getBoolean("tool-menu.enabled"),
                 gameObjects.itemStack(config.getString("tool-menu.tool")),
-                loadToolMenuCommands(config.getConfigurationSection("tool-menu.commands"), gameObjects)
+                loadToolMenuCommands(config.getConfigurationSection("tool-menu.commands"))
             ),
             new RuntimeConfig.Signs(config.getBoolean("signs.enabled")),
             new RuntimeConfig.WorldGuard(
@@ -244,9 +244,9 @@ public final class RuntimeConfigFactory {
                 getDouble(config, "importer.progressEveryPct", DEFAULT_IMPORTER_PROGRESS_EVERY_PCT),
                 parseDuration(config, "importer.progressEveryMs", DEFAULT_IMPORTER_PROGRESS_EVERY, true)
             ),
-            loadIslandSchemes(config, gameObjects),
-            loadExtraMenus(config.getConfigurationSection("options.extra-menus"), gameObjects),
-            loadDonorPerks(config.getConfigurationSection("donor-perks"), gameObjects),
+            loadIslandSchemes(config),
+            loadExtraMenus(config.getConfigurationSection("options.extra-menus")),
+            loadDonorPerks(config.getConfigurationSection("donor-perks")),
             loadConfirmations(config)
         );
     }
@@ -329,7 +329,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, List<ItemStackAmountSpec>> loadItemStackAmountLists(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
+    private Map<String, List<ItemStackAmountSpec>> loadItemStackAmountLists(ConfigurationSection section) {
         if (section == null) {
             return Collections.emptyMap();
         }
@@ -359,7 +359,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static List<RuntimeConfig.ToolMenuCommand> loadToolMenuCommands(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
+    private List<RuntimeConfig.ToolMenuCommand> loadToolMenuCommands(ConfigurationSection section) {
         if (section == null) {
             return Collections.emptyList();
         }
@@ -389,7 +389,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, RuntimeConfig.IslandScheme> loadIslandSchemes(@NotNull FileConfiguration config, @NotNull GameObjectFactory gameObjects) {
+    private Map<String, RuntimeConfig.IslandScheme> loadIslandSchemes(@NotNull FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection("island-schemes");
         if (section == null) {
             return Collections.emptyMap();
@@ -424,7 +424,7 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<Integer, RuntimeConfig.ExtraMenu> loadExtraMenus(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
+    private Map<Integer, RuntimeConfig.ExtraMenu> loadExtraMenus(ConfigurationSection section) {
         if (section == null) {
             return Collections.emptyMap();
         }
@@ -450,17 +450,17 @@ public final class RuntimeConfigFactory {
     }
 
     @NotNull
-    private static Map<String, RuntimeConfig.PerkSpec> loadDonorPerks(ConfigurationSection section, @NotNull GameObjectFactory gameObjects) {
+    private Map<String, RuntimeConfig.PerkSpec> loadDonorPerks(ConfigurationSection section) {
         if (section == null) {
             return Collections.emptyMap();
         }
 
         Map<String, RuntimeConfig.PerkSpec> perks = new LinkedHashMap<>();
-        loadDonorPerks(section, null, perks, gameObjects);
+        loadDonorPerks(section, null, perks);
         return Collections.unmodifiableMap(perks);
     }
 
-    private static void loadDonorPerks(ConfigurationSection section, String permission, Map<String, RuntimeConfig.PerkSpec> perks, @NotNull GameObjectFactory gameObjects) {
+    private void loadDonorPerks(ConfigurationSection section, String permission, Map<String, RuntimeConfig.PerkSpec> perks) {
         if (isLeafSection(section)) {
             perks.put(permission, new RuntimeConfig.PerkSpec(
                 gameObjects.itemStackAmounts(section.getStringList("extraItems")),
@@ -482,7 +482,7 @@ public final class RuntimeConfigFactory {
                 continue;
             }
             ConfigurationSection child = section.getConfigurationSection(key);
-            loadDonorPerks(child, permission != null ? permission + "." + key : key, perks, gameObjects);
+            loadDonorPerks(child, permission != null ? permission + "." + key : key, perks);
         }
     }
 

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,12 +30,10 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.normalize;
 @Singleton
 public class ChallengeFactory {
     private static final Pattern ENTITY_PATTERN = Pattern.compile("(?<type>[a-zA-Z0-9_]+)(?<meta>:\\{.*\\})?(:(?<count>[0-9]+))?");
-    private final Logger log;
     private final GameObjectFactory gameObjects;
 
     @Inject
-    public ChallengeFactory(@NotNull Logger log, @NotNull GameObjectFactory gameObjects) {
-        this.log = log;
+    public ChallengeFactory(@NotNull GameObjectFactory gameObjects) {
         this.gameObjects = gameObjects;
     }
 
