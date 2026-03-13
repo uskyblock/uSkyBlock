@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.ConfigDuration;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.LongFunction;
@@ -20,7 +21,7 @@ public final class ConfigMigrationV113 implements ConfigMigration {
     }
 
     @Override
-    public void apply(@NotNull YamlConfiguration config) {
+    public void apply(@NotNull YamlConfiguration config, @NotNull Path pluginDataDir) {
         migrateSecondsToDuration(config, "options.general.cooldownRestart");
         migrateSecondsToDuration(config, "options.general.biomeChange");
         migrateSecondsToDuration(config, "options.island.islandTeleportDelay");

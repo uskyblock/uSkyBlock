@@ -2,45 +2,39 @@ package us.talabrek.ultimateskyblock.handler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
-import us.talabrek.ultimateskyblock.util.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Singleton
 public class SchematicHandler {
+    private static final String DEFAULT_SCHEME_NAME = "default";
+    private static final String SCHEMATIC_PATH_KEY = "schematic";
+    private static final String NETHER_SCHEMATIC_PATH_KEY = "nether-schematic";
 
-    // Current state: mirrors the legacy IslandGenerator behavior (copy bundled schematics, scan data/schematics
-    // with island-schemes.<name>.enabled gating, and resolve overworld/nether by naming convention). This keeps
-    // functionality 1:1 for now; the whole schematics subsystem would benefit from a dedicated redesign to separate
-    // discovery, layout, and pasting for clarity and robustness.
     private final Logger logger;
     private final PluginConfig config;
     private final Path directorySchematics;
-    private final String defaultNetherName;
 
-    private List<Path> schematicFiles = Collections.emptyList();
-    private @Nullable Path netherSchematic;
     private boolean initialized = false;
 
     @Inject
@@ -52,24 +46,21 @@ public class SchematicHandler {
         this.logger = logger;
         this.config = config;
         this.directorySchematics = dataFolder.toAbsolutePath().resolve("schematics").normalize();
-        this.defaultNetherName = config.getYamlConfig().getString("nether.schematicName", "uSkyBlockNether");
     }
 
     /**
-     * Prepare schematic files: ensure directory, copy bundled files, and scan the folder.
+     * Prepare schematic files: ensure directory, copy bundled files, and validate configured scheme paths.
      */
     public void initialize(@Nullable Plugin plugin) {
         if (initialized) {
             return;
         }
         try {
-            if (!Files.exists(directorySchematics)) {
-                Files.createDirectories(directorySchematics);
-            }
+            Files.createDirectories(directorySchematics);
             copySchematicsFromJar(plugin);
-            netherSchematic = getSchematicFile(defaultNetherName);
-            schematicFiles = loadSchematics();
-            logger.info(schematicFiles.isEmpty() ? "No schematic file loaded." : schematicFiles.size() + " schematics loaded.");
+            validateConfiguredSchemes();
+            List<String> schemeNames = getSchemeNames();
+            logger.info(schemeNames.isEmpty() ? "No island schemes configured." : schemeNames.size() + " island schemes configured.");
             initialized = true;
         } catch (IOException e) {
             logger.log(Level.WARNING, "Unable to prepare schematics", e);
@@ -77,12 +68,35 @@ public class SchematicHandler {
     }
 
     /**
-     * Returns a list of available schematic names (basename).
+     * Returns a list of configured, enabled scheme names.
      */
     public List<String> getSchemeNames() {
+        ConfigurationSection islandSchemes = getIslandSchemes();
+        if (islandSchemes == null) {
+            return Collections.emptyList();
+        }
+
+        boolean netherEnabled = isNetherEnabled();
         List<String> names = new ArrayList<>();
-        for (Path p : schematicFiles) {
-            names.add(FileUtil.getBasename(p.getFileName().toString()));
+        for (String schemeName : islandSchemes.getKeys(false)) {
+            ConfigurationSection scheme = islandSchemes.getConfigurationSection(schemeName);
+            if (scheme == null || !scheme.getBoolean("enabled", true)) {
+                continue;
+            }
+            if (!hasConfiguredPath(scheme, SCHEMATIC_PATH_KEY)) {
+                continue;
+            }
+            if (netherEnabled && !hasConfiguredPath(scheme, NETHER_SCHEMATIC_PATH_KEY)) {
+                continue;
+            }
+            if (initialized && resolveConfiguredSchematicPath(scheme.getString(SCHEMATIC_PATH_KEY)).isEmpty()) {
+                continue;
+            }
+            if (initialized && netherEnabled
+                && resolveConfiguredSchematicPath(scheme.getString(NETHER_SCHEMATIC_PATH_KEY)).isEmpty()) {
+                continue;
+            }
+            names.add(schemeName);
         }
         Collections.sort(names);
         return names;
@@ -93,51 +107,26 @@ public class SchematicHandler {
      */
     @Nullable
     public SchematicPair getScheme(@Nullable String scheme) {
-        String schemeName = scheme != null ? scheme : "default";
-        Path overworld = getSchematicFile(schemeName);
-        if (overworld == null) {
+        String schemeName = scheme != null ? scheme : DEFAULT_SCHEME_NAME;
+        ConfigurationSection schemeConfig = getIslandScheme(schemeName);
+        if (schemeConfig == null || !schemeConfig.getBoolean("enabled", true)) {
             return null;
         }
 
-        Path nether = getSchematicFile(scheme != null ? scheme + "Nether" : defaultNetherName);
-        if (nether == null) {
-            nether = netherSchematic;
+        Optional<Path> overworld = resolveConfiguredSchematicPath(schemeConfig.getString(SCHEMATIC_PATH_KEY));
+        if (overworld.isEmpty()) {
+            return null;
         }
-        return new SchematicPair(overworld, Optional.ofNullable(nether));
-    }
 
-    private List<Path> loadSchematics() throws IOException {
-        if (!Files.isDirectory(directorySchematics)) {
-            return Collections.emptyList();
+        if (!isNetherEnabled()) {
+            return new SchematicPair(overworld.get(), Optional.empty());
         }
-        List<Path> result = new ArrayList<>();
-        try (Stream<Path> paths = Files.list(directorySchematics)) {
-            paths.filter(Files::isRegularFile)
-                .filter(p -> isIslandSchematic(p.getFileName().toString()))
-                .forEach(result::add);
-        }
-        return result;
-    }
 
-    private boolean isIslandSchematic(String name) {
-        String basename = FileUtil.getBasename(name);
-        boolean enabled = config.getYamlConfig().getBoolean("island-schemes." + basename + ".enabled", true);
-        return enabled
-            && name != null
-            && (name.endsWith(".schematic") || name.endsWith(".schem"))
-            && !name.startsWith("uSkyBlock")
-            && !basename.toLowerCase(Locale.ROOT).endsWith("nether");
-    }
-
-    private Path getSchematicFile(String cSchem) {
-        List<String> extensions = List.of("schematic", "schem");
-        for (String ext : extensions) {
-            Path candidate = directorySchematics.resolve(cSchem + "." + ext);
-            if (Files.exists(candidate) && Files.isRegularFile(candidate) && Files.isReadable(candidate)) {
-                return candidate;
-            }
+        Optional<Path> nether = resolveConfiguredSchematicPath(schemeConfig.getString(NETHER_SCHEMATIC_PATH_KEY));
+        if (nether.isEmpty()) {
+            return null;
         }
-        return null;
+        return new SchematicPair(overworld.get(), nether);
     }
 
     /**
@@ -176,14 +165,13 @@ public class SchematicHandler {
                     continue;
                 }
                 Path target = targetPath.get();
-                File targetFile = target.toFile();
-                if (targetFile.exists()) {
+                if (Files.exists(target)) {
                     continue;
                 }
                 try (InputStream inputStream = loader.getResourceAsStream(entry.getName())) {
                     if (inputStream != null) {
                         Files.createDirectories(target.getParent());
-                        FileUtil.copy(inputStream, targetFile);
+                        Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
                     }
                 } catch (IOException e) {
                     logger.log(Level.WARNING, "Unable to load schematic " + entry.getName(), e);
@@ -205,6 +193,71 @@ public class SchematicHandler {
             return Optional.empty();
         }
         return Optional.of(target);
+    }
+
+    private void validateConfiguredSchemes() {
+        ConfigurationSection islandSchemes = getIslandSchemes();
+        if (islandSchemes == null) {
+            return;
+        }
+
+        boolean netherEnabled = isNetherEnabled();
+        for (String schemeName : islandSchemes.getKeys(false)) {
+            ConfigurationSection scheme = islandSchemes.getConfigurationSection(schemeName);
+            if (scheme == null || !scheme.getBoolean("enabled", true)) {
+                continue;
+            }
+            validateConfiguredPath(schemeName, SCHEMATIC_PATH_KEY, scheme.getString(SCHEMATIC_PATH_KEY));
+            if (netherEnabled) {
+                validateConfiguredPath(schemeName, NETHER_SCHEMATIC_PATH_KEY, scheme.getString(NETHER_SCHEMATIC_PATH_KEY));
+            }
+        }
+    }
+
+    private void validateConfiguredPath(@NotNull String schemeName, @NotNull String key, @Nullable String configuredPath) {
+        if (configuredPath == null || configuredPath.trim().isEmpty()) {
+            logger.warning("Island scheme '" + schemeName + "' is missing required '" + key + "' configuration.");
+            return;
+        }
+
+        Optional<Path> resolved = resolveTarget(directorySchematics, configuredPath);
+        if (resolved.isEmpty()) {
+            logger.warning("Island scheme '" + schemeName + "' has suspicious '" + key + "' path: " + configuredPath);
+            return;
+        }
+
+        Path path = resolved.get();
+        if (!Files.isRegularFile(path) || !Files.isReadable(path)) {
+            logger.warning("Island scheme '" + schemeName + "' points '" + key + "' to a missing or unreadable file: " + configuredPath);
+        }
+    }
+
+    private boolean isNetherEnabled() {
+        return config.getYamlConfig().getBoolean("nether.enabled", false);
+    }
+
+    private boolean hasConfiguredPath(@NotNull ConfigurationSection scheme, @NotNull String key) {
+        String configuredPath = scheme.getString(key);
+        return configuredPath != null && !configuredPath.trim().isEmpty();
+    }
+
+    private @Nullable ConfigurationSection getIslandSchemes() {
+        return config.getYamlConfig().getConfigurationSection("island-schemes");
+    }
+
+    private @Nullable ConfigurationSection getIslandScheme(@NotNull String schemeName) {
+        ConfigurationSection islandSchemes = getIslandSchemes();
+        return islandSchemes != null ? islandSchemes.getConfigurationSection(schemeName) : null;
+    }
+
+    private Optional<Path> resolveConfiguredSchematicPath(@Nullable String configuredPath) {
+        if (configuredPath == null || configuredPath.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return resolveTarget(directorySchematics, configuredPath)
+            .filter(Files::isRegularFile)
+            .filter(Files::isReadable);
     }
 
     public record SchematicPair(@NotNull Path overworld, @NotNull Optional<Path> nether) {

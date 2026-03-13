@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.config.migration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 public final class ConfigMigrationV112 implements ConfigMigration {
@@ -23,7 +24,7 @@ public final class ConfigMigrationV112 implements ConfigMigration {
     }
 
     @Override
-    public void apply(@NotNull YamlConfiguration config) {
+    public void apply(@NotNull YamlConfiguration config, @NotNull Path pluginDataDir) {
         if (!config.contains("options.extras.obsidianToLava")) {
             config.set("options.extras.obsidianToLava", true);
         }

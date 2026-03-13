@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.config.migration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public final class ConfigMigrationV115 implements ConfigMigration {
@@ -21,7 +22,7 @@ public final class ConfigMigrationV115 implements ConfigMigration {
     }
 
     @Override
-    public void apply(@NotNull YamlConfiguration config) {
+    public void apply(@NotNull YamlConfiguration config, @NotNull Path pluginDataDir) {
         if (!config.contains("options.spawning.guardians.enabled")) {
             config.set("options.spawning.guardians.enabled", GUARDIAN_ENABLED);
         }
