@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.command.island;
 import com.google.inject.Inject;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Placeholder;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -21,11 +22,13 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 public class WarpCommand extends RequirePlayerCommand {
 
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public WarpCommand(@NotNull uSkyBlock plugin) {
+    public WarpCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         super("warp|w", "usb.island.warp", "island", marktr("warp to another player's island"));
         this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class WarpCommand extends RequirePlayerCommand {
                     return true;
                 }
                 if (!island.isBanned(player)) {
-                    if (plugin.getConfig().getBoolean("options.protection.visitors.warn-on-warp", true)) {
+                    if (runtimeConfigs.current().protection().visitorWarnOnWarp()) {
                         island.sendMessageToOnlineMembers(trLegacy("<error>Warning:</error> <player> is warping to your island.",
                             Placeholder.legacy("player", player.getDisplayName(), PRIMARY)));
                     }

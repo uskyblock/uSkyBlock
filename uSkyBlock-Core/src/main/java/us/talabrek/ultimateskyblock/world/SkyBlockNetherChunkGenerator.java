@@ -2,13 +2,15 @@ package us.talabrek.ultimateskyblock.world;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.List;
 import java.util.Random;
@@ -23,7 +25,7 @@ public class SkyBlockNetherChunkGenerator extends ChunkGenerator {
     @Override
     public void generateNoise(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {
         // Generate lava sea
-        chunkData.setRegion(0, MIN_HEIGHT, 0, 16, Settings.nether_lava_level + 1, 16, Material.LAVA);
+        chunkData.setRegion(0, MIN_HEIGHT, 0, 16, uSkyBlock.getInstance().getRuntimeConfigs().current().nether().lavaLevel() + 1, 16, Material.LAVA);
 
         // Generate netherrack ceiling
 
@@ -83,11 +85,12 @@ public class SkyBlockNetherChunkGenerator extends ChunkGenerator {
 
     @Override
     public BiomeProvider getDefaultBiomeProvider(@NotNull WorldInfo worldInfo) {
-        return new SingleBiomeProvider(Settings.general_defaultNetherBiome);
+        Biome biome = Registry.BIOME.match(uSkyBlock.getInstance().getRuntimeConfigs().current().general().defaultNetherBiomeKey());
+        return new SingleBiomeProvider(biome != null ? biome : Biome.NETHER_WASTES);
     }
 
     @Override
     public Location getFixedSpawnLocation(@NotNull World world, @NotNull Random random) {
-        return new Location(world, 0, Settings.nether_height, 0);
+        return new Location(world, 0, uSkyBlock.getInstance().getRuntimeConfigs().current().nether().height(), 0);
     }
 }

@@ -44,10 +44,10 @@ public class ChunkRegenerator {
     public void regenerateChunks(@NotNull List<Chunk> chunkList, @Nullable Runnable onCompletion) {
         Validate.notNull(chunkList, "ChunkList cannot be empty");
 
-        final int CHUNKS_PER_TICK = plugin.getConfig().getInt("options.advanced.chunkRegenSpeed", 4);
+        final int chunksPerTick = plugin.getRuntimeConfigs().current().advanced().chunkRegenSpeed();
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
         task = scheduler.runTaskTimer(plugin, () -> {
-            for (int i = 0; i <= CHUNKS_PER_TICK; i++) {
+            for (int i = 0; i <= chunksPerTick; i++) {
                 if (!chunkList.isEmpty()) {
                     Chunk chunk = chunkList.removeFirst();
                     regenerateChunk(chunk);

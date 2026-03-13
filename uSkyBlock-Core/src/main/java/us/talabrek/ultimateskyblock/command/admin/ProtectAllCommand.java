@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.command.admin.task.ProtectAllTask;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -22,13 +23,15 @@ import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 public class ProtectAllCommand extends AbstractCommand {
     private final uSkyBlock plugin;
     private final IslandLogic islandLogic;
+    private final RuntimeConfigs runtimeConfigs;
     private ProtectAllTask task;
 
     @Inject
-    public ProtectAllCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic) {
+    public ProtectAllCommand(@NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic, @NotNull RuntimeConfigs runtimeConfigs) {
         super("protectall", "usb.admin.protectall", marktr("protects all islands (time consuming)"));
         this.plugin = plugin;
         this.islandLogic = islandLogic;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     private boolean isProtectAllActive() {
@@ -49,7 +52,7 @@ public class ProtectAllCommand extends AbstractCommand {
             }
         }
         sendTr(sender, "Starting a protect-all task. It may take a while.");
-        Duration feedbackFrequency = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
+        Duration feedbackFrequency = runtimeConfigs.current().advanced().feedbackEvery();
         ProgressTracker tracker = new ProgressTracker(sender,
             marktr("- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             10,

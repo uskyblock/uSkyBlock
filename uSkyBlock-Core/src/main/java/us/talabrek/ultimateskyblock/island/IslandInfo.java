@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.api.event.island.IslandBanPlayerEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandLockEvent;
 import us.talabrek.ultimateskyblock.api.event.island.IslandTrustPlayerEvent;
@@ -85,6 +85,10 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     private boolean dirty = false;
     private boolean toBeDeleted = false;
 
+    private RuntimeConfig runtimeConfig() {
+        return plugin.getRuntimeConfigs().current();
+    }
+
     public IslandInfo(@NotNull String islandName, @NotNull uSkyBlock plugin, @NotNull Path islandDirectory) {
         Validate.notNull(islandName, "IslandName cannot be null");
         Validate.notEmpty(islandName, "IslandName cannot be empty");
@@ -112,7 +116,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         // Backwards compatibility.
         if (config.contains("maxSize")) {
             int oldMaxSize = config.getInt("maxSize");
-            if (oldMaxSize > Settings.general_maxPartySize) {
+            if (oldMaxSize > runtimeConfig().general().maxPartySize()) {
                 ConfigurationSection leaderSection = config.getConfigurationSection("party.members." +
                     UUIDUtil.asString(getLeaderUniqueId()));
                 if (leaderSection != null) {
@@ -226,7 +230,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         boolean dirty = false;
         if (section != null) {
             section.set("name", member.getName());
-            int maxParty = section.getInt("maxPartySizePermission", Settings.general_maxPartySize);
+            int maxParty = section.getInt("maxPartySizePermission", runtimeConfig().general().maxPartySize());
             if (perk.getMaxPartySize() != maxParty) {
                 section.set("maxPartySizePermission", perk.getMaxPartySize());
                 dirty = true;
@@ -417,12 +421,13 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     @Override
     public Biome getIslandBiome() {
-        String biomeKey = config.getString("general.biome", Settings.general_defaultBiome.getKey().getKey());
+        String biomeKey = config.getString("general.biome", runtimeConfig().general().defaultBiomeKey());
         Biome biome = Registry.BIOME.match(biomeKey);
         if (biome != null) {
             return biome;
         } else {
-            return Settings.general_defaultNetherBiome;
+            Biome defaultBiome = Registry.BIOME.match(runtimeConfig().general().defaultNetherBiomeKey());
+            return defaultBiome != null ? defaultBiome : Biome.NETHER_WASTES;
         }
     }
 
@@ -550,7 +555,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         sb.append(System.currentTimeMillis());
         sb.append(";").append(LOG_ENTRY_V2).append(";").append(plainMessage);
         log.addFirst(sb.toString());
-        int logSize = plugin.getConfig().getInt("options.island.log-size", 10);
+        int logSize = runtimeConfig().island().logSize();
         if (log.size() > logSize) {
             log = log.subList(0, logSize);
         }
@@ -1193,7 +1198,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
 
     @Override
     public String getSchematicName() {
-        return config.getString("general.schematicName", Settings.island_schematicName);
+        return config.getString("general.schematicName", runtimeConfig().island().defaultScheme());
     }
 
     public void setSchematicName(String schematicName) {

@@ -36,7 +36,7 @@ public class ChallengeCompletionLogic {
         this.plugin = plugin;
         storeOnIsland = config.getString("challengeSharing", "island").equalsIgnoreCase("island");
         completionCache = CacheBuilder
-            .from(plugin.getConfig().getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"))
+            .from(plugin.getRuntimeConfigs().current().advanced().completionCacheSpec())
             .removalListener((RemovalListener<String, Map<ChallengeKey, ChallengeCompletion>>) removal -> saveToFile(removal.getKey(), removal.getValue()))
             .build(new CacheLoader<>() {
                        @Override

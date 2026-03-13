@@ -20,7 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -47,6 +47,10 @@ public class WorldGuardHandler {
     private static final String CN = WorldGuardHandler.class.getName();
     private static final Logger log = Logger.getLogger(CN);
     private static final String VERSION = "14";
+
+    private static RuntimeConfig runtimeConfig() {
+        return uSkyBlock.getInstance().getRuntimeConfigs().current();
+    }
 
     public static WorldGuardPlatform getWorldGuard() {
         final Plugin plugin = uSkyBlock.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
@@ -147,7 +151,7 @@ public class WorldGuardHandler {
         region.setOwners(owners);
         region.setMembers(members);
         region.setPriority(100);
-        if (uSkyBlock.getInstance().getConfig().getBoolean("worldguard.entry-message", true)) {
+        if (runtimeConfig().worldGuard().entryMessage()) {
             if (owners.size() == 0) {
                 region.setFlag(Flags.GREET_MESSAGE, trLegacy("** You are entering a protected - but abandoned - island area.", ERROR));
             } else {
@@ -157,7 +161,7 @@ public class WorldGuardHandler {
         } else {
             region.setFlag(Flags.GREET_MESSAGE, null);
         }
-        if (uSkyBlock.getInstance().getConfig().getBoolean("worldguard.exit-message", true)) {
+        if (runtimeConfig().worldGuard().exitMessage()) {
             if (owners.size() == 0) {
                 region.setFlag(Flags.FAREWELL_MESSAGE, trLegacy("** You are leaving an abandoned island.", ERROR));
             } else {
@@ -224,12 +228,14 @@ public class WorldGuardHandler {
 
     public static BlockVector3 getProtectionVectorLeft(final Location island) {
         World world = island.getWorld();
-        return BlockVector3.at(island.getX() + Settings.island_radius - 1, world.getMaxHeight() - 1, island.getZ() + Settings.island_radius - 1);
+        int radius = runtimeConfig().island().radius();
+        return BlockVector3.at(island.getX() + radius - 1, world.getMaxHeight() - 1, island.getZ() + radius - 1);
     }
 
     public static BlockVector3 getProtectionVectorRight(final Location island) {
         World world = island.getWorld();
-        return BlockVector3.at(island.getX() - Settings.island_radius, world.getMinHeight(), island.getZ() - Settings.island_radius);
+        int radius = runtimeConfig().island().radius();
+        return BlockVector3.at(island.getX() - radius, world.getMinHeight(), island.getZ() - radius);
     }
 
     public static String getIslandNameAt(Location location) {
@@ -264,7 +270,7 @@ public class WorldGuardHandler {
     }
 
     public static ProtectedRegion getNetherRegionAt(Location location) {
-        if (!Settings.nether_enabled || location == null) {
+        if (!runtimeConfig().nether().enabled() || location == null) {
             return null;
         }
         RegionManager regionManager = getRegionManager(location.getWorld());
@@ -292,10 +298,10 @@ public class WorldGuardHandler {
         if (regionManager != null) {
             ProtectedRegion global = regionManager.getRegion("__global__");
             if (global == null) {
-                global = new GlobalProtectedRegion("__global__");
-            }
-            global.setFlag(Flags.BUILD, StateFlag.State.DENY);
-            if (Settings.island_allowPvP) {
+            global = new GlobalProtectedRegion("__global__");
+        }
+        global.setFlag(Flags.BUILD, StateFlag.State.DENY);
+            if (runtimeConfig().island().allowPvP()) {
                 global.setFlag(Flags.PVP, StateFlag.State.ALLOW);
             } else {
                 global.setFlag(Flags.PVP, StateFlag.State.DENY);
@@ -325,7 +331,7 @@ public class WorldGuardHandler {
     public static boolean isIslandIntersectingSpawn(Location islandLocation) {
         log.entering(CN, "isIslandIntersectingSpawn", islandLocation);
         try {
-            int r = Settings.general_spawnSize;
+            int r = runtimeConfig().general().spawnSize();
             if (r == 0) {
                 return false;
             }
@@ -342,7 +348,6 @@ public class WorldGuardHandler {
     }
 
     public static ProtectedCuboidRegion getIslandRegion(Location islandLocation) {
-        int r = Settings.island_radius;
         BlockVector3 islandCenter = BlockVector3.at(islandLocation.getBlockX(), 0, islandLocation.getBlockZ());
         return new ProtectedCuboidRegion(
                 String.format("%d,%disland", islandCenter.getBlockX(), islandLocation.getBlockZ()),

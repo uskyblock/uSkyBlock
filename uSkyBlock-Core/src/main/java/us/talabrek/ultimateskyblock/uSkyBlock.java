@@ -46,6 +46,7 @@ import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.Settings;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
@@ -370,6 +371,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public void clearPlayerInventory(Player player) {
         getLogger().entering(CN, "clearPlayerInventory", player);
+        RuntimeConfig.Restart restartConfig = runtimeConfigs.current().restart();
         PlayerInfo playerInfo = getPlayerInfo(player);
         if (!getWorldManager().isSkyWorld(player.getWorld())) {
             getLogger().finer("not clearing, since player is not in skyworld, marking for clear on next entry");
@@ -381,20 +383,20 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (playerInfo != null) {
             playerInfo.setClearInventoryOnNextEntry(false);
         }
-        if (getConfig().getBoolean("options.restart.clearInventory", true)) {
+        if (restartConfig.clearInventory()) {
             player.getInventory().clear();
         }
-        if (getConfig().getBoolean("options.restart.clearPerms", true)) {
+        if (restartConfig.clearPerms()) {
             playerInfo.clearPerms(player);
         }
-        if (getConfig().getBoolean("options.restart.clearArmor", true)) {
+        if (restartConfig.clearArmor()) {
             ItemStack[] armor = player.getEquipment().getArmorContents();
             player.getEquipment().setArmorContents(new ItemStack[armor.length]);
         }
-        if (getConfig().getBoolean("options.restart.clearEnderChest", true)) {
+        if (restartConfig.clearEnderChest()) {
             player.getEnderChest().clear();
         }
-        if (getConfig().getBoolean("options.restart.clearCurrency", false)) {
+        if (restartConfig.clearCurrency()) {
             getHookManager().getEconomyHook().ifPresent((hook) -> hook.withdrawPlayer(player, hook.getBalance(player)));
         }
         getLogger().exiting(CN, "clearPlayerInventory");
@@ -405,7 +407,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
         String islandName = WorldGuardHandler.getIslandNameAt(l);
         Location islandLocation = IslandUtil.getIslandLocation(islandName);
-        final Location newLoc = LocationUtil.alignToDistance(islandLocation, Settings.island_distance);
+        final Location newLoc = LocationUtil.alignToDistance(islandLocation, runtimeConfigs.current().island().distance());
         if (newLoc == null) {
             return false;
         }
@@ -845,7 +847,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             return false;
         }
         Location spawnCenter = new Location(WorldManager.skyBlockWorld, 0, pLoc.getBlockY(), 0);
-        return spawnCenter.distance(pLoc) <= Settings.general_spawnSize;
+        return spawnCenter.distance(pLoc) <= runtimeConfigs.current().general().spawnSize();
     }
 
     /**

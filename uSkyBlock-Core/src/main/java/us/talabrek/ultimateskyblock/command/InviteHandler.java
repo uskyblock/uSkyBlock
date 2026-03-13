@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.config.ConfigDuration;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.api.event.AcceptEvent;
 import us.talabrek.ultimateskyblock.api.event.InviteEvent;
 import us.talabrek.ultimateskyblock.api.event.RejectEvent;
@@ -43,11 +43,13 @@ public class InviteHandler implements Listener {
     private final Map<String, Map<UUID, String>> waitingInvites = new HashMap<>();
     private final uSkyBlock plugin;
     private final Scheduler scheduler;
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public InviteHandler(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler) {
+    public InviteHandler(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
         this.scheduler = scheduler;
+        this.runtimeConfigs = runtimeConfigs;
     }
 
     private synchronized void invite(Player player, final IslandInfo island, Player otherPlayer) {
@@ -76,7 +78,7 @@ public class InviteHandler implements Listener {
             Placeholder.legacy("player", player.getDisplayName(), PRIMARY));
         sendTr(otherPlayer, "Use <cmd>/is accept</cmd> or <cmd>/is reject</cmd> to respond.", MUTED);
         sendErrorTr(otherPlayer, "Warning: Accepting will replace your current island.");
-        Duration timeout = ConfigDuration.parse(plugin.getConfig().getString("options.party.invite-timeout", "2m"));
+        Duration timeout = runtimeConfigs.current().party().inviteTimeout();
         BukkitTask timeoutTask = scheduler.async(() -> uninvite(island, uniqueId), timeout);
         final Invite invite = new Invite(island.getName(), player.getDisplayName(), timeoutTask);
         inviteMap.put(uniqueId, invite);

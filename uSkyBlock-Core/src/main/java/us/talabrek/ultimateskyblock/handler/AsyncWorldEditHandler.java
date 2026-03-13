@@ -44,7 +44,7 @@ public enum AsyncWorldEditHandler {;
 
     public static AWEAdaptor getAWEAdaptor() {
         if (adaptor == null) {
-            if (!uSkyBlock.getInstance().getConfig().getBoolean("asyncworldedit.enabled", true)) {
+            if (!uSkyBlock.getInstance().getRuntimeConfigs().current().asyncWorldEdit().enabled()) {
                 return NULL_ADAPTOR;
             }
             //Plugin fawe = getFAWE();

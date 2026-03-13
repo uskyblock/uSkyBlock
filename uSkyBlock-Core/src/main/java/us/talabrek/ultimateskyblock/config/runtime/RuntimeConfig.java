@@ -17,14 +17,18 @@ public record RuntimeConfig(
     @NotNull Extras extras,
     @NotNull Protection protection,
     @NotNull Nether nether,
+    @NotNull Restart restart,
     @NotNull Advanced advanced,
     @NotNull Async async,
+    @NotNull AsyncWorldEdit asyncWorldEdit,
     @NotNull Party party,
     @NotNull PluginUpdates pluginUpdates,
     @NotNull Spawning spawning,
     @NotNull Placeholder placeholder,
     @NotNull ToolMenu toolMenu,
     @NotNull Signs signs,
+    @NotNull WorldGuard worldGuard,
+    @NotNull Importer importer,
     @NotNull Map<String, IslandScheme> islandSchemes,
     @NotNull Map<Integer, ExtraMenu> extraMenus,
     @NotNull Map<String, PerkSpec> donorPerks,
@@ -65,11 +69,13 @@ public record RuntimeConfig(
         boolean useTopTen,
         @NotNull String defaultScheme,
         @NotNull Duration topTenTimeout,
+        @NotNull Duration reservationTimeout,
         boolean allowPvP,
         @NotNull Duration teleportDelay,
         double teleportCancelDistance,
         int autoRefreshScore,
         boolean topTenShowMembers,
+        int logSize,
         boolean schemesEnabled,
         @NotNull String chatFormat,
         @NotNull SpawnLimits spawnLimits,
@@ -100,10 +106,12 @@ public record RuntimeConfig(
     public record Protection(
         boolean enabled,
         boolean itemDrops,
+        boolean visitorItemDrops,
         boolean protectLava,
         boolean visitorFallProtected,
         boolean visitorFireProtected,
         boolean visitorMonsterProtected,
+        boolean visitorWarnOnWarp,
         boolean blockBannedEntry
     ) {
     }
@@ -116,6 +124,18 @@ public record RuntimeConfig(
     ) {
     }
 
+    public record Restart(
+        boolean clearInventory,
+        boolean clearPerms,
+        boolean clearArmor,
+        boolean clearEnderChest,
+        boolean clearCurrency,
+        boolean teleportWhenReady,
+        @NotNull Duration teleportDelay,
+        @NotNull List<String> extraCommands
+    ) {
+    }
+
     public record Advanced(
         @NotNull Duration confirmTimeout,
         boolean useDisplayNames,
@@ -123,9 +143,16 @@ public record RuntimeConfig(
         boolean manageSpawn,
         @NotNull String playerCacheSpec,
         @NotNull String islandCacheSpec,
+        @NotNull String placeholderCacheSpec,
+        @NotNull String completionCacheSpec,
         @NotNull Duration islandSaveEvery,
         @NotNull Duration playerSaveEvery,
         @NotNull String chunkGenerator,
+        int chunkRegenSpeed,
+        @NotNull Duration feedbackEvery,
+        double purgeLevel,
+        @NotNull Duration purgeTimeout,
+        @Nullable String debugLevel,
         @NotNull PlayerDb playerDb
     ) {
     }
@@ -133,7 +160,8 @@ public record RuntimeConfig(
     public record PlayerDb(
         @NotNull String storage,
         @NotNull String nameCacheSpec,
-        @NotNull String uuidCacheSpec
+        @NotNull String uuidCacheSpec,
+        @NotNull Duration saveDelay
     ) {
     }
 
@@ -144,9 +172,18 @@ public record RuntimeConfig(
     ) {
     }
 
+    public record AsyncWorldEdit(
+        boolean enabled,
+        @NotNull Duration heartBeat,
+        @NotNull Duration timeout
+    ) {
+    }
+
     public record Party(
         @NotNull Duration inviteTimeout,
         @NotNull String chatFormat,
+        @NotNull List<String> joinCommands,
+        @NotNull List<String> leaveCommands,
         @NotNull Map<String, Integer> maxPartyPermissions
     ) {
     }
@@ -184,12 +221,26 @@ public record RuntimeConfig(
     }
 
     public record ToolMenu(
-        boolean enabled
+        boolean enabled,
+        @NotNull String toolSpec,
+        @NotNull Map<String, String> commands
     ) {
     }
 
     public record Signs(
         boolean enabled
+    ) {
+    }
+
+    public record WorldGuard(
+        boolean entryMessage,
+        boolean exitMessage
+    ) {
+    }
+
+    public record Importer(
+        double progressEveryPct,
+        @NotNull Duration progressEvery
     ) {
     }
 

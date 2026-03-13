@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.util.UUIDUtil;
@@ -45,7 +46,7 @@ public class FilePlayerDB implements PlayerDB {
     private final Map<String, UUID> name2uuidCache = new ConcurrentHashMap<>();
     private final Map<UUID, String> uuid2nameCache = new ConcurrentHashMap<>();
 
-    public FilePlayerDB(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler, @NotNull Logger logger) {
+    public FilePlayerDB(@NotNull uSkyBlock plugin, @NotNull Scheduler scheduler, @NotNull Logger logger, @NotNull RuntimeConfig.PlayerDb playerDbConfig) {
         this.scheduler = scheduler;
         this.logger = logger;
         uuid2NameFile = new File(plugin.getDataFolder(), "uuid2name.yml");
@@ -53,8 +54,7 @@ public class FilePlayerDB implements PlayerDB {
         if (uuid2NameFile.exists()) {
             FileUtil.readConfig(uuid2NameConfig, uuid2NameFile);
         }
-        // Save max every 10 seconds
-        saveDelay = Duration.ofMillis(plugin.getConfig().getInt("playerdb.saveDelay", 10000));
+        saveDelay = playerDbConfig.saveDelay();
         scheduler.async(() -> {
             synchronized (uuid2NameConfig) {
                 Set<String> uuids = uuid2NameConfig.getKeys(false);

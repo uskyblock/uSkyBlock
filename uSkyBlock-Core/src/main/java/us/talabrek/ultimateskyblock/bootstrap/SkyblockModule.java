@@ -54,7 +54,7 @@ public class SkyblockModule extends AbstractModule {
     @NotNull PlayerDB providePlayerDB(RuntimeConfigs runtimeConfigs, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
         String playerDbStorage = runtimeConfigs.current().advanced().playerDb().storage();
         if (playerDbStorage.equalsIgnoreCase("yml")) {
-            return new FilePlayerDB(plugin, scheduler, logger);
+            return new FilePlayerDB(plugin, scheduler, logger, runtimeConfigs.current().advanced().playerDb());
         } else if (playerDbStorage.equalsIgnoreCase("memory")) {
             return new MemoryPlayerDB(runtimeConfigs.current().advanced().playerDb());
         } else {

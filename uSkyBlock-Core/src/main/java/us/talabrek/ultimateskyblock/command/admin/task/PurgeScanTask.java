@@ -53,7 +53,7 @@ public class PurgeScanTask extends BukkitRunnable {
         this.islandList = new ArrayList<>(Arrays.asList(islandList));
         purgeList = new ArrayList<>();
         this.purgeLevel = purgeLevel;
-        Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getLong("async.long.feedbackEvery", 30000));
+        Duration feedbackEvery = plugin.getRuntimeConfigs().current().advanced().feedbackEvery();
         timer = Timer.start();
         tracker = new ProgressTracker(sender,
             marktr("- Scanning: <progress_pct:'0%'> (<progress>/<total> failed: <failed>) ~ <elapsed>"),

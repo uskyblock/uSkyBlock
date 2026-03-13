@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.ArrayList;
@@ -33,9 +34,9 @@ public class ItemDropEvents implements Listener {
     private final boolean visitorsCanDrop;
 
     @Inject
-    public ItemDropEvents(@NotNull uSkyBlock plugin) {
+    public ItemDropEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        visitorsCanDrop = plugin.getConfig().getBoolean("options.protection.visitors.item-drops", true);
+        visitorsCanDrop = runtimeConfigs.current().protection().visitorItemDrops();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

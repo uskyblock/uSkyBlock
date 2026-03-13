@@ -39,7 +39,7 @@ public class CreateIslandTask extends BukkitRunnable {
                 unparsed("schematic", cSchem));
         }
         GenerateTask generateTask = new GenerateTask(plugin, player, playerPerk.getPlayerInfo(), next, playerPerk, cSchem);
-        Duration heartBeat = Duration.ofMillis(plugin.getConfig().getInt("asyncworldedit.watchDog.heartBeatMs", 2000));
+        Duration heartBeat = plugin.getRuntimeConfigs().current().asyncWorldEdit().heartBeat();
         final BukkitRunnable completionWatchDog = new LocateChestTask(plugin, player, next, generateTask);
         scheduler.sync(completionWatchDog, Duration.ZERO, heartBeat);
     }

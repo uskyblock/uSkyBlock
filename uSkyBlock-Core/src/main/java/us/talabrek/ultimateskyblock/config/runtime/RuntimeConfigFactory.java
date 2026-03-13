@@ -55,11 +55,13 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.island.useTopTen"),
                 config.getString("options.island.schematicName", "default"),
                 parseDuration(config.getString("options.island.topTenTimeout", "7m"), Duration.ofMinutes(7), false),
+                parseDuration(config.getString("options.island.reservationTimeout"), Duration.ofMinutes(5), true),
                 isAllowPvP(config),
                 parseDuration(config.getString("options.island.islandTeleportDelay", "2s"), Duration.ofSeconds(2), false),
                 config.getDouble("options.island.teleportCancelDistance", 0.2d),
                 Math.max(0, config.getInt("options.island.autoRefreshScore", 0)),
                 config.getBoolean("options.island.topTenShowMembers", true),
+                Math.max(0, config.getInt("options.island.log-size", 10)),
                 config.getBoolean("island-schemes-enabled", true),
                 config.getString("options.island.chat-format", "&9SKY &r{DISPLAYNAME} &f>&d {MESSAGE}"),
                 new RuntimeConfig.SpawnLimits(
@@ -80,10 +82,12 @@ public final class RuntimeConfigFactory {
             new RuntimeConfig.Protection(
                 config.getBoolean("options.protection.enabled", true),
                 config.getBoolean("options.protection.item-drops", true),
+                config.getBoolean("options.protection.visitors.item-drops", true),
                 config.getBoolean("options.protection.protect-lava", true),
                 config.getBoolean("options.protection.visitors.fall", true),
                 config.getBoolean("options.protection.visitors.fire-damage", true),
                 config.getBoolean("options.protection.visitors.monster-damage", false),
+                config.getBoolean("options.protection.visitors.warn-on-warp", true),
                 config.getBoolean("options.protection.visitors.block-banned-entry", true)
             ),
             new RuntimeConfig.Nether(
@@ -92,6 +96,16 @@ public final class RuntimeConfigFactory {
                 config.getInt("nether.height", islandHeight / 2),
                 config.getString("nether.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockNetherChunkGenerator")
             ),
+            new RuntimeConfig.Restart(
+                config.getBoolean("options.restart.clearInventory", true),
+                config.getBoolean("options.restart.clearPerms", true),
+                config.getBoolean("options.restart.clearArmor", true),
+                config.getBoolean("options.restart.clearEnderChest", true),
+                config.getBoolean("options.restart.clearCurrency", false),
+                config.getBoolean("options.restart.teleportWhenReady", true),
+                parseDuration(config.getString("options.restart.teleportDelay", "2000ms"), Duration.ofSeconds(2), false),
+                List.copyOf(config.getStringList("options.restart.extra-commands"))
+            ),
             new RuntimeConfig.Advanced(
                 parseDuration(config.getString("options.advanced.confirmTimeout", "10s"), Duration.ofSeconds(10), false),
                 config.getBoolean("options.advanced.useDisplayNames", false),
@@ -99,13 +113,21 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("options.advanced.manageSpawn", true),
                 config.getString("options.advanced.playerCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
                 config.getString("options.advanced.islandCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
+                config.getString("options.advanced.placeholderCache", "maximumSize=200,expireAfterWrite=20s"),
+                config.getString("options.advanced.completionCache", "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m"),
                 Duration.ofSeconds(config.getInt("options.advanced.island.saveEvery", 30)),
                 Duration.ofSeconds(config.getInt("options.advanced.player.saveEvery", 2 * 60)),
                 config.getString("options.advanced.chunk-generator", "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator"),
+                Math.max(0, config.getInt("options.advanced.chunkRegenSpeed", 4)),
+                Duration.ofMillis(config.getLong("async.long.feedbackEvery", 30000)),
+                config.getDouble("options.advanced.purgeLevel", 10),
+                Duration.ofMillis(config.getLong("options.advanced.purgeTimeout", 600000)),
+                normalizeBlank(config.getString("options.advanced.debugLevel")),
                 new RuntimeConfig.PlayerDb(
                     config.getString("options.advanced.playerdb.storage", "yml"),
                     config.getString("options.advanced.playerdb.nameCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"),
-                    config.getString("options.advanced.playerdb.uuidCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m")
+                    config.getString("options.advanced.playerdb.uuidCache", "maximumSize=1500,expireAfterWrite=30m,expireAfterAccess=15m"),
+                    Duration.ofMillis(config.getInt("playerdb.saveDelay", 10000))
                 )
             ),
             new RuntimeConfig.Async(
@@ -113,9 +135,16 @@ public final class RuntimeConfigFactory {
                 config.getLong("async.maxConsecutiveTicks", 20),
                 TimeUtil.ticksAsDuration(config.getLong("async.yieldDelay", 2))
             ),
+            new RuntimeConfig.AsyncWorldEdit(
+                config.getBoolean("asyncworldedit.enabled", true),
+                Duration.ofMillis(config.getInt("asyncworldedit.watchDog.heartBeatMs", 2000)),
+                parseDuration(config.getString("asyncworldedit.watchDog.timeout", "5m"), Duration.ofMinutes(5), false)
+            ),
             new RuntimeConfig.Party(
                 parseDuration(config.getString("options.party.invite-timeout", "2m"), Duration.ofMinutes(2), false),
                 config.getString("options.party.chat-format", "&9PARTY &r{DISPLAYNAME} &f>&b {MESSAGE}"),
+                List.copyOf(config.getStringList("options.party.join-commands")),
+                List.copyOf(config.getStringList("options.party.leave-commands")),
                 loadPartyPermissionOverrides(config.getConfigurationSection("options.party.maxPartyPermissions"))
             ),
             new RuntimeConfig.PluginUpdates(
@@ -138,8 +167,20 @@ public final class RuntimeConfigFactory {
                 config.getBoolean("placeholder.servercommandplaceholder", false),
                 config.getBoolean("placeholder.mvdwplaceholderapi", false)
             ),
-            new RuntimeConfig.ToolMenu(config.getBoolean("tool-menu.enabled", true)),
+            new RuntimeConfig.ToolMenu(
+                config.getBoolean("tool-menu.enabled", true),
+                config.getString("tool-menu.tool", "OAK_SAPLING"),
+                loadStringMap(config.getConfigurationSection("tool-menu.commands"))
+            ),
             new RuntimeConfig.Signs(config.getBoolean("signs.enabled", true)),
+            new RuntimeConfig.WorldGuard(
+                config.getBoolean("worldguard.entry-message", true),
+                config.getBoolean("worldguard.exit-message", true)
+            ),
+            new RuntimeConfig.Importer(
+                config.getDouble("importer.progressEveryPct", 10),
+                Duration.ofMillis(config.getLong("importer.progressEveryMs", 10000))
+            ),
             loadIslandSchemes(config),
             loadExtraMenus(config.getConfigurationSection("options.extra-menus")),
             loadDonorPerks(config.getConfigurationSection("donor-perks")),
@@ -189,6 +230,21 @@ public final class RuntimeConfigFactory {
                 continue;
             }
             values.put(key, section.getInt(key));
+        }
+        return Collections.unmodifiableMap(values);
+    }
+
+    @NotNull
+    private static Map<String, String> loadStringMap(ConfigurationSection section) {
+        if (section == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> values = new LinkedHashMap<>();
+        for (String key : section.getKeys(false)) {
+            if (section.isString(key)) {
+                values.put(key, section.getString(key));
+            }
         }
         return Collections.unmodifiableMap(values);
     }

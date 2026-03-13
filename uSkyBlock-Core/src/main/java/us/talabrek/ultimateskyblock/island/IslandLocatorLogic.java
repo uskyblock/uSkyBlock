@@ -74,7 +74,7 @@ public class IslandLocatorLogic {
             plugin.getConfig().set("options.general.lastIslandX", null);
             plugin.getConfig().set("options.general.lastIslandZ", null);
         }
-        reservationTimeout = Duration.ofMillis(plugin.getConfig().getLong("options.island.reservationTimeout", 5 * 60000));
+        reservationTimeout = runtimeConfigs.current().island().reservationTimeout();
     }
 
     private Location getLastIsland() {

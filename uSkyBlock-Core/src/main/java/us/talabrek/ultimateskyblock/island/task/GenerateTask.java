@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.island.task;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.talabrek.ultimateskyblock.config.ConfigDuration;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -71,7 +70,7 @@ public class GenerateTask extends BukkitRunnable {
                 }
                 plugin.clearPlayerInventory(player);
                 if (player != null && player.isOnline()) {
-                    if (plugin.getConfig().getBoolean("options.restart.teleportWhenReady", true)) {
+                    if (plugin.getRuntimeConfigs().current().restart().teleportWhenReady()) {
                         sendTr(player, "<success>Congratulations!</success> Your island is ready.");
                         if (AsyncWorldEditHandler.isAWE()) {
                             sendTr(player, "Note: Construction may still be in progress.", MUTED);
@@ -83,10 +82,10 @@ public class GenerateTask extends BukkitRunnable {
                         sendTr(player, "Note: Construction may still be in progress.", MUTED);
                     }
                 }
-                for (String command : plugin.getConfig().getStringList("options.restart.extra-commands")) {
+                for (String command : plugin.getRuntimeConfigs().current().restart().extraCommands()) {
                     plugin.execCommand(player, command, true);
                 }
-            }, ConfigDuration.parse(plugin.getConfig().getString("options.restart.teleportDelay", "2000ms"))
+            }, plugin.getRuntimeConfigs().current().restart().teleportDelay()
         );
     }
 }

@@ -40,8 +40,8 @@ public class USBImporterExecutor {
     @Inject
     public USBImporterExecutor(uSkyBlock plugin) {
         this.plugin = plugin;
-        double progressEveryPct = plugin.getConfig().getDouble("importer.progressEveryPct", 10);
-        Duration progressInterval = Duration.ofMillis(plugin.getConfig().getLong("importer.progressEveryMs", 10000));
+        double progressEveryPct = plugin.getRuntimeConfigs().current().importer().progressEveryPct();
+        Duration progressInterval = plugin.getRuntimeConfigs().current().importer().progressEvery();
         progressTracker = new ProgressTracker(Bukkit.getConsoleSender(),
             marktr("Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
             progressEveryPct,

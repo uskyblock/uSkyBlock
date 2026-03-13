@@ -32,7 +32,7 @@ public class PurgeTask extends BukkitRunnable {
         this.sender = sender;
         this.purgeList = purgeList;
         this.timer = Timer.start();
-        Duration feedbackEvery = Duration.ofMillis(plugin.getConfig().getInt("async.long.feedbackEvery", 30000));
+        Duration feedbackEvery = plugin.getRuntimeConfigs().current().advanced().feedbackEvery();
         tracker = new ProgressTracker(sender,
             marktr("- Purging: <progress_pct:'0%'> (<progress>/<total>), elapsed <elapsed>, estimated completion ~<eta>"),
             25,

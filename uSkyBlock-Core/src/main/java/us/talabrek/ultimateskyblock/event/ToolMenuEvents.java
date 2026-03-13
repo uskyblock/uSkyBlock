@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.HashMap;
@@ -30,23 +31,23 @@ public class ToolMenuEvents implements Listener {
     private final uSkyBlock plugin;
     private final ItemStack tool;
     private final Map<String, String> commandMap = new HashMap<>();
+    private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public ToolMenuEvents(@NotNull uSkyBlock plugin) {
+    public ToolMenuEvents(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
-        tool = ItemStackUtil.createItemStack(plugin.getConfig().getString("tool-menu.tool", Material.OAK_SAPLING.toString()));
+        this.runtimeConfigs = runtimeConfigs;
+        RuntimeConfig.ToolMenu toolMenu = runtimeConfigs.current().toolMenu();
+        tool = ItemStackUtil.createItemStack(toolMenu.toolSpec());
         registerChallenges();
         registerCommands();
     }
 
     private void registerCommands() {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("tool-menu.commands");
-        if (section != null) {
-            for (String block : section.getKeys(false)) {
-                ItemStack item = ItemStackUtil.createItemStack(block);
-                if (item.getType().isBlock() && section.isString(block)) {
-                    commandMap.put(ItemStackUtil.asString(item), section.getString(block));
-                }
+        for (Map.Entry<String, String> entry : runtimeConfigs.current().toolMenu().commands().entrySet()) {
+            ItemStack item = ItemStackUtil.createItemStack(entry.getKey());
+            if (item.getType().isBlock()) {
+                commandMap.put(ItemStackUtil.asString(item), entry.getValue());
             }
         }
     }

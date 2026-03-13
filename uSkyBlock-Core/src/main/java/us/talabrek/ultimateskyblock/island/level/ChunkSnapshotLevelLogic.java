@@ -42,7 +42,7 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         @NotNull Scheduler scheduler,
         @NotNull Logger logger
     ) {
-        super(levelConfigLoader.load(), worldManager);
+        super(levelConfigLoader.load(), worldManager, runtimeConfigs.current().nether().height());
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
         this.scheduler = scheduler;

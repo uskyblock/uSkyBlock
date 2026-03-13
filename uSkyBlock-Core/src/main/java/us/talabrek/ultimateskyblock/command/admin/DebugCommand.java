@@ -78,7 +78,7 @@ public class DebugCommand extends CompositeCommand {
                 return true;
             }
         });
-        String debugLevel = plugin.getConfig().getString("options.advanced.debugLevel", null);
+        String debugLevel = plugin.getRuntimeConfigs().current().advanced().debugLevel();
         if (debugLevel != null) {
             setLogLevel(plugin.getServer().getConsoleSender(), debugLevel);
         }
