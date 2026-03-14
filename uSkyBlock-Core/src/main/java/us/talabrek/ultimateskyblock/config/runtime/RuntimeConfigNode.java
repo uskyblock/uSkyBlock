@@ -268,6 +268,26 @@ final class RuntimeConfigNode {
         return listDefault(relativePath);
     }
 
+    @Nullable
+    Object configuredValueOrNull(@NotNull String relativePath) {
+        return configuredValue(relativePath);
+    }
+
+    @NotNull
+    String defaultString(@NotNull String relativePath, @NotNull String explicitFallback) {
+        return stringDefault(relativePath, explicitFallback);
+    }
+
+    @NotNull
+    List<String> defaultStringList(@NotNull String relativePath) {
+        return listDefault(relativePath);
+    }
+
+    @NotNull
+    String path(@NotNull String relativePath) {
+        return fullPath(relativePath);
+    }
+
     private Object configuredValue(String relativePath) {
         return configured != null && configured.contains(relativePath) ? configured.get(relativePath) : null;
     }

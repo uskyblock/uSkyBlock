@@ -32,7 +32,8 @@ public final class ConfigMigrations {
             new ConfigMigrationV119(),
             new ConfigMigrationV120(),
             new ConfigMigrationV121(),
-            new ConfigMigrationV122()
+            new ConfigMigrationV122(),
+            new ConfigMigrationV123()
         ));
     }
 

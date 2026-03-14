@@ -429,6 +429,26 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void normalizesBlankSchemeExtraItemsAndWorkbenchToolMenuDuringMigration123() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(122);
+        config.set("island-schemes.default.extraItems", "");
+        config.set("tool-menu.commands.CRAFTING_TABLE", null);
+        config.set("tool-menu.commands.WORKBENCH", "challenges");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertTrue(migrated.isList("island-schemes.default.extraItems"));
+        assertEquals(List.of(), migrated.getStringList("island-schemes.default.extraItems"));
+        assertEquals("challenges", migrated.getString("tool-menu.commands.CRAFTING_TABLE"));
+        assertFalse(migrated.contains("tool-menu.commands.WORKBENCH"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();

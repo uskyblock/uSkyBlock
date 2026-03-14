@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountSpec;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -100,7 +101,7 @@ public final class RuntimeConfigFactory {
                     root.boolWithDefault("options.island.removeCreaturesByTeleport"),
                     protectionRange,
                     protectionRange / 2,
-                    gameObjects.itemStackAmounts(root.stringList("options.island.chestItems")),
+                    loadItemStackAmounts(root, "options.island.chestItems"),
                     root.boolWithDefault("options.island.addExtraItems"),
                     loadItemStackAmountLists(root.child("options.island.extraPermissions")),
                     root.boolWithDefault("options.island.allowIslandLock"),
@@ -248,7 +249,7 @@ public final class RuntimeConfigFactory {
                 ),
                 new RuntimeConfig.ToolMenu(
                     root.boolWithDefault("tool-menu.enabled"),
-                    gameObjects.itemStack(root.stringWithDefault("tool-menu.tool")),
+                    loadItemStack(root, "tool-menu.tool", "OAK_SAPLING"),
                     loadToolMenuCommands(root.child("tool-menu.commands"))
                 ),
             new RuntimeConfig.Signs(root.boolWithDefault("signs.enabled")),
@@ -344,7 +345,7 @@ public final class RuntimeConfigFactory {
 
         Map<String, List<ItemStackAmountSpec>> values = new LinkedHashMap<>();
         for (String key : section.keys()) {
-            values.put(key, gameObjects.itemStackAmounts(section.stringList(key)));
+            values.put(key, loadItemStackAmounts(section, key));
         }
         return Collections.unmodifiableMap(values);
     }
@@ -373,7 +374,7 @@ public final class RuntimeConfigFactory {
         }
 
         return section.keys().stream()
-            .map(key -> new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack(key), section.string(key, "")))
+            .map(key -> loadToolMenuCommand(section, key))
             .filter(command -> command.command() != null && !command.command().isBlank())
             .toList();
     }
@@ -412,9 +413,9 @@ public final class RuntimeConfigFactory {
                 normalizeBlank(schemeSection.stringOrNull("nether-schematic")),
                 schemeSection.string("permission", "usb.schematic." + schemeName),
                 normalizeBlank(schemeSection.stringOrNull("description")),
-                gameObjects.itemStack(schemeSection.string("displayItem", "OAK_SAPLING")),
-                    schemeSection.integer("index", 1, 1),
-                gameObjects.itemStackAmounts(schemeSection.stringList("extraItems")),
+                loadItemStack(schemeSection, "displayItem", "OAK_SAPLING"),
+                schemeSection.integer("index", 1, 1),
+                loadItemStackAmounts(schemeSection, "extraItems"),
                 schemeSection.integer("maxPartySize", 0),
                 schemeSection.integer("animals", 0),
                 schemeSection.integer("monsters", 0),
@@ -441,7 +442,7 @@ public final class RuntimeConfigFactory {
                 int index = Integer.parseInt(key, 10);
                 menus.put(index, new RuntimeConfig.ExtraMenu(
                     menuSection.string("title", "\u00a9Unknown"),
-                    gameObjects.itemStack(menuSection.string("displayItem", "CHEST")),
+                    loadItemStack(menuSection, "displayItem", "CHEST"),
                     menuSection.stringList("lore"),
                     menuSection.stringList("commands")
                 ));
@@ -465,7 +466,7 @@ public final class RuntimeConfigFactory {
     private void loadDonorPerks(RuntimeConfigNode section, String permission, Map<String, RuntimeConfig.PerkSpec> perks) {
         if (isLeafSection(section)) {
             perks.put(permission, new RuntimeConfig.PerkSpec(
-                gameObjects.itemStackAmounts(section.stringList("extraItems")),
+                loadItemStackAmounts(section, "extraItems"),
                 section.integer("maxPartySize", 0),
                 section.integer("animals", 0),
                 section.integer("monsters", 0),
@@ -484,6 +485,51 @@ public final class RuntimeConfigFactory {
                 continue;
             }
             loadDonorPerks(section.child(key), permission != null ? permission + "." + key : key, perks);
+        }
+    }
+
+    @NotNull
+    private ItemStackSpec loadItemStack(@NotNull RuntimeConfigNode node, @NotNull String relativePath, @NotNull String explicitFallback) {
+        String specification = node.string(relativePath, explicitFallback);
+        try {
+            return gameObjects.itemStack(specification);
+        } catch (IllegalArgumentException e) {
+            Object configuredValue = node.configuredValueOrNull(relativePath);
+            if (!(configuredValue instanceof String configuredSpecification)) {
+                throw e;
+            }
+            String fallbackSpecification = node.defaultString(relativePath, explicitFallback);
+            logger.warning("Config value '" + node.path(relativePath) + "' has invalid item specification '"
+                + configuredSpecification + "'. Using fallback '" + fallbackSpecification + "'.");
+            return gameObjects.itemStack(fallbackSpecification);
+        }
+    }
+
+    @NotNull
+    private List<ItemStackAmountSpec> loadItemStackAmounts(@NotNull RuntimeConfigNode node, @NotNull String relativePath) {
+        List<String> specifications = node.stringList(relativePath);
+        try {
+            return gameObjects.itemStackAmounts(specifications);
+        } catch (IllegalArgumentException e) {
+            Object configuredValue = node.configuredValueOrNull(relativePath);
+            if (!(configuredValue instanceof List<?>)) {
+                throw e;
+            }
+            List<String> fallbackSpecifications = node.defaultStringList(relativePath);
+            logger.warning("Config value '" + node.path(relativePath) + "' has invalid item specification list "
+                + configuredValue + ". Using fallback " + fallbackSpecifications + ".");
+            return gameObjects.itemStackAmounts(fallbackSpecifications);
+        }
+    }
+
+    @NotNull
+    private RuntimeConfig.ToolMenuCommand loadToolMenuCommand(@NotNull RuntimeConfigNode section, @NotNull String key) {
+        try {
+            return new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack(key), section.string(key, ""));
+        } catch (IllegalArgumentException e) {
+            logger.warning("Config value '" + section.path(key) + "' has invalid item specification '" + key
+                + "'. Ignoring command entry.");
+            return new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack("BARRIER"), "");
         }
     }
 

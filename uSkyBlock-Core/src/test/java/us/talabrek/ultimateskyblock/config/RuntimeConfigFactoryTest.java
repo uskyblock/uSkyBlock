@@ -288,6 +288,27 @@ public class RuntimeConfigFactoryTest {
     }
 
     @Test
+    public void fallsBackForInvalidItemSpecifications() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+        config.set("options.island.chestItems", java.util.List.of("definitely_not_a_real_item:1"));
+        config.set("tool-menu.tool", "also_not_a_real_item");
+        config.set("tool-menu.commands.NOT_A_REAL_ITEM", "challenges");
+        config.set("options.island.extraPermissions.custom", java.util.List.of("bad_item:1"));
+
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
+
+        assertEquals(Material.ICE, runtimeConfig.island().chestItems().get(0).prototype().create().getType());
+        assertEquals(Material.OAK_SAPLING, runtimeConfig.toolMenu().tool().create().getType());
+        assertEquals(3, runtimeConfig.toolMenu().commands().size());
+        assertEquals(java.util.List.of(), runtimeConfig.island().extraPermissionItems().get("custom"));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.chestItems")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("tool-menu.tool")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("tool-menu.commands.NOT_A_REAL_ITEM")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.extraPermissions.custom")));
+    }
+
+    @Test
     public void ignoresBiomeValidationWhenRegistryIsUnavailable() {
         YamlConfiguration config = new YamlConfiguration();
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
