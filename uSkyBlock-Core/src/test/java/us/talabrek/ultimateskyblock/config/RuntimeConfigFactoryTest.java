@@ -11,6 +11,10 @@ import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.time.Duration;
 import java.util.Locale;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,11 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuntimeConfigFactoryTest {
     private RuntimeConfigFactory runtimeConfigFactory;
+    private TestLogHandler logHandler;
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         BukkitServerMock.setupServerMock();
-        runtimeConfigFactory = new RuntimeConfigFactory(new GameObjectFactory());
+        logHandler = new TestLogHandler();
+        runtimeConfigFactory = new RuntimeConfigFactory(new GameObjectFactory(), testLogger(logHandler));
     }
 
     @Test
@@ -50,7 +56,7 @@ public class RuntimeConfigFactoryTest {
         config.set("options.island.allowIslandLock", true);
         config.set("options.island.useIslandLevel", true);
         config.set("options.island.useTopTen", true);
-        config.set("options.island.schematicName", "default");
+        config.set("options.island.default-scheme", "default");
         config.set("options.island.topTenTimeout", "15m");
         config.set("options.island.allowPvP", "allow");
         config.set("options.island.islandTeleportDelay", "5s");
@@ -79,7 +85,7 @@ public class RuntimeConfigFactoryTest {
         config.set("options.spawning.guardians.max-per-island", 4);
         config.set("options.spawning.guardians.spawn-chance", 0.25d);
         config.set("nether.enabled", true);
-        config.set("nether.lava_level", 11);
+        config.set("nether.lava-level", 11);
         config.set("nether.height", 80);
         config.set("nether.terraform-enabled", false);
         config.set("nether.terraform-min-pitch", -50d);
@@ -169,6 +175,7 @@ public class RuntimeConfigFactoryTest {
 
         assertEquals("en", runtimeConfig.configuredLanguage());
         assertEquals(Locale.ENGLISH, runtimeConfig.locale());
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("Config value 'language' references unsupported language")));
     }
 
     @Test
@@ -199,7 +206,122 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofMillis(15), runtimeConfig.async().maxIterationTime());
         assertEquals(20L, runtimeConfig.async().maxConsecutiveTicks());
         assertEquals(Duration.ofMillis(100), runtimeConfig.async().yieldDelay());
-        assertEquals(10d, runtimeConfig.importer().progressEveryPct());
+        assertEquals(0.10d, runtimeConfig.importer().progressEveryFraction());
         assertEquals(Duration.ofSeconds(10), runtimeConfig.importer().progressEvery());
+    }
+
+    @Test
+    public void warnsForInvalidBranchAndNormalizedValues() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+        config.set("options.general.defaultBiome", "definitely_not_a_biome");
+        config.set("options.general.defaultNetherBiome", "also_not_a_biome");
+        config.set("plugin-updates.branch", "BETA");
+        config.set("options.general.maxPartySize", -1);
+        config.set("options.island.distance", 10);
+        config.set("options.island.protectionRange", 999);
+        config.set("options.island.height", 5);
+        config.set("options.island.log-size", -2);
+        config.set("options.spawning.guardians.max-per-island", -3);
+        config.set("options.spawning.guardians.spawn-chance", 2.5d);
+        config.set("options.island.teleportCancelDistance", -0.5d);
+        config.set("options.advanced.chunkRegenSpeed", -4);
+        config.set("options.advanced.purgeLevel", -1d);
+        config.set("options.advanced.topTenCutoff", -2d);
+        config.set("nether.terraform-distance", -5);
+        config.set("nether.terraform-min-pitch", -120d);
+        config.set("nether.terraform-max-pitch", 120d);
+        config.set("nether.spawn-chances.blaze", 2d);
+        config.set("nether.spawn-chances.wither", -1d);
+        config.set("donor-perks.usb.test.rewardBonus", 2d);
+        config.set("donor-perks.usb.test.hungerReduction", -1d);
+        config.set("options.general.maxSpam", "-10s");
+        config.set("options.party.invite-timeout", "-1s");
+        config.set("island-schemes.default.index", 0);
+        config.set("confirmation", false);
+        config.set("importer.progressEveryFraction", 2.5d);
+
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
+
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("plugin-updates.branch")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.general.maxPartySize")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.distance")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.protectionRange")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.height")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.log-size")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.spawning.guardians.spawn-chance")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.spawning.guardians.max-per-island")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.island.teleportCancelDistance")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.advanced.chunkRegenSpeed")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.advanced.purgeLevel")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.advanced.topTenCutoff")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("nether.terraform-distance")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("nether.terraform-min-pitch")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("nether.terraform-max-pitch")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("nether.spawn-chances.blaze")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("nether.spawn-chances.wither")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.general.maxSpam")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("options.party.invite-timeout")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("island-schemes.default.index")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("confirmation")));
+        assertTrue(logHandler.messages.stream().anyMatch(message -> message.contains("importer.progressEveryFraction")));
+        assertEquals(0, runtimeConfig.general().maxPartySize());
+        assertEquals(Duration.ZERO, runtimeConfig.general().maxSpam());
+        assertEquals(0d, runtimeConfig.island().teleportCancelDistance());
+        assertEquals(0, runtimeConfig.island().logSize());
+        assertEquals(0, runtimeConfig.spawning().guardians().maxPerIsland());
+        assertEquals(1.0d, runtimeConfig.spawning().guardians().spawnChance());
+        assertEquals(0d, runtimeConfig.advanced().purgeLevel());
+        assertEquals(0d, runtimeConfig.advanced().topTenCutoff());
+        assertEquals(1.0d, runtimeConfig.importer().progressEveryFraction());
+        assertEquals(0, runtimeConfig.nether().terraform().distance());
+        assertEquals(-90d, runtimeConfig.nether().terraform().minPitch());
+        assertEquals(90d, runtimeConfig.nether().terraform().maxPitch());
+        assertEquals(1d, runtimeConfig.nether().spawnChances().blaze());
+        assertEquals(0d, runtimeConfig.nether().spawnChances().wither());
+        assertEquals(0, runtimeConfig.advanced().chunkRegenSpeed());
+        assertEquals(Duration.ZERO, runtimeConfig.party().inviteTimeout());
+        assertEquals(1, runtimeConfig.islandScheme("default").index());
+        assertEquals("RELEASE", runtimeConfig.pluginUpdates().branch());
+        assertEquals(1d, runtimeConfig.donorPerks().get("usb.test").rewardBonus());
+        assertEquals(0d, runtimeConfig.donorPerks().get("usb.test").hungerReduction());
+    }
+
+    @Test
+    public void ignoresBiomeValidationWhenRegistryIsUnavailable() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+        config.set("options.general.defaultBiome", "definitely_not_a_biome");
+        config.set("options.general.defaultNetherBiome", "also_not_a_biome");
+
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
+
+        assertEquals("definitely_not_a_biome", runtimeConfig.general().defaultBiomeKey());
+        assertEquals("also_not_a_biome", runtimeConfig.general().defaultNetherBiomeKey());
+    }
+
+    private static Logger testLogger(TestLogHandler handler) {
+        Logger logger = Logger.getAnonymousLogger();
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.ALL);
+        logger.addHandler(handler);
+        return logger;
+    }
+
+    private static final class TestLogHandler extends Handler {
+        private final java.util.List<String> messages = new java.util.ArrayList<>();
+
+        @Override
+        public void publish(LogRecord record) {
+            messages.add(record.getMessage());
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public void close() {
+        }
     }
 }

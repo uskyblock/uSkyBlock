@@ -14,16 +14,16 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.number;
  * General progress tracker using throttling
  */
 public class ProgressTracker {
-    private final double progressEveryPct;
+    private final double progressEveryFraction;
     private final Duration progressEvery;
     private final String format;
     private final CommandSender sender;
 
     private Instant lastProgressTime;
-    private double lastProgressPct;
+    private double lastProgressFraction;
 
-    public ProgressTracker(CommandSender sender, String format, double progressEveryPct, Duration progressEvery) {
-        this.progressEveryPct = progressEveryPct;
+    public ProgressTracker(CommandSender sender, String format, double progressEveryFraction, Duration progressEvery) {
+        this.progressEveryFraction = progressEveryFraction;
         this.progressEvery = progressEvery;
         this.format = format;
         this.sender = sender;
@@ -32,13 +32,13 @@ public class ProgressTracker {
 
     public void progressUpdate(long progress, long total, TagResolver... resolvers) {
         Instant now = Instant.now();
-        double pct = (double) progress / (total > 0 ? total : 1d);
-        if (now.isAfter(lastProgressTime.plus(progressEvery)) || pct > (lastProgressPct + progressEveryPct)) {
-            lastProgressPct = pct;
+        double progressFraction = (double) progress / (total > 0 ? total : 1d);
+        if (now.isAfter(lastProgressTime.plus(progressEvery)) || progressFraction > (lastProgressFraction + progressEveryFraction)) {
+            lastProgressFraction = progressFraction;
             lastProgressTime = now;
             int extra = resolvers != null ? resolvers.length : 0;
             TagResolver[] progressResolvers = new TagResolver[extra + 3];
-            progressResolvers[0] = number("progress_pct", pct);
+            progressResolvers[0] = number("progress_pct", progressFraction);
             progressResolvers[1] = number("progress", progress);
             progressResolvers[2] = number("total", total);
             if (extra > 0) {

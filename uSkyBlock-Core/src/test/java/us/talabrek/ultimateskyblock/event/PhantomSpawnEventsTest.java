@@ -14,6 +14,8 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import java.util.logging.Logger;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -136,7 +138,7 @@ public class PhantomSpawnEventsTest {
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
         config.set("options.spawning.phantoms.overworld", overworld);
         config.set("options.spawning.phantoms.nether", nether);
-        var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(config);
+        var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger()).load(config);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;

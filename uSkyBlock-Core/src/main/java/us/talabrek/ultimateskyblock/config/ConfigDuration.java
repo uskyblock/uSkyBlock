@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public enum ConfigDuration {
     ;
 
-    private static final Pattern DURATION_PATTERN = Pattern.compile("^(?<value>[0-9]+)(?<unit>ms|s|m|h|d)$");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("^(?<value>-?[0-9]+)(?<unit>ms|s|m|h|d)$");
 
     @NotNull
     public static Duration parse(@NotNull String value) {

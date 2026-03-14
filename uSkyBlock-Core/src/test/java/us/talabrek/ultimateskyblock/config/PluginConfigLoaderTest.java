@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -58,7 +59,7 @@ public class PluginConfigLoaderTest {
         YamlConfiguration config = loader.load();
 
         assertEquals(loadBundledVersion(), config.getInt("version"));
-        assertEquals("default", config.getString("options.island.schematicName"));
+        assertEquals("default", config.getString("options.island.default-scheme"));
         assertTrue(config.getBoolean("options.extras.obsidianToLava"));
         assertEquals("20s", config.getString("options.general.cooldownInfo"));
         assertEquals("30s", config.getString("options.general.cooldownRestart"));
@@ -106,19 +107,20 @@ public class PluginConfigLoaderTest {
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
-        assertEquals("default", migrated.getString("options.island.schematicName"));
+        assertEquals("default", migrated.getString("options.island.default-scheme"));
+        assertFalse(migrated.contains("options.island.schematicName"));
         assertTrue(migrated.getBoolean("options.extras.obsidianToLava"));
-        assertEquals("20s", migrated.getString("options.general.cooldownInfo"));
+        assertNull(migrated.getString("options.general.cooldownInfo"));
         assertEquals("30s", migrated.getString("options.general.cooldownRestart"));
         assertEquals("60s", migrated.getString("options.general.biomeChange"));
-        assertEquals("2s", migrated.getString("options.general.maxSpam"));
+        assertNull(migrated.getString("options.general.maxSpam"));
         assertEquals("2s", migrated.getString("options.island.islandTeleportDelay"));
         assertEquals("20m", migrated.getString("options.island.topTenTimeout"));
-        assertEquals("0m", migrated.getString("options.island.autoRefreshScore"));
+        assertNull(migrated.getString("options.island.autoRefreshScore"));
         assertEquals("30s", migrated.getString("options.party.invite-timeout"));
         assertEquals("10s", migrated.getString("options.advanced.confirmTimeout"));
         assertEquals("1000ms", migrated.getString("options.restart.teleportDelay"));
-        assertEquals("2s", migrated.getString("asyncworldedit.watchDog.heartBeat"));
+        assertNull(migrated.getString("asyncworldedit.watchDog.heartBeat"));
         assertTrue(migrated.getBoolean("options.spawning.guardians.enabled"));
         assertEquals(10, migrated.getInt("options.spawning.guardians.max-per-island"));
         assertEquals(0.1d, migrated.getDouble("options.spawning.guardians.spawn-chance"), 0.00001d);
@@ -155,7 +157,8 @@ public class PluginConfigLoaderTest {
         YamlConfiguration migrated = loader.load();
 
         assertEquals(loadBundledVersion(), migrated.getInt("version"));
-        assertEquals("default", migrated.getString("options.island.schematicName"));
+        assertEquals("default", migrated.getString("options.island.default-scheme"));
+        assertFalse(migrated.contains("options.island.schematicName"));
     }
 
     @Test
@@ -372,6 +375,60 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void convertsImporterProgressPercentToFractionDuringMigration120() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(119);
+        config.set("importer.progressEveryPct", 20);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals(0.2d, migrated.getDouble("importer.progressEveryFraction"), 0.00001d);
+        assertFalse(migrated.contains("importer.progressEveryPct"));
+    }
+
+    @Test
+    public void renamesDefaultSchemeKeyDuringMigration121() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(120);
+        config.set("options.island.default-scheme", null);
+        config.set("options.island.schematicName", "skySMP");
+        config.set("nether.lava-level", null);
+        config.set("nether.lava_level", 11);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals("skySMP", migrated.getString("options.island.default-scheme"));
+        assertEquals(11, migrated.getInt("nether.lava-level"));
+        assertFalse(migrated.contains("options.island.schematicName"));
+        assertFalse(migrated.contains("nether.lava_level"));
+    }
+
+    @Test
+    public void addsTeleportCancelDistanceAndSignsEnabledDuringMigration122() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(121);
+        config.set("options.island.teleportCancelDistance", null);
+        config.set("signs.enabled", null);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals(0.5d, migrated.getDouble("options.island.teleportCancelDistance"));
+        assertTrue(migrated.getBoolean("signs.enabled"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();
@@ -445,8 +502,15 @@ public class PluginConfigLoaderTest {
         config.set("options.general.spawnSize", 64);
         config.set("options.island.height", 150);
         config.set("options.island.islandTeleportDelay", "2s");
+        if (version >= 122) {
+            config.set("options.island.teleportCancelDistance", 0.5d);
+        }
         config.set("options.island.topTenTimeout", "20m");
-        config.set("options.island.schematicName", "default");
+        if (version >= 121) {
+            config.set("options.island.default-scheme", "default");
+        } else {
+            config.set("options.island.schematicName", "default");
+        }
         config.set("options.island.chat-format", "<blue>SKY </blue><display-name> <white>></white><light_purple> <message>");
         config.set("options.extras.obsidianToLava", true);
         config.set("options.party.invite-timeout", "2m");
@@ -467,6 +531,9 @@ public class PluginConfigLoaderTest {
             config.set("nether.schematicName", "uSkyBlockNether");
         }
         config.set("nether.enabled", false);
+        if (version >= 122) {
+            config.set("signs.enabled", true);
+        }
         return config;
     }
 

@@ -58,20 +58,28 @@ public class SchematicHandler {
         try {
             Files.createDirectories(directorySchematics);
             copySchematicsFromJar(plugin);
-            validateConfiguredSchemes();
-            validateDefaultScheme();
-            List<String> schemeNames = getSchemeNames();
-            logger.info(schemeNames.isEmpty() ? "No island schemes configured." : schemeNames.size() + " island schemes configured.");
-            initialized = true;
         } catch (IOException e) {
             logger.log(Level.WARNING, "Unable to prepare schematics", e);
+            return;
         }
+        validateConfiguredSchemes();
+        List<String> schemeNames = getSchemeNames(true);
+        if (schemeNames.isEmpty()) {
+            throw new IllegalStateException("No usable island schemes are configured.");
+        }
+        validateDefaultScheme(schemeNames);
+        logger.info(schemeNames.size() + " island schemes configured.");
+        initialized = true;
     }
 
     /**
      * Returns a list of configured, enabled scheme names.
      */
     public List<String> getSchemeNames() {
+        return getSchemeNames(initialized);
+    }
+
+    private List<String> getSchemeNames(boolean requireFiles) {
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
         if (runtimeConfig.islandSchemes().isEmpty()) {
             return Collections.emptyList();
@@ -91,10 +99,10 @@ public class SchematicHandler {
             if (netherEnabled && !hasConfiguredPath(scheme.netherSchematic())) {
                 continue;
             }
-            if (initialized && resolveConfiguredSchematicPath(scheme.schematic()).isEmpty()) {
+            if (requireFiles && resolveConfiguredSchematicPath(scheme.schematic()).isEmpty()) {
                 continue;
             }
-            if (initialized && netherEnabled
+            if (requireFiles && netherEnabled
                 && resolveConfiguredSchematicPath(scheme.netherSchematic()).isEmpty()) {
                 continue;
             }
@@ -102,6 +110,11 @@ public class SchematicHandler {
         }
         Collections.sort(names);
         return names;
+    }
+
+    @Nullable
+    public String getDefaultSchemeName() {
+        return chooseDefaultScheme(runtimeConfigs.current().island().defaultScheme(), getSchemeNames());
     }
 
     /**
@@ -232,26 +245,31 @@ public class SchematicHandler {
         }
     }
 
-    private void validateDefaultScheme() {
+    private void validateDefaultScheme(@NotNull List<String> usableSchemes) {
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
-        String defaultScheme = runtimeConfig.island().defaultScheme();
-        if (defaultScheme == null || defaultScheme.isBlank()) {
-            logger.warning("Configured default island scheme is missing.");
+        String configuredDefault = runtimeConfig.island().defaultScheme();
+        String effectiveDefault = chooseDefaultScheme(configuredDefault, usableSchemes);
+        if (effectiveDefault == null) {
+            throw new IllegalStateException("No usable default island scheme could be selected.");
+        }
+        if (configuredDefault == null || configuredDefault.isBlank()) {
+            logger.warning("Configured default island scheme is missing. Falling back to '" + effectiveDefault + "'.");
             return;
         }
+        if (!configuredDefault.equals(effectiveDefault)) {
+            logger.warning("Configured default island scheme '" + configuredDefault + "' is not usable. Falling back to '" + effectiveDefault + "'.");
+        }
+    }
 
-        RuntimeConfig.IslandScheme scheme = runtimeConfig.islandScheme(defaultScheme);
-        if (scheme == null) {
-            logger.warning("Configured default island scheme '" + defaultScheme + "' does not exist.");
-            return;
+    @Nullable
+    private String chooseDefaultScheme(@Nullable String configuredDefault, @NotNull List<String> usableSchemes) {
+        if (configuredDefault != null && usableSchemes.contains(configuredDefault)) {
+            return configuredDefault;
         }
-        if (!scheme.enabled()) {
-            logger.warning("Configured default island scheme '" + defaultScheme + "' is disabled.");
-            return;
+        if (usableSchemes.contains(DEFAULT_SCHEME_NAME)) {
+            return DEFAULT_SCHEME_NAME;
         }
-        if (getScheme(defaultScheme) == null) {
-            logger.warning("Configured default island scheme '" + defaultScheme + "' is not usable.");
-        }
+        return usableSchemes.isEmpty() ? null : usableSchemes.get(0);
     }
 
     private boolean hasConfiguredPath(@Nullable String configuredPath) {

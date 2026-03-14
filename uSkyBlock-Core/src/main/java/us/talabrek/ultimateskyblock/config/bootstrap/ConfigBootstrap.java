@@ -56,7 +56,7 @@ public class ConfigBootstrap {
     }
 
     private boolean applyFirstSetupLanguageSelection(@NotNull FileConfiguration pluginConfig) {
-        String effectiveConfiguredLanguage = normalizeConfiguredLanguage(pluginConfig.getString("language"));
+        String effectiveConfiguredLanguage = resolveConfiguredLanguage(pluginConfig.getString("language"));
         Locale systemLocale = Locale.getDefault();
         Optional<String> supportedSystemLocale = I18nUtil.resolveSupportedLocaleKey(systemLocale);
         if (supportedSystemLocale.isPresent() && !supportedSystemLocale.get().equalsIgnoreCase(effectiveConfiguredLanguage)) {
@@ -80,7 +80,7 @@ public class ConfigBootstrap {
     }
 
     private void logLanguageSuggestionIfUsingDefaultLanguage(@NotNull FileConfiguration pluginConfig) {
-        String effectiveConfiguredLanguage = normalizeConfiguredLanguage(pluginConfig.getString("language"));
+        String effectiveConfiguredLanguage = resolveConfiguredLanguage(pluginConfig.getString("language"));
         if (!defaultLanguage.equalsIgnoreCase(effectiveConfiguredLanguage)) {
             return;
         }
@@ -98,15 +98,20 @@ public class ConfigBootstrap {
 
     @NotNull
     private Locale resolveLocale(@NotNull FileConfiguration pluginConfig) {
-        Locale configuredLocale = I18nUtil.getLocale(normalizeConfiguredLanguage(pluginConfig.getString("language")));
+        Locale configuredLocale = I18nUtil.getLocale(resolveConfiguredLanguage(pluginConfig.getString("language")));
         return configuredLocale != null ? configuredLocale : Locale.ENGLISH;
     }
 
     @NotNull
-    private String normalizeConfiguredLanguage(String configuredLanguage) {
+    private String resolveConfiguredLanguage(String configuredLanguage) {
         if (configuredLanguage == null || configuredLanguage.isBlank()) {
             return defaultLanguage;
         }
-        return I18nUtil.findSupportedLocaleKey(configuredLanguage).orElse(defaultLanguage);
+        return I18nUtil.findSupportedLocaleKey(configuredLanguage)
+            .orElseGet(() -> {
+                logger.log(Level.WARNING, "Config value 'language' references unsupported language '{0}'. Using fallback '{1}'.",
+                    new Object[]{configuredLanguage, defaultLanguage});
+                return defaultLanguage;
+            });
     }
 }

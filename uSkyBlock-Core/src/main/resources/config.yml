@@ -44,7 +44,7 @@ options:
     protectionRange: 128
 
     # [name] The default island scheme to use for island generation.
-    schematicName: default
+    default-scheme: default
 
     # [true/false] If true, remove all hostile mobs when a player teleports back to their island.
     removeCreaturesByTeleport: false
@@ -63,6 +63,9 @@ options:
     - oak_sign:1
     addExtraItems: true
     islandTeleportDelay: 2s
+
+    # [number] How far a player may move before an island teleport is cancelled. Use 0 to disable movement cancel.
+    teleportCancelDistance: 0.5
     allowPvP: deny
     allowIslandLock: true
     useIslandLevel: true
@@ -380,10 +383,13 @@ asyncworldedit:
 worldguard:
   entry-message: true
   exit-message: true
+signs:
+  # [true/false] Whether [usb] challenge signs are enabled.
+  enabled: true
 nether:
   enabled: true
   height: 75
-  lava_level: 7
+  lava-level: 7
   terraform-enabled: true
 
   # The distance to search for valid terra-form location.
@@ -467,4 +473,4 @@ placeholder:
   servercommandplaceholder: false
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 119
+version: 122

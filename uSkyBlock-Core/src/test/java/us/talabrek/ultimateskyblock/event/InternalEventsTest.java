@@ -27,6 +27,7 @@ import us.talabrek.ultimateskyblock.util.LocationUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static org.mockito.Mockito.*;
 
@@ -70,7 +71,7 @@ public class InternalEventsTest {
         doReturn(config).when(fakePlugin).getConfig();
 
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
-        doReturn(new RuntimeConfigFactory(new GameObjectFactory()).load(config)).when(runtimeConfigs).current();
+        doReturn(new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger()).load(config)).when(runtimeConfigs).current();
         internalEvents = new InternalEvents(fakePlugin, runtimeConfigs);
 
         fakeBlockLimitLogic = mock(BlockLimitLogic.class);

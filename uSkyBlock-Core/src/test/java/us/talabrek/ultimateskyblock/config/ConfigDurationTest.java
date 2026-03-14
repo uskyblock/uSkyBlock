@@ -16,6 +16,7 @@ public class ConfigDurationTest {
         assertEquals(Duration.ofMinutes(5), ConfigDuration.parse("5m"));
         assertEquals(Duration.ofHours(2), ConfigDuration.parse("2h"));
         assertEquals(Duration.ofDays(3), ConfigDuration.parse("3d"));
+        assertEquals(Duration.ofSeconds(-1), ConfigDuration.parse("-1s"));
     }
 
     @Test

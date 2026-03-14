@@ -281,7 +281,7 @@ public record RuntimeConfig(
     }
 
     public record Importer(
-        double progressEveryPct,
+        double progressEveryFraction,
         @NotNull Duration progressEvery
     ) {
     }

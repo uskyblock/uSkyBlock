@@ -43,11 +43,11 @@ public class USBImporterExecutor {
     public USBImporterExecutor(uSkyBlock plugin, RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
-        double progressEveryPct = runtimeConfigs.current().importer().progressEveryPct();
+        double progressEveryFraction = runtimeConfigs.current().importer().progressEveryFraction();
         Duration progressInterval = runtimeConfigs.current().importer().progressEvery();
         progressTracker = new ProgressTracker(Bukkit.getConsoleSender(),
             marktr("Progress: <progress_pct:'0%'> (<progress>/<total> - success:<success>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"),
-            progressEveryPct,
+            progressEveryFraction,
             progressInterval);
     }
 

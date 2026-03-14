@@ -93,7 +93,6 @@ public class PluginConfigLoader {
         YamlConfiguration config = new YamlConfiguration();
         try (Reader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
             config.load(reader);
-            config.setDefaults(bundledDefaults);
             return config;
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load config.yml from " + configPath, e);

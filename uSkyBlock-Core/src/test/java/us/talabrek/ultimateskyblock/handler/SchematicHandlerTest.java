@@ -110,42 +110,72 @@ public class SchematicHandlerTest {
     }
 
     @Test
-    public void initializeWarnsWhenDefaultSchemeDoesNotExist() {
+    public void initializeFallsBackWhenDefaultSchemeDoesNotExist() throws Exception {
+        Files.createDirectories(tempDir.resolve("schematics"));
+        Files.writeString(tempDir.resolve("schematics/default.schematic"), "default");
         YamlConfiguration config = new YamlConfiguration();
-        config.set("options.island.schematicName", "missing");
+        config.set("options.island.default-scheme", "missing");
+        config.set("nether.enabled", false);
         config.set("island-schemes.default.enabled", true);
         config.set("island-schemes.default.schematic", "default.schematic");
 
         TestLogHandler logHandler = new TestLogHandler();
-        Logger logger = testLogger(logHandler);
-        SchematicHandler handler = new SchematicHandler(logger, runtimeConfigs(config), tempDir);
+        SchematicHandler handler = new SchematicHandler(testLogger(logHandler), runtimeConfigs(config), tempDir);
 
         handler.initialize(mock(Plugin.class));
 
+        assertEquals("default", handler.getDefaultSchemeName());
         assertTrue(logHandler.messages().stream()
-            .anyMatch(message -> message.contains("Configured default island scheme 'missing' does not exist.")));
+            .anyMatch(message -> message.contains("Configured default island scheme 'missing' is not usable. Falling back to 'default'.")));
     }
 
     @Test
-    public void initializeWarnsWhenDefaultSchemeIsDisabled() {
+    public void initializeFallsBackWhenDefaultSchemeIsDisabled() throws Exception {
+        Files.createDirectories(tempDir.resolve("schematics"));
+        Files.writeString(tempDir.resolve("schematics/default.schematic"), "default");
         YamlConfiguration config = new YamlConfiguration();
-        config.set("options.island.schematicName", "default");
+        config.set("options.island.default-scheme", "default");
+        config.set("nether.enabled", false);
         config.set("island-schemes.default.enabled", false);
         config.set("island-schemes.default.schematic", "default.schematic");
+        config.set("island-schemes.other.enabled", true);
+        config.set("island-schemes.other.schematic", "default.schematic");
 
         TestLogHandler logHandler = new TestLogHandler();
-        Logger logger = testLogger(logHandler);
-        SchematicHandler handler = new SchematicHandler(logger, runtimeConfigs(config), tempDir);
+        SchematicHandler handler = new SchematicHandler(testLogger(logHandler), runtimeConfigs(config), tempDir);
+
+        handler.initialize(mock(Plugin.class));
+
+        assertEquals("other", handler.getDefaultSchemeName());
+        assertTrue(logHandler.messages().stream()
+            .anyMatch(message -> message.contains("Configured default island scheme 'default' is not usable. Falling back to 'other'.")));
+    }
+
+    @Test
+    public void initializeWarnsWhenEnabledSchemeIsMissingFile() throws Exception {
+        Files.createDirectories(tempDir.resolve("schematics"));
+        Files.writeString(tempDir.resolve("schematics/default.schematic"), "default");
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("options.island.default-scheme", "default");
+        config.set("nether.enabled", false);
+        config.set("island-schemes.default.enabled", true);
+        config.set("island-schemes.default.schematic", "default.schematic");
+        config.set("island-schemes.other.enabled", true);
+        config.set("island-schemes.other.schematic", "missing.schematic");
+
+        TestLogHandler logHandler = new TestLogHandler();
+        SchematicHandler handler = new SchematicHandler(testLogger(logHandler), runtimeConfigs(config), tempDir);
 
         handler.initialize(mock(Plugin.class));
 
         assertTrue(logHandler.messages().stream()
-            .anyMatch(message -> message.contains("Configured default island scheme 'default' is disabled.")));
+            .anyMatch(message -> message.contains("Island scheme 'other' points 'schematic' to a missing or unreadable file: missing.schematic")));
+        assertEquals(List.of("default"), handler.getSchemeNames());
     }
 
     private static RuntimeConfigs runtimeConfigs(YamlConfiguration yamlConfig) {
         yamlConfig.setDefaults(PluginConfigLoader.loadBundledConfig());
-        var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(yamlConfig);
+        var runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger()).load(yamlConfig);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;

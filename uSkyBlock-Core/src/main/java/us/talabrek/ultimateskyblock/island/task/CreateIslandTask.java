@@ -40,6 +40,9 @@ public class CreateIslandTask extends BukkitRunnable {
         if (!plugin.getIslandGenerator().createIsland(next, cSchem)) {
             sendTr(player, "Unable to locate schematic <schematic>, contact a server admin",
                 unparsed("schematic", cSchem));
+            playerPerk.getPlayerInfo().setIslandGenerating(false);
+            plugin.getOrphanLogic().addOrphan(next);
+            return;
         }
         GenerateTask generateTask = new GenerateTask(plugin, runtimeConfigs, player, playerPerk.getPlayerInfo(), next, playerPerk, cSchem);
         Duration heartBeat = runtimeConfigs.current().asyncWorldEdit().heartBeat();

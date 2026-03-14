@@ -47,6 +47,7 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
+import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
@@ -137,6 +138,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     private WorldManager worldManager;
     @Inject
     private IslandGenerator islandGenerator;
+    @Inject
+    private SchematicHandler schematicHandler;
     @Inject
     private PlayerNotifier notifier;
     @Inject
@@ -544,8 +547,22 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             sendErrorTr(player, "Your island is currently generating. You cannot create a new one right now.");
             return;
         }
+        if (cSchem == null || cSchem.isBlank()) {
+            sendErrorTr(player, "No island scheme is configured. Please contact a server admin.");
+            return;
+        }
+        if (runtimeConfigs.current().islandScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is not configured. Please contact a server admin.",
+                unparsed("schematic", cSchem));
+            return;
+        }
         if (!perkLogic.getSchemes(player).contains(cSchem)) {
             sendErrorTr(player, "You do not have access to that island schematic.");
+            return;
+        }
+        if (schematicHandler.getScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is currently unavailable. Please contact a server admin.",
+                unparsed("schematic", cSchem));
             return;
         }
         pi.setIslandGenerating(true);
@@ -563,8 +580,23 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     private void generateIsland(final Player player, final PlayerInfo pi, final Location next, final String cSchem) {
+        if (cSchem == null || cSchem.isBlank() || runtimeConfigs.current().islandScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is not configured. Please contact a server admin.",
+                unparsed("schematic", cSchem != null ? cSchem : ""));
+            pi.setIslandGenerating(false);
+            orphanLogic.addOrphan(next);
+            return;
+        }
         if (!perkLogic.getSchemes(player).contains(cSchem)) {
             sendErrorTr(player, "You do not have access to that island schematic.");
+            pi.setIslandGenerating(false);
+            orphanLogic.addOrphan(next);
+            return;
+        }
+        if (schematicHandler.getScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is currently unavailable. Please contact a server admin.",
+                unparsed("schematic", cSchem));
+            pi.setIslandGenerating(false);
             orphanLogic.addOrphan(next);
             return;
         }

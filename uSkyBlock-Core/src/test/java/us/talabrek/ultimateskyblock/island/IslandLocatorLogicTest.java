@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
@@ -139,7 +140,7 @@ public class IslandLocatorLogicTest {
         config.set("options.advanced.playerCacheSpec", "maximumSize=100");
         config.set("options.advanced.islandCacheSpec", "maximumSize=100");
         config.set("plugin-updates.branch", "LATEST");
-        RuntimeConfig runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory()).load(config);
+        RuntimeConfig runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger()).load(config);
 
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);

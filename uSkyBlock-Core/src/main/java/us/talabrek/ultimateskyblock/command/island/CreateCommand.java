@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.api.event.CreateIslandEvent;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -22,12 +23,14 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 public class CreateCommand extends RequirePlayerCommand {
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
+    private final SchematicHandler schematicHandler;
 
     @Inject
-    public CreateCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs) {
+    public CreateCommand(@NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs, @NotNull SchematicHandler schematicHandler) {
         super("create|c", "usb.island.create", "?schematic", marktr("create an island"));
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
+        this.schematicHandler = schematicHandler;
         addFeaturePermission("usb.exempt.cooldown.create", trLegacy("exempt player from create-cooldown"));
     }
 
@@ -36,7 +39,11 @@ public class CreateCommand extends RequirePlayerCommand {
         PlayerInfo pi = plugin.getPlayerInfo(player);
         Duration cooldown = plugin.getCooldownHandler().getCooldown(player, "restart");
         if (!pi.getHasIsland() && cooldown.isZero()) {
-            String cSchem = args != null && args.length > 0 ? args[0] : runtimeConfigs.current().island().defaultScheme();
+            String cSchem = args != null && args.length > 0 ? args[0] : schematicHandler.getDefaultSchemeName();
+            if (cSchem == null || cSchem.isBlank()) {
+                sendErrorTr(player, "No usable island scheme is configured. Please contact a server admin.");
+                return true;
+            }
             plugin.getServer().getPluginManager().callEvent(new CreateIslandEvent(player, cSchem));
         } else if (pi.getHasIsland()) {
             IslandInfo island = plugin.getIslandInfo(pi);
