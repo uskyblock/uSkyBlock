@@ -492,7 +492,7 @@ public final class RuntimeConfigFactory {
     private ItemStackSpec loadItemStack(@NotNull RuntimeConfigNode node, @NotNull String relativePath, @NotNull String explicitFallback) {
         String specification = node.string(relativePath, explicitFallback);
         try {
-            return gameObjects.itemStack(specification);
+            return gameObjects.itemStack(normalizeItemSpecification(specification));
         } catch (IllegalArgumentException e) {
             Object configuredValue = node.configuredValueOrNull(relativePath);
             if (!(configuredValue instanceof String configuredSpecification)) {
@@ -501,7 +501,7 @@ public final class RuntimeConfigFactory {
             String fallbackSpecification = node.defaultString(relativePath, explicitFallback);
             logger.warning("Config value '" + node.path(relativePath) + "' has invalid item specification '"
                 + configuredSpecification + "'. Using fallback '" + fallbackSpecification + "'.");
-            return gameObjects.itemStack(fallbackSpecification);
+            return gameObjects.itemStack(normalizeItemSpecification(fallbackSpecification));
         }
     }
 
@@ -509,7 +509,7 @@ public final class RuntimeConfigFactory {
     private List<ItemStackAmountSpec> loadItemStackAmounts(@NotNull RuntimeConfigNode node, @NotNull String relativePath) {
         List<String> specifications = node.stringList(relativePath);
         try {
-            return gameObjects.itemStackAmounts(specifications);
+            return gameObjects.itemStackAmounts(specifications.stream().map(this::normalizeItemSpecification).toList());
         } catch (IllegalArgumentException e) {
             Object configuredValue = node.configuredValueOrNull(relativePath);
             if (!(configuredValue instanceof List<?>)) {
@@ -518,19 +518,24 @@ public final class RuntimeConfigFactory {
             List<String> fallbackSpecifications = node.defaultStringList(relativePath);
             logger.warning("Config value '" + node.path(relativePath) + "' has invalid item specification list "
                 + configuredValue + ". Using fallback " + fallbackSpecifications + ".");
-            return gameObjects.itemStackAmounts(fallbackSpecifications);
+            return gameObjects.itemStackAmounts(fallbackSpecifications.stream().map(this::normalizeItemSpecification).toList());
         }
     }
 
     @NotNull
     private RuntimeConfig.ToolMenuCommand loadToolMenuCommand(@NotNull RuntimeConfigNode section, @NotNull String key) {
         try {
-            return new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack(key), section.string(key, ""));
+            return new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack(normalizeItemSpecification(key)), section.string(key, ""));
         } catch (IllegalArgumentException e) {
             logger.warning("Config value '" + section.path(key) + "' has invalid item specification '" + key
                 + "'. Ignoring command entry.");
             return new RuntimeConfig.ToolMenuCommand(gameObjects.itemStack("BARRIER"), "");
         }
+    }
+
+    @NotNull
+    private String normalizeItemSpecification(@NotNull String specification) {
+        return specification.toLowerCase(Locale.ROOT);
     }
 
     private static boolean isLeafSection(RuntimeConfigNode section) {
