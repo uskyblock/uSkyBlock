@@ -5,13 +5,13 @@
 **Required:**
 
 - Spigot or Paper (API version 1.21+)
-- WorldEdit
-- WorldGuard
+- [WorldEdit](https://dev.bukkit.org/projects/worldedit)
+- [WorldGuard](https://dev.bukkit.org/projects/worldguard)
 
 **Recommended:**
 
-- Vault — for economy integration
-- FastAsyncWorldEdit — significantly faster island generation
+- [Vault](https://www.spigotmc.org/resources/vault.34315/) or [VaultUnlocked](https://www.spigotmc.org/resources/vaultunlocked.117277/) — for economy integration
+- [FastAsyncWorldEdit](https://www.spigotmc.org/resources/fastasyncworldedit.13932/) — significantly faster island generation
 
 ## Installation
 
