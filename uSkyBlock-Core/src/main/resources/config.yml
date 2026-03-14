@@ -23,7 +23,8 @@ options:
     # [string] The default biome assigned to new nether islands.
     defaultNetherBiome: nether_wastes
 
-    # [duration] Minimum interval between repeated notifications (e.g. pickup/damage prevention). Use ms, s, m, h, or d.
+    # [duration] Minimum interval between repeated notifications
+    # (e.g. pickup/damage prevention). Use ms, s, m, h, or d.
     maxSpam: 2s
 
     # [string] Name of the skyblock world. Created automatically if it doesn't exist.
@@ -44,10 +45,12 @@ options:
     # MUST be divisible by 32 if nether is enabled.
     protectionRange: 128
 
-    # [string] The default island scheme used for /is create. Must match a key in 'island-schemes'.
+    # [string] The default island scheme used for /is create.
+    # Must match a key in 'island-schemes'.
     default-scheme: default
 
-    # [item list] Items placed in the chest when a player starts a new island. Format: ITEM_ID:AMOUNT.
+    # [item list] Items placed in the chest when a player starts
+    # a new island. Format: ITEM_ID:AMOUNT.
     chestItems:
     - ice:2
     - melon_slice:1
@@ -90,7 +93,8 @@ options:
     # [duration] Delay before teleporting to your island via /island. Use ms, s, m, h, or d.
     islandTeleportDelay: 2s
 
-    # [number] How far a player may move before an island teleport is cancelled. Use 0 to disable.
+    # [number] How far a player may move before an island teleport
+    # is cancelled. Use 0 to disable.
     teleportCancelDistance: 0.5
 
     # [true/false] Remove all hostile mobs when a player teleports to their island.
@@ -108,10 +112,12 @@ options:
     # [true/false] Enable the /island top command (top 10 islands by score).
     useTopTen: true
 
-    # [duration] How long the top 10 ranking is cached before recalculating. Use ms, s, m, h, or d.
+    # [duration] How long the top 10 ranking is cached before
+    # recalculating. Use ms, s, m, h, or d.
     topTenTimeout: 20m
 
-    # [duration] Automatically refresh island levels on this interval. Use 0m to disable. Use ms, s, m, h, or d.
+    # [duration] Automatically refresh island levels on this interval.
+    # Use 0m to disable. Use ms, s, m, h, or d.
     autoRefreshScore: 0m
 
     # [true/false] Show island member names in the top 10 ranking.
@@ -241,14 +247,17 @@ options:
     # [duration] How long an island invite stays valid. Use ms, s, m, h, or d.
     invite-timeout: 2m
 
-    # MiniMessage format for /partytalk messages. Use <display-name> and <message> placeholders.
+    # MiniMessage format for /partytalk messages.
+    # Use <display-name> and <message> placeholders.
     chat-format: '<blue>PARTY </blue><display-name> <white>></white><aqua> <message>'
 
-    # Commands to execute when a player joins an island party. Prefix with op: to run as operator.
+    # Commands to execute when a player joins an island party.
+    # Prefix with op: to run as operator.
     join-commands:
     - op:playsound block.enderchest.open block @p
 
-    # Commands to execute when a player leaves an island party. Prefix with op: to run as operator.
+    # Commands to execute when a player leaves an island party.
+    # Prefix with op: to run as operator.
     leave-commands:
     - op:playsound block.enderchest.close block @p
 
@@ -261,19 +270,22 @@ options:
     # [number] Islands at or below this level are eligible for purging.
     purgeLevel: 10
 
-    # [duration] Timeout for confirming risky commands (e.g. /island leave). Use ms, s, m, h, or d.
+    # [duration] Timeout for confirming risky commands
+    # (e.g. /island leave). Use ms, s, m, h, or d.
     confirmTimeout: 10s
 
     # [integer] Chunks to regenerate per server tick. Lower values reduce lag.
     chunkRegenSpeed: 4
 
-    # [true/false] Let the plugin manage the world spawn area. If false, use /mv setspawn yourself.
+    # [true/false] Let the plugin manage the world spawn area.
+    # If false, use /mv setspawn yourself.
     manageSpawn: true
 
     # Player database backend.
     playerdb:
 
-      # Valid values: yml (file-based), memory (in-RAM, lost on restart), bukkit (Bukkit's native cache).
+      # Valid values: yml (file-based), memory (in-RAM, lost on restart),
+      # bukkit (Bukkit's native cache).
       storage: bukkit
 
   # What to reset when a player creates or restarts their island.
@@ -294,7 +306,8 @@ options:
     # Reset the player's economy balance to 0.
     clearCurrency: false
 
-    # [duration] Delay before teleporting the player after /is create or /is restart. Use ms, s, m, h, or d.
+    # [duration] Delay before teleporting the player after
+    # /is create or /is restart. Use ms, s, m, h, or d.
     teleportDelay: 1000ms
 
     # [true/false] Automatically teleport the player to their island once it's ready.
@@ -303,7 +316,8 @@ options:
     # Commands to execute after island creation. Example: "me Jumps with <green>joy"
     extra-commands: []
 
-# Assign additional perks to permission nodes. Each key is a permission (e.g. usb.donor.small).
+# Assign additional perks to permission nodes.
+# Each key is a permission (e.g. usb.donor.small).
 # Perks override default spawn limits, party size, and can grant extra starting items.
 donor-perks:
   'usb.donor.small':
@@ -412,7 +426,8 @@ signs:
   enabled: true
 
 nether:
-  # [true/false] Enable nether world support. Requires protectionRange to be divisible by 32.
+  # [true/false] Enable nether world support.
+  # Requires protectionRange to be divisible by 32.
   enabled: true
 
   # [integer] Max Y-coordinate for the nether world. Blocks cannot be placed above this.
@@ -421,13 +436,15 @@ nether:
   # [integer] Y-level up to which lava is generated in the nether.
   lava-level: 7
 
-  # [true/false] Enable terraforming: breaking nether blocks can spawn new blocks based on probability.
+  # [true/false] Enable terraforming: breaking nether blocks can
+  # spawn new blocks based on probability.
   terraform-enabled: true
 
   # [integer] Max distance from the broken block to search for a valid terraform location.
   terraform-distance: 7
 
-  # Vertical aim range (pitch) in which terraforming is active. -90 = looking straight up, 90 = looking straight down.
+  # Vertical aim range (pitch) in which terraforming is active.
+  # -90 = looking straight up, 90 = looking straight down.
   terraform-min-pitch: -70.0
   terraform-max-pitch: 90.0
 
@@ -453,7 +470,8 @@ nether:
     - '{p=0.80}GLOWSTONE'
     - '{p=0.15}GLOWSTONE'
 
-  # Multipliers applied to terraform probabilities based on pickaxe tier. 0 = no terraforming.
+  # Multipliers applied to terraform probabilities based on
+  # pickaxe tier. 0 = no terraforming.
   terraform-weight:
     WOOD: 0
     STONE: 1.0
@@ -469,7 +487,8 @@ nether:
     skeleton: 0.1
     blaze: 0.2
 
-# Left-click blocks while holding the tool item to execute commands. Each entry maps a block material to the command to run.
+# Left-click blocks while holding the tool item to execute commands.
+# Each entry maps a block material to the command to run.
 tool-menu:
   enabled: true
   tool: oak_sapling
@@ -487,7 +506,8 @@ plugin-updates:
   # Update channel: RELEASE or STAGING.
   branch: RELEASE
 
-# Placeholder substitution (e.g. usb_island_level, usb_island_rank, usb_island_leader, etc.).
+# Placeholder substitution
+# (e.g. usb_island_level, usb_island_rank, usb_island_leader, etc.).
 placeholder:
 
   # [true/false] Hook into MVdWPlaceholderAPI for third-party placeholder support.
