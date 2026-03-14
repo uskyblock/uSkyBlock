@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
-"PO-Revision-Date: 2026-03-03 18:13\n"
+"PO-Revision-Date: 2026-03-14 00:26\n"
 "Last-Translator: minoneer <minoneer@gmail.com>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -600,6 +600,14 @@ msgstr "島レベルは無効化されています。管理者に連絡してく
 msgid "Island level is <level:'#,##0'>"
 msgstr "島レベルは <level:'#,##0'> です"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
+msgid "Island scheme <schematic> is currently unavailable. Please contact a server admin."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
+msgid "Island scheme <schematic> is not configured. Please contact a server admin."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "It's a bad idea to replace your lava!"
 msgstr "溶岩を置き換えるのはやめた方がいいよ！"
@@ -718,6 +726,10 @@ msgstr "一致するチャレンジがありません: <input>"
 msgid "No challenge with id <challenge-id> found"
 msgstr "ID <challenge-id> のチャレンジが見つかりません"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
+msgid "No island scheme is configured. Please contact a server admin."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "No pending invite found for <player>"
 msgstr "<player> の保留中の招待が見つかりません"
@@ -725,6 +737,10 @@ msgstr "<player> の保留中の招待が見つかりません"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "No pending invites."
 msgstr "保留中の招待はありません。"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
+msgid "No usable island scheme is configured. Please contact a server admin."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North"
