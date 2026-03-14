@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: bs\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
 "X-Crowdin-File-ID: 26\n"
+"X-Crowdin-Language: bs\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -359,6 +365,10 @@ msgstr "Pokušavam prekinuti protect-all zadatak."
 msgid "Trying to abort purge"
 msgstr "Pokušavam prekinuti purge"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Unable to save config.yml: <reason>"
+msgstr "Nije moguće sačuvati config.yml: <reason>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Unloading chunks at <location>."
 msgstr "Izbacivanje chunkova na <location>."
@@ -427,7 +437,8 @@ msgstr "prikazuje informacije o verziji"
 msgid "hides the regions again"
 msgstr "ponovo sakriva regione"
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
+#. still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
 msgstr "poslovi   ms/posao   ms/tik  tikovi   aktivno  vrijeme   naziv"
@@ -599,4 +610,3 @@ msgstr "razne WorldGuard alatke"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "razne chunk komande"
-

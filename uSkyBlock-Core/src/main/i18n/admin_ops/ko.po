@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: ko\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
 "X-Crowdin-File-ID: 26\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -359,6 +365,10 @@ msgstr "전체 보호 작업을 중단하려고 하는 중입니다."
 msgid "Trying to abort purge"
 msgstr "정리를 중단하려고 하는 중입니다"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
+msgid "Unable to save config.yml: <reason>"
+msgstr "config.yml을(를) 저장할 수 없습니다: <reason>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Unloading chunks at <location>."
 msgstr "<location>의 청크를 언로드하는 중입니다."
@@ -427,7 +437,8 @@ msgstr "버전 정보를 표시합니다"
 msgid "hides the regions again"
 msgstr "영역 표시를 다시 숨깁니다"
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
+#. still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
 msgstr "작업   ms/작업   ms/틱   틱수    활성   시간     이름"
@@ -599,4 +610,3 @@ msgstr "여러 WorldGuard 유틸리티"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "여러 청크 명령"
-
