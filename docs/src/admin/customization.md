@@ -5,20 +5,23 @@ Once uSkyBlock is installed and working, these are the highest-value places to m
 ## Main config
 
 Most general customization starts in `plugins/uSkyBlock/config.yml`.
+See the [Configuration Reference](config-reference.md) for every available key.
 
 Common settings to review:
 
 | Option | Default | Notes |
 |---|---|---|
+| `language` | `en` | Plugin language |
 | `options.general.worldName` | `skyworld` | Name of the skyblock world |
 | `options.general.maxPartySize` | `4` | Max players per island |
-| `options.island.schematicName` | `default` | Default starting island schematic |
+| `options.island.default-scheme` | `default` | Default starting island schematic |
+| `options.island.chestItems` | *(see config)* | Items placed in the starter chest |
 | `options.island.distance` | `128` | Blocks between island centers |
 | `options.island.protectionRange` | `128` | Protection radius per island |
 | `options.island.height` | `150` | Spawn height for new islands |
 | `options.island.allowPvP` | `deny` | PvP on islands: `deny` or `allow` |
+| `options.extras.obsidianToLava` | `true` | Right-click obsidian with empty bucket to recover lava |
 | `nether.enabled` | `true` | Enable a skyblock nether world |
-| `nether.activate-at.level` | `100` | Island level required to unlock nether |
 
 To apply config changes without a full restart: `/usb reload`
 
@@ -82,12 +85,12 @@ Key flags:
 
 | Flag | Default | Notes |
 |---|---|---|
-| `kill-animals` | off | Visitors cannot kill animals |
-| `kill-monsters` | off | Visitors cannot kill monsters |
-| `villager-trading` | off | Visitors cannot trade |
-| `shearing` | off | Visitors cannot shear |
-| `item-drops` | on | Visitors can pick up item drops |
-| `trample` | off | Visitors cannot trample crops |
-| `portal-access` | off | Visitors cannot use portals |
+| `kill-animals` | on | Visitors cannot kill animals |
+| `kill-monsters` | on | Visitors cannot kill monsters |
+| `villager-trading` | on | Visitors cannot trade with villagers |
+| `shearing` | on | Visitors cannot shear animals |
+| `item-drops` | on | Visitors cannot drop items |
+| `trampling` | on | Visitors cannot trample crops |
+| `use-portals` | off | Visitors can use portals |
 
 Island members and trusted players bypass these restrictions. Creeper and wither damage, fire spread, and lava flow protection are also configurable under `protection`.

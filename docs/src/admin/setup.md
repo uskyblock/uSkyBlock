@@ -47,5 +47,6 @@ If something goes wrong, stop the server, restore the previous JAR and backup, a
 ## Next steps
 
 - For gameplay tuning, schematics, biomes, and protection settings, see [Customization](customization.md).
-- For challenge progression and rewards, see [Challenges config](challenges.md).
-- For command and permission nodes, see [Useful Commands & Permissions](reference.md).
+- For challenge progression and rewards, see [Challenges](challenges.md).
+- For the full default config with inline documentation, see [Configuration](config-reference.md).
+- For command and permission nodes, see [Commands & Permissions](commands.md).

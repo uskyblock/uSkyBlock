@@ -31,7 +31,7 @@ All player commands use `/island` (alias: `/is`).
 | `top` | `usb.island.top` | Top 10 leaderboard |
 | `limits` | `usb.island.limit` | Show spawn/block limits |
 | `restart` | `usb.island.restart` | Reset island |
-| `biome` | `usb.island.biome` | Change island biome |
+| `biome` | `usb.biome.<name>` | Change island biome |
 | `lock` / `unlock` | `usb.island.lock` | Lock island to visitors |
 | `ban` / `unban` | `usb.island.ban` | Ban player from island |
 | `setwarp` | `usb.island.setwarp` | Set warp point |
@@ -84,7 +84,6 @@ These are the most useful admin commands for day-to-day server management. Addit
 | `island info <player>` | Show island data for a player |
 | `island delete <player>` | Delete a player's island |
 | `island addmember <island> <player>` | Force-add a member |
-| `island purge` | Remove abandoned islands |
 | `island setbiome <player> <biome>` | Override island biome |
 | `island makeleader <player>` | Transfer island leadership |
 | `goto <player>` | Teleport to a player's island (`usb.mod.goto`) |
@@ -92,7 +91,7 @@ These are the most useful admin commands for day-to-day server management. Addit
 | `topten` | Recalculate the top 10 list |
 | `purge` | Remove islands below the configured purge level |
 | `cooldown <player>` | View or reset player cooldowns |
-| `challenge <player>` | View or reset player challenges |
+| `challenge <player>` | View or reset player challenges (`usb.mod.challenges`) |
 | `perk <player>` | Manage player perks |
 | `flush` | Write cached data to disk |
 | `version` | Show plugin and dependency versions |

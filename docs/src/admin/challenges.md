@@ -1,6 +1,6 @@
 # Challenges Config
 
-`plugins/uSkyBlock/challenges.yml` controls the challenge menu, unlock progression, requirements, and rewards.
+`plugins/uSkyBlock/challenges.yml` controls the challenge menu, unlock progression, requirements, and rewards. See the [default challenges.yml on GitHub](https://github.com/uskyblock/uSkyBlock/blob/master/uSkyBlock-Core/src/main/resources/challenges.yml) for the full file with inline documentation.
 
 If you want your server to feel custom rather than stock, `challenges.yml` is one of the highest-impact files to tune.
 
@@ -102,7 +102,7 @@ Most challenges use a small subset of fields:
 | `lockedDisplayItem` | Optional menu icon while locked |
 | `resetInHours` | Override repeat reset time for this challenge |
 | `repeatLimit` | Override max repeat count |
-| `takeItems` | Whether inventory requirements are consumed |
+| `takeItems` | Whether inventory requirements are consumed (default: `true`) |
 | `reward` | First-completion rewards |
 | `repeatReward` | Rewards for repeats |
 | `disabled` | Hide this challenge without deleting it |
@@ -121,6 +121,8 @@ Most challenges use a small subset of fields:
 | `currency` | Economy reward if Vault is installed |
 | `xp` | Experience reward |
 | `commands` | Commands run as `op:` or `console:` |
+
+Available command placeholders: `{player}`, `{playerName}`, `{challenge}`, `{challengeName}`, `{position}`, and `{party}` (runs the command once per island member). Commands also support `{p=0.5}` (probability) and `{d=1000}` (delay in ms) modifiers.
 
 Example:
 

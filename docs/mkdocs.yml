@@ -9,6 +9,9 @@ site_dir: ../site
 
 strict: true
 
+hooks:
+  - hooks/gen_config_reference.py
+
 theme:
   name: material
   favicon: images/uskyblock-favicon.svg
@@ -52,9 +55,10 @@ nav:
   - Home: index.md
   - Players: players.md
   - Server Admins:
-    - Setup: admin/setup.md
+    - Getting Started: admin/setup.md
     - Customization: admin/customization.md
-    - Challenges Config: admin/challenges.md
-    - Useful Commands & Permissions: admin/reference.md
+    - Challenges: admin/challenges.md
+    - Configuration: admin/config-reference.md
+    - Commands & Permissions: admin/commands.md
   - Developers: developers.md
   - Contributing: contributing.md
