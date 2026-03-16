@@ -4,26 +4,27 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentCaptor;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
-import us.talabrek.ultimateskyblock.player.PlayerInfo;
+import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ChallengeCompletionLogicTest {
@@ -31,54 +32,120 @@ public class ChallengeCompletionLogicTest {
     Path tempDir;
 
     @Test
-    public void importsLegacyPlayerChallengesIntoRepository() {
-        ChallengeProgressRepository repository = mock(ChallengeProgressRepository.class);
-        when(repository.hasProgress(any())).thenReturn(false);
-        when(repository.load(any())).thenReturn(Map.of());
-
-        ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
+    public void importsLegacyPlayerChallengesDuringStartup() throws Exception {
         ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        writeLegacyPlayerProgress("player-one.yml", 0, 64, 0, challengeKey, 2, 1, 1000L);
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("player"), repository);
+
+            Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
+
+            assertEquals(2, loaded.get(challengeKey).getTimesCompleted());
+            assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
+            assertNull(YamlConfiguration.loadConfiguration(tempDir.resolve("players/player-one.yml").toFile()).get("player.challenges"));
+            assertTrue(repository.hasProgress(IslandKey.fromIslandName("0,0")));
+        }
+    }
+
+    @Test
+    public void importsLegacyCompletionFilesDuringStartup() throws Exception {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        UUID leaderUuid = UUID.randomUUID();
+        long futureCooldown = System.currentTimeMillis() + 60_000L;
+        writeLegacyIsland(leaderUuid, "0,0");
+        writeLegacyCompletionFile(leaderUuid + ".yml", challengeKey, 3, 2, futureCooldown);
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("island"), repository);
+
+            Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
+
+            assertEquals(3, loaded.get(challengeKey).getTimesCompleted());
+            assertEquals(2, loaded.get(challengeKey).getTimesCompletedInCooldown());
+            assertFalse(Files.exists(tempDir.resolve("completion/" + leaderUuid + ".yml")));
+            assertTrue(Files.exists(tempDir.resolve("completion/legacy-backup/" + leaderUuid + ".yml")));
+        }
+    }
+
+    private uSkyBlock plugin(ChallengeKey challengeKey) {
+        ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
             Map<ChallengeKey, ChallengeCompletion> map = invocation.getArgument(0);
             map.put(challengeKey, new ChallengeCompletion(challengeKey, null, 0, 0));
             return null;
-        }).when(challengeLogic).populateChallenges(any());
+        }).when(challengeLogic).populateChallenges(org.mockito.ArgumentMatchers.any());
 
         uSkyBlock plugin = mock(uSkyBlock.class);
         when(plugin.getChallengeLogic()).thenReturn(challengeLogic);
         when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
         when(plugin.getDataFolder()).thenReturn(tempDir.toFile());
+        return plugin;
+    }
 
+    private RuntimeConfigs runtimeConfigs() {
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig());
+        return runtimeConfigs;
+    }
 
+    private static YamlConfiguration challengeConfig(String challengeSharing) {
         YamlConfiguration config = new YamlConfiguration();
-        config.set("challengeSharing", "player");
+        config.set("challengeSharing", challengeSharing);
+        return config;
+    }
 
-        ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin, runtimeConfigs, config, repository);
-
-        PlayerInfo playerInfo = mock(PlayerInfo.class);
-        when(playerInfo.getHasIsland()).thenReturn(true);
-        when(playerInfo.locationForParty()).thenReturn("0,0");
-        when(playerInfo.getPlayerName()).thenReturn("TestPlayer");
-
+    private void writeLegacyPlayerProgress(
+        String fileName,
+        int islandX,
+        int islandY,
+        int islandZ,
+        ChallengeKey challengeKey,
+        int timesCompleted,
+        int timesCompletedSinceTimer,
+        long firstCompleted
+    ) throws Exception {
+        Path playersDir = tempDir.resolve("players");
+        Files.createDirectories(playersDir);
         YamlConfiguration playerConfig = new YamlConfiguration();
-        playerConfig.set("player.challenges.cobblestonegenerator.firstCompleted", 1000L);
-        playerConfig.set("player.challenges.cobblestonegenerator.timesCompleted", 2);
-        playerConfig.set("player.challenges.cobblestonegenerator.timesCompletedSinceTimer", 1);
-        when(playerInfo.getConfig()).thenReturn(playerConfig);
+        playerConfig.set("player.islandX", islandX);
+        playerConfig.set("player.islandY", islandY);
+        playerConfig.set("player.islandZ", islandZ);
+        playerConfig.set("player.challenges." + challengeKey.id() + ".firstCompleted", firstCompleted);
+        playerConfig.set("player.challenges." + challengeKey.id() + ".timesCompleted", timesCompleted);
+        playerConfig.set("player.challenges." + challengeKey.id() + ".timesCompletedSinceTimer", timesCompletedSinceTimer);
+        playerConfig.save(playersDir.resolve(fileName).toFile());
+    }
 
-        Map<ChallengeKey, ChallengeCompletion> loaded = logic.getChallenges(playerInfo);
+    private void writeLegacyIsland(UUID leaderUuid, String islandName) throws Exception {
+        Path islandsDir = tempDir.resolve("islands");
+        Files.createDirectories(islandsDir);
+        YamlConfiguration islandConfig = new YamlConfiguration();
+        islandConfig.set("party.leader-uuid", leaderUuid.toString());
+        islandConfig.save(islandsDir.resolve(islandName + ".yml").toFile());
+    }
 
-        assertEquals(2, loaded.get(challengeKey).getTimesCompleted());
-        assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
-        assertNull(playerConfig.get("player.challenges"));
-        verify(playerInfo).save();
-
-        ArgumentCaptor<Map<ChallengeKey, ChallengeCompletion>> captor = ArgumentCaptor.forClass(Map.class);
-        verify(repository).replace(any(), captor.capture());
-        assertEquals(2, captor.getValue().get(challengeKey).getTimesCompleted());
+    private void writeLegacyCompletionFile(
+        String fileName,
+        ChallengeKey challengeKey,
+        int timesCompleted,
+        int timesCompletedSinceTimer,
+        long firstCompleted
+    ) throws Exception {
+        Path completionDir = tempDir.resolve("completion");
+        Files.createDirectories(completionDir);
+        YamlConfiguration config = new YamlConfiguration();
+        config.set(challengeKey.id() + ".firstCompleted", firstCompleted);
+        config.set(challengeKey.id() + ".timesCompleted", timesCompleted);
+        config.set(challengeKey.id() + ".timesCompletedSinceTimer", timesCompletedSinceTimer);
+        config.save(completionDir.resolve(fileName).toFile());
     }
 
     private static RuntimeConfig runtimeConfig() {
