@@ -24,6 +24,7 @@ dependencies {
     testImplementation(libs.net.kyori.adventure.text.minimessage)
     testImplementation(libs.net.kyori.adventure.text.serializer.legacy)
     testImplementation(libs.org.apache.commons.commons.lang3)
+    implementation(libs.org.xerial.sqlite.jdbc)
     implementation(libs.net.kyori.adventure.text.serializer.plain)
     compileOnly(libs.net.milkbowl.vault.vaultapi)
     compileOnly(libs.org.spigotmc.spigot.api)
@@ -334,7 +335,8 @@ tasks.processResources {
         "adventureBukkitVersion" to libs.versions.net.kyori.adventure.platform.bukkit.get(),
         "apacheCommonsVersion" to libs.versions.org.apache.commons.commons.lang3.get(),
         "apacheHttpVersion" to libs.versions.org.apache.httpcomponents.httpclient.get(),
-        "mavenArtifactVersion" to libs.versions.org.apache.maven.maven.artifact.get()
+        "mavenArtifactVersion" to libs.versions.org.apache.maven.maven.artifact.get(),
+        "sqliteVersion" to libs.versions.org.xerial.sqlite.jdbc.get()
     )
     inputs.properties(props)
     filesMatching("plugin.yml") {
