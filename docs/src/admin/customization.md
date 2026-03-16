@@ -59,12 +59,11 @@ Access is still controlled by permissions. Grant `usb.biome.<name>` for individu
 
 ## Gameplay tuning files
 
-Beyond `config.yml`, two files are especially important:
+Beyond `config.yml`, one file is especially important:
 
 - **`challenges.yml`** — defines challenge progression, requirements, and rewards. See [Challenges config](challenges.md).
-- **`levelConfig.yml`** — controls how blocks contribute to island score, including block values, diminishing returns, and hard caps.
 
-Both are high-impact tuning files. Change them carefully and test on a staging server first if you are already live.
+This is a high-impact tuning file. Change it carefully and test on a staging server first if you are already live.
 
 ## Cooldowns and limits
 
