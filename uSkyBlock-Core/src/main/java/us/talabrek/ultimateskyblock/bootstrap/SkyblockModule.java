@@ -81,7 +81,7 @@ public class SkyblockModule extends AbstractModule {
         @PluginDataDir Path pluginDataDir,
         Logger logger
     ) {
-        return new SqliteChallengeProgressRepository(pluginDataDir.resolve("challenge-progress.db"), logger);
+        return new SqliteChallengeProgressRepository(pluginDataDir.resolve("data").resolve("challenge-progress.db"), logger);
     }
 
     @Provides

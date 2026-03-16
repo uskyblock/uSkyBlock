@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 public class SqliteChallengeProgressRepository implements ChallengeProgressRepository {
     private static final String SCHEMA_VERSION = "1";
+    private static final int BUSY_TIMEOUT_MS = 5_000;
 
     private final Logger logger;
     private final String jdbcUrl;
@@ -74,33 +75,39 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
             """;
         try (Connection connection = openConnection()) {
             connection.setAutoCommit(false);
-            try (PreparedStatement delete = connection.prepareStatement(deleteSql)) {
-                delete.setString(1, islandKey.value());
-                delete.executeUpdate();
-            }
-            try (PreparedStatement insert = connection.prepareStatement(insertSql)) {
-                long updatedAt = System.currentTimeMillis();
-                for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : progress.entrySet()) {
-                    ChallengeCompletion completion = entry.getValue();
-                    if (isDefault(completion)) {
-                        continue;
-                    }
-                    insert.setString(1, islandKey.value());
-                    insert.setString(2, entry.getKey().id());
-                    if (completion.cooldownUntil() != null) {
-                        insert.setLong(3, completion.cooldownUntil().toEpochMilli());
-                    } else {
-                        insert.setObject(3, null);
-                    }
-                    insert.setInt(4, completion.getTimesCompleted());
-                    insert.setInt(5, completion.getTimesCompletedInCooldown());
-                    insert.setLong(6, updatedAt);
-                    insert.addBatch();
+            try {
+                try (PreparedStatement delete = connection.prepareStatement(deleteSql)) {
+                    delete.setString(1, islandKey.value());
+                    delete.executeUpdate();
                 }
-                insert.executeBatch();
+                try (PreparedStatement insert = connection.prepareStatement(insertSql)) {
+                    long updatedAt = System.currentTimeMillis();
+                    for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : progress.entrySet()) {
+                        ChallengeCompletion completion = entry.getValue();
+                        if (isDefault(completion)) {
+                            continue;
+                        }
+                        insert.setString(1, islandKey.value());
+                        insert.setString(2, entry.getKey().id());
+                        if (completion.cooldownUntil() != null) {
+                            insert.setLong(3, completion.cooldownUntil().toEpochMilli());
+                        } else {
+                            insert.setObject(3, null);
+                        }
+                        insert.setInt(4, completion.getTimesCompleted());
+                        insert.setInt(5, completion.getTimesCompletedInCooldown());
+                        insert.setLong(6, updatedAt);
+                        insert.addBatch();
+                    }
+                    insert.executeBatch();
+                }
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
             }
-            connection.commit();
         } catch (SQLException e) {
+            logger.log(Level.FINE, "Unable to store challenge progress for " + islandKey.value(), e);
             throw new IllegalStateException("Unable to store challenge progress for " + islandKey.value(), e);
         }
     }
@@ -127,9 +134,10 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
     private @NotNull Connection openConnection() throws SQLException {
         Connection connection = DriverManager.getConnection(jdbcUrl);
         try (Statement statement = connection.createStatement()) {
+            statement.execute("PRAGMA busy_timeout = " + BUSY_TIMEOUT_MS);
             statement.execute("PRAGMA foreign_keys = ON");
         } catch (SQLException e) {
-            logger.log(Level.FINE, "Unable to enable SQLite foreign keys", e);
+            logger.log(Level.FINE, "Unable to apply SQLite connection pragmas", e);
         }
         return connection;
     }
@@ -137,6 +145,8 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
     private void initialize() throws SQLException {
         try (Connection connection = openConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("PRAGMA journal_mode = WAL");
+            statement.execute("PRAGMA synchronous = NORMAL");
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS challenge_progress (
                     island_key TEXT NOT NULL,
@@ -166,7 +176,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
              PreparedStatement statement = connection.prepareStatement("""
                  INSERT INTO challenge_progress_meta(key, value)
                  VALUES ('schema_version', ?)
-                 ON CONFLICT(key) DO UPDATE SET value=excluded.value
+                ON CONFLICT(key) DO UPDATE SET value=excluded.value
                  """)) {
             statement.setString(1, SCHEMA_VERSION);
             statement.executeUpdate();

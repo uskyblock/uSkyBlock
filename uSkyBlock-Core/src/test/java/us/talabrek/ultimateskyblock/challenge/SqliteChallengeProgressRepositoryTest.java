@@ -21,7 +21,7 @@ public class SqliteChallengeProgressRepositoryTest {
     @Test
     public void storesAndLoadsChallengeProgress() {
         SqliteChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
-            tempDir.resolve("challenge-progress.db"),
+            tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         );
         IslandKey islandKey = IslandKey.fromIslandName("0,0");
@@ -42,7 +42,7 @@ public class SqliteChallengeProgressRepositoryTest {
     @Test
     public void omitsDefaultProgressRows() {
         SqliteChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
-            tempDir.resolve("challenge-progress.db"),
+            tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         );
         IslandKey islandKey = IslandKey.fromIslandName("128,256");

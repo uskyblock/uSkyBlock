@@ -37,7 +37,7 @@ public class ChallengeCompletionLogicTest {
         writeLegacyPlayerProgress("player-one.yml", 0, 64, 0, challengeKey, 2, 1, 1000L);
 
         try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
-            tempDir.resolve("challenge-progress.db"),
+            tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         )) {
             ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("player"), repository);
@@ -60,7 +60,7 @@ public class ChallengeCompletionLogicTest {
         writeLegacyCompletionFile(leaderUuid + ".yml", challengeKey, 3, 2, futureCooldown);
 
         try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
-            tempDir.resolve("challenge-progress.db"),
+            tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         )) {
             ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("island"), repository);
