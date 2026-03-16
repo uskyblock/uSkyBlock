@@ -54,9 +54,12 @@ public class RestartCommand extends RequireIslandCommand {
                     return true;
                 }
             }
+            String cSchem = args != null && args.length > 0 ? args[0] : island.getSchematicName();
+            if (!plugin.canUseIslandScheme(player, cSchem)) {
+                return true;
+            }
             if (plugin.getConfirmHandler().checkCommand(player, "/is restart")) {
                 plugin.getCooldownHandler().resetCooldown(player, "restart", runtimeConfigs.current().general().cooldownRestart());
-                String cSchem = args != null && args.length > 0 ? args[0] : island.getSchematicName();
                 plugin.getServer().getPluginManager().callEvent(new RestartIslandEvent(player, pi.getIslandLocation(), cSchem));
                 return true;
             } else {

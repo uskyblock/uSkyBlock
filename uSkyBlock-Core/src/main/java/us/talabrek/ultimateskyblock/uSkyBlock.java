@@ -347,8 +347,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     public boolean restartPlayerIsland(final Player player, final Location next, final String cSchem) {
-        if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            sendErrorTr(player, "You do not have access to that island schematic.");
+        if (!canUseIslandScheme(player, cSchem)) {
             return false;
         }
         final PlayerInfo playerInfo = getPlayerInfo(player);
@@ -547,22 +546,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             sendErrorTr(player, "Your island is currently generating. You cannot create a new one right now.");
             return;
         }
-        if (cSchem == null || cSchem.isBlank()) {
-            sendErrorTr(player, "No island scheme is configured. Please contact a server admin.");
-            return;
-        }
-        if (runtimeConfigs.current().islandScheme(cSchem) == null) {
-            sendErrorTr(player, "Island scheme <schematic> is not configured. Please contact a server admin.",
-                unparsed("schematic", cSchem));
-            return;
-        }
-        if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            sendErrorTr(player, "You do not have access to that island schematic.");
-            return;
-        }
-        if (schematicHandler.getScheme(cSchem) == null) {
-            sendErrorTr(player, "Island scheme <schematic> is currently unavailable. Please contact a server admin.",
-                unparsed("schematic", cSchem));
+        if (!canUseIslandScheme(player, cSchem)) {
             return;
         }
         pi.setIslandGenerating(true);
@@ -580,22 +564,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     private void generateIsland(final Player player, final PlayerInfo pi, final Location next, final String cSchem) {
-        if (cSchem == null || cSchem.isBlank() || runtimeConfigs.current().islandScheme(cSchem) == null) {
-            sendErrorTr(player, "Island scheme <schematic> is not configured. Please contact a server admin.",
-                unparsed("schematic", cSchem != null ? cSchem : ""));
-            pi.setIslandGenerating(false);
-            orphanLogic.addOrphan(next);
-            return;
-        }
-        if (!perkLogic.getSchemes(player).contains(cSchem)) {
-            sendErrorTr(player, "You do not have access to that island schematic.");
-            pi.setIslandGenerating(false);
-            orphanLogic.addOrphan(next);
-            return;
-        }
-        if (schematicHandler.getScheme(cSchem) == null) {
-            sendErrorTr(player, "Island scheme <schematic> is currently unavailable. Please contact a server admin.",
-                unparsed("schematic", cSchem));
+        if (!canUseIslandScheme(player, cSchem)) {
             pi.setIslandGenerating(false);
             orphanLogic.addOrphan(next);
             return;
@@ -606,6 +575,28 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         IslandInfo tempInfo = islandLogic.createIslandInfo(LocationUtil.getIslandName(next), pi.getPlayerName());
         WorldGuardHandler.protectIsland(this, player, tempInfo);
         islandLogic.clearIsland(next, createTask);
+    }
+
+    public boolean canUseIslandScheme(@NotNull Player player, @Nullable String cSchem) {
+        if (cSchem == null || cSchem.isBlank()) {
+            sendErrorTr(player, "No island scheme is configured. Please contact a server admin.");
+            return false;
+        }
+        if (runtimeConfigs.current().islandScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is not configured. Please contact a server admin.",
+                unparsed("schematic", cSchem));
+            return false;
+        }
+        if (!perkLogic.getSchemes(player).contains(cSchem)) {
+            sendErrorTr(player, "You do not have access to that island schematic.");
+            return false;
+        }
+        if (schematicHandler.getScheme(cSchem) == null) {
+            sendErrorTr(player, "Island scheme <schematic> is currently unavailable. Please contact a server admin.",
+                unparsed("schematic", cSchem));
+            return false;
+        }
+        return true;
     }
 
     public IslandInfo setNewPlayerIsland(final PlayerInfo playerInfo, final Location loc) {
