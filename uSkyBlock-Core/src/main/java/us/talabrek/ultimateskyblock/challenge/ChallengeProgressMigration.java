@@ -6,11 +6,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.BackupFileUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -256,16 +257,12 @@ final class ChallengeProgressMigration {
 
     private void backupLegacyFile(@NotNull Path source) {
         try {
-            Path backupDir = legacyStorageDir.resolve("legacy-backup");
-            Files.createDirectories(backupDir);
-            Path target = backupDir.resolve(source.getFileName());
-            int suffix = 1;
-            while (Files.exists(target)) {
-                target = backupDir.resolve(source.getFileName().toString().replace(".yml", "-" + suffix + ".yml"));
-                suffix++;
-            }
-            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
+            BackupFileUtil.moveToBackup(
+                plugin.getDataFolder().toPath(),
+                source,
+                "completion/" + source.getFileName()
+            );
+        } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Unable to back up legacy challenge progress file " + source, e);
         }
     }

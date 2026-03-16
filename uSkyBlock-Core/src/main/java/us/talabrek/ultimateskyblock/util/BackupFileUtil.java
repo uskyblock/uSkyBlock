@@ -33,6 +33,10 @@ public final class BackupFileUtil {
         Files.createDirectories(backupDir);
 
         Path candidate = backupDir.resolve(backupFileName);
+        Path candidateParent = candidate.getParent();
+        if (candidateParent != null) {
+            Files.createDirectories(candidateParent);
+        }
         if (!Files.exists(candidate)) {
             return candidate;
         }

@@ -70,7 +70,7 @@ public class ChallengeCompletionLogicTest {
             assertEquals(3, loaded.get(challengeKey).getTimesCompleted());
             assertEquals(2, loaded.get(challengeKey).getTimesCompletedInCooldown());
             assertFalse(Files.exists(tempDir.resolve("completion/" + leaderUuid + ".yml")));
-            assertTrue(Files.exists(tempDir.resolve("completion/legacy-backup/" + leaderUuid + ".yml")));
+            assertTrue(Files.exists(tempDir.resolve("backup/completion/" + leaderUuid + ".yml")));
         }
     }
 
