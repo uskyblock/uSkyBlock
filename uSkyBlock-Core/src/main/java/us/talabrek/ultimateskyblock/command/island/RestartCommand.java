@@ -55,7 +55,7 @@ public class RestartCommand extends RequireIslandCommand {
                 }
             }
             String cSchem = args != null && args.length > 0 ? args[0] : island.getSchematicName();
-            if (!plugin.canUseIslandScheme(player, cSchem)) {
+            if (!plugin.validateIslandScheme(player, cSchem)) {
                 return true;
             }
             if (plugin.getConfirmHandler().checkCommand(player, "/is restart")) {

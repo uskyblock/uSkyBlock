@@ -44,7 +44,7 @@ public class RestartCommandTest {
         when(cooldownHandler.getCooldown(player, "restart")).thenReturn(Duration.ZERO);
         when(plugin.getConfirmHandler()).thenReturn(confirmHandler);
         when(confirmHandler.checkCommand(player, "/is restart")).thenReturn(true);
-        when(plugin.canUseIslandScheme(player, "broken")).thenReturn(false);
+        when(plugin.validateIslandScheme(player, "broken")).thenReturn(false);
         when(island.getPartySize()).thenReturn(1);
         when(island.getSchematicName()).thenReturn("broken");
         when(playerInfo.isIslandGenerating()).thenReturn(false);

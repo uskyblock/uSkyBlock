@@ -30,7 +30,7 @@ public class uSkyBlockTest {
         Player player = mock(Player.class);
         IslandLogic islandLogic = mock(IslandLogic.class);
         setField(plugin, "islandLogic", islandLogic);
-        doReturn(false).when(plugin).canUseIslandScheme(player, "broken");
+        doReturn(false).when(plugin).validateIslandScheme(player, "broken");
 
         boolean restarted = plugin.restartPlayerIsland(player, new Location(mock(World.class), 0, 64, 0), "broken");
 

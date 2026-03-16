@@ -347,7 +347,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     public boolean restartPlayerIsland(final Player player, final Location next, final String cSchem) {
-        if (!canUseIslandScheme(player, cSchem)) {
+        if (!validateIslandScheme(player, cSchem)) {
             return false;
         }
         final PlayerInfo playerInfo = getPlayerInfo(player);
@@ -546,7 +546,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             sendErrorTr(player, "Your island is currently generating. You cannot create a new one right now.");
             return;
         }
-        if (!canUseIslandScheme(player, cSchem)) {
+        if (!validateIslandScheme(player, cSchem)) {
             return;
         }
         pi.setIslandGenerating(true);
@@ -564,7 +564,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     }
 
     private void generateIsland(final Player player, final PlayerInfo pi, final Location next, final String cSchem) {
-        if (!canUseIslandScheme(player, cSchem)) {
+        if (!validateIslandScheme(player, cSchem)) {
             pi.setIslandGenerating(false);
             orphanLogic.addOrphan(next);
             return;
@@ -577,7 +577,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         islandLogic.clearIsland(next, createTask);
     }
 
-    public boolean canUseIslandScheme(@NotNull Player player, @Nullable String cSchem) {
+    public boolean validateIslandScheme(@NotNull Player player, @Nullable String cSchem) {
         if (cSchem == null || cSchem.isBlank()) {
             sendErrorTr(player, "No island scheme is configured. Please contact a server admin.");
             return false;
