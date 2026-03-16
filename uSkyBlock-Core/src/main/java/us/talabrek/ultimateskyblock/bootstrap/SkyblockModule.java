@@ -43,6 +43,7 @@ public class SkyblockModule extends AbstractModule {
         // TODO: this should not be injected, but it is here fore legacy reasons. Move all functionality out of the plugin class and into the appropriate classes.
         bind(uSkyBlock.class).toInstance(plugin);
         bind(Plugin.class).toInstance(plugin);
+        bind(Logger.class).toInstance(plugin.getLogger());
         bind(PluginConfig.class).toInstance(pluginConfig);
         bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
