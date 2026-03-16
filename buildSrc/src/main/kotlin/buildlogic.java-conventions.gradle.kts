@@ -51,7 +51,6 @@ repositories {
 }
 
 group = "ovh.uskyblock"
-version = "3.3.2"
 
 java {
     toolchain {
