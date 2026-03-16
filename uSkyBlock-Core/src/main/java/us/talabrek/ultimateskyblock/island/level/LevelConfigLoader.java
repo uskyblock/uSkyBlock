@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
-import us.talabrek.ultimateskyblock.util.BackupFileUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,26 +28,19 @@ public class LevelConfigLoader {
     }
 
     public @NotNull YamlConfiguration load() {
-        moveLegacyDataFolderCopyToBackup();
+        Path levelConfigPath = pluginDataDir.resolve(LEVEL_CONFIG_NAME);
+        if (Files.exists(levelConfigPath)) {
+            logger.info("Loading " + LEVEL_CONFIG_NAME + " from " + levelConfigPath + ".");
+            return YamlConfiguration.loadConfiguration(levelConfigPath.toFile());
+        }
+
         try (var stream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(LEVEL_CONFIG_NAME),
             "Missing bundled resource " + LEVEL_CONFIG_NAME);
              var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            logger.info("Loading bundled " + LEVEL_CONFIG_NAME + ".");
             return YamlConfiguration.loadConfiguration(reader);
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to load bundled " + LEVEL_CONFIG_NAME, e);
-        }
-    }
-
-    private void moveLegacyDataFolderCopyToBackup() {
-        Path levelConfigPath = pluginDataDir.resolve(LEVEL_CONFIG_NAME);
-        if (!Files.exists(levelConfigPath)) {
-            return;
-        }
-        try {
-            Path backupPath = BackupFileUtil.moveToBackup(pluginDataDir, levelConfigPath, LEVEL_CONFIG_NAME);
-            logger.info("Moved legacy " + LEVEL_CONFIG_NAME + " from the data folder to " + backupPath + ".");
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to back up legacy " + LEVEL_CONFIG_NAME + ".", e);
+            throw new IllegalStateException("Unable to load " + LEVEL_CONFIG_NAME, e);
         }
     }
 }

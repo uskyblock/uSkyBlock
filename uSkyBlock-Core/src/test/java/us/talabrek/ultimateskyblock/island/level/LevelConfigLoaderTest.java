@@ -27,31 +27,28 @@ public class LevelConfigLoaderTest {
     }
 
     @Test
-    public void movesExistingDataFolderLevelConfigIntoBackupBeforeLoadingBundledConfig() throws Exception {
-        Path legacyLevelConfig = tempDir.resolve(LevelConfigLoader.LEVEL_CONFIG_NAME);
-        Files.writeString(legacyLevelConfig, "general:\n  pointsPerLevel: 999\n");
+    public void loadsExistingDataFolderLevelConfig() throws Exception {
+        Path levelConfig = tempDir.resolve(LevelConfigLoader.LEVEL_CONFIG_NAME);
+        Files.writeString(levelConfig, "general:\n  pointsPerLevel: 999\n");
 
         LevelConfigLoader loader = new LevelConfigLoader(tempDir, Logger.getAnonymousLogger());
         YamlConfiguration config = loader.load();
 
-        assertEquals(1000, config.getInt("general.pointsPerLevel"));
-        assertFalse(Files.exists(legacyLevelConfig));
-        Path backupPath = tempDir.resolve("backup").resolve(LevelConfigLoader.LEVEL_CONFIG_NAME);
-        assertTrue(Files.exists(backupPath));
-        assertEquals("general:\n  pointsPerLevel: 999\n", Files.readString(backupPath));
+        assertEquals(999, config.getInt("general.pointsPerLevel"));
+        assertEquals("general:\n  pointsPerLevel: 999\n", Files.readString(levelConfig));
     }
 
     @Test
-    public void usesSuffixedBackupNameWhenBackupAlreadyExists() throws Exception {
-        Path backupDir = tempDir.resolve("backup");
-        Files.createDirectories(backupDir);
-        Files.writeString(backupDir.resolve(LevelConfigLoader.LEVEL_CONFIG_NAME), "existing backup");
-        Files.writeString(tempDir.resolve(LevelConfigLoader.LEVEL_CONFIG_NAME), "legacy copy");
+    public void keepsExistingDataFolderLevelConfigUnchangedAcrossLoads() throws Exception {
+        Path levelConfig = tempDir.resolve(LevelConfigLoader.LEVEL_CONFIG_NAME);
+        Files.writeString(levelConfig, "general:\n  pointsPerLevel: 777\n");
 
         LevelConfigLoader loader = new LevelConfigLoader(tempDir, Logger.getAnonymousLogger());
-        loader.load();
+        YamlConfiguration firstLoad = loader.load();
+        YamlConfiguration secondLoad = loader.load();
 
-        assertTrue(Files.exists(backupDir.resolve("levelConfig-1.yml")));
-        assertEquals("legacy copy", Files.readString(backupDir.resolve("levelConfig-1.yml")));
+        assertEquals(777, firstLoad.getInt("general.pointsPerLevel"));
+        assertEquals(777, secondLoad.getInt("general.pointsPerLevel"));
+        assertEquals("general:\n  pointsPerLevel: 777\n", Files.readString(levelConfig));
     }
 }
