@@ -89,7 +89,9 @@ public class AdminChallengeCommand extends CompositeCommand {
                 if (commandSender instanceof Player player) {
                     int page = args.length > 0 && args[0].matches("[0-9]+") ? Integer.parseInt(args[0], 10) : 1;
                     String playerName = (String) data.get("playerName");
-                    player.openInventory(plugin.getMenu().displayChallengeGUI(player, page, playerName));
+                    challengeLogic.whenChallengesLoaded(playerInfo,
+                        () -> player.openInventory(plugin.getMenu().displayChallengeGUI(player, page, playerName)),
+                        error -> sendErrorTr(player, "Unable to load challenge progress right now. Please try again."));
                     return true;
                 }
                 return false;

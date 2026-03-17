@@ -332,10 +332,6 @@ public class SignLogic {
         }
     }
 
-    // This logic is duplicated in ChallengeLogic.tryCompleteOnPlayer. It has a lot of the same checks. If they
-    // pass, it moves the items to the player inventory and then calls the challengeLogic to complete the challenge.
-    // This is prone to bugs and exploits, and should be refactored. Ideally we get rid of the transfer and just
-    // refactor the challenge logic to accept multiple inventories as source.
     private void tryComplete(Player player, Location chestLoc, Challenge challenge) {
         BlockState state = chestLoc.getBlock().getState();
         if (!(state instanceof Chest chest)) {
@@ -345,55 +341,7 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
-        Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
-        int missing = 0;
-        for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-            ItemStack requiredType = required.getKey();
-            int requiredAmount = required.getValue();
-            int diff = 0;
-            if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                diff = requiredAmount - challengeLogic.getCountOf(player.getInventory(), requiredType);
-            }
-            if (diff > 0 && !chest.getInventory().containsAtLeast(requiredType, diff)) {
-                diff -= challengeLogic.getCountOf(chest.getInventory(), requiredType);
-            } else {
-                diff = 0;
-            }
-            missing += diff;
-        }
-        if (missing == 0) {
-            boolean successfulItemTransfer = attemptToMoveItemsToPlayerInventory(player.getInventory(), chest.getInventory(), requiredItems);
-            if (successfulItemTransfer) {
-                challengeLogic.completeChallenge(player, challenge.getId());
-            } else {
-                sendErrorTr(player, "Warning: <muted>Could not transfer all required items to your inventory.");
-            }
-            updateSignsOnContainer(chest.getLocation());
-        } else {
-            sendErrorTr(player, "Not enough items in chest to complete challenge!");
-        }
-    }
-
-    // This is a counter-intuitive way transfer the required items from the chest to the player inventory.
-    // It's prone to bugs and exploits, and should be refactored. Ideally we get rid of the transfer and just
-    // refactor the challenge logic to accept multiple inventories as source.
-    private static boolean attemptToMoveItemsToPlayerInventory(Inventory player, Inventory chest, Map<ItemStack, Integer> requiredItems) {
-        ItemStack[] itemsToRemove = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
-        ItemStack[] itemCopy = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
-
-        HashMap<Integer, ItemStack> missingItems = player.removeItem(itemsToRemove);
-        missingItems = chest.removeItem(missingItems.values().toArray(new ItemStack[0]));
-        if (!missingItems.isEmpty()) {
-            // This effectively means, we just donated some items to the player (exploit!!)
-            throw new IllegalStateException("Not all items removed from chest and player: " + missingItems.values());
-        }
-        HashMap<Integer, ItemStack> leftOvers = player.addItem(itemCopy);
-        if (leftOvers.isEmpty()) {
-            return true;
-        } else {
-            chest.addItem(leftOvers.values().toArray(new ItemStack[0]));
-            return false;
-        }
+        challengeLogic.completeChallenge(player, challenge.getId(), List.of(player.getInventory(), chest.getInventory()));
+        updateSignsOnContainer(chest.getLocation());
     }
 }

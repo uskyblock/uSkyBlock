@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Material;
+import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
@@ -9,6 +10,7 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +44,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("player"), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -67,7 +69,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("island"), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -241,7 +243,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("island"), repository);
 
             assertTrue(Files.exists(tempDir.resolve("completion")));
             assertTrue(Files.exists(sentinel));
@@ -272,6 +274,22 @@ public class ChallengeCompletionLogicTest {
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig());
         return runtimeConfigs;
+    }
+
+    private Scheduler scheduler() {
+        Scheduler scheduler = mock(Scheduler.class);
+        BukkitTask task = mock(BukkitTask.class);
+        when(scheduler.async(org.mockito.ArgumentMatchers.any(Runnable.class))).thenAnswer(invocation -> {
+            invocation.<Runnable>getArgument(0).run();
+            return task;
+        });
+        when(scheduler.sync(org.mockito.ArgumentMatchers.any(Runnable.class))).thenAnswer(invocation -> {
+            invocation.<Runnable>getArgument(0).run();
+            return task;
+        });
+        when(scheduler.async(org.mockito.ArgumentMatchers.any(Runnable.class), org.mockito.ArgumentMatchers.any(Duration.class), org.mockito.ArgumentMatchers.any(Duration.class)))
+            .thenReturn(task);
+        return scheduler;
     }
 
     private static YamlConfiguration challengeConfig(String challengeSharing) {

@@ -39,6 +39,7 @@ import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ComponentLineSplitter;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,6 +101,7 @@ public class ChallengeLogic implements Listener {
 
     public final ChallengeDefaults defaults;
     public final ChallengeCompletionLogic completionLogic;
+    private final ChallengeExecutor challengeExecutor;
     private final ItemStack lockedItem;
     private final Map<Challenge.Type, ItemStack> lockedItemMap = new EnumMap<>(Challenge.Type.class);
 
@@ -112,6 +114,7 @@ public class ChallengeLogic implements Listener {
         @NotNull HookManager hookManager,
         @NotNull GameObjectFactory gameObjects,
         @NotNull ChallengeFactory challengeFactory,
+        @NotNull Scheduler scheduler,
         @NotNull ChallengeProgressRepository challengeProgressRepository
     ) {
         this.logger = logger;
@@ -123,7 +126,8 @@ public class ChallengeLogic implements Listener {
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
         ranks = challengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
         rebuildIndex();
-        completionLogic = new ChallengeCompletionLogic(this, plugin, runtimeConfigs, config, challengeProgressRepository);
+        completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, config, challengeProgressRepository);
+        challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, hookManager, perkLogic, completionLogic.progressCache(), challengeProgressRepository);
         String displayItemForLocked = config.getString("lockedDisplayItem", null);
         if (displayItemForLocked != null) {
             lockedItem = gameObjects.itemStack(displayItemForLocked).create();
@@ -328,48 +332,15 @@ public class ChallengeLogic implements Listener {
     }
 
     public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
-        PlayerInfo pi = plugin.getPlayerInfo(player);
-        Optional<Challenge> opt = getChallengeById(id);
-        if (opt.isEmpty()) {
-            sendErrorTr(player, "No challenge with id <challenge-id> found", unparsed("challenge-id", id.id()));
-            return;
-        }
-        Challenge challenge = opt.get();
-        if (!plugin.playerIsOnOwnIsland(player)) {
-            sendErrorTr(player, "You must be on your island to do that!");
-            return;
-        }
-        if (!challenge.getRank().isAvailable(pi)) {
-            sendErrorTr(player, "The <challenge> challenge is not available yet!",
-                legacyArg("challenge", challenge.getDisplayName()));
-            return;
-        }
-        ChallengeCompletion completion = getChallengeCompletion(pi, id);
-        if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
-            sendErrorTr(player, "The <challenge> challenge is not repeatable!", legacyArg("challenge", challenge.getDisplayName()));
-            return;
-        }
-        if (completion.isOnCooldown() && completion.getTimesCompletedInCooldown() >= challenge.getRepeatLimit() && challenge.getRepeatLimit() > 0) {
-            sendErrorTr(player, "You cannot complete the <challenge> challenge again yet!",
-                legacyArg("challenge", challenge.getDisplayName()));
-            return;
-        }
-        sendTr(player, "Trying to complete challenge <challenge>.",
-            Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
-        if (challenge.getType() == Challenge.Type.PLAYER) {
-            tryCompleteOnPlayer(player, challenge);
-        } else if (challenge.getType() == Challenge.Type.ISLAND) {
-            if (!tryCompleteOnIsland(player, challenge)) {
-                sendError(player, dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy(challenge.getDescription()));
-                sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
-                    number("radius", challenge.getRadius()));
-            }
-        } else if (challenge.getType() == Challenge.Type.ISLAND_LEVEL) {
-            if (!tryCompleteIslandLevel(player, challenge)) {
-                sendErrorTr(player, "Your island must be level <level> to complete this challenge!",
-                    number("level", challenge.getRequiredLevel()));
-            }
-        }
+        challengeExecutor.attempt(player, id);
+    }
+
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id, @NotNull List<Inventory> itemSources) {
+        challengeExecutor.attempt(player, id, itemSources);
+    }
+
+    public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull java.util.function.Consumer<Throwable> onError) {
+        completionLogic.whenChallengesLoaded(playerInfo, onLoaded, onError);
     }
 
     /**
@@ -761,6 +732,10 @@ public class ChallengeLogic implements Listener {
 
     public Collection<ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
         return completionLogic.getChallenges(playerInfo).values();
+    }
+
+    String getBroadcastText() {
+        return config.getString("broadcastText");
     }
 
     public void completeChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {

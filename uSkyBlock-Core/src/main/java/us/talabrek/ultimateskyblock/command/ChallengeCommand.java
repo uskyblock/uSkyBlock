@@ -77,7 +77,9 @@ public class ChallengeCommand extends BaseCommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            player.openInventory(mainMenu.displayChallengeGUI(player, 1, null));
+            challengeLogic.whenChallengesLoaded(playerInfo,
+                () -> player.openInventory(mainMenu.displayChallengeGUI(player, 1, null)),
+                error -> sendErrorTr(player, "Unable to load challenge progress right now. Please try again."));
             return true;
         } else {
             return super.onCommand(sender, command, alias, args);

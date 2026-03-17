@@ -105,6 +105,7 @@ msgstr ""
 msgid "<player> has been removed from the island!"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 msgid "<player> has completed the <challenge> challenge!"
@@ -264,8 +265,24 @@ msgstr ""
 msgid "Challenge Menu"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Challenge completion failed unexpectedly."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Challenge completion is already in progress for your island."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "Challenge name: <challenge>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Challenge progress could not be saved. Challenge completions are now locked for this island until restart."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Challenge progress is temporarily locked due to a persistence error. Please contact an administrator."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -433,6 +450,7 @@ msgstr ""
 msgid "Currency reward: <currency:'#,##0'>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
 msgstr ""
@@ -617,6 +635,7 @@ msgstr ""
 msgid "Item reward: <reward-line>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Item rewards: <items>"
 msgstr ""
@@ -660,6 +679,10 @@ msgstr ""
 #. I18N: Section header for configured island limits in admin island info debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Limits:"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Loading challenge data..."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -723,7 +746,7 @@ msgstr ""
 msgid "No challenge matched: <input>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "No challenge with id <challenge-id> found"
 msgstr ""
 
@@ -753,10 +776,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/util/LocationUtil.java
 msgid "North-West"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
-msgid "Not enough items in chest to complete challenge!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PatienceTester.java
@@ -945,6 +964,7 @@ msgstr ""
 msgid "Still missing the following blocks: <blocks>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Still missing the following entities:"
 msgstr ""
@@ -1020,13 +1040,13 @@ msgstr ""
 msgid "That player's island is currently generating, so you cannot warp to it right now."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "The <challenge> challenge is not available yet!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "The <challenge> challenge is not repeatable!"
 msgstr ""
 
@@ -1163,7 +1183,7 @@ msgstr ""
 msgid "Trading isn't allowed on other islands. <muted>Use spawn instead."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "Trying to complete challenge <challenge>."
 msgstr ""
 
@@ -1173,6 +1193,12 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Unable to find a safe home location on your island!"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
+msgid "Unable to load challenge progress right now. Please try again."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/task/CreateIslandTask.java
@@ -1257,10 +1283,6 @@ msgstr ""
 msgid "Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
-msgid "Warning: <muted>Could not transfer all required items to your inventory."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "Warning: <muted>Teleporting you to mid-air."
 msgstr ""
@@ -1302,6 +1324,7 @@ msgid "When your warp is activated,<newline>other players will be taken to<newli
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "XP reward: <experience:'0'>"
 msgstr ""
@@ -1326,6 +1349,7 @@ msgstr ""
 msgid "You are now trusted on <leader>'s island."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You are still missing the following items:<items>"
 msgstr ""
@@ -1372,6 +1396,7 @@ msgstr ""
 msgid "You can only submit challenges in the skyblock world!"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "You can only submit challenges when you have an island!"
 msgstr ""
@@ -1433,7 +1458,7 @@ msgstr ""
 msgid "You cannot break vehicles while being a visitor."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "You cannot complete the <challenge> challenge again yet!"
 msgstr ""
 
@@ -1453,6 +1478,7 @@ msgstr ""
 msgid "You cannot use another island's portals."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "You completed the <challenge> challenge!"
 msgstr ""
@@ -1585,7 +1611,7 @@ msgstr ""
 msgid "You must be on your island to change the biome."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "You must be on your island to do that!"
 msgstr ""
 
@@ -1594,7 +1620,7 @@ msgstr ""
 msgid "You must be on your island to use this command."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "You must be standing within <radius> blocks of all required items."
 msgstr ""
 
@@ -1651,6 +1677,7 @@ msgstr ""
 msgid "Your incoming warp is inactive, players may not warp to your island."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
 msgid "Your inventory is full. <muted>Items were dropped on the ground."
 msgstr ""
@@ -1690,10 +1717,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "Your island is now <secondary>unlocked</secondary>. Anyone may enter, but only you and your party members may build or remove blocks."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Your island must be level <level> to complete this challenge!"
 msgstr ""
 
 #. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
