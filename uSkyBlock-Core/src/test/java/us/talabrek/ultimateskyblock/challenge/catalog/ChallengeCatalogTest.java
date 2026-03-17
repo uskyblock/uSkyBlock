@@ -16,13 +16,15 @@ class ChallengeCatalogTest {
     void preservesRankAndChallengeOrderAndBuildsIndexes() {
         RankDefinition early = new RankDefinition(
             RankId.of("Tier1"),
-            display("Novice"),
+            rankDisplay("Novice"),
+            item(Material.BARRIER),
             List.of(),
             List.of(challenge("alpha"), challenge("beta"))
         );
         RankDefinition late = new RankDefinition(
             RankId.of("Tier2"),
-            display("Adept"),
+            rankDisplay("Adept"),
+            item(Material.OBSIDIAN),
             List.of(new CompletedChallengesRequirement(List.of(ChallengeId.of("alpha")))),
             List.of(challenge("gamma"))
         );
@@ -41,7 +43,8 @@ class ChallengeCatalogTest {
     void rejectsDuplicateChallengeIds() {
         RankDefinition rank = new RankDefinition(
             RankId.of("Tier1"),
-            display("Novice"),
+            rankDisplay("Novice"),
+            item(Material.BARRIER),
             List.of(),
             List.of(challenge("duplicate"), challenge("duplicate"))
         );
@@ -52,7 +55,7 @@ class ChallengeCatalogTest {
     private static ChallengeDefinition challenge(String id) {
         return new ChallengeDefinition(
             ChallengeId.of(id),
-            display(id),
+            challengeDisplay(id),
             List.of(),
             List.of(),
             new ChallengeProperties(true),
@@ -62,11 +65,22 @@ class ChallengeCatalogTest {
         );
     }
 
-    private static DisplaySpec display(String name) {
+    private static RankDisplaySpec rankDisplay(String name) {
+        return new RankDisplaySpec(
+            TextSpec.miniMessage(name),
+            TextSpec.empty()
+        );
+    }
+
+    private static DisplaySpec challengeDisplay(String name) {
         return new DisplaySpec(
             TextSpec.miniMessage(name),
             TextSpec.empty(),
-            new ItemStackSpec(new org.bukkit.inventory.ItemStack(Material.STONE))
+            item(Material.STONE)
         );
+    }
+
+    private static ItemStackSpec item(Material material) {
+        return new ItemStackSpec(new org.bukkit.inventory.ItemStack(material));
     }
 }
