@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalogDiagnostic;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements;
@@ -18,6 +19,7 @@ import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.io.StringReader;
 import java.time.Duration;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -188,10 +190,69 @@ class ChallengeCatalogYamlParserTest {
                       item: "minecraft:stone"
             """));
 
-        assertEquals(3, result.warnings().size());
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.unknownRoot")));
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.unknownRank")));
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.weird")));
+    }
+
+    @Test
+    void fallsBackForRecoverableMissingPresentationFields() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                challenges:
+                  alpha: {}
+            """));
+
+        var rank = result.catalog().rank(RankId.of("starter")).orElseThrow();
+        var challenge = result.catalog().challenge(ChallengeId.of("alpha")).orElseThrow();
+
+        assertEquals("starter", rank.display().name().source());
+        assertEquals("", rank.display().description().source());
+        assertEquals(Material.BARRIER, rank.lockedDisplayItem().create().getType());
+        assertEquals("alpha", challenge.display().name().source());
+        assertEquals("", challenge.display().description().source());
+        assertEquals(Material.STONE, challenge.display().displayItem().create().getType());
+        assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.display")));
+        assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.lockedDisplayItem")));
+        assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.display")));
+    }
+
+    @Test
+    void validatesSuspiciousButParseableChallenges() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  alpha:
+                    display:
+                      name: "<gray>Alpha"
+                      item: "minecraft:stone"
+                    repeat:
+                      enabled: true
+                    rewards:
+                      repeat:
+                        - type: economy
+                          amount: 5
+                  beta:
+                    display:
+                      name: "<gray>Beta"
+                      item: "minecraft:cobblestone"
+                    unlock:
+                      - type: completed-challenges
+                        challenges: [missing]
+            """));
+
+        List<String> warnings = result.warnings();
+        assertTrue(warnings.stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.complete")));
+        assertTrue(warnings.stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.repeat")));
+        assertTrue(warnings.stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.beta.unlock[0]")));
+        assertTrue(result.diagnostics().stream().allMatch(d -> d.severity() == ChallengeCatalogDiagnostic.Severity.WARNING));
     }
 
     @Test

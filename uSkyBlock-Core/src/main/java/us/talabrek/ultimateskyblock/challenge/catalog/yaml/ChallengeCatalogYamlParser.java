@@ -10,6 +10,8 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalogDiagnostic;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalogValidator;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeProperties;
@@ -35,23 +37,30 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @Singleton
 public class ChallengeCatalogYamlParser {
     private static final int SUPPORTED_SCHEMA_VERSION = 1;
+    private static final String DEFAULT_LOCKED_DISPLAY_ITEM = "minecraft:barrier";
+    private static final String DEFAULT_CHALLENGE_DISPLAY_ITEM = "minecraft:stone";
 
     private final GameObjectFactory gameObjects;
+    private final ChallengeCatalogValidator validator;
 
     @Inject
     public ChallengeCatalogYamlParser(@NotNull GameObjectFactory gameObjects) {
+        this(gameObjects, new ChallengeCatalogValidator());
+    }
+
+    ChallengeCatalogYamlParser(@NotNull GameObjectFactory gameObjects, @NotNull ChallengeCatalogValidator validator) {
         this.gameObjects = gameObjects;
+        this.validator = validator;
     }
 
     public @NotNull ChallengeCatalogParseResult parse(@NotNull FileConfiguration config) {
-        List<String> warnings = new ArrayList<>();
-        warnUnknownKeys(config, "$", warnings, "schemaVersion", "ranks");
+        List<ChallengeCatalogDiagnostic> diagnostics = new ArrayList<>();
+        warnUnknownKeys(config, "$", diagnostics, "schemaVersion", "ranks");
 
         int schemaVersion = config.getInt("schemaVersion", -1);
         if (schemaVersion == -1) {
@@ -65,39 +74,45 @@ public class ChallengeCatalogYamlParser {
         List<RankDefinition> ranks = new ArrayList<>();
         for (String rankKey : ranksSection.getKeys(false)) {
             ConfigurationSection rankSection = requiredSection(ranksSection, rankKey, "$.ranks");
-            ranks.add(parseRank(rankKey, rankSection, "$.ranks." + rankKey, warnings));
+            ranks.add(parseRank(rankKey, rankSection, "$.ranks." + rankKey, diagnostics));
         }
 
-        return new ChallengeCatalogParseResult(new ChallengeCatalog(ranks), warnings);
+        ChallengeCatalog catalog = new ChallengeCatalog(ranks);
+        diagnostics.addAll(validator.validate(catalog));
+        return new ChallengeCatalogParseResult(catalog, diagnostics);
     }
 
-    private RankDefinition parseRank(String rankKey, ConfigurationSection section, String path, List<String> warnings) {
-        warnUnknownKeys(section, path, warnings, "display", "lockedDisplayItem", "unlock", "challenges");
+    private RankDefinition parseRank(String rankKey, ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(section, path, diagnostics, "display", "lockedDisplayItem", "unlock", "challenges");
 
-        RankDisplaySpec display = parseRankDisplay(requiredSection(section, "display", path), path + ".display", warnings);
-        ItemStackSpec lockedDisplayItem = parseRankLockedDisplayItem(section, path);
-        List<ChallengeRequirements.RankUnlockRequirement> unlockRequirements = parseRankUnlockRequirements(section.getMapList("unlock"), path + ".unlock", warnings);
+        RankDisplaySpec display = parseRankDisplay(rankKey, section.getConfigurationSection("display"), path + ".display", diagnostics);
+        ItemStackSpec lockedDisplayItem = parseRankLockedDisplayItem(section, path, diagnostics);
+        List<ChallengeRequirements.RankUnlockRequirement> unlockRequirements = parseRankUnlockRequirements(section.getMapList("unlock"), path + ".unlock", diagnostics);
 
-        ConfigurationSection challengesSection = requiredSection(section, "challenges", path);
         List<ChallengeDefinition> challenges = new ArrayList<>();
-        for (String challengeKey : challengesSection.getKeys(false)) {
-            ConfigurationSection challengeSection = requiredSection(challengesSection, challengeKey, path + ".challenges");
-            challenges.add(parseChallenge(challengeKey, challengeSection, path + ".challenges." + challengeKey, warnings));
+        ConfigurationSection challengesSection = section.getConfigurationSection("challenges");
+        if (challengesSection == null) {
+            diagnostics.add(warn(path + ".challenges", "Missing challenges section, defaulting to an empty challenge list"));
+        } else {
+            for (String challengeKey : challengesSection.getKeys(false)) {
+                ConfigurationSection challengeSection = requiredSection(challengesSection, challengeKey, path + ".challenges");
+                challenges.add(parseChallenge(challengeKey, challengeSection, path + ".challenges." + challengeKey, diagnostics));
+            }
         }
 
         return new RankDefinition(RankId.of(rankKey), display, lockedDisplayItem, unlockRequirements, challenges);
     }
 
-    private ChallengeDefinition parseChallenge(String challengeKey, ConfigurationSection section, String path, List<String> warnings) {
-        warnUnknownKeys(section, path, warnings, "display", "unlock", "complete", "properties", "repeat", "rewards");
+    private ChallengeDefinition parseChallenge(String challengeKey, ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(section, path, diagnostics, "display", "unlock", "complete", "properties", "repeat", "rewards");
 
-        DisplaySpec display = parseDisplay(requiredSection(section, "display", path), path + ".display", warnings);
-        List<ChallengeRequirements.ChallengeUnlockRequirement> unlockRequirements = parseChallengeUnlockRequirements(section.getMapList("unlock"), path + ".unlock", warnings);
-        List<ChallengeRequirements.CompletionRequirement> completionRequirements = parseCompletionRequirements(section.getMapList("complete"), path + ".complete", warnings);
-        ChallengeProperties properties = parseProperties(section.getConfigurationSection("properties"), path + ".properties", warnings);
-        RepeatPolicy repeatPolicy = parseRepeatPolicy(section.getConfigurationSection("repeat"), path + ".repeat", warnings);
-        RewardBundle firstReward = parseRewardBundle(section.getMapList("rewards.first"), path + ".rewards.first", warnings);
-        RewardBundle repeatReward = parseRewardBundle(section.getMapList("rewards.repeat"), path + ".rewards.repeat", warnings);
+        DisplaySpec display = parseChallengeDisplay(challengeKey, section.getConfigurationSection("display"), path + ".display", diagnostics);
+        List<ChallengeRequirements.ChallengeUnlockRequirement> unlockRequirements = parseChallengeUnlockRequirements(section.getMapList("unlock"), path + ".unlock", diagnostics);
+        List<ChallengeRequirements.CompletionRequirement> completionRequirements = parseCompletionRequirements(section.getMapList("complete"), path + ".complete", diagnostics);
+        ChallengeProperties properties = parseProperties(section.getConfigurationSection("properties"), path + ".properties", diagnostics);
+        RepeatPolicy repeatPolicy = parseRepeatPolicy(section.getConfigurationSection("repeat"), path + ".repeat", diagnostics);
+        RewardBundle firstReward = parseRewardBundle(section.getMapList("rewards.first"), path + ".rewards.first", diagnostics);
+        RewardBundle repeatReward = parseRewardBundle(section.getMapList("rewards.repeat"), path + ".rewards.repeat", diagnostics);
 
         return new ChallengeDefinition(
             ChallengeId.of(challengeKey),
@@ -111,10 +126,25 @@ public class ChallengeCatalogYamlParser {
         );
     }
 
-    private DisplaySpec parseDisplay(ConfigurationSection section, String path, List<String> warnings) {
-        warnUnknownKeys(section, path, warnings, "name", "description", "item");
-        String name = requiredString(section, "name", path);
-        String itemSpec = requiredString(section, "item", path);
+    private DisplaySpec parseChallengeDisplay(
+        String challengeKey,
+        @Nullable ConfigurationSection section,
+        String path,
+        List<ChallengeCatalogDiagnostic> diagnostics
+    ) {
+        if (section == null) {
+            diagnostics.add(warn(path, "Missing display section, defaulting challenge display fields"));
+            return new DisplaySpec(TextSpec.miniMessage(challengeKey), TextSpec.empty(), gameObjects.itemStack(DEFAULT_CHALLENGE_DISPLAY_ITEM));
+        }
+        warnUnknownKeys(section, path, diagnostics, "name", "description", "item");
+        String name = optionalString(section, "name").orElseGet(() -> {
+            diagnostics.add(warn(path + ".name", "Missing name, defaulting to challenge key"));
+            return challengeKey;
+        });
+        String itemSpec = optionalString(section, "item").orElseGet(() -> {
+            diagnostics.add(warn(path + ".item", "Missing item, defaulting to '" + DEFAULT_CHALLENGE_DISPLAY_ITEM + "'"));
+            return DEFAULT_CHALLENGE_DISPLAY_ITEM;
+        });
         String description = section.getString("description", "");
         return new DisplaySpec(
             TextSpec.miniMessage(name),
@@ -123,9 +153,21 @@ public class ChallengeCatalogYamlParser {
         );
     }
 
-    private RankDisplaySpec parseRankDisplay(ConfigurationSection section, String path, List<String> warnings) {
-        warnUnknownKeys(section, path, warnings, "name", "description");
-        String name = requiredString(section, "name", path);
+    private RankDisplaySpec parseRankDisplay(
+        String rankKey,
+        @Nullable ConfigurationSection section,
+        String path,
+        List<ChallengeCatalogDiagnostic> diagnostics
+    ) {
+        if (section == null) {
+            diagnostics.add(warn(path, "Missing display section, defaulting rank display fields"));
+            return new RankDisplaySpec(TextSpec.miniMessage(rankKey), TextSpec.empty());
+        }
+        warnUnknownKeys(section, path, diagnostics, "name", "description");
+        String name = optionalString(section, "name").orElseGet(() -> {
+            diagnostics.add(warn(path + ".name", "Missing name, defaulting to rank key"));
+            return rankKey;
+        });
         String description = section.getString("description", "");
         return new RankDisplaySpec(
             TextSpec.miniMessage(name),
@@ -133,27 +175,28 @@ public class ChallengeCatalogYamlParser {
         );
     }
 
-    private ItemStackSpec parseRankLockedDisplayItem(ConfigurationSection section, String path) {
-        String rawLockedDisplayItem = section.getString("lockedDisplayItem", null);
+    private ItemStackSpec parseRankLockedDisplayItem(ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        String rawLockedDisplayItem = optionalString(section, "lockedDisplayItem").orElse(null);
         if (rawLockedDisplayItem == null || rawLockedDisplayItem.isBlank()) {
-            throw new IllegalArgumentException("Missing required string '" + path + ".lockedDisplayItem'");
+            diagnostics.add(warn(path + ".lockedDisplayItem", "Missing locked display item, defaulting to '" + DEFAULT_LOCKED_DISPLAY_ITEM + "'"));
+            rawLockedDisplayItem = DEFAULT_LOCKED_DISPLAY_ITEM;
         }
         return gameObjects.itemStack(rawLockedDisplayItem);
     }
 
-    private ChallengeProperties parseProperties(@Nullable ConfigurationSection section, String path, List<String> warnings) {
+    private ChallengeProperties parseProperties(@Nullable ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         if (section == null) {
             return new ChallengeProperties(true);
         }
-        warnUnknownKeys(section, path, warnings, "consumeItemsOnCompletion");
+        warnUnknownKeys(section, path, diagnostics, "consumeItemsOnCompletion");
         return new ChallengeProperties(section.getBoolean("consumeItemsOnCompletion", true));
     }
 
-    private RepeatPolicy parseRepeatPolicy(@Nullable ConfigurationSection section, String path, List<String> warnings) {
+    private RepeatPolicy parseRepeatPolicy(@Nullable ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         if (section == null) {
             return new RepeatPolicy(false, Duration.ZERO, 0);
         }
-        warnUnknownKeys(section, path, warnings, "enabled", "resetWindow", "limit");
+        warnUnknownKeys(section, path, diagnostics, "enabled", "resetWindow", "limit");
         boolean enabled = section.getBoolean("enabled", false);
         Duration resetWindow = parseDuration(section.getString("resetWindow", "0s"), path + ".resetWindow");
         int limit = section.getInt("limit", 0);
@@ -163,7 +206,7 @@ public class ChallengeCatalogYamlParser {
         return new RepeatPolicy(enabled, resetWindow, limit);
     }
 
-    private RewardBundle parseRewardBundle(List<Map<?, ?>> entries, String path, List<String> warnings) {
+    private RewardBundle parseRewardBundle(List<Map<?, ?>> entries, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         if (entries == null || entries.isEmpty()) {
             return RewardBundle.empty();
         }
@@ -173,25 +216,25 @@ public class ChallengeCatalogYamlParser {
             Map<String, Object> entry = normalizeMap(entries.get(i), itemPath);
             String type = requiredString(entry, "type", itemPath).toLowerCase(Locale.ROOT);
             switch (type) {
-                case "item" -> actions.add(parseItemReward(entry, itemPath, warnings));
+                case "item" -> actions.add(parseItemReward(entry, itemPath, diagnostics));
                 case "economy" -> actions.add(new ChallengeRewards.EconomyReward(requiredInt(entry, "amount", itemPath)));
                 case "experience" -> actions.add(new ChallengeRewards.ExperienceReward(requiredInt(entry, "amount", itemPath)));
                 case "permission" -> actions.add(new ChallengeRewards.PermissionReward(requiredStringList(entry, "permissions", itemPath)));
-                case "command" -> actions.add(parseCommandReward(entry, itemPath, warnings));
+                case "command" -> actions.add(parseCommandReward(entry, itemPath, diagnostics));
                 default -> throw new IllegalArgumentException("Unsupported reward type '" + type + "' at " + itemPath);
             }
         }
         return new RewardBundle(actions);
     }
 
-    private ChallengeRewards.ItemReward parseItemReward(Map<String, Object> entry, String path, List<String> warnings) {
-        warnUnknownKeys(entry, path, warnings, "type", "items");
+    private ChallengeRewards.ItemReward parseItemReward(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(entry, path, diagnostics, "type", "items");
         List<Map<String, Object>> items = requiredMapList(entry, "items", path);
         List<ItemStackAmountProbabilitySpec> parsed = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
             String itemPath = path + ".items[" + i + "]";
             Map<String, Object> item = items.get(i);
-            warnUnknownKeys(item, itemPath, warnings, "item", "amount", "probability");
+            warnUnknownKeys(item, itemPath, diagnostics, "item", "amount", "probability");
             ItemStackSpec itemSpec = gameObjects.itemStack(requiredString(item, "item", itemPath));
             int amount = requiredInt(item, "amount", itemPath);
             double probability = requiredDouble(item, "probability", itemPath, 1.0d);
@@ -200,14 +243,14 @@ public class ChallengeCatalogYamlParser {
         return new ChallengeRewards.ItemReward(parsed);
     }
 
-    private ChallengeRewards.CommandReward parseCommandReward(Map<String, Object> entry, String path, List<String> warnings) {
-        warnUnknownKeys(entry, path, warnings, "type", "commands");
+    private ChallengeRewards.CommandReward parseCommandReward(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(entry, path, diagnostics, "type", "commands");
         List<Map<String, Object>> commands = requiredMapList(entry, "commands", path);
         List<ChallengeRewards.CommandSpec> parsed = new ArrayList<>();
         for (int i = 0; i < commands.size(); i++) {
             String commandPath = path + ".commands[" + i + "]";
             Map<String, Object> command = commands.get(i);
-            warnUnknownKeys(command, commandPath, warnings, "execution", "command");
+            warnUnknownKeys(command, commandPath, diagnostics, "execution", "command");
             String executionValue = requiredString(command, "execution", commandPath).toUpperCase(Locale.ROOT);
             ChallengeRewards.CommandExecution execution;
             try {
@@ -220,7 +263,7 @@ public class ChallengeCatalogYamlParser {
         return new ChallengeRewards.CommandReward(parsed);
     }
 
-    private List<ChallengeRequirements.RankUnlockRequirement> parseRankUnlockRequirements(List<Map<?, ?>> entries, String path, List<String> warnings) {
+    private List<ChallengeRequirements.RankUnlockRequirement> parseRankUnlockRequirements(List<Map<?, ?>> entries, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         List<ChallengeRequirements.RankUnlockRequirement> requirements = new ArrayList<>();
         if (entries == null || entries.isEmpty()) {
             return requirements;
@@ -228,7 +271,7 @@ public class ChallengeCatalogYamlParser {
         for (int i = 0; i < entries.size(); i++) {
             String entryPath = path + "[" + i + "]";
             Map<String, Object> entry = normalizeMap(entries.get(i), entryPath);
-            Object requirement = parseTaggedRequirement(entry, entryPath, warnings);
+            Object requirement = parseTaggedRequirement(entry, entryPath, diagnostics);
             if (!(requirement instanceof ChallengeRequirements.RankUnlockRequirement rankRequirement)) {
                 throw new IllegalArgumentException("Requirement type at " + entryPath + " is not valid for rank unlocks");
             }
@@ -237,7 +280,7 @@ public class ChallengeCatalogYamlParser {
         return requirements;
     }
 
-    private List<ChallengeRequirements.ChallengeUnlockRequirement> parseChallengeUnlockRequirements(List<Map<?, ?>> entries, String path, List<String> warnings) {
+    private List<ChallengeRequirements.ChallengeUnlockRequirement> parseChallengeUnlockRequirements(List<Map<?, ?>> entries, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         List<ChallengeRequirements.ChallengeUnlockRequirement> requirements = new ArrayList<>();
         if (entries == null || entries.isEmpty()) {
             return requirements;
@@ -245,7 +288,7 @@ public class ChallengeCatalogYamlParser {
         for (int i = 0; i < entries.size(); i++) {
             String entryPath = path + "[" + i + "]";
             Map<String, Object> entry = normalizeMap(entries.get(i), entryPath);
-            Object requirement = parseTaggedRequirement(entry, entryPath, warnings);
+            Object requirement = parseTaggedRequirement(entry, entryPath, diagnostics);
             if (!(requirement instanceof ChallengeRequirements.ChallengeUnlockRequirement challengeRequirement)) {
                 throw new IllegalArgumentException("Requirement type at " + entryPath + " is not valid for challenge unlocks");
             }
@@ -254,7 +297,7 @@ public class ChallengeCatalogYamlParser {
         return requirements;
     }
 
-    private List<ChallengeRequirements.CompletionRequirement> parseCompletionRequirements(List<Map<?, ?>> entries, String path, List<String> warnings) {
+    private List<ChallengeRequirements.CompletionRequirement> parseCompletionRequirements(List<Map<?, ?>> entries, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         List<ChallengeRequirements.CompletionRequirement> requirements = new ArrayList<>();
         if (entries == null || entries.isEmpty()) {
             return requirements;
@@ -262,7 +305,7 @@ public class ChallengeCatalogYamlParser {
         for (int i = 0; i < entries.size(); i++) {
             String entryPath = path + "[" + i + "]";
             Map<String, Object> entry = normalizeMap(entries.get(i), entryPath);
-            Object requirement = parseTaggedRequirement(entry, entryPath, warnings);
+            Object requirement = parseTaggedRequirement(entry, entryPath, diagnostics);
             if (!(requirement instanceof ChallengeRequirements.CompletionRequirement completionRequirement)) {
                 throw new IllegalArgumentException("Requirement type at " + entryPath + " is not valid for completion requirements");
             }
@@ -271,62 +314,62 @@ public class ChallengeCatalogYamlParser {
         return requirements;
     }
 
-    private Object parseTaggedRequirement(Map<String, Object> entry, String path, List<String> warnings) {
+    private Object parseTaggedRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         String type = requiredString(entry, "type", path).toLowerCase(Locale.ROOT);
         return switch (type) {
             case "completed-challenges" -> {
-                warnUnknownKeys(entry, path, warnings, "type", "challenges");
+                warnUnknownKeys(entry, path, diagnostics, "type", "challenges");
                 yield new ChallengeRequirements.CompletedChallengesRequirement(
                     requiredStringList(entry, "challenges", path).stream().map(ChallengeId::of).toList()
                 );
             }
             case "completed-rank" -> {
-                warnUnknownKeys(entry, path, warnings, "type", "rank", "minimumCompletedChallenges");
+                warnUnknownKeys(entry, path, diagnostics, "type", "rank", "minimumCompletedChallenges");
                 yield new ChallengeRequirements.CompletedRankRequirement(
                     RankId.of(requiredString(entry, "rank", path)),
                     requiredInt(entry, "minimumCompletedChallenges", path)
                 );
             }
             case "permission" -> {
-                warnUnknownKeys(entry, path, warnings, "type", "permission");
+                warnUnknownKeys(entry, path, diagnostics, "type", "permission");
                 yield new ChallengeRequirements.PermissionRequirement(requiredString(entry, "permission", path));
             }
             case "island-level" -> {
-                warnUnknownKeys(entry, path, warnings, "type", "minimum");
+                warnUnknownKeys(entry, path, diagnostics, "type", "minimum");
                 yield new ChallengeRequirements.IslandLevelRequirement(requiredDouble(entry, "minimum", path));
             }
-            case "inventory-items" -> parseInventoryItemsRequirement(entry, path, warnings);
-            case "island-blocks" -> parseIslandBlocksRequirement(entry, path, warnings);
-            case "entity-presence" -> parseEntityPresenceRequirement(entry, path, warnings);
+            case "inventory-items" -> parseInventoryItemsRequirement(entry, path, diagnostics);
+            case "island-blocks" -> parseIslandBlocksRequirement(entry, path, diagnostics);
+            case "entity-presence" -> parseEntityPresenceRequirement(entry, path, diagnostics);
             default -> throw new IllegalArgumentException("Unsupported requirement type '" + type + "' at " + path);
         };
     }
 
-    private ChallengeRequirements.InventoryItemsRequirement parseInventoryItemsRequirement(Map<String, Object> entry, String path, List<String> warnings) {
-        warnUnknownKeys(entry, path, warnings, "type", "items");
+    private ChallengeRequirements.InventoryItemsRequirement parseInventoryItemsRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(entry, path, diagnostics, "type", "items");
         List<Map<String, Object>> items = requiredMapList(entry, "items", path);
         List<ChallengeRequirements.ItemRequirementSpec> parsed = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
             String itemPath = path + ".items[" + i + "]";
             Map<String, Object> item = items.get(i);
-            warnUnknownKeys(item, itemPath, warnings, "item", "amount", "progression");
+            warnUnknownKeys(item, itemPath, diagnostics, "item", "amount", "progression");
             ItemStackSpec itemSpec = gameObjects.itemStack(requiredString(item, "item", itemPath));
             int amount = requiredInt(item, "amount", itemPath);
-            ChallengeRequirements.ItemAmountProgression progression = parseItemProgression(item.get("progression"), itemPath + ".progression", warnings);
+            ChallengeRequirements.ItemAmountProgression progression = parseItemProgression(item.get("progression"), itemPath + ".progression", diagnostics);
             parsed.add(new ChallengeRequirements.ItemRequirementSpec(itemSpec, amount, progression));
         }
         return new ChallengeRequirements.InventoryItemsRequirement(parsed);
     }
 
-    private ChallengeRequirements.IslandBlocksRequirement parseIslandBlocksRequirement(Map<String, Object> entry, String path, List<String> warnings) {
-        warnUnknownKeys(entry, path, warnings, "type", "radius", "blocks");
+    private ChallengeRequirements.IslandBlocksRequirement parseIslandBlocksRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(entry, path, diagnostics, "type", "radius", "blocks");
         int radius = requiredInt(entry, "radius", path);
         List<Map<String, Object>> blocks = requiredMapList(entry, "blocks", path);
         List<ChallengeRequirements.BlockRequirementSpec> parsed = new ArrayList<>();
         for (int i = 0; i < blocks.size(); i++) {
             String blockPath = path + ".blocks[" + i + "]";
             Map<String, Object> block = blocks.get(i);
-            warnUnknownKeys(block, blockPath, warnings, "block", "amount");
+            warnUnknownKeys(block, blockPath, diagnostics, "block", "amount");
             String blockSpec = requiredString(block, "block", blockPath);
             int amount = requiredInt(block, "amount", blockPath);
             BlockRequirement requirement = ItemStackUtil.createBlockRequirement(blockSpec + ":" + amount);
@@ -335,15 +378,15 @@ public class ChallengeCatalogYamlParser {
         return new ChallengeRequirements.IslandBlocksRequirement(parsed, radius);
     }
 
-    private ChallengeRequirements.EntityPresenceRequirement parseEntityPresenceRequirement(Map<String, Object> entry, String path, List<String> warnings) {
-        warnUnknownKeys(entry, path, warnings, "type", "radius", "entities");
+    private ChallengeRequirements.EntityPresenceRequirement parseEntityPresenceRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        warnUnknownKeys(entry, path, diagnostics, "type", "radius", "entities");
         int radius = requiredInt(entry, "radius", path);
         List<Map<String, Object>> entities = requiredMapList(entry, "entities", path);
         List<ChallengeRequirements.EntityRequirementSpec> parsed = new ArrayList<>();
         for (int i = 0; i < entities.size(); i++) {
             String entityPath = path + ".entities[" + i + "]";
             Map<String, Object> entity = entities.get(i);
-            warnUnknownKeys(entity, entityPath, warnings, "entity", "count", "metadata");
+            warnUnknownKeys(entity, entityPath, diagnostics, "entity", "count", "metadata");
             String entityName = requiredString(entity, "entity", entityPath);
             EntityType entityType = parseEntityType(entityName);
             if (entityType == null) {
@@ -373,7 +416,7 @@ public class ChallengeCatalogYamlParser {
         }
     }
 
-    private ChallengeRequirements.ItemAmountProgression parseItemProgression(@Nullable Object rawValue, String path, List<String> warnings) {
+    private ChallengeRequirements.ItemAmountProgression parseItemProgression(@Nullable Object rawValue, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
         if (rawValue == null) {
             return ChallengeRequirements.ItemAmountProgression.none();
         }
@@ -381,7 +424,7 @@ public class ChallengeCatalogYamlParser {
             throw new IllegalArgumentException("Expected object at " + path);
         }
         Map<String, Object> map = normalizeMap(rawMap, path);
-        warnUnknownKeys(map, path, warnings, "operator", "increment");
+        warnUnknownKeys(map, path, diagnostics, "operator", "increment");
         String operatorValue = requiredString(map, "operator", path).toUpperCase(Locale.ROOT);
         try {
             return new ChallengeRequirements.ItemAmountProgression(
@@ -407,6 +450,14 @@ public class ChallengeCatalogYamlParser {
             throw new IllegalArgumentException("Missing required string '" + path + "." + key + "'");
         }
         return value;
+    }
+
+    private static java.util.Optional<String> optionalString(ConfigurationSection section, String key) {
+        String value = section.getString(key, null);
+        if (value == null || value.isBlank()) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(value);
     }
 
     private static String requiredString(Map<String, Object> map, String key, String path) {
@@ -500,20 +551,24 @@ public class ChallengeCatalogYamlParser {
         }
     }
 
-    private static void warnUnknownKeys(ConfigurationSection section, String path, List<String> warnings, String... allowedKeys) {
-        warnUnknownKeys(new LinkedHashSet<>(section.getKeys(false)), path, warnings, allowedKeys);
+    private static void warnUnknownKeys(ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics, String... allowedKeys) {
+        warnUnknownKeys(new LinkedHashSet<>(section.getKeys(false)), path, diagnostics, allowedKeys);
     }
 
-    private static void warnUnknownKeys(Map<String, Object> map, String path, List<String> warnings, String... allowedKeys) {
-        warnUnknownKeys(map.keySet(), path, warnings, allowedKeys);
+    private static void warnUnknownKeys(Map<String, Object> map, String path, List<ChallengeCatalogDiagnostic> diagnostics, String... allowedKeys) {
+        warnUnknownKeys(map.keySet(), path, diagnostics, allowedKeys);
     }
 
-    private static void warnUnknownKeys(Set<String> keys, String path, List<String> warnings, String... allowedKeys) {
+    private static void warnUnknownKeys(Set<String> keys, String path, List<ChallengeCatalogDiagnostic> diagnostics, String... allowedKeys) {
         Set<String> allowed = Set.of(allowedKeys);
         for (String key : keys) {
             if (!allowed.contains(key)) {
-                warnings.add("Unknown key '" + path + "." + key + "'");
+                diagnostics.add(warn(path + "." + key, "Unknown key"));
             }
         }
+    }
+
+    private static ChallengeCatalogDiagnostic warn(String path, String message) {
+        return new ChallengeCatalogDiagnostic(ChallengeCatalogDiagnostic.Severity.WARNING, path, message);
     }
 }
