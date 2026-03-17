@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
@@ -34,7 +35,7 @@ public class IslandGenerator {
 
     @Inject
     public IslandGenerator(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull SchematicHandler schematicHandler,
         @NotNull RuntimeConfigs runtimeConfigs
     ) {

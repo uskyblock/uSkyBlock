@@ -13,6 +13,7 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.net.URI;
@@ -34,7 +35,7 @@ public class SkyUpdateChecker implements UpdateChecker {
     public SkyUpdateChecker(
         @NotNull uSkyBlock plugin,
         @NotNull RuntimeConfigs runtimeConfigs,
-        @NotNull Logger logger
+        @NotNull @PluginLog Logger logger
     ) {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;

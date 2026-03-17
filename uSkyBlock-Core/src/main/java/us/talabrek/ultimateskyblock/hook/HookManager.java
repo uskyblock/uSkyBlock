@@ -6,6 +6,7 @@ import dk.lockfuglsang.minecraft.util.VersionUtil;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.hook.economy.EconomyHook;
 import us.talabrek.ultimateskyblock.hook.economy.VaultEconomy;
@@ -31,7 +32,7 @@ public class HookManager {
     private final Map<String, PluginHook> hooks = new ConcurrentHashMap<>();
 
     @Inject
-    public HookManager(@NotNull uSkyBlock plugin, @NotNull Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
+    public HookManager(@NotNull uSkyBlock plugin, @NotNull @PluginLog Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
         this.plugin = plugin;
         this.logger = logger;
         this.runtimeConfigs = runtimeConfigs;

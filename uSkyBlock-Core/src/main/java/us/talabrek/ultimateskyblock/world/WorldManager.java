@@ -17,6 +17,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
@@ -50,7 +51,7 @@ public class WorldManager {
     @Inject
     public WorldManager(
         @NotNull uSkyBlock plugin,
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull HookManager hookManager,
         @NotNull Scheduler scheduler

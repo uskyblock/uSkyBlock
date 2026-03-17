@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -56,7 +57,7 @@ public class PlayerLogic {
         @NotNull uSkyBlock plugin,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PlayerDB playerDB,
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull PerkLogic perkLogic,
         @NotNull IslandLogic islandLogic,
         @NotNull WorldManager worldManager,

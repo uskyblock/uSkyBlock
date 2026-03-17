@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
@@ -28,7 +29,7 @@ public class BiomeConfig {
     private final List<String> configuredBiomeKeys;
 
     @Inject
-    public BiomeConfig(Logger logger, GameObjectFactory gameObjects) {
+    public BiomeConfig(@PluginLog Logger logger, GameObjectFactory gameObjects) {
         this.logger = logger;
         this.gameObjects = gameObjects;
         this.configuredBiomeEntries = loadBiomes();

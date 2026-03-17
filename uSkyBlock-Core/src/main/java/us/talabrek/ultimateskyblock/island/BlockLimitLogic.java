@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -30,7 +31,7 @@ public class BlockLimitLogic {
     @Inject
     public BlockLimitLogic(
         @NotNull RuntimeConfigs runtimeConfigs,
-        @NotNull Logger logger
+        @NotNull @PluginLog Logger logger
     ) {
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
         limitsEnabled = !runtimeConfig.island().blockLimits().isEmpty();

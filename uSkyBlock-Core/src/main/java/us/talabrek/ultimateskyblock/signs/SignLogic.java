@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
@@ -60,7 +61,7 @@ public class SignLogic {
 
     @Inject
     public SignLogic(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull uSkyBlock plugin,
         @NotNull Scheduler scheduler,
         @NotNull ChallengeLogic challengeLogic,

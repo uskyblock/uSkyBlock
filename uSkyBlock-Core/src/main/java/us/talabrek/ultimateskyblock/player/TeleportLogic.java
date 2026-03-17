@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -46,7 +47,7 @@ public class TeleportLogic implements Listener {
 
     @Inject
     public TeleportLogic(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
         @NotNull Scheduler scheduler,

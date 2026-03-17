@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackAmountSpec;
@@ -51,7 +52,7 @@ public final class RuntimeConfigFactory {
     private final YamlConfiguration bundledDefaults;
 
     @Inject
-    public RuntimeConfigFactory(@NotNull GameObjectFactory gameObjects, @NotNull Logger logger) {
+    public RuntimeConfigFactory(@NotNull GameObjectFactory gameObjects, @NotNull @PluginLog Logger logger) {
         this.gameObjects = gameObjects;
         this.logger = logger;
         this.bundledDefaults = PluginConfigLoader.loadBundledConfig();

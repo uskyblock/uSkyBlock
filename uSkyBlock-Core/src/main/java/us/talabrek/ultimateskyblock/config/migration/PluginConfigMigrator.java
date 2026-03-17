@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.util.BackupFileUtil;
 
@@ -36,7 +37,7 @@ public class PluginConfigMigrator {
     private final ConfigMigrations migrations;
 
     @Inject
-    public PluginConfigMigrator(@NotNull Logger logger) {
+    public PluginConfigMigrator(@NotNull @PluginLog Logger logger) {
         this(logger, ConfigMigrations.defaults());
     }
 

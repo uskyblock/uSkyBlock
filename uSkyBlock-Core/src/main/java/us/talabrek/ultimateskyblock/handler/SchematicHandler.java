@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
@@ -39,7 +40,7 @@ public class SchematicHandler {
 
     @Inject
     public SchematicHandler(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull @PluginDataDir Path dataFolder
     ) {
