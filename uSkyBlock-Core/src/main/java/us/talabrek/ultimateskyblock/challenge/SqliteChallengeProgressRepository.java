@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,6 +128,37 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
     }
 
     @Override
+    public @NotNull Optional<String> getMetadata(@NotNull String key) {
+        String sql = "SELECT value FROM challenge_progress_meta WHERE key = ?";
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, key);
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next() ? Optional.ofNullable(rs.getString("value")) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Unable to query challenge progress metadata for key " + key, e);
+        }
+    }
+
+    @Override
+    public void putMetadata(@NotNull String key, @NotNull String value) {
+        String sql = """
+            INSERT INTO challenge_progress_meta(key, value)
+            VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET value=excluded.value
+            """;
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, key);
+            statement.setString(2, value);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Unable to store challenge progress metadata for key " + key, e);
+        }
+    }
+
+    @Override
     public void shutdown() {
         // No-op. Connections are short-lived per operation.
     }
@@ -172,15 +204,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
                 """);
         }
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement("""
-                 INSERT INTO challenge_progress_meta(key, value)
-                 VALUES ('schema_version', ?)
-                ON CONFLICT(key) DO UPDATE SET value=excluded.value
-                 """)) {
-            statement.setString(1, SCHEMA_VERSION);
-            statement.executeUpdate();
-        }
+        putMetadata("schema_version", SCHEMA_VERSION);
     }
 
     private static boolean isDefault(@NotNull ChallengeCompletion completion) {

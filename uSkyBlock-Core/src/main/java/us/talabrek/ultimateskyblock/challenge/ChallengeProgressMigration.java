@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 final class ChallengeProgressMigration {
+    private static final String LEGACY_IMPORT_COMPLETED_KEY = "legacy_yaml_import_completed";
     private record LegacyPlayerProgress(Path path, YamlConfiguration config) {}
 
     private final uSkyBlock plugin;
@@ -37,7 +38,11 @@ final class ChallengeProgressMigration {
         this.islandStorageDir = plugin.getDataFolder().toPath().resolve("islands");
     }
 
-    @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migrateLegacyDataEagerly() {
+    void migrateLegacyDataEagerly() {
+        if (repository.getMetadata(LEGACY_IMPORT_COMPLETED_KEY).isPresent()) {
+            return;
+        }
+
         Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress = new HashMap<>();
         Map<IslandKey, List<Path>> migratedFiles = new HashMap<>();
         Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs = new HashMap<>();
@@ -45,18 +50,12 @@ final class ChallengeProgressMigration {
         migrateLegacyCompletionFiles(migratedProgress, migratedFiles);
         migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs);
 
-        if (migratedProgress.isEmpty()) {
-            return Map.of();
-        }
-
-        Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedCacheEntries = new HashMap<>();
         int migratedIslands = 0;
         for (Map.Entry<IslandKey, Map<ChallengeKey, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
             IslandKey islandKey = entry.getKey();
             Map<ChallengeKey, ChallengeCompletion> merged = loadOrPopulateProgress(islandKey);
             mergeProgress(merged, entry.getValue());
             repository.replace(islandKey, merged);
-            migratedCacheEntries.put(islandKey, merged);
 
             for (Path file : migratedFiles.getOrDefault(islandKey, List.of())) {
                 backupLegacyFile(file);
@@ -71,8 +70,8 @@ final class ChallengeProgressMigration {
             }
             migratedIslands++;
         }
+        repository.putMetadata(LEGACY_IMPORT_COMPLETED_KEY, "true");
         plugin.getLogger().info("Migrated legacy challenge progress for " + migratedIslands + " island(s) into SQLite storage.");
-        return migratedCacheEntries;
     }
 
     private @NotNull Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {

@@ -60,11 +60,7 @@ public class ChallengeCompletionLogic {
         if (!Files.exists(legacyStorageDir)) {
             legacyStorageDir.toFile().mkdirs();
         }
-        Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress =
-            new ChallengeProgressMigration(plugin, repository).migrateLegacyDataEagerly();
-        for (Map.Entry<IslandKey, Map<ChallengeKey, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
-            completionCache.put(entry.getKey(), entry.getValue());
-        }
+        new ChallengeProgressMigration(plugin, repository).migrateLegacyDataEagerly();
     }
 
     private Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {

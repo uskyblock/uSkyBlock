@@ -48,6 +48,7 @@ public class ChallengeCompletionLogicTest {
             assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
             assertNull(YamlConfiguration.loadConfiguration(tempDir.resolve("players/player-one.yml").toFile()).get("player.challenges"));
             assertTrue(repository.hasProgress(IslandKey.fromIslandName("0,0")));
+            assertEquals("true", repository.getMetadata("legacy_yaml_import_completed").orElseThrow());
         }
     }
 
@@ -71,6 +72,7 @@ public class ChallengeCompletionLogicTest {
             assertEquals(2, loaded.get(challengeKey).getTimesCompletedInCooldown());
             assertFalse(Files.exists(tempDir.resolve("completion/" + leaderUuid + ".yml")));
             assertTrue(Files.exists(tempDir.resolve("backup/completion/" + leaderUuid + ".yml")));
+            assertEquals("true", repository.getMetadata("legacy_yaml_import_completed").orElseThrow());
         }
     }
 

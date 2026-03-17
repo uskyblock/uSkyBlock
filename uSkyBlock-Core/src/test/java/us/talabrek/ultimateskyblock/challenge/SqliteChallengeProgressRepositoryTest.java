@@ -56,4 +56,17 @@ public class SqliteChallengeProgressRepositoryTest {
         assertFalse(repository.hasProgress(islandKey));
         assertTrue(repository.load(islandKey).isEmpty());
     }
+
+    @Test
+    public void storesMetadata() {
+        SqliteChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        );
+
+        repository.putMetadata("legacy_yaml_import_completed", "true");
+
+        assertEquals("1", repository.getMetadata("schema_version").orElseThrow());
+        assertEquals("true", repository.getMetadata("legacy_yaml_import_completed").orElseThrow());
+    }
 }
