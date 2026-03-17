@@ -71,8 +71,31 @@ public class ChallengeCompletionLogicTest {
             assertEquals(3, loaded.get(challengeKey).getTimesCompleted());
             assertEquals(2, loaded.get(challengeKey).getTimesCompletedInCooldown());
             assertFalse(Files.exists(tempDir.resolve("completion/" + leaderUuid + ".yml")));
+            assertFalse(Files.exists(tempDir.resolve("completion")));
             assertTrue(Files.exists(tempDir.resolve("backup/completion/" + leaderUuid + ".yml")));
             assertEquals("true", repository.getMetadata("legacy_yaml_import_completed").orElseThrow());
+        }
+    }
+
+    @Test
+    public void keepsLegacyCompletionDirWhenOtherFilesRemain() throws Exception {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        UUID leaderUuid = UUID.randomUUID();
+        long futureCooldown = System.currentTimeMillis() + 60_000L;
+        writeLegacyIsland(leaderUuid, "0,0");
+        writeLegacyCompletionFile(leaderUuid + ".yml", challengeKey, 3, 2, futureCooldown);
+        Path sentinel = tempDir.resolve("completion").resolve("README.txt");
+        Files.writeString(sentinel, "keep");
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("island"), repository);
+
+            assertTrue(Files.exists(tempDir.resolve("completion")));
+            assertTrue(Files.exists(sentinel));
+            assertTrue(Files.exists(tempDir.resolve("backup/completion/" + leaderUuid + ".yml")));
         }
     }
 

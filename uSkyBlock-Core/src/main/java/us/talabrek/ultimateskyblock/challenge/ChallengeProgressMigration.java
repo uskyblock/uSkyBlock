@@ -70,6 +70,7 @@ final class ChallengeProgressMigration {
             }
             migratedIslands++;
         }
+        cleanupLegacyCompletionDir();
         repository.putMetadata(LEGACY_IMPORT_COMPLETED_KEY, "true");
         plugin.getLogger().info("Migrated legacy challenge progress for " + migratedIslands + " island(s) into SQLite storage.");
     }
@@ -263,6 +264,19 @@ final class ChallengeProgressMigration {
             );
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Unable to back up legacy challenge progress file " + source, e);
+        }
+    }
+
+    private void cleanupLegacyCompletionDir() {
+        if (!Files.isDirectory(legacyStorageDir)) {
+            return;
+        }
+        try (var files = Files.list(legacyStorageDir)) {
+            if (files.findAny().isEmpty()) {
+                Files.delete(legacyStorageDir);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.FINE, "Unable to clean up legacy completion directory " + legacyStorageDir, e);
         }
     }
 }
