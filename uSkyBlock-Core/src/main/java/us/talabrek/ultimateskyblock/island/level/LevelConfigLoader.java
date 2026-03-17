@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +23,7 @@ public class LevelConfigLoader {
     private final Logger logger;
 
     @Inject
-    public LevelConfigLoader(@NotNull @PluginDataDir Path pluginDataDir, @NotNull Logger logger) {
+    public LevelConfigLoader(@NotNull @PluginDataDir Path pluginDataDir, @NotNull @PluginLog Logger logger) {
         this.pluginDataDir = pluginDataDir;
         this.logger = logger;
     }

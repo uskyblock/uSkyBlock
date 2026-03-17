@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -40,7 +41,7 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         @NotNull LevelConfigLoader levelConfigLoader,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Scheduler scheduler,
-        @NotNull Logger logger
+        @NotNull @PluginLog Logger logger
     ) {
         super(levelConfigLoader.load(), worldManager, runtimeConfigs.current().nether().height());
         this.plugin = plugin;

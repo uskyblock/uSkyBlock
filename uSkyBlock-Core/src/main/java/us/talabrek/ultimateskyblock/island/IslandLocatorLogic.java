@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
@@ -51,7 +52,7 @@ public class IslandLocatorLogic {
     public IslandLocatorLogic(
         @NotNull uSkyBlock plugin,
         @NotNull @PluginDataDir Path pluginDir,
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull WorldManager worldManager,
         @NotNull Scheduler scheduler,
         @NotNull OrphanLogic orphanLogic,

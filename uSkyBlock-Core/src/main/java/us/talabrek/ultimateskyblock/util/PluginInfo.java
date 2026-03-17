@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
@@ -39,7 +40,8 @@ public class PluginInfo {
         @NotNull IslandLogic islandLogic,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull UpdateChecker updateChecker,
-        @NotNull PlayerLogic playerLogic, Logger logger
+        @NotNull PlayerLogic playerLogic,
+        @NotNull @PluginLog Logger logger
     ) {
         this.plugin = plugin;
         this.islandLogic = islandLogic;

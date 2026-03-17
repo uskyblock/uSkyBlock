@@ -19,6 +19,7 @@ import us.talabrek.ultimateskyblock.api.IslandLevel;
 import us.talabrek.ultimateskyblock.api.IslandRank;
 import us.talabrek.ultimateskyblock.api.event.uSkyBlockEvent;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldEditHandler;
@@ -93,7 +94,7 @@ public class IslandLogic {
 
     @Inject
     public IslandLogic(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
         @NotNull TeleportLogic teleportLogic,

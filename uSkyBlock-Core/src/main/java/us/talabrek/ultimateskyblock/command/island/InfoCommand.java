@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.api.model.IslandScore;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
@@ -36,7 +37,7 @@ public class InfoCommand extends RequireIslandCommand {
     private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public InfoCommand(@NotNull uSkyBlock plugin, @NotNull Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
+    public InfoCommand(@NotNull uSkyBlock plugin, @NotNull @PluginLog Logger logger, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "info", "usb.island.info", "?island", marktr("check your or another's island info"));
         this.logger = logger;
         this.runtimeConfigs = runtimeConfigs;

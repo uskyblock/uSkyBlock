@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginDataDir;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -42,7 +43,7 @@ public class OrphanLogic {
     @Inject
     public OrphanLogic(
         @NotNull @PluginDataDir Path pluginDir,
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull WorldManager worldManager,
         @NotNull RuntimeConfigs runtimeConfigs
         ) {

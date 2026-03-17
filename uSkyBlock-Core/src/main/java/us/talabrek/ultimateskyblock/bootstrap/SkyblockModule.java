@@ -43,7 +43,7 @@ public class SkyblockModule extends AbstractModule {
         // TODO: this should not be injected, but it is here fore legacy reasons. Move all functionality out of the plugin class and into the appropriate classes.
         bind(uSkyBlock.class).toInstance(plugin);
         bind(Plugin.class).toInstance(plugin);
-        bind(Logger.class).toInstance(plugin.getLogger());
+        bind(Logger.class).annotatedWith(PluginLog.class).toInstance(plugin.getLogger());
         bind(PluginConfig.class).toInstance(pluginConfig);
         bind(Path.class).annotatedWith(PluginDataDir.class).toInstance(plugin.getDataFolder().toPath());
         bind(LevelLogic.class).to(ChunkSnapshotLevelLogic.class);
@@ -56,7 +56,7 @@ public class SkyblockModule extends AbstractModule {
     @Provides
     @Singleton
     public static
-    @NotNull PlayerDB providePlayerDB(RuntimeConfigs runtimeConfigs, uSkyBlock plugin, Scheduler scheduler, Logger logger) {
+    @NotNull PlayerDB providePlayerDB(RuntimeConfigs runtimeConfigs, uSkyBlock plugin, Scheduler scheduler, @PluginLog Logger logger) {
         String playerDbStorage = runtimeConfigs.current().advanced().playerDb().storage();
         if (playerDbStorage.equalsIgnoreCase("yml")) {
             return new FilePlayerDB(plugin, scheduler, logger, runtimeConfigs.current().advanced().playerDb());

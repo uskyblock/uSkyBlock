@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
@@ -104,7 +105,7 @@ public class ChallengeLogic implements Listener {
 
     @Inject
     public ChallengeLogic(
-        @NotNull Logger logger,
+        @NotNull @PluginLog Logger logger,
         @NotNull uSkyBlock plugin,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PerkLogic perkLogic,
