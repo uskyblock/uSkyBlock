@@ -1,5 +1,4 @@
 package us.talabrek.ultimateskyblock.challenge.view;
-
 import org.bukkit.Material;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
@@ -42,12 +41,14 @@ class ChallengeMenuViewAssemblerTest {
             1
         );
 
-        assertFalse(page.rankUnlocked());
-        assertEquals(2, page.slots().size());
-        assertTrue(page.slots().stream().allMatch(slot -> slot.state() == ChallengeSlotState.RANK_LOCKED));
-        assertTrue(page.slots().stream().allMatch(slot -> slot.detailMode() == ChallengeSlotDetailMode.RANK_UNLOCK_DETAILS));
-        assertTrue(page.slots().stream().allMatch(slot -> slot.icon().create().getType() == Material.BARRIER));
-        assertTrue(page.slots().stream().noneMatch(ChallengeSlotView::clickable));
+        ChallengeRankRowView row = page.rows().getFirst();
+        assertFalse(row.rankUnlocked());
+        assertEquals(2, row.slots().size());
+        assertTrue(row.slots().stream().allMatch(slot -> slot.state() == ChallengeSlotState.RANK_LOCKED));
+        assertTrue(row.slots().stream().allMatch(slot -> slot.detailMode() == ChallengeSlotDetailMode.RANK_UNLOCK_DETAILS));
+        assertTrue(row.slots().stream().allMatch(slot -> slot.icon().create().getType() == Material.BARRIER));
+        assertTrue(row.slots().stream().noneMatch(ChallengeSlotView::clickable));
+        assertFalse(row.slots().getFirst().lore().isEmpty());
     }
 
     @Test
@@ -64,11 +65,12 @@ class ChallengeMenuViewAssemblerTest {
             1
         );
 
-        ChallengeSlotView slot = page.slots().getFirst();
+        ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
         assertEquals(ChallengeSlotState.CHALLENGE_LOCKED, slot.state());
         assertEquals(ChallengeSlotDetailMode.CHALLENGE_UNLOCK_DETAILS, slot.detailMode());
         assertEquals(Material.OBSIDIAN, slot.icon().create().getType());
         assertFalse(slot.clickable());
+        assertFalse(slot.lore().isEmpty());
     }
 
     @Test
@@ -85,11 +87,12 @@ class ChallengeMenuViewAssemblerTest {
             1
         );
 
-        ChallengeSlotView slot = page.slots().getFirst();
+        ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
         assertEquals(ChallengeSlotState.CHALLENGE_UNLOCKED, slot.state());
         assertEquals(ChallengeSlotDetailMode.CHALLENGE_DETAILS, slot.detailMode());
         assertEquals(Material.STONE, slot.icon().create().getType());
         assertTrue(slot.clickable());
+        assertFalse(slot.lore().isEmpty());
     }
 
     @Test
@@ -100,6 +103,30 @@ class ChallengeMenuViewAssemblerTest {
 
         assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 0));
         assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 2));
+    }
+
+    @Test
+    void packsUpToFiveRanksIntoOnePage() {
+        ChallengeCatalog catalog = new ChallengeCatalog(List.of(
+            rank("r1", Material.BARRIER, List.of(challenge("c1", Material.STONE, Material.OBSIDIAN))),
+            rank("r2", Material.BARRIER, List.of(challenge("c2", Material.STONE, Material.OBSIDIAN))),
+            rank("r3", Material.BARRIER, List.of(challenge("c3", Material.STONE, Material.OBSIDIAN))),
+            rank("r4", Material.BARRIER, List.of(challenge("c4", Material.STONE, Material.OBSIDIAN))),
+            rank("r5", Material.BARRIER, List.of(challenge("c5", Material.STONE, Material.OBSIDIAN))),
+            rank("r6", Material.BARRIER, List.of(challenge("c6", Material.STONE, Material.OBSIDIAN)))
+        ));
+
+        ChallengePageView firstPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 1);
+        ChallengePageView secondPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 2);
+
+        assertEquals(2, firstPage.totalPages());
+        assertEquals(5, firstPage.rows().size());
+        assertEquals("r1", firstPage.rows().get(0).rank().id().value());
+        assertEquals("r5", firstPage.rows().get(4).rank().id().value());
+        assertEquals(1, secondPage.rows().size());
+        assertEquals("r6", secondPage.rows().getFirst().rank().id().value());
+        assertEquals(0, firstPage.rows().get(0).slots().getFirst().slotIndex());
+        assertEquals(36, firstPage.rows().get(4).slots().getFirst().slotIndex());
     }
 
     private static RankDefinition rank(String id, Material lockedItem, List<ChallengeDefinition> challenges) {

@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.challenge.view;
 
-import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
 import us.talabrek.ultimateskyblock.gui.PaginationBar;
 
 import java.util.List;
@@ -9,9 +8,7 @@ import java.util.Objects;
 public record ChallengePageView(
     int pageNumber,
     int totalPages,
-    RankDefinition rank,
-    boolean rankUnlocked,
-    List<ChallengeSlotView> slots,
+    List<ChallengeRankRowView> rows,
     PaginationBar pagination
 ) {
     public ChallengePageView {
@@ -24,8 +21,7 @@ public record ChallengePageView(
         if (pageNumber > totalPages) {
             throw new IllegalArgumentException("pageNumber cannot exceed totalPages");
         }
-        rank = Objects.requireNonNull(rank, "rank");
-        slots = List.copyOf(Objects.requireNonNull(slots, "slots"));
+        rows = List.copyOf(Objects.requireNonNull(rows, "rows"));
         pagination = Objects.requireNonNull(pagination, "pagination");
     }
 }
