@@ -56,6 +56,7 @@ class ChallengeCatalogTest {
         return new ChallengeDefinition(
             ChallengeId.of(id),
             challengeDisplay(id),
+            item(Material.BARRIER),
             List.of(),
             List.of(),
             new ChallengeProperties(true),

@@ -87,6 +87,7 @@ class ChallengeCatalogYamlParserTest {
         assertEquals("beta", catalog.ranks().get(0).challenges().get(1).id().value());
         assertEquals("<green>Starter", catalog.ranks().get(0).display().name().source());
         assertEquals(Material.EMERALD, catalog.ranks().get(0).lockedDisplayItem().create().getType());
+        assertEquals(Material.EMERALD, catalog.challenge(ChallengeId.of("alpha")).orElseThrow().lockedDisplayItem().create().getType());
         assertEquals(RankId.of("adept"), catalog.index().challengeOwners().get(ChallengeId.of("gamma")));
     }
 
@@ -104,6 +105,7 @@ class ChallengeCatalogYamlParserTest {
                     challenges: [bootstrap]
                 challenges:
                   cobble:
+                    lockedDisplayItem: "minecraft:obsidian"
                     display:
                       name: "<gray>Cobble"
                       description: "Collect cobble."
@@ -157,6 +159,7 @@ class ChallengeCatalogYamlParserTest {
 
         ChallengeDefinition challenge = result.catalog().challenge(ChallengeId.of("cobble")).orElseThrow();
         assertEquals(Material.BARRIER, result.catalog().rank(RankId.of("starter")).orElseThrow().lockedDisplayItem().create().getType());
+        assertEquals(Material.OBSIDIAN, challenge.lockedDisplayItem().create().getType());
 
         assertEquals("<gray>Cobble", challenge.display().name().source());
         assertEquals("Collect cobble.", challenge.display().description().source());
@@ -214,9 +217,11 @@ class ChallengeCatalogYamlParserTest {
         assertEquals("alpha", challenge.display().name().source());
         assertEquals("", challenge.display().description().source());
         assertEquals(Material.STONE, challenge.display().displayItem().create().getType());
+        assertEquals(Material.BARRIER, challenge.lockedDisplayItem().create().getType());
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.display")));
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.lockedDisplayItem")));
         assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.display")));
+        assertTrue(result.warnings().stream().anyMatch(w -> w.contains("$.ranks.starter.challenges.alpha.lockedDisplayItem")));
     }
 
     @Test

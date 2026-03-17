@@ -96,17 +96,24 @@ public class ChallengeCatalogYamlParser {
         } else {
             for (String challengeKey : challengesSection.getKeys(false)) {
                 ConfigurationSection challengeSection = requiredSection(challengesSection, challengeKey, path + ".challenges");
-                challenges.add(parseChallenge(challengeKey, challengeSection, path + ".challenges." + challengeKey, diagnostics));
+                challenges.add(parseChallenge(challengeKey, challengeSection, lockedDisplayItem, path + ".challenges." + challengeKey, diagnostics));
             }
         }
 
         return new RankDefinition(RankId.of(rankKey), display, lockedDisplayItem, unlockRequirements, challenges);
     }
 
-    private ChallengeDefinition parseChallenge(String challengeKey, ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
-        warnUnknownKeys(section, path, diagnostics, "display", "unlock", "complete", "properties", "repeat", "rewards");
+    private ChallengeDefinition parseChallenge(
+        String challengeKey,
+        ConfigurationSection section,
+        ItemStackSpec rankLockedDisplayItem,
+        String path,
+        List<ChallengeCatalogDiagnostic> diagnostics
+    ) {
+        warnUnknownKeys(section, path, diagnostics, "display", "lockedDisplayItem", "unlock", "complete", "properties", "repeat", "rewards");
 
         DisplaySpec display = parseChallengeDisplay(challengeKey, section.getConfigurationSection("display"), path + ".display", diagnostics);
+        ItemStackSpec lockedDisplayItem = parseChallengeLockedDisplayItem(section, rankLockedDisplayItem, path, diagnostics);
         List<ChallengeRequirements.ChallengeUnlockRequirement> unlockRequirements = parseChallengeUnlockRequirements(section.getMapList("unlock"), path + ".unlock", diagnostics);
         List<ChallengeRequirements.CompletionRequirement> completionRequirements = parseCompletionRequirements(section.getMapList("complete"), path + ".complete", diagnostics);
         ChallengeProperties properties = parseProperties(section.getConfigurationSection("properties"), path + ".properties", diagnostics);
@@ -117,6 +124,7 @@ public class ChallengeCatalogYamlParser {
         return new ChallengeDefinition(
             ChallengeId.of(challengeKey),
             display,
+            lockedDisplayItem,
             unlockRequirements,
             completionRequirements,
             properties,
@@ -180,6 +188,20 @@ public class ChallengeCatalogYamlParser {
         if (rawLockedDisplayItem == null || rawLockedDisplayItem.isBlank()) {
             diagnostics.add(warn(path + ".lockedDisplayItem", "Missing locked display item, defaulting to '" + DEFAULT_LOCKED_DISPLAY_ITEM + "'"));
             rawLockedDisplayItem = DEFAULT_LOCKED_DISPLAY_ITEM;
+        }
+        return gameObjects.itemStack(rawLockedDisplayItem);
+    }
+
+    private ItemStackSpec parseChallengeLockedDisplayItem(
+        ConfigurationSection section,
+        ItemStackSpec rankLockedDisplayItem,
+        String path,
+        List<ChallengeCatalogDiagnostic> diagnostics
+    ) {
+        String rawLockedDisplayItem = optionalString(section, "lockedDisplayItem").orElse(null);
+        if (rawLockedDisplayItem == null || rawLockedDisplayItem.isBlank()) {
+            diagnostics.add(warn(path + ".lockedDisplayItem", "Missing locked display item, defaulting to the rank locked display item"));
+            return rankLockedDisplayItem;
         }
         return gameObjects.itemStack(rawLockedDisplayItem);
     }
