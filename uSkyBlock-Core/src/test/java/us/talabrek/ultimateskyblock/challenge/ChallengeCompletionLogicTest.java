@@ -40,7 +40,8 @@ public class ChallengeCompletionLogicTest {
             tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         )) {
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("player"), repository);
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -64,7 +65,8 @@ public class ChallengeCompletionLogicTest {
             tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         )) {
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -91,7 +93,8 @@ public class ChallengeCompletionLogicTest {
             tempDir.resolve("data").resolve("challenge-progress.db"),
             Logger.getAnonymousLogger()
         )) {
-            new ChallengeCompletionLogic(plugin(challengeKey), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
 
             assertTrue(Files.exists(tempDir.resolve("completion")));
             assertTrue(Files.exists(sentinel));
@@ -99,7 +102,7 @@ public class ChallengeCompletionLogicTest {
         }
     }
 
-    private uSkyBlock plugin(ChallengeKey challengeKey) {
+    private ChallengeLogic challengeLogic(ChallengeKey challengeKey) {
         ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
@@ -107,7 +110,10 @@ public class ChallengeCompletionLogicTest {
             map.put(challengeKey, new ChallengeCompletion(challengeKey, null, 0, 0));
             return null;
         }).when(challengeLogic).populateChallenges(org.mockito.ArgumentMatchers.any());
+        return challengeLogic;
+    }
 
+    private uSkyBlock plugin(ChallengeLogic challengeLogic) {
         uSkyBlock plugin = mock(uSkyBlock.class);
         when(plugin.getChallengeLogic()).thenReturn(challengeLogic);
         when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());

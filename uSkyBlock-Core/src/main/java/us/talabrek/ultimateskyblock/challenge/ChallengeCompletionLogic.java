@@ -25,17 +25,20 @@ import java.util.logging.Level;
  */
 public class ChallengeCompletionLogic {
     private final uSkyBlock plugin;
+    private final ChallengeLogic challengeLogic;
     private final ChallengeProgressRepository repository;
     private final Path legacyStorageDir;
     private final boolean legacyPlayerSharingConfigured;
     private final LoadingCache<IslandKey, Map<ChallengeKey, ChallengeCompletion>> completionCache;
 
     public ChallengeCompletionLogic(
+        ChallengeLogic challengeLogic,
         uSkyBlock plugin,
         RuntimeConfigs runtimeConfigs,
         FileConfiguration config,
         ChallengeProgressRepository repository
     ) {
+        this.challengeLogic = challengeLogic;
         this.plugin = plugin;
         this.repository = repository;
         this.legacyStorageDir = plugin.getDataFolder().toPath().resolve("completion");
@@ -60,12 +63,12 @@ public class ChallengeCompletionLogic {
         if (!Files.exists(legacyStorageDir)) {
             legacyStorageDir.toFile().mkdirs();
         }
-        new ChallengeProgressMigration(plugin, repository).migrateLegacyDataEagerly();
+        new ChallengeProgressMigration(plugin, challengeLogic, repository).migrateLegacyDataEagerly();
     }
 
     private Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
         Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
-        plugin.getChallengeLogic().populateChallenges(challengeMap);
+        challengeLogic.populateChallenges(challengeMap);
         challengeMap.putAll(repository.load(islandKey));
         return challengeMap;
     }
@@ -89,7 +92,6 @@ public class ChallengeCompletionLogic {
         if (challenges.containsKey(id)) {
             ChallengeCompletion completion = challenges.get(id);
             if (!completion.isOnCooldown()) {
-                ChallengeLogic challengeLogic = plugin.getChallengeLogic();
                 Duration resetDuration = challengeLogic.getChallengeById(id).orElseThrow().getResetDuration();
                 if (resetDuration.isPositive()) {
                     Instant now = Instant.now();
@@ -125,7 +127,7 @@ public class ChallengeCompletionLogic {
 
     public void resetAllChallenges(PlayerInfo playerInfo) {
         Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
-        plugin.getChallengeLogic().populateChallenges(challengeMap);
+        challengeLogic.populateChallenges(challengeMap);
         IslandKey islandKey = getIslandKey(playerInfo);
         completionCache.put(islandKey, challengeMap);
     }

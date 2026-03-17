@@ -25,13 +25,19 @@ final class ChallengeProgressMigration {
     private record LegacyPlayerProgress(Path path, YamlConfiguration config) {}
 
     private final uSkyBlock plugin;
+    private final ChallengeLogic challengeLogic;
     private final ChallengeProgressRepository repository;
     private final Path legacyStorageDir;
     private final Path playerStorageDir;
     private final Path islandStorageDir;
 
-    ChallengeProgressMigration(@NotNull uSkyBlock plugin, @NotNull ChallengeProgressRepository repository) {
+    ChallengeProgressMigration(
+        @NotNull uSkyBlock plugin,
+        @NotNull ChallengeLogic challengeLogic,
+        @NotNull ChallengeProgressRepository repository
+    ) {
         this.plugin = plugin;
+        this.challengeLogic = challengeLogic;
         this.repository = repository;
         this.legacyStorageDir = plugin.getDataFolder().toPath().resolve("completion");
         this.playerStorageDir = plugin.getDataFolder().toPath().resolve("players");
@@ -77,7 +83,7 @@ final class ChallengeProgressMigration {
 
     private @NotNull Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
         Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
-        plugin.getChallengeLogic().populateChallenges(challengeMap);
+        challengeLogic.populateChallenges(challengeMap);
         challengeMap.putAll(repository.load(islandKey));
         return challengeMap;
     }

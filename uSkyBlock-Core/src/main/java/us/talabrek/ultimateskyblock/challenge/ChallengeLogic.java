@@ -123,7 +123,7 @@ public class ChallengeLogic implements Listener {
         this.defaults = ChallengeFactory.createDefaults(config.getRoot());
         ranks = challengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
         rebuildIndex();
-        completionLogic = new ChallengeCompletionLogic(plugin, runtimeConfigs, config, challengeProgressRepository);
+        completionLogic = new ChallengeCompletionLogic(this, plugin, runtimeConfigs, config, challengeProgressRepository);
         String displayItemForLocked = config.getString("lockedDisplayItem", null);
         if (displayItemForLocked != null) {
             lockedItem = gameObjects.itemStack(displayItemForLocked).create();
