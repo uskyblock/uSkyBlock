@@ -11,6 +11,8 @@ import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.challenge.ChallengeProgressRepository;
+import us.talabrek.ultimateskyblock.challenge.SqliteChallengeProgressRepository;
 import us.talabrek.ultimateskyblock.handler.placeholder.MVdWPlaceholderAPI;
 import us.talabrek.ultimateskyblock.handler.placeholder.MvdwPlacehoderProvider;
 import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderAPI;
@@ -71,6 +73,15 @@ public class SkyblockModule extends AbstractModule {
     @Singleton
     public static @NotNull AnimationHandler provideAnimationHandler(Plugin plugin) {
         return new AnimationHandler(plugin);
+    }
+
+    @Provides
+    @Singleton
+    public static @NotNull ChallengeProgressRepository provideChallengeProgressRepository(
+        @PluginDataDir Path pluginDataDir,
+        Logger logger
+    ) {
+        return new SqliteChallengeProgressRepository(pluginDataDir.resolve("data").resolve("challenge-progress.db"), logger);
     }
 
     @Provides
