@@ -156,6 +156,15 @@ public final class RuntimeConfigFactory {
                     root.boolWithDefault("options.protection.visitors.vehicle-damage"),
                     root.boolWithDefault("options.protection.visitors.block-banned-entry")
                 ),
+                new RuntimeConfig.Challenges(
+                    root.bool("options.challenges.enabled", true),
+                    root.bool("options.challenges.reset-on-create", true),
+                    root.bool("options.challenges.enable-economy-rewards", true),
+                    new RuntimeConfig.Broadcast(
+                        root.bool("options.challenges.broadcast.enabled", true),
+                        root.string("options.challenges.broadcast.prefix", "")
+                    )
+                ),
                 new RuntimeConfig.Nether(
                     root.boolWithDefault("nether.enabled"),
                     root.integerWithDefault("nether.lava-level", 0),

@@ -18,6 +18,7 @@ public record RuntimeConfig(
     @NotNull Island island,
     @NotNull Extras extras,
     @NotNull Protection protection,
+    @NotNull Challenges challenges,
     @NotNull Nether nether,
     @NotNull Restart restart,
     @NotNull Advanced advanced,
@@ -128,6 +129,20 @@ public record RuntimeConfig(
         boolean visitorVehicleEnterAllowed,
         boolean visitorVehicleBreakAllowed,
         boolean blockBannedEntry
+    ) {
+    }
+
+    public record Challenges(
+        boolean enabled,
+        boolean resetOnCreate,
+        boolean enableEconomyRewards,
+        @NotNull Broadcast broadcast
+    ) {
+    }
+
+    public record Broadcast(
+        boolean enabled,
+        @NotNull String prefix
     ) {
     }
 

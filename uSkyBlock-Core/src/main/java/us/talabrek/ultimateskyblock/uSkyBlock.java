@@ -39,6 +39,7 @@ import us.talabrek.ultimateskyblock.api.uSkyBlockAPI;
 import us.talabrek.ultimateskyblock.bootstrap.SkyblockApp;
 import us.talabrek.ultimateskyblock.bootstrap.SkyblockModule;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogBootstrap;
 import us.talabrek.ultimateskyblock.command.AdminCommand;
 import us.talabrek.ultimateskyblock.command.admin.SetMaintenanceCommand;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
@@ -50,8 +51,6 @@ import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.hook.HookManager;
-import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
-import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
 import us.talabrek.ultimateskyblock.imports.USBImporterExecutor;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandGenerator;
@@ -191,24 +190,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         }
     }
 
-    private void convertConfigItemsTo1_20_6IfRequired() {
-        var converter = new ItemComponentConverter(getLogger());
-        converter.checkAndDoChallengeImport(getDataFolder());
-    }
-
-    private void convertConfigToBlockRequirements() {
-        var converter = new BlockRequirementConverter(getLogger());
-        converter.checkAndDoImport(getDataFolder());
-    }
-
     @Override
     public void onEnable() {
         missingRequirements = null;
         instance = this;
-
-        // Converter has to run before the plugin loads its config files.
-        convertConfigItemsTo1_20_6IfRequired();
-        convertConfigToBlockRequirements();
 
         reloadLegacyStuff();
         startup();
@@ -714,6 +699,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         CommandManager.registerRequirements(this);
         FileUtil.setDataFolder(getDataFolder());
         config = new ConfigBootstrap(getDataFolder().toPath(), getLogger()).bootstrap();
+        new ChallengeCatalogBootstrap(getDataFolder().toPath(), getLogger(), config).bootstrap();
         // Update all of the loaded configs.
         FileUtil.reload();
     }

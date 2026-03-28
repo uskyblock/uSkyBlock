@@ -44,7 +44,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("player"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -69,7 +69,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -243,7 +243,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), challengeConfig("island"), repository);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             assertTrue(Files.exists(tempDir.resolve("completion")));
             assertTrue(Files.exists(sentinel));
@@ -290,12 +290,6 @@ public class ChallengeCompletionLogicTest {
         when(scheduler.async(org.mockito.ArgumentMatchers.any(Runnable.class), org.mockito.ArgumentMatchers.any(Duration.class), org.mockito.ArgumentMatchers.any(Duration.class)))
             .thenReturn(task);
         return scheduler;
-    }
-
-    private static YamlConfiguration challengeConfig(String challengeSharing) {
-        YamlConfiguration config = new YamlConfiguration();
-        config.set("challengeSharing", challengeSharing);
-        return config;
     }
 
     private void writeLegacyPlayerProgress(
@@ -362,6 +356,7 @@ public class ChallengeCompletionLogicTest {
             ),
             new RuntimeConfig.Extras(false, true, true),
             new RuntimeConfig.Protection(true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, false, false, false, true),
+            new RuntimeConfig.Challenges(true, true, true, new RuntimeConfig.Broadcast(true, "")),
             new RuntimeConfig.Nether(false, 7, 75, "", new RuntimeConfig.Terraform(false, 0d, 0d, 0, Map.of(), Map.of()), new RuntimeConfig.SpawnChances(false, 0d, 0d, 0d)),
             new RuntimeConfig.Restart(true, true, true, true, false, true, Duration.ZERO, List.of()),
             new RuntimeConfig.Advanced(Duration.ZERO, false, 0d, true, "", "", "maximumSize=100", Duration.ZERO, Duration.ZERO, "", 4, Duration.ZERO, 0d, Duration.ZERO, null,

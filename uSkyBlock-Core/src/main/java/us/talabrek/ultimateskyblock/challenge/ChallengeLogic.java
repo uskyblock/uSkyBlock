@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.FormatUtil;
@@ -13,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -31,6 +29,9 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogLoader;
+import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogRuntimeAdapter;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Placeholder;
@@ -89,11 +90,10 @@ public class ChallengeLogic implements Listener {
     public static final int CHALLENGE_PAGE_SIZE = ROWS_OF_RANKS * COLS_PER_ROW;
 
     private final Logger logger;
-    private final FileConfiguration config;
     private final uSkyBlock plugin;
+    private final RuntimeConfigs runtimeConfigs;
     private final PerkLogic perkLogic;
     private final HookManager hookManager;
-    private final GameObjectFactory gameObjects;
 
     private final Map<String, Rank> ranks;
     // Fast O(1) lookup for challenges by canonical id
@@ -102,8 +102,6 @@ public class ChallengeLogic implements Listener {
     public final ChallengeDefaults defaults;
     public final ChallengeCompletionLogic completionLogic;
     private final ChallengeExecutor challengeExecutor;
-    private final ItemStack lockedItem;
-    private final Map<Challenge.Type, ItemStack> lockedItemMap = new EnumMap<>(Challenge.Type.class);
 
     @Inject
     public ChallengeLogic(
@@ -112,39 +110,34 @@ public class ChallengeLogic implements Listener {
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull PerkLogic perkLogic,
         @NotNull HookManager hookManager,
-        @NotNull GameObjectFactory gameObjects,
-        @NotNull ChallengeFactory challengeFactory,
+        @NotNull ChallengeCatalogLoader challengeCatalogLoader,
         @NotNull Scheduler scheduler,
         @NotNull ChallengeProgressRepository challengeProgressRepository
     ) {
         this.logger = logger;
+        this.plugin = plugin;
+        this.runtimeConfigs = runtimeConfigs;
         this.perkLogic = perkLogic;
         this.hookManager = hookManager;
-        this.gameObjects = gameObjects;
-        this.config = FileUtil.getYmlConfiguration("challenges.yml");
-        this.plugin = plugin;
-        this.defaults = ChallengeFactory.createDefaults(config.getRoot());
-        ranks = challengeFactory.createRankMap(config.getConfigurationSection("ranks"), defaults);
+        ChallengeCatalog catalog = challengeCatalogLoader.load();
+        this.defaults = new ChallengeDefaults(
+            java.time.Duration.ofHours(144),
+            false,
+            "",
+            "",
+            "",
+            0,
+            runtimeConfigs.current().challenges().enableEconomyRewards(),
+            runtimeConfigs.current().challenges().broadcast().enabled(),
+            10,
+            false,
+            0
+        );
+        ranks = new ChallengeCatalogRuntimeAdapter().adapt(catalog, runtimeConfigs.current().challenges());
         rebuildIndex();
-        completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, config, challengeProgressRepository);
+        completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, challengeProgressRepository);
         challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, hookManager, perkLogic, completionLogic.progressCache(), challengeProgressRepository);
-        String displayItemForLocked = config.getString("lockedDisplayItem", null);
-        if (displayItemForLocked != null) {
-            lockedItem = gameObjects.itemStack(displayItemForLocked).create();
-        } else {
-            lockedItem = null;
-        }
-        for (Challenge.Type type : Challenge.Type.values()) {
-            String itemName = config.getString(type.name() + ".lockedDisplayItem", null);
-            if (itemName != null) {
-                lockedItemMap.put(type, gameObjects.itemStack(itemName).create());
-            } else {
-                lockedItemMap.put(type, lockedItem);
-            }
-        }
-        if (completionLogic.isIslandSharing()) {
-            Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        }
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     private void rebuildIndex() {
@@ -157,7 +150,7 @@ public class ChallengeLogic implements Listener {
     }
 
     public boolean isEnabled() {
-        return config.getBoolean("allowChallenges", true);
+        return runtimeConfigs.current().challenges().enabled();
     }
 
     /**
@@ -497,7 +490,7 @@ public class ChallengeLogic implements Listener {
         player.giveExp(reward.getXpReward());
         boolean wasBroadcast = false;
         if (defaults.broadcastCompletion && isFirstCompletion) {
-            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(config.getString("broadcastText")) +
+            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(getBroadcastText()) +
                 trLegacy("<player> has completed the <challenge> challenge!",
                     unparsed("player", player.getName(), PRIMARY),
                     Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
@@ -699,13 +692,6 @@ public class ChallengeLogic implements Listener {
 
     private ItemStack renderLockedChallengeItem(Challenge challenge, List<String> missingReqs, List<String> missingRankRequirements) {
         ItemStack locked = challenge.getLockedDisplayItem();
-        ItemStack typeLock = lockedItemMap.get(challenge.getType());
-        if (locked == null && typeLock != null) {
-            locked = new ItemStack(typeLock);
-        }
-        if (locked == null && lockedItem != null) {
-            locked = new ItemStack(lockedItem);
-        }
         if (locked == null) {
             locked = new ItemStack(challenge.getDisplayItem());
         }
@@ -722,7 +708,7 @@ public class ChallengeLogic implements Listener {
     }
 
     public boolean isResetOnCreate() {
-        return config.getBoolean("resetChallengesOnCreate", true);
+        return runtimeConfigs.current().challenges().resetOnCreate();
     }
 
     public int getTotalPages() {
@@ -735,7 +721,7 @@ public class ChallengeLogic implements Listener {
     }
 
     String getBroadcastText() {
-        return config.getString("broadcastText");
+        return runtimeConfigs.current().challenges().broadcast().prefix();
     }
 
     public void completeChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
@@ -772,12 +758,12 @@ public class ChallengeLogic implements Listener {
     }
 
     public boolean isIslandSharing() {
-        return completionLogic.isIslandSharing();
+        return true;
     }
 
     @EventHandler
     public void onMemberJoinedEvent(MemberJoinedEvent e) {
-        if (!completionLogic.isIslandSharing() || !(e.getPlayerInfo() instanceof PlayerInfo playerInfo)) {
+        if (!(e.getPlayerInfo() instanceof PlayerInfo playerInfo)) {
             return;
         }
         Map<ChallengeKey, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());

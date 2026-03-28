@@ -121,12 +121,12 @@ public class ItemComponentConverter {
         }
         logger.info("Converting challenges.yml to new item component format for Minecraft 1.20.5 and later.");
 
-        convertChallengeItems(config);
+        convertChallengeItemsInMemory(config);
         updateHeaderAndVersion(config);
     }
 
 
-    private void convertChallengeItems(FileConfiguration config) {
+    public void convertChallengeItemsInMemory(FileConfiguration config) {
         for (var path : config.getKeys(true)) {
             if (path.endsWith("displayItem") || path.endsWith("lockedDisplayItem")) {
                 var oldSpecification = config.getString(path);

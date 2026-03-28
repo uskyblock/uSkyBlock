@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -21,19 +20,23 @@ import java.util.function.Consumer;
  * Handles challenge progress access and migration. Hot completion flow is handled by {@link ChallengeExecutor}.
  */
 public class ChallengeCompletionLogic {
+    /**
+     * Config flag written by the legacy challenges.yml importer when the server previously ran
+     * challengeSharing=player; consumed (and cleared) by the one-shot SQLite progress migration.
+     */
+    public static final String LEGACY_PLAYER_SHARING_CONFIG_KEY = "options.challenges.legacy-player-sharing";
+
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
     private final Scheduler scheduler;
     private final ChallengeProgressRepository repository;
     private final ChallengeProgressCache progressCache;
-    private final boolean legacyPlayerSharingConfigured;
 
     public ChallengeCompletionLogic(
         @NotNull ChallengeLogic challengeLogic,
         @NotNull uSkyBlock plugin,
         @NotNull Scheduler scheduler,
         @NotNull RuntimeConfigs runtimeConfigs,
-        @NotNull FileConfiguration config,
         @NotNull ChallengeProgressRepository repository
     ) {
         this.challengeLogic = Objects.requireNonNull(challengeLogic, "challengeLogic");
@@ -41,11 +44,16 @@ public class ChallengeCompletionLogic {
         this.scheduler = Objects.requireNonNull(scheduler, "scheduler");
         this.repository = Objects.requireNonNull(repository, "repository");
         this.progressCache = new ChallengeProgressCache(plugin.getLogger(), scheduler, repository, challengeLogic);
-        this.legacyPlayerSharingConfigured = config.getString("challengeSharing", "island").equalsIgnoreCase("player");
-        if (legacyPlayerSharingConfigured) {
-            plugin.getLogger().warning("Legacy challengeSharing=player is deprecated. Challenge progress will be migrated to island-owned database records.");
+        boolean legacyPlayerSharing = plugin.getConfig().getBoolean(LEGACY_PLAYER_SHARING_CONFIG_KEY, false);
+        new ChallengeProgressMigration(plugin, challengeLogic, repository, legacyPlayerSharing).migrateLegacyDataEagerly();
+        clearLegacyPlayerSharingFlag();
+    }
+
+    private void clearLegacyPlayerSharingFlag() {
+        if (plugin.getConfig().contains(LEGACY_PLAYER_SHARING_CONFIG_KEY)) {
+            plugin.getConfig().set(LEGACY_PLAYER_SHARING_CONFIG_KEY, null);
+            plugin.saveConfig();
         }
-        new ChallengeProgressMigration(plugin, challengeLogic, repository, legacyPlayerSharingConfigured).migrateLegacyDataEagerly();
     }
 
     public @NotNull ChallengeProgressCache progressCache() {

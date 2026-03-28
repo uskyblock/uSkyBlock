@@ -118,6 +118,7 @@ public class ChatLogicTest {
                 true, true, true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true, true, true
             ),
+            new RuntimeConfig.Challenges(true, true, true, new RuntimeConfig.Broadcast(true, "")),
             new RuntimeConfig.Nether(
                 false, 0, 150, "bukkit",
                 new RuntimeConfig.Terraform(false, -0.5d, 0.5d, 16, Map.of(), Map.of()),

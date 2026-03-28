@@ -62,6 +62,7 @@ public class Challenge {
     private final List<BlockRequirement> requiredBlocks;
     private final List<EntityMatch> requiredEntities;
     private final List<String> requiredChallenges;
+    private final List<String> requiredPermissions;
     private final double requiredLevel;
     private final Rank rank;
     private final Duration resetDuration;
@@ -80,6 +81,15 @@ public class Challenge {
                      List<String> requiredChallenges, double requiredLevel, Rank rank,
                      Duration resetDuration, ItemStackSpec displayItem, ItemStackSpec tool, ItemStackSpec lockedItem, int offset,
                      boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
+        this(id, displayName, description, type, requiredItems, requiredBlocks, requiredEntities, requiredChallenges, List.of(), requiredLevel,
+            rank, resetDuration, displayItem, tool, lockedItem, offset, takeItems, radius, reward, repeatReward, repeatLimit);
+    }
+
+    public Challenge(ChallengeKey id, String displayName, String description, Type type, List<ItemRequirement> requiredItems,
+                     @NotNull List<BlockRequirement> requiredBlocks, List<EntityMatch> requiredEntities,
+                     List<String> requiredChallenges, List<String> requiredPermissions, double requiredLevel, Rank rank,
+                     Duration resetDuration, ItemStackSpec displayItem, ItemStackSpec tool, ItemStackSpec lockedItem, int offset,
+                     boolean takeItems, int radius, Reward reward, Reward repeatReward, int repeatLimit) {
         this.id = id;
         this.displayName = displayName;
         this.type = type;
@@ -87,6 +97,7 @@ public class Challenge {
         this.requiredBlocks = requiredBlocks;
         this.requiredEntities = requiredEntities;
         this.requiredChallenges = requiredChallenges;
+        this.requiredPermissions = List.copyOf(requiredPermissions);
         this.requiredLevel = requiredLevel;
         this.rank = rank;
         this.resetDuration = resetDuration;
@@ -340,11 +351,17 @@ public class Challenge {
     }
 
     public List<String> getMissingRequirements(PlayerInfo playerInfo) {
+        List<String> missing = new ArrayList<>();
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, requiredChallenges, uSkyBlock.getInstance().getChallengeLogic());
         if (missingRequirement != null) {
-            return wordWrap(trLegacy("Requires <requirement>", legacyArg("requirement", missingRequirement)), MAX_LINE);
+            missing.addAll(wordWrap(trLegacy("Requires <requirement>", legacyArg("requirement", missingRequirement)), MAX_LINE));
         }
-        return Collections.emptyList();
+        for (String permission : requiredPermissions) {
+            if (!playerInfo.getPlayer().hasPermission(permission)) {
+                missing.addAll(wordWrap(trLegacy("Requires permission <permission>", legacyArg("permission", permission)), MAX_LINE));
+            }
+        }
+        return missing.isEmpty() ? Collections.emptyList() : List.copyOf(missing);
     }
 
     @Override

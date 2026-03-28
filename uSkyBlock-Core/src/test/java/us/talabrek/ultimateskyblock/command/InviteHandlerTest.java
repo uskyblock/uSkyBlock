@@ -151,6 +151,7 @@ public class InviteHandlerTest {
             ),
             new RuntimeConfig.Extras(false, true, true),
             new RuntimeConfig.Protection(true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, false, false, false, true),
+            new RuntimeConfig.Challenges(true, true, true, new RuntimeConfig.Broadcast(true, "")),
             new RuntimeConfig.Nether(false, 7, 75, "", new RuntimeConfig.Terraform(false, 0d, 0d, 0, Map.of(), Map.of()), new RuntimeConfig.SpawnChances(false, 0d, 0d, 0d)),
             new RuntimeConfig.Restart(true, true, true, true, false, true, Duration.ZERO, List.of()),
             new RuntimeConfig.Advanced(Duration.ZERO, false, 0d, true, "", "", "", Duration.ZERO, Duration.ZERO, "", 4, Duration.ZERO, 0d, Duration.ZERO, null,
