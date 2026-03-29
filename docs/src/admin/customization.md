@@ -65,6 +65,8 @@ Beyond `config.yml`, one file is especially important:
 
 This is a high-impact tuning file. Change it carefully and test on a staging server first if you are already live.
 
+For an overview of custom gameplay mechanics like guardian habitats, nether terraforming, and mob spawning controls, see the [Custom Mechanics](../players/mechanics.md) page. The server-side knobs for these features are documented in the [Configuration Reference](config-reference.md) under `spawning` and `nether`.
+
 ## Cooldowns and limits
 
 | Option | Default | Notes |
