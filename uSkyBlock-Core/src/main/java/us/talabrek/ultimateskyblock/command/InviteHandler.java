@@ -105,6 +105,22 @@ public class InviteHandler implements Listener {
         return false;
     }
 
+    /**
+     * Returns true if accepting would delete the player's existing island.
+     */
+    public synchronized boolean acceptWouldDeleteIsland(@NotNull Player player) {
+        Invite invite = inviteMap.get(player.getUniqueId());
+        if (invite == null) {
+            return false;
+        }
+        PlayerInfo pi = plugin.getPlayerInfo(player);
+        if (pi.getHasIsland() && pi.getIslandLocation() != null) {
+            String islandName = WorldGuardHandler.getIslandNameAt(pi.getIslandLocation());
+            return !plugin.getIslandInfo(invite.islandName()).getName().equals(islandName);
+        }
+        return false;
+    }
+
     private synchronized boolean accept(final Player player) {
         UUID uuid = player.getUniqueId();
         us.talabrek.ultimateskyblock.api.IslandInfo oldIsland = plugin.getIslandInfo(player);
