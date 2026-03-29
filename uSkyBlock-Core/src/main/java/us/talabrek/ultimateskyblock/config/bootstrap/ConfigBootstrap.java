@@ -62,19 +62,19 @@ public class ConfigBootstrap {
         if (supportedSystemLocale.isPresent() && !supportedSystemLocale.get().equalsIgnoreCase(effectiveConfiguredLanguage)) {
             String selectedLanguage = supportedSystemLocale.get();
             pluginConfig.set("language", selectedLanguage);
-            logger.log(Level.INFO, "First setup: selected language '{0}' from system locale '{1}'.",
+            logger.log(Level.INFO, "First setup: selected language ''{0}'' from system locale ''{1}''.",
                 new Object[]{selectedLanguage, systemLocale});
-            logger.log(Level.INFO, "Use '/usb lang [locale]' to change language. Help improve translations: {0}",
+            logger.log(Level.INFO, "Use ''/usb lang [locale]'' to change language. Help improve translations: {0}",
                 I18nUtil.getTranslationSupportUrl());
             return true;
         } else if (supportedSystemLocale.isPresent()) {
-            logger.log(Level.INFO, "First setup: keeping configured language '{0}' (matches system locale).",
+            logger.log(Level.INFO, "First setup: keeping configured language ''{0}'' (matches system locale).",
                 effectiveConfiguredLanguage);
         } else {
-            logger.log(Level.INFO, "First setup: keeping configured language '{0}' (system locale '{1}' not supported).",
+            logger.log(Level.INFO, "First setup: keeping configured language ''{0}'' (system locale ''{1}'' not supported).",
                 new Object[]{effectiveConfiguredLanguage, systemLocale});
         }
-        logger.log(Level.INFO, "Use '/usb lang [locale]' to change language. Help improve translations: {0}",
+        logger.log(Level.INFO, "Use ''/usb lang [locale]'' to change language. Help improve translations: {0}",
             I18nUtil.getTranslationSupportUrl());
         return false;
     }
