@@ -193,7 +193,6 @@ public record RuntimeConfig(
         boolean manageSpawn,
         @NotNull String playerCacheSpec,
         @NotNull String islandCacheSpec,
-        @NotNull String completionCacheSpec,
         @NotNull Duration islandSaveEvery,
         @NotNull Duration playerSaveEvery,
         @NotNull String chunkGenerator,

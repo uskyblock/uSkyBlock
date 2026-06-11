@@ -5,6 +5,7 @@ import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeDefaults;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
@@ -30,11 +31,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class ChallengeCatalogRuntimeAdapter {
-    public @NotNull Map<String, Rank> adapt(
-        @NotNull ChallengeCatalog catalog,
-        @NotNull RuntimeConfig.Challenges challengeSettings
-    ) {
-        ChallengeDefaults defaults = new ChallengeDefaults(
+    public static @NotNull ChallengeDefaults legacyDefaults(@NotNull RuntimeConfig.Challenges challengeSettings) {
+        return new ChallengeDefaults(
             Duration.ofHours(144),
             false,
             "",
@@ -47,6 +45,13 @@ public final class ChallengeCatalogRuntimeAdapter {
             false,
             0
         );
+    }
+
+    public @NotNull Map<String, Rank> adapt(
+        @NotNull ChallengeCatalog catalog,
+        @NotNull RuntimeConfig.Challenges challengeSettings
+    ) {
+        ChallengeDefaults defaults = legacyDefaults(challengeSettings);
 
         Map<String, Rank> ranks = new LinkedHashMap<>();
         Rank previous = null;
@@ -88,13 +93,20 @@ public final class ChallengeCatalogRuntimeAdapter {
         );
 
         for (ChallengeDefinition challengeDefinition : definition.challenges()) {
-            rank.getChallenges().add(adaptChallenge(challengeDefinition, rank));
+            Challenge challenge = adaptChallenge(challengeDefinition, rank);
+            if (challenge != null) {
+                rank.getChallenges().add(challenge);
+            }
         }
         return rank;
     }
 
-    private @NotNull Challenge adaptChallenge(@NotNull ChallengeDefinition definition, @NotNull Rank rank) {
+    private @Nullable Challenge adaptChallenge(@NotNull ChallengeDefinition definition, @NotNull Rank rank) {
+        // Reported as an ERROR diagnostic by the validator; skipping here keeps the plugin enabled.
         CompletionShape shape = CompletionShape.from(definition);
+        if (shape == null) {
+            return null;
+        }
         List<String> requiredChallenges = new ArrayList<>();
         List<String> requiredPermissions = new ArrayList<>();
         double requiredLevel = 0d;
@@ -201,7 +213,7 @@ public final class ChallengeCatalogRuntimeAdapter {
         double requiredLevel,
         int radius
     ) {
-        static @NotNull CompletionShape from(@NotNull ChallengeDefinition definition) {
+        static @Nullable CompletionShape from(@NotNull ChallengeDefinition definition) {
             List<ItemRequirement> requiredItems = new ArrayList<>();
             List<BlockRequirement> requiredBlocks = new ArrayList<>();
             List<EntityMatch> requiredEntities = new ArrayList<>();
@@ -242,8 +254,7 @@ public final class ChallengeCatalogRuntimeAdapter {
                 return new CompletionShape(Challenge.Type.PLAYER, requiredItems, requiredBlocks, requiredEntities, requiredLevel, radius);
             }
             if (types.size() > 1) {
-                throw new IllegalArgumentException("Challenge '" + definition.id().value()
-                    + "' mixes completion requirement types that are not supported by the legacy runtime adapter.");
+                return null;
             }
             return new CompletionShape(types.iterator().next(), requiredItems, requiredBlocks, requiredEntities, requiredLevel, radius);
         }

@@ -3,18 +3,11 @@ package us.talabrek.ultimateskyblock.challenge;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.BlockRequirement;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,16 +19,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
-import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
-import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
 import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogLoader;
 import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogRuntimeAdapter;
 import us.talabrek.ultimateskyblock.hook.HookManager;
-import us.talabrek.ultimateskyblock.island.IslandInfo;
-import us.talabrek.ultimateskyblock.message.Placeholder;
-import us.talabrek.ultimateskyblock.player.Perk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -46,39 +34,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.message.Msg.send;
-import static us.talabrek.ultimateskyblock.message.Msg.sendError;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
-import static us.talabrek.ultimateskyblock.message.Placeholder.component;
-import static us.talabrek.ultimateskyblock.message.Placeholder.number;
-import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
 /**
  * The home of challenge business logic.
@@ -120,19 +92,7 @@ public class ChallengeLogic implements Listener {
         this.perkLogic = perkLogic;
         this.hookManager = hookManager;
         ChallengeCatalog catalog = challengeCatalogLoader.load();
-        this.defaults = new ChallengeDefaults(
-            java.time.Duration.ofHours(144),
-            false,
-            "",
-            "",
-            "",
-            0,
-            runtimeConfigs.current().challenges().enableEconomyRewards(),
-            runtimeConfigs.current().challenges().broadcast().enabled(),
-            10,
-            false,
-            0
-        );
+        this.defaults = ChallengeCatalogRuntimeAdapter.legacyDefaults(runtimeConfigs.current().challenges());
         ranks = new ChallengeCatalogRuntimeAdapter().adapt(catalog, runtimeConfigs.current().challenges());
         rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, challengeProgressRepository);
@@ -336,217 +296,10 @@ public class ChallengeLogic implements Listener {
         completionLogic.whenChallengesLoaded(playerInfo, onLoaded, onError);
     }
 
-    /**
-     * Try to complete a {@link Challenge} for the given {@link Player} where a minimal island level is a requirement.
-     *
-     * @param player    Player to complete the challenge for.
-     * @param challenge Challenge to complete.
-     * @return True if the challenge was completed succesfully, false otherwise.
-     */
-    private boolean tryCompleteIslandLevel(Player player, Challenge challenge) {
-        if (plugin.getIslandInfo(player).getLevel() >= challenge.getRequiredLevel()) {
-            giveReward(player, challenge);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean islandContains(Player player, List<BlockRequirement> itemStacks, int radius) {
-        final Location l = player.getLocation();
-        final int px = l.getBlockX();
-        final int py = l.getBlockY();
-        final int pz = l.getBlockZ();
-        World world = Objects.requireNonNull(l.getWorld());
-        BlockCollection blockCollection = new BlockCollection();
-        for (int x = px - radius; x <= px + radius; x++) {
-            for (int y = py - radius; y <= py + radius; y++) {
-                for (int z = pz - radius; z <= pz + radius; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    blockCollection.add(block);
-                }
-            }
-        }
-        Component diff = blockCollection.diff(itemStacks);
-        if (diff != null) {
-            send(player, diff);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Try to complete a {@link Challenge} on the island of the given {@link Player} where items or entities are
-     * required to be present on the island.
-     *
-     * @param player    Player to complete the challenge for.
-     * @param challenge Challenge to complete.
-     * @return True if the challenge was completed successfully, false otherwise.
-     */
-    private boolean tryCompleteOnIsland(Player player, Challenge challenge) {
-        List<BlockRequirement> requiredBlocks = challenge.getRequiredBlocks();
-        int radius = challenge.getRadius();
-        if (islandContains(player, requiredBlocks, radius) && hasEntitiesNear(player, challenge.getRequiredEntities(), radius)) {
-            giveReward(player, challenge);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean hasEntitiesNear(Player player, List<EntityMatch> requiredEntities, int radius) {
-        Map<EntityMatch, Integer> countMap = new LinkedHashMap<>();
-        Map<EntityType, Set<EntityMatch>> matchMap = new EnumMap<>(EntityType.class);
-        for (EntityMatch match : requiredEntities) {
-            countMap.put(match, match.getCount());
-            Set<EntityMatch> set = matchMap.get(match.getType());
-            if (set == null) {
-                set = new HashSet<>();
-            }
-            set.add(match);
-            matchMap.put(match.getType(), set);
-        }
-        List<Entity> nearbyEntities = player.getNearbyEntities(radius, radius, radius);
-        for (Entity entity : nearbyEntities) {
-            if (matchMap.containsKey(entity.getType())) {
-                for (Iterator<EntityMatch> it = matchMap.get(entity.getType()).iterator(); it.hasNext(); ) {
-                    EntityMatch match = it.next();
-                    if (match.matches(entity)) {
-                        int newCount = countMap.get(match) - 1;
-                        if (newCount <= 0) {
-                            countMap.remove(match);
-                            it.remove();
-                        } else {
-                            countMap.put(match, newCount);
-                        }
-                    }
-                }
-            }
-        }
-        if (!countMap.isEmpty()) {
-            sendTr(player, "Still missing the following entities:");
-            for (Map.Entry<EntityMatch, Integer> entry : countMap.entrySet()) {
-                send(player, parseMini(
-                    "<muted> - <count> x <entity>",
-                    number("count", entry.getValue(), ERROR),
-                    component("entity", entry.getKey().getDisplayName().applyFallbackStyle(PRIMARY))
-                ));
-            }
-        }
-        return countMap.isEmpty();
-    }
-
-    // TODO: This logic is duplicated in SignLogic.tryComplete. Refactor to a common method.
-    private boolean tryCompleteOnPlayer(@NotNull Player player, @NotNull Challenge challenge) {
-        PlayerInfo playerInfo = plugin.getPlayerInfo(player);
-        ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
-        if (completion != null) {
-            Component missingItems = Component.empty();
-            boolean hasAll = true;
-            Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
-            for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-                ItemStack requiredType = required.getKey();
-                int requiredAmount = required.getValue();
-                Component name = ItemStackUtil.getItemName(requiredType);
-                if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                    missingItems = missingItems.append(parseMini(" <count> <item>",
-                        number("count", requiredAmount - getCountOf(player.getInventory(), requiredType), ERROR),
-                        component("item", name, PRIMARY)));
-                    hasAll = false;
-                }
-            }
-            if (hasAll) {
-                if (challenge.isTakeItems()) {
-                    ItemStack[] itemsToRemove = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
-                    var leftovers = player.getInventory().removeItem(itemsToRemove);
-                    if (!leftovers.isEmpty()) {
-                        throw new IllegalStateException("Player " + player.getName() + " had items left over after completing challenge " + challenge.getId().id() + ": " + leftovers);
-                    }
-                }
-                giveReward(player, challenge);
-                return true;
-            } else {
-                sendTr(player, "You are still missing the following items:<items>", component("items", missingItems));
-            }
-        }
-        return false;
-    }
-
     public int getCountOf(Inventory inventory, ItemStack required) {
         return Arrays.stream(inventory.getContents())
             .filter(item -> item != null && item.isSimilar(required))
             .mapToInt(ItemStack::getAmount).sum();
-    }
-
-    private boolean giveReward(Player player, Challenge challenge) {
-        sendTr(player, "You completed the <challenge> challenge!",
-            Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
-        PlayerInfo playerInfo = plugin.getPlayerInfo(player);
-        Reward reward;
-        boolean isFirstCompletion = checkChallenge(playerInfo, challenge.getId()) == 0;
-        if (isFirstCompletion) {
-            reward = challenge.getReward();
-        } else {
-            reward = challenge.getRepeatReward();
-        }
-        player.giveExp(reward.getXpReward());
-        boolean wasBroadcast = false;
-        if (defaults.broadcastCompletion && isFirstCompletion) {
-            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(getBroadcastText()) +
-                trLegacy("<player> has completed the <challenge> challenge!",
-                    unparsed("player", player.getName(), PRIMARY),
-                    Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
-            wasBroadcast = true;
-        }
-        sendTr(player, "Item rewards: <items>", Placeholder.legacy("items", reward.getRewardText(), PRIMARY));
-        sendTr(player, "XP reward: <experience:'0'>", number("experience", reward.getXpReward(), PRIMARY));
-        if (defaults.enableEconomyPlugin) {
-            double rewBonus = 1;
-            Perk perk = perkLogic.getPerk(player);
-            rewBonus += perk.getRewBonus();
-            double currencyReward = reward.getCurrencyReward() * rewBonus;
-            double percentage = (rewBonus - 1.0);
-
-            hookManager.getEconomyHook().ifPresent((hook) -> {
-                hook.depositPlayer(player, currencyReward);
-
-                sendTr(player, "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>",
-                    number("amount", currencyReward),
-                    unparsed("currency", hook.getCurrenyName()),
-                    number("bonus", percentage));
-            });
-        }
-        if (reward.getPermissionReward() != null) {
-            List<String> perms = Arrays.asList(reward.getPermissionReward().trim().split(" "));
-            if (isIslandSharing()) {
-                // Give all members
-                IslandInfo islandInfo = playerInfo.getIslandInfo();
-                for (UUID memberUUID : islandInfo.getMemberUUIDs()) {
-                    if (memberUUID == null) {
-                        continue;
-                    }
-                    PlayerInfo pi = plugin.getPlayerInfo(memberUUID);
-                    if (pi != null) {
-                        pi.addPermissions(perms);
-                    }
-                }
-            } else {
-                // Give only player
-                playerInfo.addPermissions(perms);
-            }
-        }
-        HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(reward.getItemReward().toArray(new ItemStack[0]));
-        for (ItemStack item : leftOvers.values()) {
-            player.getWorld().dropItem(player.getLocation(), item);
-        }
-        if (!leftOvers.isEmpty()) {
-            sendErrorTr(player, "Your inventory is full. <muted>Items were dropped on the ground.");
-        }
-        for (String cmd : reward.getCommands()) {
-            String command = cmd.replaceAll("\\{challenge\\}", Matcher.quoteReplacement(challenge.getName()));
-            command = command.replaceAll("\\{challengeName\\}", Matcher.quoteReplacement(challenge.getDisplayName()));
-            plugin.execCommand(player, command, true);
-        }
-        playerInfo.completeChallenge(challenge, wasBroadcast);
-        return true;
     }
 
     private ItemStack getItemStack(ChallengeCompletion completion, Challenge challenge) {
@@ -755,10 +508,6 @@ public class ChallengeLogic implements Listener {
 
     public long flushCache() {
         return completionLogic.flushCache();
-    }
-
-    public boolean isIslandSharing() {
-        return true;
     }
 
     @EventHandler

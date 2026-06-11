@@ -12,6 +12,8 @@ import us.talabrek.ultimateskyblock.challenge.catalog.yaml.ChallengeCatalogParse
 import us.talabrek.ultimateskyblock.challenge.catalog.yaml.ChallengeCatalogYamlParser;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Singleton
@@ -35,7 +37,14 @@ public final class ChallengeCatalogLoader {
 
     public @NotNull ChallengeCatalog load() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(challengesPath.toFile());
-        ChallengeCatalogParseResult result = parser.parse(config);
+        ChallengeCatalogParseResult result;
+        try {
+            result = parser.parse(config);
+        } catch (RuntimeException e) {
+            // A broken challenges.yml must not abort plugin enable - run with no challenges instead.
+            logger.log(Level.SEVERE, "Unable to load " + challengesPath + "; challenges are disabled until the file is fixed", e);
+            return new ChallengeCatalog(List.of());
+        }
         for (ChallengeCatalogDiagnostic diagnostic : result.diagnostics()) {
             if (diagnostic.severity() == ChallengeCatalogDiagnostic.Severity.WARNING) {
                 logger.warning("Challenge catalog warning at " + diagnostic.path() + ": " + diagnostic.message());

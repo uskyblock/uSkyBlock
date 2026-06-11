@@ -29,7 +29,6 @@ public final class RuntimeConfigFactory {
     private static final Duration DEFAULT_INIT_DELAY = Duration.ofMillis(2500);
     private static final String DEFAULT_PLAYER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final String DEFAULT_ISLAND_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
-    private static final String DEFAULT_COMPLETION_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final Duration DEFAULT_ISLAND_SAVE_EVERY = Duration.ofSeconds(30);
     private static final Duration DEFAULT_PLAYER_SAVE_EVERY = Duration.ofSeconds(120);
     private static final String DEFAULT_OVERWORLD_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator";
@@ -202,7 +201,6 @@ public final class RuntimeConfigFactory {
                     root.boolWithDefault("options.advanced.manageSpawn"),
                 root.string("options.advanced.playerCache", DEFAULT_PLAYER_CACHE_SPEC),
                 root.string("options.advanced.islandCache", DEFAULT_ISLAND_CACHE_SPEC),
-                root.string("options.advanced.completionCache", DEFAULT_COMPLETION_CACHE_SPEC),
                 root.duration("options.advanced.island.saveEvery", DEFAULT_ISLAND_SAVE_EVERY),
                 root.duration("options.advanced.player.saveEvery", DEFAULT_PLAYER_SAVE_EVERY),
                 root.string("options.advanced.chunk-generator", DEFAULT_OVERWORLD_CHUNK_GENERATOR),

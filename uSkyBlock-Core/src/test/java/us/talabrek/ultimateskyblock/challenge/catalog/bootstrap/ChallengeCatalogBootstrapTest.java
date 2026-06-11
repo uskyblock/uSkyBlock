@@ -60,6 +60,37 @@ class ChallengeCatalogBootstrapTest {
     }
 
     @Test
+    void importsLegacyProgressionOperators() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        try (var reader = Objects.requireNonNull(
+            getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-default-challenges.yml"))) {
+            Files.copy(reader, tempDir.resolve("challenges.yml"));
+        }
+        Path challengesPath = tempDir.resolve("challenges.yml");
+        YamlConfiguration legacy = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        // '/' is the 3.x divide symbol; '^' was a multiply alias in the pre-1.20.6 plugin.
+        legacy.set("ranks.Tier1.challenges.cobblestonegenerator.requiredItems",
+            java.util.List.of("COBBLESTONE:64;/2", "DIRT:16;^2"));
+        legacy.save(challengesPath.toFile());
+
+        PluginConfig pluginConfig = new PluginConfig(new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())));
+        pluginConfig.reload();
+
+        new ChallengeCatalogBootstrap(tempDir, Logger.getAnonymousLogger(), pluginConfig).bootstrap();
+
+        YamlConfiguration challenges = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        var complete = challenges.getMapList("ranks.Tier1.challenges.cobblestonegenerator.complete");
+        @SuppressWarnings("unchecked")
+        var items = (java.util.List<java.util.Map<String, Object>>) complete.getFirst().get("items");
+        @SuppressWarnings("unchecked")
+        var divideProgression = (java.util.Map<String, Object>) items.get(0).get("progression");
+        @SuppressWarnings("unchecked")
+        var multiplyProgression = (java.util.Map<String, Object>) items.get(1).get("progression");
+        assertEquals("divide", divideProgression.get("operator"));
+        assertEquals("multiply", multiplyProgression.get("operator"));
+    }
+
+    @Test
     void preservesLegacyPlayerSharingFlagForProgressMigration() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         try (var reader = Objects.requireNonNull(

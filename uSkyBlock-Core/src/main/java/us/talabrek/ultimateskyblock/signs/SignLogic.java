@@ -209,11 +209,9 @@ public class SignLogic {
         ChallengeKey challengeId = challenge.getId();
         Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
         boolean isChallengeAvailable = false;
-        if (challengeLogic.isIslandSharing()) {
-            final ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
-            if (completion != null) {
-                requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
-            }
+        ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
+        if (completion != null) {
+            requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
         }
         IslandInfo islandInfo = plugin.getIslandInfo(islandName);
         if (islandInfo != null && islandInfo.getLeaderUniqueId() != null) {

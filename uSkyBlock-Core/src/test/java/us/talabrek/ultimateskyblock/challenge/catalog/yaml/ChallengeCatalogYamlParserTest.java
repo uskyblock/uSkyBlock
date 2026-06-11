@@ -261,6 +261,70 @@ class ChallengeCatalogYamlParserTest {
     }
 
     @Test
+    void flagsMixedCompletionRequirementKindsAsError() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  brewer:
+                    display:
+                      name: "<gray>Brewer"
+                      item: "minecraft:brewing_stand"
+                    complete:
+                      - type: inventory-items
+                        items:
+                          - item: "minecraft:potion"
+                            amount: 3
+                      - type: island-blocks
+                        radius: 10
+                        blocks:
+                          - block: "minecraft:brewing_stand"
+                            amount: 1
+            """));
+
+        assertTrue(result.diagnostics().stream().anyMatch(d ->
+            d.severity() == ChallengeCatalogDiagnostic.Severity.ERROR
+                && d.path().equals("$.ranks.starter.challenges.brewer.complete")));
+    }
+
+    @Test
+    void warnsWhenCompletedRankMinimumExceedsRankSize() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  alpha:
+                    display:
+                      name: "<gray>Alpha"
+                      item: "minecraft:stone"
+              adept:
+                display:
+                  name: "<blue>Adept"
+                lockedDisplayItem: "minecraft:barrier"
+                unlock:
+                  - type: completed-rank
+                    rank: starter
+                    minimumCompletedChallenges: 5
+                challenges:
+                  beta:
+                    display:
+                      name: "<gray>Beta"
+                      item: "minecraft:cobblestone"
+            """));
+
+        assertTrue(result.warnings().stream().anyMatch(w ->
+            w.contains("$.ranks.adept.unlock[0]") && w.contains("only has 1")));
+    }
+
+    @Test
     void rejectsMissingSchemaVersion() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () -> parser.parse(load("""
             ranks:

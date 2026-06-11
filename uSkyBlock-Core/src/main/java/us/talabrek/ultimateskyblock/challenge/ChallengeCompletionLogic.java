@@ -157,10 +157,6 @@ public class ChallengeCompletionLogic {
         return progressCache.clearLoaded();
     }
 
-    public boolean isIslandSharing() {
-        return true;
-    }
-
     private void storeSynchronously(@NotNull IslandKey islandKey, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
         repository.replace(islandKey, progress);
         progressCache.replaceLoaded(islandKey, progress);

@@ -13,7 +13,6 @@ public record ChallengeSlotView(
     RankDefinition rank,
     ChallengeDefinition challenge,
     ChallengeSlotState state,
-    ChallengeSlotDetailMode detailMode,
     ItemStackSpec icon,
     Component title,
     List<Component> lore,
@@ -26,7 +25,6 @@ public record ChallengeSlotView(
         rank = Objects.requireNonNull(rank, "rank");
         challenge = Objects.requireNonNull(challenge, "challenge");
         state = Objects.requireNonNull(state, "state");
-        detailMode = Objects.requireNonNull(detailMode, "detailMode");
         icon = Objects.requireNonNull(icon, "icon");
         title = Objects.requireNonNull(title, "title");
         lore = List.copyOf(Objects.requireNonNull(lore, "lore"));

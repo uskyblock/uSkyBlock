@@ -16,6 +16,7 @@ public record ChallengeCatalogDiagnostic(Severity severity, String path, String 
     }
 
     public enum Severity {
-        WARNING
+        WARNING,
+        ERROR
     }
 }

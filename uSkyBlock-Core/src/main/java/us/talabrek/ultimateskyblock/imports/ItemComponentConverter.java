@@ -190,7 +190,7 @@ public class ItemComponentConverter {
 
     private static final Pattern DISPLAY_PATTERN = Pattern.compile("(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?\\s*(?<meta>\\{.*})?");
     private static final Pattern REWARD_PATTERN = Pattern.compile("(\\{p=(?<prob>0\\.[0-9]+)})?(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?:(?<amount>[0-9]+)\\s*(?<meta>\\{.*})?");
-    public static final Pattern REQUIREMENT_PATTERN = Pattern.compile("(?<itemstack>(?<type>[0-9A-Z_]+)(:(?<subtype>[0-9]+))?(?<meta>\\{.*})?):(?<amount>[0-9]+)(;(?<op>[-+*^])(?<inc>[0-9]+))?");
+    public static final Pattern REQUIREMENT_PATTERN = Pattern.compile("(?<itemstack>(?<type>[0-9A-Z_]+)(:(?<subtype>[0-9]+))?(?<meta>\\{.*})?):(?<amount>[0-9]+)(;(?<op>[-+*^/])(?<inc>[0-9]+))?");
 
     private SpecificationCommentPair convertDisplayItem(String oldSpecification, String path) {
         var matcher = DISPLAY_PATTERN.matcher(oldSpecification);

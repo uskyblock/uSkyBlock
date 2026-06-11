@@ -371,11 +371,12 @@ public final class LegacyChallengeCatalogImporter {
                 amountText = remainder.substring(0, progressionSeparator);
                 String progression = remainder.substring(progressionSeparator + 1);
                 if (progression.length() >= 2) {
+                    // The pre-1.20.6 plugin treated '^' as a multiply alias; '/' is the 3.x divide symbol.
                     progressionOperator = switch (progression.charAt(0)) {
                         case '+' -> "add";
                         case '-' -> "subtract";
-                        case '*' -> "multiply";
-                        case '^' -> "divide";
+                        case '*', '^' -> "multiply";
+                        case '/' -> "divide";
                         default -> "none";
                     };
                     progressionIncrement = Double.parseDouble(progression.substring(1));

@@ -45,7 +45,6 @@ class ChallengeMenuViewAssemblerTest {
         assertFalse(row.rankUnlocked());
         assertEquals(2, row.slots().size());
         assertTrue(row.slots().stream().allMatch(slot -> slot.state() == ChallengeSlotState.RANK_LOCKED));
-        assertTrue(row.slots().stream().allMatch(slot -> slot.detailMode() == ChallengeSlotDetailMode.RANK_UNLOCK_DETAILS));
         assertTrue(row.slots().stream().allMatch(slot -> slot.icon().create().getType() == Material.BARRIER));
         assertTrue(row.slots().stream().noneMatch(ChallengeSlotView::clickable));
         assertFalse(row.slots().getFirst().lore().isEmpty());
@@ -67,7 +66,6 @@ class ChallengeMenuViewAssemblerTest {
 
         ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
         assertEquals(ChallengeSlotState.CHALLENGE_LOCKED, slot.state());
-        assertEquals(ChallengeSlotDetailMode.CHALLENGE_UNLOCK_DETAILS, slot.detailMode());
         assertEquals(Material.OBSIDIAN, slot.icon().create().getType());
         assertFalse(slot.clickable());
         assertFalse(slot.lore().isEmpty());
@@ -89,7 +87,6 @@ class ChallengeMenuViewAssemblerTest {
 
         ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
         assertEquals(ChallengeSlotState.CHALLENGE_UNLOCKED, slot.state());
-        assertEquals(ChallengeSlotDetailMode.CHALLENGE_DETAILS, slot.detailMode());
         assertEquals(Material.STONE, slot.icon().create().getType());
         assertTrue(slot.clickable());
         assertFalse(slot.lore().isEmpty());

@@ -2,20 +2,18 @@ package us.talabrek.ultimateskyblock.challenge.catalog;
 
 import java.util.Objects;
 
-public record TextSpec(String source, Format format) {
-    public enum Format {
-        MINI_MESSAGE
-    }
-
-    private static final TextSpec EMPTY = new TextSpec("", Format.MINI_MESSAGE);
+/**
+ * MiniMessage source text for catalog display fields.
+ */
+public record TextSpec(String source) {
+    private static final TextSpec EMPTY = new TextSpec("");
 
     public TextSpec {
         source = Objects.requireNonNull(source, "source");
-        format = Objects.requireNonNull(format, "format");
     }
 
     public static TextSpec miniMessage(String source) {
-        return new TextSpec(source, Format.MINI_MESSAGE);
+        return new TextSpec(source);
     }
 
     public static TextSpec empty() {
