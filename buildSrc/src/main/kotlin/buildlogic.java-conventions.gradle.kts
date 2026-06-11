@@ -42,6 +42,11 @@ repositories {
         url = uri("https://repo.onarandombox.com/content/groups/public/")
         content { includeGroupByRegex("""org\.mvplugins.*""") }
     }
+
+    maven {
+        url = uri("https://repo.helpch.at/releases/")
+        content { includeGroup("me.clip") }
+    }
 }
 
 group = "ovh.uskyblock"

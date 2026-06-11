@@ -20,6 +20,7 @@ dependencies {
     shade(project(":uSkyBlock-APIv2")) { isTransitive = false }
     shade(project(":uSkyBlock-Core")) { isTransitive = false }
     shade(project(":uSkyBlock-FAWE")) { isTransitive = false }
+    shade(project(":uSkyBlock-PAPI")) { isTransitive = false }
     shade(project(":bukkit-utils")) { isTransitive = false }
     shade(project(":po-utils")) { isTransitive = false }
 
