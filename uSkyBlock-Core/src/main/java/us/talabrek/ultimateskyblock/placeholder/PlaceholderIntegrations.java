@@ -33,6 +33,11 @@ public class PlaceholderIntegrations {
         this.logger = logger;
     }
 
+    /**
+     * Discovers and enables the available integrations. Must be called after all plugins
+     * have enabled (delayed enable) — integrations gate on isPluginEnabled, and uSkyBlock's
+     * STARTUP-phase onEnable runs before POSTWORLD plugins like PlaceholderAPI.
+     */
     public void startup(@NotNull uSkyBlock plugin) {
         for (PlaceholderIntegration integration : ServiceLoader.load(PlaceholderIntegration.class, getClass().getClassLoader())) {
             if (!plugin.getServer().getPluginManager().isPluginEnabled(integration.pluginName())) {

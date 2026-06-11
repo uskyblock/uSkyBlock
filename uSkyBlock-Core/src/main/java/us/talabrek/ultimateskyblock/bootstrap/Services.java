@@ -64,11 +64,11 @@ public class Services {
         schematicHandler.initialize(plugin);
         metricsManager.setup();
         autoIslandLevelRefresh.startup();
-        placeholderIntegrations.startup(plugin);
     }
 
     public void delayedEnable(uSkyBlock plugin) {
         hookManager.setupHooks();
+        placeholderIntegrations.startup(plugin);
 
         // TODO: make these non-static objects
         WorldGuardHandler.setupGlobal(plugin.getWorldManager().getWorld());
