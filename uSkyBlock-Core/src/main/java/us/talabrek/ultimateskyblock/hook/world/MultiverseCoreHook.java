@@ -60,6 +60,7 @@ public class MultiverseCoreHook extends WorldHook {
         }
 
         MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        ensureGeneratorRegistered(mvWorldManager, mvWorld);
         mvWorld.setScale(1.0);
 
         if (runtimeConfig.general().spawnSize() > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
@@ -98,6 +99,7 @@ public class MultiverseCoreHook extends WorldHook {
         }
 
         MultiverseWorld mvWorld = mvWorldManager.getWorld(world).get();
+        ensureGeneratorRegistered(mvWorldManager, mvWorld);
         mvWorld.setScale(1.0);
 
         if (runtimeConfig.general().spawnSize() > 0 && LocationUtil.isEmptyLocation(mvWorld.getSpawnLocation())) {
@@ -110,6 +112,30 @@ public class MultiverseCoreHook extends WorldHook {
 
         if (!runtimeConfig.extras().sendToSpawn()) {
             mvWorld.setRespawnWorld(plugin.getWorldManager().getWorld().getName());
+        }
+    }
+
+    /**
+     * Ensures the Multiverse registration for the given world has a generator configured.
+     * Multiverse re-applies the stored generator string every time it loads the world; without
+     * it, the world loads with the vanilla generator and new chunks get regular terrain.
+     * The repair takes effect the next time Multiverse loads the world.
+     *
+     * @param mvWorldManager Multiverse world manager used to persist the change.
+     * @param mvWorld        Multiverse world registration to check.
+     */
+    void ensureGeneratorRegistered(@NotNull WorldManager mvWorldManager, @NotNull MultiverseWorld mvWorld) {
+        String generator = mvWorld.getGenerator();
+        if (generator == null || generator.isEmpty()) {
+            logger.warning("Multiverse world '" + mvWorld.getName() + "' has no generator configured. "
+                + "Setting it to '" + GENERATOR_NAME + "' so it loads as a void world.");
+            mvWorld.getStringPropertyHandle().setProperty("generator", GENERATOR_NAME)
+                .flatMap(ignored -> mvWorldManager.saveWorldsConfig())
+                .onFailure(failure -> logger.severe("Failed to set Multiverse generator for '"
+                    + mvWorld.getName() + "': " + failure));
+        } else if (!generator.equals(GENERATOR_NAME)) {
+            logger.warning("Multiverse world '" + mvWorld.getName() + "' uses generator '" + generator
+                + "' instead of '" + GENERATOR_NAME + "'. Leaving it unchanged - make sure it is a void generator.");
         }
     }
 }

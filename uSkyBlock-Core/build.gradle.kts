@@ -29,6 +29,7 @@ dependencies {
     compileOnly(libs.net.milkbowl.vault.vaultapi)
     compileOnly(libs.org.spigotmc.spigot.api)
     compileOnly(libs.org.mvplugins.multiverse.core.multiverse.core)
+    testImplementation(libs.org.mvplugins.multiverse.core.multiverse.core)
     compileOnly(libs.org.mvplugins.multiverse.inventories.multiverse.inventories)
     compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
     testImplementation(libs.com.sk89q.worldedit.worldedit.bukkit)
