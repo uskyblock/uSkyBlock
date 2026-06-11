@@ -15,7 +15,7 @@ repositories {
     }
 
     maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
     maven {
@@ -32,6 +32,8 @@ repositories {
 
     maven {
         url = uri("https://repo.mvdw-software.com/content/groups/public/")
+        // Repo is frequently unreachable; scope it so outages only affect its own artifact.
+        content { includeGroup("be.maximvdw") }
     }
 
     maven {
@@ -44,6 +46,7 @@ repositories {
 
     maven {
         url = uri("https://repo.onarandombox.com/content/groups/public/")
+        content { includeGroupByRegex("""org\.mvplugins.*""") }
     }
 }
 
