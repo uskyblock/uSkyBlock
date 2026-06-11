@@ -267,11 +267,9 @@ public class WorldManager {
             String worldName = runtimeConfigs.current().general().worldName();
             skyBlockWorld = Bukkit.getWorld(worldName);
             ChunkGenerator skyGenerator = getOverworldGenerator();
-            ChunkGenerator worldGenerator = skyBlockWorld != null ? skyBlockWorld.getGenerator() : null;
             if (skyBlockWorld == null
                 || skyBlockWorld.canGenerateStructures()
-                || worldGenerator == null
-                || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
+                || !hasExpectedGenerator(skyBlockWorld, skyGenerator)) {
                 skyBlockWorld = WorldCreator
                     .name(worldName)
                     .type(WorldType.NORMAL)
@@ -280,6 +278,11 @@ public class WorldManager {
                     .generator(skyGenerator)
                     .createWorld();
                 skyBlockWorld.save();
+            }
+            if (!hasExpectedGenerator(skyBlockWorld, skyGenerator)) {
+                // createWorld() returns an already-loaded world unchanged, so the generator
+                // could not be swapped; tell the admin how to fix the setup.
+                warnWrongGenerator(skyBlockWorld);
             }
 
             scheduleOverworldSetup(skyBlockWorld);
@@ -305,11 +308,9 @@ public class WorldManager {
             String worldName = runtimeConfig.general().worldName();
             skyBlockNetherWorld = Bukkit.getWorld(worldName + "_nether");
             ChunkGenerator skyGenerator = getNetherGenerator();
-            ChunkGenerator worldGenerator = skyBlockNetherWorld != null ? skyBlockNetherWorld.getGenerator() : null;
             if (skyBlockNetherWorld == null
                 || skyBlockNetherWorld.canGenerateStructures()
-                || worldGenerator == null
-                || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
+                || !hasExpectedGenerator(skyBlockNetherWorld, skyGenerator)) {
                 skyBlockNetherWorld = WorldCreator
                     .name(worldName + "_nether")
                     .type(WorldType.NORMAL)
@@ -318,6 +319,11 @@ public class WorldManager {
                     .generator(skyGenerator)
                     .createWorld();
                 skyBlockNetherWorld.save();
+            }
+            if (!hasExpectedGenerator(skyBlockNetherWorld, skyGenerator)) {
+                // createWorld() returns an already-loaded world unchanged, so the generator
+                // could not be swapped; tell the admin how to fix the setup.
+                warnWrongGenerator(skyBlockNetherWorld);
             }
 
             scheduleNetherSetup(skyBlockNetherWorld);
