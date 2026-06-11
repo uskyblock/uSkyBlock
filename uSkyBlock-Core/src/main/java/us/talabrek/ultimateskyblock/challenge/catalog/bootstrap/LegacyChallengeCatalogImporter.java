@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.ChallengeCompletionLogic;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.imports.BlockRequirementConverter;
 import us.talabrek.ultimateskyblock.imports.ItemComponentConverter;
@@ -96,6 +97,9 @@ public final class LegacyChallengeCatalogImporter {
         pluginConfig.getYamlConfig().set("options.challenges.broadcast.prefix", Objects.toString(legacyConfig.getString("broadcastText"), ""));
         if ("player".equalsIgnoreCase(legacyConfig.getString("challengeSharing", "island"))) {
             logger.warning("Legacy challengeSharing=player is deprecated. Challenge progress remains island-owned after migration.");
+            // The one-shot SQLite progress migration needs this flag to interpret legacy per-player
+            // data correctly, and this import destroys the original challenges.yml that carried it.
+            pluginConfig.getYamlConfig().set(ChallengeCompletionLogic.LEGACY_PLAYER_SHARING_CONFIG_KEY, true);
         }
         try {
             pluginConfig.save();

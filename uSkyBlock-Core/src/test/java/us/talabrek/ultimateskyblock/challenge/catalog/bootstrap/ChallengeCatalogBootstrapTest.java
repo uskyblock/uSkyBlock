@@ -4,6 +4,7 @@ import dk.lockfuglsang.minecraft.file.FileUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import us.talabrek.ultimateskyblock.challenge.ChallengeCompletionLogic;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
@@ -54,5 +55,29 @@ class ChallengeCatalogBootstrapTest {
         }
 
         assertTrue(challenges.contains("ranks.Tier3.challenges.woolcollector.rewards.first"));
+        // Default sharing mode: no legacy-player-sharing flag is written.
+        assertFalse(pluginConfig.getYamlConfig().contains(ChallengeCompletionLogic.LEGACY_PLAYER_SHARING_CONFIG_KEY));
+    }
+
+    @Test
+    void preservesLegacyPlayerSharingFlagForProgressMigration() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        try (var reader = Objects.requireNonNull(
+            getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-default-challenges.yml"))) {
+            Files.copy(reader, tempDir.resolve("challenges.yml"));
+        }
+        Path challengesPath = tempDir.resolve("challenges.yml");
+        YamlConfiguration legacy = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        legacy.set("challengeSharing", "player");
+        legacy.save(challengesPath.toFile());
+
+        PluginConfig pluginConfig = new PluginConfig(new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())));
+        pluginConfig.reload();
+
+        new ChallengeCatalogBootstrap(tempDir, Logger.getAnonymousLogger(), pluginConfig).bootstrap();
+
+        // The import destroys the legacy challenges.yml that carried challengeSharing; the flag
+        // must survive in config.yml for the one-shot SQLite progress migration to consume.
+        assertTrue(pluginConfig.getYamlConfig().getBoolean(ChallengeCompletionLogic.LEGACY_PLAYER_SHARING_CONFIG_KEY));
     }
 }

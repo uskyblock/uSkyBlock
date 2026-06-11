@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Handles challenge progress access and migration. Hot completion flow is handled by {@link ChallengeExecutor}.
@@ -79,17 +80,30 @@ public class ChallengeCompletionLogic {
         if (islandName == null) {
             return new HashMap<>();
         }
-        IslandKey islandKey = IslandKey.fromIslandName(islandName);
-        return progressCache.getIfLoaded(islandKey)
-            .map(LoadedChallengeProgress::snapshot)
-            .orElseGet(() -> progressCache.loadSynchronously(islandKey));
+        return getLoadedOrLoad(IslandKey.fromIslandName(islandName));
     }
 
     public Map<ChallengeKey, ChallengeCompletion> getChallenges(@Nullable PlayerInfo playerInfo) {
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
             return new HashMap<>();
         }
-        IslandKey islandKey = getIslandKey(playerInfo);
+        return getLoadedOrLoad(getIslandKey(playerInfo));
+    }
+
+    private @NotNull Map<ChallengeKey, ChallengeCompletion> getLoadedOrLoad(@NotNull IslandKey islandKey) {
+        try {
+            return loadForWrite(islandKey);
+        } catch (RuntimeException e) {
+            plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + islandKey.value(), e);
+            return new HashMap<>();
+        }
+    }
+
+    /**
+     * Loads without degradation: mutation paths must fail loudly on a repository error rather
+     * than write a near-default map over the island's stored progress.
+     */
+    private @NotNull Map<ChallengeKey, ChallengeCompletion> loadForWrite(@NotNull IslandKey islandKey) {
         return progressCache.getIfLoaded(islandKey)
             .map(LoadedChallengeProgress::snapshot)
             .orElseGet(() -> progressCache.loadSynchronously(islandKey));
@@ -97,7 +111,7 @@ public class ChallengeCompletionLogic {
 
     public void completeChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey id) {
         IslandKey islandKey = getIslandKey(playerInfo);
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        Map<ChallengeKey, ChallengeCompletion> challenges = loadForWrite(islandKey);
         ChallengeCompletion completion = challenges.computeIfAbsent(id, key -> new ChallengeCompletion(key, null, 0, 0));
         if (!completion.isOnCooldown()) {
             Duration resetDuration = challengeLogic.getChallengeById(id).orElseThrow().getResetDuration();
@@ -113,7 +127,7 @@ public class ChallengeCompletionLogic {
 
     public void resetChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey id) {
         IslandKey islandKey = getIslandKey(playerInfo);
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
+        Map<ChallengeKey, ChallengeCompletion> challenges = loadForWrite(islandKey);
         ChallengeCompletion completion = challenges.computeIfAbsent(id, key -> new ChallengeCompletion(key, null, 0, 0));
         completion.setTimesCompleted(0);
         completion.setCooldownUntil(null);

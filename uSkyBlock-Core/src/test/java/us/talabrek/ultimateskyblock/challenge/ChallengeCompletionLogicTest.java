@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.island.IslandKey;
+import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -23,11 +24,14 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ChallengeCompletionLogicTest {
@@ -95,7 +99,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic, true), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -119,7 +123,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             assertFalse(repository.hasProgress(IslandKey.fromIslandName("0,0")));
             assertTrue(Files.exists(tempDir.resolve("completion/" + memberUuid + ".yml")));
@@ -141,7 +145,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic, true), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -164,7 +168,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -186,7 +190,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic, true), scheduler(), runtimeConfigs(), repository);
 
             // The old player-sharing runtime never read island-named files.
             assertFalse(repository.hasProgress(IslandKey.fromIslandName("0,0")));
@@ -205,7 +209,7 @@ public class ChallengeCompletionLogicTest {
             Logger.getAnonymousLogger()
         )) {
             ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
             Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
 
@@ -223,9 +227,28 @@ public class ChallengeCompletionLogicTest {
         when(repository.load(org.mockito.ArgumentMatchers.any())).thenThrow(new IllegalStateException("database unavailable"));
 
         ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-        ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+        ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
 
         assertTrue(logic.getIslandChallenges("0,0").isEmpty());
+    }
+
+    @Test
+    public void refusesToCompleteChallengeWhenRepositoryFails() {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        ChallengeProgressRepository repository = mock(ChallengeProgressRepository.class);
+        when(repository.getMetadata("legacy_yaml_import_completed")).thenReturn(Optional.of("true"));
+        when(repository.load(org.mockito.ArgumentMatchers.any())).thenThrow(new IllegalStateException("database unavailable"));
+        PlayerInfo playerInfo = mock(PlayerInfo.class);
+        when(playerInfo.getHasIsland()).thenReturn(true);
+        when(playerInfo.locationForParty()).thenReturn("0,0");
+
+        ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+        ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
+
+        // A failing load must abort the write path; degrading to defaults here would
+        // let storeSynchronously replace the island's stored progress.
+        assertThrows(IllegalStateException.class, () -> logic.completeChallenge(playerInfo, challengeKey));
+        verify(repository, never()).replace(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -263,10 +286,19 @@ public class ChallengeCompletionLogicTest {
     }
 
     private uSkyBlock plugin(ChallengeLogic challengeLogic) {
+        return plugin(challengeLogic, false);
+    }
+
+    private uSkyBlock plugin(ChallengeLogic challengeLogic, boolean legacyPlayerSharing) {
         uSkyBlock plugin = mock(uSkyBlock.class);
         when(plugin.getChallengeLogic()).thenReturn(challengeLogic);
         when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
         when(plugin.getDataFolder()).thenReturn(tempDir.toFile());
+        YamlConfiguration config = new YamlConfiguration();
+        if (legacyPlayerSharing) {
+            config.set(ChallengeCompletionLogic.LEGACY_PLAYER_SHARING_CONFIG_KEY, true);
+        }
+        when(plugin.getConfig()).thenReturn(config);
         return plugin;
     }
 
