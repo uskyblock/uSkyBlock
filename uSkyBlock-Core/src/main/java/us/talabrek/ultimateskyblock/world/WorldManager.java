@@ -41,6 +41,7 @@ public class WorldManager {
     private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Logger logger;
+    private final BukkitYmlGeneratorMapping bukkitYmlGeneratorMapping;
 
     public static volatile World skyBlockWorld;
     public static volatile World skyBlockNetherWorld;
@@ -62,6 +63,8 @@ public class WorldManager {
         this.runtimeConfigs = runtimeConfigs;
         this.logger = logger;
         this.scheduler = scheduler;
+        // bukkit.yml resolves against the process working directory, same as the server's own lookup
+        this.bukkitYmlGeneratorMapping = new BukkitYmlGeneratorMapping(Path.of("bukkit.yml"), logger);
     }
 
     /**
@@ -363,6 +366,7 @@ public class WorldManager {
 
     private void scheduleOverworldSetup(@NotNull World world) {
         scheduler.sync(() -> {
+            bukkitYmlGeneratorMapping.ensureMapping(world.getName());
             hookManager.getWorldHook().ifPresent(hook -> hook.registerOverworld(world));
             setupWorld(world, runtimeConfigs.current().island().height());
         });
@@ -370,6 +374,7 @@ public class WorldManager {
 
     private void scheduleNetherSetup(@NotNull World world) {
         scheduler.sync(() -> {
+            bukkitYmlGeneratorMapping.ensureMapping(world.getName());
             hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(world));
             hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), world));
             setupWorld(world, runtimeConfigs.current().island().height() / 2);
