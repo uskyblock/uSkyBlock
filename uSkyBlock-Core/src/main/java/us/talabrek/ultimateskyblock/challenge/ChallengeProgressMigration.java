@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.BackupFileUtil;
@@ -15,18 +16,30 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 final class ChallengeProgressMigration {
     private static final String LEGACY_IMPORT_COMPLETED_KEY = "legacy_yaml_import_completed";
+
     private record LegacyPlayerProgress(Path path, YamlConfiguration config) {}
+
+    private record IslandUuidIndex(Map<UUID, IslandKey> byLeader, Map<UUID, IslandKey> byMember) {}
+
+    private static final class MigrationCounters {
+        private final AtomicInteger unmapped = new AtomicInteger();
+        private final AtomicInteger residue = new AtomicInteger();
+    }
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
     private final ChallengeProgressRepository repository;
+    private final boolean legacyPlayerSharing;
     private final Path legacyStorageDir;
     private final Path playerStorageDir;
     private final Path islandStorageDir;
@@ -34,11 +47,13 @@ final class ChallengeProgressMigration {
     ChallengeProgressMigration(
         @NotNull uSkyBlock plugin,
         @NotNull ChallengeLogic challengeLogic,
-        @NotNull ChallengeProgressRepository repository
+        @NotNull ChallengeProgressRepository repository,
+        boolean legacyPlayerSharing
     ) {
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
         this.repository = repository;
+        this.legacyPlayerSharing = legacyPlayerSharing;
         this.legacyStorageDir = plugin.getDataFolder().toPath().resolve("completion");
         this.playerStorageDir = plugin.getDataFolder().toPath().resolve("players");
         this.islandStorageDir = plugin.getDataFolder().toPath().resolve("islands");
@@ -52,9 +67,10 @@ final class ChallengeProgressMigration {
         Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress = new HashMap<>();
         Map<IslandKey, List<Path>> migratedFiles = new HashMap<>();
         Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs = new HashMap<>();
+        MigrationCounters counters = new MigrationCounters();
 
-        migrateLegacyCompletionFiles(migratedProgress, migratedFiles);
-        migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs);
+        Set<IslandKey> islandsWithCompletionFiles = migrateLegacyCompletionFiles(migratedProgress, migratedFiles, counters);
+        migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs, islandsWithCompletionFiles, counters);
 
         int migratedIslands = 0;
         for (Map.Entry<IslandKey, Map<ChallengeKey, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
@@ -79,6 +95,15 @@ final class ChallengeProgressMigration {
         cleanupLegacyCompletionDir();
         repository.putMetadata(LEGACY_IMPORT_COMPLETED_KEY, "true");
         plugin.getLogger().info("Migrated legacy challenge progress for " + migratedIslands + " island(s) into SQLite storage.");
+        if (counters.unmapped.get() > 0) {
+            plugin.getLogger().warning("Skipped " + counters.unmapped.get()
+                + " legacy challenge progress source(s) that could not be mapped to an island."
+                + " The files were left in place; see the release notes for details.");
+        }
+        if (counters.residue.get() > 0) {
+            plugin.getLogger().info("Left " + counters.residue.get()
+                + " stale legacy challenge progress source(s) in place; the previous version did not use them either.");
+        }
     }
 
     private @NotNull Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
@@ -88,20 +113,21 @@ final class ChallengeProgressMigration {
         return challengeMap;
     }
 
-    private void migrateLegacyCompletionFiles(
+    private @NotNull Set<IslandKey> migrateLegacyCompletionFiles(
         @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
-        @NotNull Map<IslandKey, List<Path>> migratedFiles
+        @NotNull Map<IslandKey, List<Path>> migratedFiles,
+        @NotNull MigrationCounters counters
     ) {
+        Set<IslandKey> islandsWithCompletionFiles = new HashSet<>();
         if (!Files.isDirectory(legacyStorageDir)) {
-            return;
+            return islandsWithCompletionFiles;
         }
-        Map<UUID, IslandKey> islandsByLeader = loadIslandsByLeaderUuid();
+        IslandUuidIndex islandIndex = loadIslandUuidIndex();
         try (var files = Files.list(legacyStorageDir)) {
             files.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".yml"))
                 .forEach(path -> {
-                    IslandKey islandKey = resolveLegacyCompletionOwner(path, islandsByLeader);
+                    IslandKey islandKey = resolveLegacyCompletionOwner(path, islandIndex, counters);
                     if (islandKey == null) {
-                        plugin.getLogger().warning("Unable to resolve legacy challenge progress owner for " + path.getFileName() + ". Leaving file in place.");
                         return;
                     }
                     mergeProgress(
@@ -109,15 +135,19 @@ final class ChallengeProgressMigration {
                         loadLegacyFile(path.toFile())
                     );
                     migratedFiles.computeIfAbsent(islandKey, ignored -> new java.util.ArrayList<>()).add(path);
+                    islandsWithCompletionFiles.add(islandKey);
                 });
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Unable to scan legacy challenge progress directory " + legacyStorageDir, e);
+            throw new IllegalStateException("Unable to scan legacy challenge progress directory " + legacyStorageDir, e);
         }
+        return islandsWithCompletionFiles;
     }
 
     private void migrateLegacyPlayerFiles(
         @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
-        @NotNull Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs
+        @NotNull Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs,
+        @NotNull Set<IslandKey> islandsWithCompletionFiles,
+        @NotNull MigrationCounters counters
     ) {
         if (!Files.isDirectory(playerStorageDir)) {
             return;
@@ -130,9 +160,22 @@ final class ChallengeProgressMigration {
                     if (challengeSection == null || challengeSection.getKeys(false).isEmpty()) {
                         return;
                     }
+                    if (config.getInt("player.islandY", 0) == 0) {
+                        // The player has no island to attach the progress to; the previous version
+                        // never read this data either.
+                        counters.residue.incrementAndGet();
+                        return;
+                    }
                     IslandKey islandKey = resolvePlayerIslandKey(config);
                     if (islandKey == null) {
                         plugin.getLogger().warning("Unable to resolve island owner for legacy player challenge progress in " + path.getFileName() + ". Leaving data in place.");
+                        counters.unmapped.incrementAndGet();
+                        return;
+                    }
+                    if (islandsWithCompletionFiles.contains(islandKey)) {
+                        // The island already has migrated completion-file progress. The previous
+                        // version only fell back to the player-yml data when no completion file
+                        // existed, so importing it here would resurrect stale state.
                         return;
                     }
                     mergeProgress(
@@ -143,38 +186,60 @@ final class ChallengeProgressMigration {
                         .add(new LegacyPlayerProgress(path, config));
                 });
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Unable to scan player data directory " + playerStorageDir + " for legacy challenge progress", e);
+            throw new IllegalStateException("Unable to scan player data directory " + playerStorageDir + " for legacy challenge progress", e);
         }
     }
 
-    private @NotNull Map<UUID, IslandKey> loadIslandsByLeaderUuid() {
-        Map<UUID, IslandKey> islandsByLeader = new HashMap<>();
+    private @NotNull IslandUuidIndex loadIslandUuidIndex() {
+        Map<UUID, IslandKey> byLeader = new HashMap<>();
+        Map<UUID, IslandKey> byMember = new HashMap<>();
         if (!Files.isDirectory(islandStorageDir)) {
-            return islandsByLeader;
+            return new IslandUuidIndex(byLeader, byMember);
         }
         try (var files = Files.list(islandStorageDir)) {
             files.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".yml"))
                 .forEach(path -> {
-                    YamlConfiguration config = YamlConfiguration.loadConfiguration(path.toFile());
-                    String leaderUuid = config.getString("party.leader-uuid", null);
-                    if (leaderUuid == null || leaderUuid.isBlank()) {
+                    String fileName = path.getFileName().toString();
+                    IslandKey islandKey;
+                    try {
+                        islandKey = IslandKey.fromIslandName(fileName.substring(0, fileName.length() - 4));
+                    } catch (IllegalArgumentException ignored) {
+                        // Not an island data file.
                         return;
                     }
-                    try {
-                        String fileName = path.getFileName().toString();
-                        String islandName = fileName.substring(0, fileName.length() - 4);
-                        islandsByLeader.put(UUID.fromString(leaderUuid), IslandKey.fromIslandName(islandName));
-                    } catch (IllegalArgumentException ignored) {
-                        // Ignore invalid leader UUIDs or non-island-named files.
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(path.toFile());
+                    String leaderUuid = config.getString("party.leader-uuid", null);
+                    if (leaderUuid != null && !leaderUuid.isBlank()) {
+                        try {
+                            UUID uuid = UUID.fromString(leaderUuid);
+                            byLeader.put(uuid, islandKey);
+                            byMember.put(uuid, islandKey);
+                        } catch (IllegalArgumentException ignored) {
+                            // Ignore invalid leader UUIDs.
+                        }
+                    }
+                    ConfigurationSection membersSection = config.getConfigurationSection("party.members");
+                    if (membersSection != null) {
+                        for (String memberKey : membersSection.getKeys(false)) {
+                            try {
+                                byMember.put(UUID.fromString(memberKey), islandKey);
+                            } catch (IllegalArgumentException ignored) {
+                                // Ignore ancient name-keyed member entries.
+                            }
+                        }
                     }
                 });
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Unable to scan island data directory " + islandStorageDir, e);
+            throw new IllegalStateException("Unable to scan island data directory " + islandStorageDir, e);
         }
-        return islandsByLeader;
+        return new IslandUuidIndex(byLeader, byMember);
     }
 
-    private IslandKey resolveLegacyCompletionOwner(@NotNull Path legacyFile, @NotNull Map<UUID, IslandKey> islandsByLeader) {
+    private @Nullable IslandKey resolveLegacyCompletionOwner(
+        @NotNull Path legacyFile,
+        @NotNull IslandUuidIndex islandIndex,
+        @NotNull MigrationCounters counters
+    ) {
         String fileName = legacyFile.getFileName().toString();
         String basename = fileName.substring(0, fileName.length() - 4);
         try {
@@ -182,18 +247,33 @@ final class ChallengeProgressMigration {
         } catch (IllegalArgumentException ignored) {
             // fall through
         }
+        UUID uuid;
         try {
-            return islandsByLeader.get(UUID.fromString(basename));
+            uuid = UUID.fromString(basename);
         } catch (IllegalArgumentException ignored) {
+            plugin.getLogger().warning("Unable to resolve legacy challenge progress owner for " + fileName + ". Leaving file in place.");
+            counters.unmapped.incrementAndGet();
             return null;
         }
+        if (legacyPlayerSharing) {
+            // Per-player progress was live data: attach it to the island the player is a member of.
+            IslandKey islandKey = islandIndex.byMember().get(uuid);
+            if (islandKey == null) {
+                plugin.getLogger().warning("No island found for legacy per-player challenge progress " + fileName + ". Leaving file in place.");
+                counters.unmapped.incrementAndGet();
+            }
+            return islandKey;
+        }
+        // Under island sharing the previous version only promoted the leader's per-player file;
+        // other per-player files are stale data from a former challengeSharing=player setup.
+        IslandKey islandKey = islandIndex.byLeader().get(uuid);
+        if (islandKey == null) {
+            counters.residue.incrementAndGet();
+        }
+        return islandKey;
     }
 
-    private IslandKey resolvePlayerIslandKey(@NotNull YamlConfiguration config) {
-        int islandY = config.getInt("player.islandY", 0);
-        if (islandY == 0) {
-            return null;
-        }
+    private @Nullable IslandKey resolvePlayerIslandKey(@NotNull YamlConfiguration config) {
         int islandX = config.getInt("player.islandX", 0);
         int islandZ = config.getInt("player.islandZ", 0);
         try {
