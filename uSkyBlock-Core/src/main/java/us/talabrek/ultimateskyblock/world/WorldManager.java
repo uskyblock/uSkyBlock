@@ -30,6 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +41,7 @@ public class WorldManager {
     private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final Logger logger;
+    private final BukkitYmlGeneratorMapping bukkitYmlGeneratorMapping;
 
     public static volatile World skyBlockWorld;
     public static volatile World skyBlockNetherWorld;
@@ -61,6 +63,8 @@ public class WorldManager {
         this.runtimeConfigs = runtimeConfigs;
         this.logger = logger;
         this.scheduler = scheduler;
+        // bukkit.yml resolves against the process working directory, same as the server's own lookup
+        this.bukkitYmlGeneratorMapping = new BukkitYmlGeneratorMapping(Path.of("bukkit.yml"), logger);
     }
 
     /**
@@ -212,6 +216,50 @@ public class WorldManager {
     }
 
     /**
+     * Checks whether the given {@link World} has the expected {@link ChunkGenerator} attached.
+     * A world loaded by the server (default world) or another plugin without a generator keeps
+     * the vanilla generator; Bukkit's createWorld() cannot change it afterwards.
+     *
+     * @param world     World to check.
+     * @param expected  Generator the world should be using.
+     * @return True if the attached generator is of the expected class, false otherwise.
+     */
+    static boolean hasExpectedGenerator(@NotNull World world, @NotNull ChunkGenerator expected) {
+        ChunkGenerator actual = world.getGenerator();
+        return actual != null && actual.getClass().getName().equals(expected.getClass().getName());
+    }
+
+    /**
+     * Builds the admin-facing warning logged when a skyblock world runs without the void generator.
+     *
+     * @param worldName Name of the affected world.
+     * @return Warning message, one entry per log line.
+     */
+    static List<String> wrongGeneratorWarning(@NotNull String worldName) {
+        return List.of(
+            "============================================================",
+            "World '" + worldName + "' is loaded WITHOUT the uSkyBlock void",
+            "generator. New chunks will generate regular vanilla terrain!",
+            "This happens when the world is loaded before uSkyBlock can",
+            "attach its generator. uSkyBlock registers the generator in",
+            "bukkit.yml and Multiverse automatically - usually a RESTART",
+            "fixes this. If the warning persists after a restart:",
+            "- Ensure bukkit.yml contains (and is writable):",
+            "      worlds:",
+            "        " + worldName + ":",
+            "          generator: uSkyBlock",
+            "- Make sure no other plugin loads the world before",
+            "  uSkyBlock created it.",
+            "Already generated terrain can be removed with",
+            "'/usb chunk regen <x> <z> <radius>'.",
+            "============================================================");
+    }
+
+    private void warnWrongGenerator(@NotNull World world) {
+        wrongGeneratorWarning(world.getName()).forEach(logger::severe);
+    }
+
+    /**
      * Gets the skyblock island {@link World}. Creates and/or imports the world if necessary.
      *
      * @return Skyblock island world.
@@ -222,11 +270,9 @@ public class WorldManager {
             String worldName = runtimeConfigs.current().general().worldName();
             skyBlockWorld = Bukkit.getWorld(worldName);
             ChunkGenerator skyGenerator = getOverworldGenerator();
-            ChunkGenerator worldGenerator = skyBlockWorld != null ? skyBlockWorld.getGenerator() : null;
             if (skyBlockWorld == null
                 || skyBlockWorld.canGenerateStructures()
-                || worldGenerator == null
-                || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
+                || !hasExpectedGenerator(skyBlockWorld, skyGenerator)) {
                 skyBlockWorld = WorldCreator
                     .name(worldName)
                     .type(WorldType.NORMAL)
@@ -235,6 +281,11 @@ public class WorldManager {
                     .generator(skyGenerator)
                     .createWorld();
                 skyBlockWorld.save();
+            }
+            if (!hasExpectedGenerator(skyBlockWorld, skyGenerator)) {
+                // createWorld() returns an already-loaded world unchanged, so the generator
+                // could not be swapped; tell the admin how to fix the setup.
+                warnWrongGenerator(skyBlockWorld);
             }
 
             scheduleOverworldSetup(skyBlockWorld);
@@ -260,11 +311,9 @@ public class WorldManager {
             String worldName = runtimeConfig.general().worldName();
             skyBlockNetherWorld = Bukkit.getWorld(worldName + "_nether");
             ChunkGenerator skyGenerator = getNetherGenerator();
-            ChunkGenerator worldGenerator = skyBlockNetherWorld != null ? skyBlockNetherWorld.getGenerator() : null;
             if (skyBlockNetherWorld == null
                 || skyBlockNetherWorld.canGenerateStructures()
-                || worldGenerator == null
-                || !worldGenerator.getClass().getName().equals(skyGenerator.getClass().getName())) {
+                || !hasExpectedGenerator(skyBlockNetherWorld, skyGenerator)) {
                 skyBlockNetherWorld = WorldCreator
                     .name(worldName + "_nether")
                     .type(WorldType.NORMAL)
@@ -273,6 +322,11 @@ public class WorldManager {
                     .generator(skyGenerator)
                     .createWorld();
                 skyBlockNetherWorld.save();
+            }
+            if (!hasExpectedGenerator(skyBlockNetherWorld, skyGenerator)) {
+                // createWorld() returns an already-loaded world unchanged, so the generator
+                // could not be swapped; tell the admin how to fix the setup.
+                warnWrongGenerator(skyBlockNetherWorld);
             }
 
             scheduleNetherSetup(skyBlockNetherWorld);
@@ -312,6 +366,7 @@ public class WorldManager {
 
     private void scheduleOverworldSetup(@NotNull World world) {
         scheduler.sync(() -> {
+            bukkitYmlGeneratorMapping.ensureMapping(world.getName());
             hookManager.getWorldHook().ifPresent(hook -> hook.registerOverworld(world));
             setupWorld(world, runtimeConfigs.current().island().height());
         });
@@ -319,6 +374,7 @@ public class WorldManager {
 
     private void scheduleNetherSetup(@NotNull World world) {
         scheduler.sync(() -> {
+            bukkitYmlGeneratorMapping.ensureMapping(world.getName());
             hookManager.getWorldHook().ifPresent(hook -> hook.registerNetherworld(world));
             hookManager.getInventorySyncHook().ifPresent(hook -> hook.linkNetherInventory(getWorld(), world));
             setupWorld(world, runtimeConfigs.current().island().height() / 2);
