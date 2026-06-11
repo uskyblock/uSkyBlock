@@ -379,7 +379,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         if (restartConfig.clearInventory()) {
             player.getInventory().clear();
         }
-        if (restartConfig.clearPerms()) {
+        if (restartConfig.clearPerms() && playerInfo != null) {
             playerInfo.clearPerms(player);
         }
         if (restartConfig.clearArmor()) {
