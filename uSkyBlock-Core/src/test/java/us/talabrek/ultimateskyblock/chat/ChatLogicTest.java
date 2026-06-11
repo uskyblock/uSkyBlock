@@ -12,9 +12,10 @@ import us.talabrek.ultimateskyblock.api.event.IslandChatEvent;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
-import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Msg;
+import us.talabrek.ultimateskyblock.placeholder.PlaceholderService;
+import us.talabrek.ultimateskyblock.placeholder.PlaceholderSource;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -27,18 +28,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ChatLogicTest {
     private final AtomicReference<Component> delivered = new AtomicReference<>();
 
+    private PlaceholderSource placeholderSource;
+    private PlaceholderService placeholderService;
+
     @BeforeEach
     void setUp() {
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         Msg.configure((sender, message) -> delivered.set(message));
+        placeholderSource = mock(PlaceholderSource.class);
+        placeholderService = new PlaceholderService(placeholderSource);
     }
 
     @AfterEach
@@ -51,7 +55,6 @@ public class ChatLogicTest {
         uSkyBlock plugin = mock(uSkyBlock.class);
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         WorldManager worldManager = mock(WorldManager.class);
-        PlaceholderHandler placeholderHandler = mock(PlaceholderHandler.class);
         Player sender = mock(Player.class);
         Player recipient = mock(Player.class);
         IslandInfo islandInfo = mock(IslandInfo.class);
@@ -61,16 +64,40 @@ public class ChatLogicTest {
         when(plugin.getIslandInfo(sender)).thenReturn(islandInfo);
         when(islandInfo.getOnlineMembers()).thenReturn(List.of(sender, recipient));
         when(sender.getDisplayName()).thenReturn("§cMinoneer");
-        when(placeholderHandler.replacePlaceholders(eq(sender), anyString()))
-            .thenAnswer(invocation -> invocation.getArgument(1));
 
-        ChatLogic chatLogic = new ChatLogic(plugin, runtimeConfigs, worldManager, placeholderHandler);
+        ChatLogic chatLogic = new ChatLogic(plugin, runtimeConfigs, worldManager, placeholderService);
         chatLogic.sendMessage(sender, IslandChatEvent.Type.PARTY, "hello <green>tag");
 
         assertThat(I18nUtil.legacy(delivered.get()), is("§9PARTY §cMinoneer§r §f>§b hello <green>tag"));
     }
 
+    @Test
+    public void resolvesUsbPlaceholdersInChatFormat() {
+        uSkyBlock plugin = mock(uSkyBlock.class);
+        RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+        WorldManager worldManager = mock(WorldManager.class);
+        Player sender = mock(Player.class);
+        Player recipient = mock(Player.class);
+        IslandInfo islandInfo = mock(IslandInfo.class);
+
+        when(runtimeConfigs.current()).thenReturn(runtimeConfigWithPartyFormat(
+            "[<usb:island_level>] <display-name>: <message>"));
+        when(placeholderSource.resolve(sender, "island_level")).thenReturn(Component.text("42"));
+        when(plugin.getIslandInfo(sender)).thenReturn(islandInfo);
+        when(islandInfo.getOnlineMembers()).thenReturn(List.of(sender, recipient));
+        when(sender.getDisplayName()).thenReturn("§cMinoneer");
+
+        ChatLogic chatLogic = new ChatLogic(plugin, runtimeConfigs, worldManager, placeholderService);
+        chatLogic.sendMessage(sender, IslandChatEvent.Type.PARTY, "hi");
+
+        assertThat(Msg.plainText(delivered.get()), is("[42] Minoneer: hi"));
+    }
+
     private RuntimeConfig runtimeConfig() {
+        return runtimeConfigWithPartyFormat("<blue>PARTY </blue><display-name> <white>></white><aqua> <message>");
+    }
+
+    private RuntimeConfig runtimeConfigWithPartyFormat(String partyFormat) {
         return new RuntimeConfig(
             "en",
             Locale.ENGLISH,
@@ -99,7 +126,7 @@ public class ChatLogicTest {
             new RuntimeConfig.Restart(true, true, true, true, true, true, Duration.ofSeconds(1), List.of()),
             new RuntimeConfig.Advanced(
                 Duration.ofSeconds(10), true, 0.0d, true,
-                "maximumSize=1000", "maximumSize=1000", "maximumSize=1000", "maximumSize=1000",
+                "maximumSize=1000", "maximumSize=1000", "maximumSize=1000",
                 Duration.ofSeconds(30), Duration.ofSeconds(120), "bukkit", 4,
                 Duration.ofSeconds(30), 50.0d, Duration.ofMinutes(10), null,
                 new RuntimeConfig.PlayerDb("yaml", "maximumSize=1000", "maximumSize=1000", Duration.ofSeconds(10))
@@ -108,7 +135,7 @@ public class ChatLogicTest {
             new RuntimeConfig.AsyncWorldEdit(false, Duration.ofSeconds(2), Duration.ofSeconds(30)),
             new RuntimeConfig.Party(
                 Duration.ofMinutes(2),
-                "<blue>PARTY </blue><display-name> <white>></white><aqua> <message>",
+                partyFormat,
                 List.of(),
                 List.of(),
                 Map.of()
@@ -118,7 +145,6 @@ public class ChatLogicTest {
                 new RuntimeConfig.Guardians(true, 10, 0.1d),
                 new RuntimeConfig.Phantoms(true, false)
             ),
-            new RuntimeConfig.Placeholder(true, false, false),
             new RuntimeConfig.ToolMenu(true, new ItemStackSpec(new ItemStack(Material.STICK)), List.of()),
             new RuntimeConfig.Signs(true),
             new RuntimeConfig.WorldGuard(false, false),

@@ -10,10 +10,10 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.admin.DebugCommand;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderModule;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
+import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
@@ -30,7 +30,7 @@ public class Services {
     private final MetricsManager metricsManager;
     private final HookManager hookManager;
     private final AutoIslandLevelRefresh autoIslandLevelRefresh;
-    private final PlaceholderModule placeholderModule;
+    private final PlaceholderIntegrations placeholderIntegrations;
     private final SchematicHandler schematicHandler;
 
     @Inject
@@ -44,7 +44,7 @@ public class Services {
         @NotNull MetricsManager metricsManager,
         @NotNull HookManager hookManager,
         @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh,
-        @NotNull PlaceholderModule placeholderModule,
+        @NotNull PlaceholderIntegrations placeholderIntegrations,
         @NotNull SchematicHandler schematicHandler
         ) {
         this.animationHandler = animationHandler;
@@ -56,7 +56,7 @@ public class Services {
         this.metricsManager = metricsManager;
         this.hookManager = hookManager;
         this.autoIslandLevelRefresh = autoIslandLevelRefresh;
-        this.placeholderModule = placeholderModule;
+        this.placeholderIntegrations = placeholderIntegrations;
         this.schematicHandler = schematicHandler;
     }
 
@@ -64,11 +64,11 @@ public class Services {
         schematicHandler.initialize(plugin);
         metricsManager.setup();
         autoIslandLevelRefresh.startup();
-        placeholderModule.startup(plugin);
     }
 
     public void delayedEnable(uSkyBlock plugin) {
         hookManager.setupHooks();
+        placeholderIntegrations.enableIntegrations(plugin);
 
         // TODO: make these non-static objects
         WorldGuardHandler.setupGlobal(plugin.getWorldManager().getWorld());

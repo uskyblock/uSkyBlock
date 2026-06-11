@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.chat;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.kyori.adventure.text.Component;
 import us.talabrek.ultimateskyblock.message.Placeholder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.api.IslandInfo;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
-import us.talabrek.ultimateskyblock.handler.placeholder.PlaceholderHandler;
+import us.talabrek.ultimateskyblock.placeholder.PlaceholderService;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
@@ -22,13 +23,13 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
 import static us.talabrek.ultimateskyblock.api.event.IslandChatEvent.Type;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.send;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.message.Msg.sendLegacy;
 
 /**
  * The primary logic of uSkyBlocks chat-handling
@@ -44,7 +45,7 @@ public class ChatLogic {
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
     private final WorldManager worldManager;
-    private final PlaceholderHandler placeholderHandler;
+    private final PlaceholderService placeholderService;
     private final Map<UUID, Type> toggled = new HashMap<>();
 
     @Inject
@@ -52,12 +53,12 @@ public class ChatLogic {
         @NotNull uSkyBlock plugin,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull WorldManager worldManager,
-        @NotNull PlaceholderHandler placeholderHandler
+        @NotNull PlaceholderService placeholderService
     ) {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
         this.worldManager = worldManager;
-        this.placeholderHandler = placeholderHandler;
+        this.placeholderService = placeholderService;
     }
 
     /**
@@ -91,11 +92,10 @@ public class ChatLogic {
      * @param message Message to send.
      */
     public void sendMessage(Player sender, Type type, String message) {
-        String format = getFormat(type);
-        String msg = miniToLegacy(format,
+        Component formatted = parseMini(getFormat(type),
             Placeholder.legacy("display-name", sender.getDisplayName()),
-            Placeholder.unparsed("message", message));
-        msg = placeholderHandler.replacePlaceholders(sender, msg);
+            Placeholder.unparsed("message", message),
+            placeholderService.resolvers(sender));
         List<Player> onlineMembers = getRecipients(sender, type);
         if (onlineMembers.size() <= 1) {
             int randomIndex = ThreadLocalRandom.current().nextInt(ALONE_MESSAGE_KEYS.size());
@@ -103,7 +103,7 @@ public class ChatLogic {
                 component("reason", tr(ALONE_MESSAGE_KEYS.get(randomIndex), PRIMARY)));
         } else {
             for (Player member : onlineMembers) {
-                sendLegacy(member, msg);
+                send(member, formatted);
             }
         }
     }

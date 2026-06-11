@@ -15,7 +15,7 @@ repositories {
     }
 
     maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
     maven {
@@ -31,10 +31,6 @@ repositories {
     }
 
     maven {
-        url = uri("https://repo.mvdw-software.com/content/groups/public/")
-    }
-
-    maven {
         url = uri("https://www.uskyblock.ovh/maven/dependencies/")
     }
 
@@ -44,6 +40,12 @@ repositories {
 
     maven {
         url = uri("https://repo.onarandombox.com/content/groups/public/")
+        content { includeGroupByRegex("""org\.mvplugins.*""") }
+    }
+
+    maven {
+        url = uri("https://repo.helpch.at/releases/")
+        content { includeGroup("me.clip") }
     }
 }
 

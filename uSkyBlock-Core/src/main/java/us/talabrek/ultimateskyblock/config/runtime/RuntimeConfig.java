@@ -26,7 +26,6 @@ public record RuntimeConfig(
     @NotNull Party party,
     @NotNull PluginUpdates pluginUpdates,
     @NotNull Spawning spawning,
-    @NotNull Placeholder placeholder,
     @NotNull ToolMenu toolMenu,
     @NotNull Signs signs,
     @NotNull WorldGuard worldGuard,
@@ -179,7 +178,6 @@ public record RuntimeConfig(
         boolean manageSpawn,
         @NotNull String playerCacheSpec,
         @NotNull String islandCacheSpec,
-        @NotNull String placeholderCacheSpec,
         @NotNull String completionCacheSpec,
         @NotNull Duration islandSaveEvery,
         @NotNull Duration playerSaveEvery,
@@ -246,13 +244,6 @@ public record RuntimeConfig(
     public record Phantoms(
         boolean overworld,
         boolean nether
-    ) {
-    }
-
-    public record Placeholder(
-        boolean chatPlaceholder,
-        boolean serverCommandPlaceholder,
-        boolean mvdwPlaceholderApi
     ) {
     }
 

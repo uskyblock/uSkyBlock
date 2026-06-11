@@ -189,7 +189,6 @@ public class RuntimeConfigFactoryTest {
         assertEquals(Duration.ofSeconds(20), runtimeConfig.general().cooldownInfo());
         assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().playerCacheSpec());
         assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().islandCacheSpec());
-        assertEquals("maximumSize=200,expireAfterWrite=20s", runtimeConfig.advanced().placeholderCacheSpec());
         assertEquals("maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m", runtimeConfig.advanced().completionCacheSpec());
         assertEquals(Duration.ofSeconds(30), runtimeConfig.advanced().islandSaveEvery());
         assertEquals(Duration.ofSeconds(120), runtimeConfig.advanced().playerSaveEvery());

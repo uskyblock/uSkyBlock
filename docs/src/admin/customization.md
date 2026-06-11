@@ -78,6 +78,42 @@ For an overview of custom gameplay mechanics like guardian habitats, nether terr
 | `options.island.block-limits.hopper` | `50` | Per-island hopper limit |
 | `options.island.block-limits.spawner` | `10` | Per-island spawner limit |
 
+## Placeholders
+
+uSkyBlock exposes island data as placeholders and can render placeholders from other
+plugins in its chat formats.
+
+### For other plugins (PlaceholderAPI)
+
+If [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) is installed,
+uSkyBlock automatically registers the `uskyblock` expansion — no eCloud download needed.
+All placeholders take the viewing player's island as context:
+
+`%uskyblock_version%`, `%uskyblock_island_level%`, `%uskyblock_island_level_int%`,
+`%uskyblock_island_rank%`, `%uskyblock_island_leader%`, `%uskyblock_island_biome%`,
+`%uskyblock_island_schematic%`, `%uskyblock_island_partysize%`, `%uskyblock_island_partysize_max%`,
+`%uskyblock_island_members%`, `%uskyblock_island_trustees%`, `%uskyblock_island_bans%`,
+`%uskyblock_island_location%`, `%uskyblock_island_location_x%`, `%uskyblock_island_location_y%`,
+`%uskyblock_island_location_z%`, `%uskyblock_island_golems%`, `%uskyblock_island_copper_golems%`,
+`%uskyblock_island_monsters%`, `%uskyblock_island_animals%`, `%uskyblock_island_villagers%`,
+and the `_max` variants of the creature limits.
+
+Creature counts are sampled on the main server thread at most every 10 seconds; a cold
+async lookup (e.g. the first scoreboard poll) briefly shows `…`.
+
+### In uSkyBlock chat formats
+
+The island/party chat formats (`options.island.chat-format`, `options.party.chat-format`)
+are MiniMessage strings and support two placeholder tags in addition to `<display-name>`
+and `<message>`:
+
+- `<usb:KEY>` — uSkyBlock's own values, always available (same keys as above without the
+  `uskyblock_` prefix), e.g. `<usb:island_level>`.
+- `<papi:PLACEHOLDER>` — any PlaceholderAPI placeholder, when PlaceholderAPI is installed,
+  e.g. `<papi:luckperms_prefix>`. Without PlaceholderAPI the tag renders literally.
+
+Older configs using `{usb_island_level}` style tokens are migrated automatically.
+
 ## Visitor protection
 
 Islands are automatically protected. The `protection.visitors` section in `config.yml` controls what visitors can and cannot do.

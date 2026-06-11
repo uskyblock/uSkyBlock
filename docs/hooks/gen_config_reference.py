@@ -35,7 +35,6 @@ _TITLES = {
     'nether': 'Nether',
     'tool-menu': 'Tool Menu',
     'plugin-updates': 'Plugin Updates',
-    'placeholder': 'Placeholders',
 }
 
 # Sections to merge: key is absorbed into the section that follows it.

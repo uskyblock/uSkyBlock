@@ -123,7 +123,7 @@ options:
     # [true/false] Show island member names in the top 10 ranking.
     topTenShowMembers: true
 
-    # MiniMessage format used in /island chat. Use <display-name> and <message> placeholders.
+    # MiniMessage format used in /island chat. Supports <display-name>, <message>, and <usb:KEY> placeholder tags (see the admin docs).
     chat-format: '<blue>SKY </blue><display-name> <white>></white><light_purple> <message>'
 
     # [integer] Maximum number of island log entries to keep.
@@ -248,7 +248,7 @@ options:
     invite-timeout: 2m
 
     # MiniMessage format for /partytalk messages.
-    # Use <display-name> and <message> placeholders.
+    # Supports <display-name>, <message>, and <usb:KEY> placeholder tags (see the admin docs).
     chat-format: '<blue>PARTY </blue><display-name> <white>></white><aqua> <message>'
 
     # Commands to execute when a player joins an island party.
@@ -506,18 +506,5 @@ plugin-updates:
   # Update channel: RELEASE or STAGING.
   branch: RELEASE
 
-# Placeholder substitution
-# (e.g. usb_island_level, usb_island_rank, usb_island_leader, etc.).
-placeholder:
-
-  # [true/false] Hook into MVdWPlaceholderAPI for third-party placeholder support.
-  mvdwplaceholderapi: false
-
-  # [true/false] Enable native placeholder substitution in chat messages.
-  chatplaceholder: false
-
-  # [true/false] Enable native placeholder substitution in server commands.
-  servercommandplaceholder: false
-
 # DO NOT TOUCH THE FIELDS BELOW
-version: 123
+version: 124
