@@ -31,6 +31,8 @@ final class ChallengeProgressMigration {
 
     private record IslandUuidIndex(Map<UUID, IslandKey> byLeader, Map<UUID, IslandKey> byMember) {}
 
+    private record CompletionScanResult(Set<IslandKey> islands, Set<UUID> players) {}
+
     private static final class MigrationCounters {
         private final AtomicInteger unmapped = new AtomicInteger();
         private final AtomicInteger residue = new AtomicInteger();
@@ -69,8 +71,8 @@ final class ChallengeProgressMigration {
         Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs = new HashMap<>();
         MigrationCounters counters = new MigrationCounters();
 
-        Set<IslandKey> islandsWithCompletionFiles = migrateLegacyCompletionFiles(migratedProgress, migratedFiles, counters);
-        migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs, islandsWithCompletionFiles, counters);
+        CompletionScanResult completionFiles = migrateLegacyCompletionFiles(migratedProgress, migratedFiles, counters);
+        migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs, completionFiles, counters);
 
         int migratedIslands = 0;
         for (Map.Entry<IslandKey, Map<ChallengeKey, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
@@ -113,20 +115,20 @@ final class ChallengeProgressMigration {
         return challengeMap;
     }
 
-    private @NotNull Set<IslandKey> migrateLegacyCompletionFiles(
+    private @NotNull CompletionScanResult migrateLegacyCompletionFiles(
         @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
         @NotNull Map<IslandKey, List<Path>> migratedFiles,
         @NotNull MigrationCounters counters
     ) {
-        Set<IslandKey> islandsWithCompletionFiles = new HashSet<>();
+        CompletionScanResult result = new CompletionScanResult(new HashSet<>(), new HashSet<>());
         if (!Files.isDirectory(legacyStorageDir)) {
-            return islandsWithCompletionFiles;
+            return result;
         }
         IslandUuidIndex islandIndex = loadIslandUuidIndex();
         try (var files = Files.list(legacyStorageDir)) {
             files.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".yml"))
                 .forEach(path -> {
-                    IslandKey islandKey = resolveLegacyCompletionOwner(path, islandIndex, counters);
+                    IslandKey islandKey = resolveLegacyCompletionOwner(path, islandIndex, result, counters);
                     if (islandKey == null) {
                         return;
                     }
@@ -135,18 +137,18 @@ final class ChallengeProgressMigration {
                         loadLegacyFile(path.toFile())
                     );
                     migratedFiles.computeIfAbsent(islandKey, ignored -> new java.util.ArrayList<>()).add(path);
-                    islandsWithCompletionFiles.add(islandKey);
+                    result.islands().add(islandKey);
                 });
         } catch (Exception e) {
             throw new IllegalStateException("Unable to scan legacy challenge progress directory " + legacyStorageDir, e);
         }
-        return islandsWithCompletionFiles;
+        return result;
     }
 
     private void migrateLegacyPlayerFiles(
         @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
         @NotNull Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs,
-        @NotNull Set<IslandKey> islandsWithCompletionFiles,
+        @NotNull CompletionScanResult completionFiles,
         @NotNull MigrationCounters counters
     ) {
         if (!Files.isDirectory(playerStorageDir)) {
@@ -172,10 +174,11 @@ final class ChallengeProgressMigration {
                         counters.unmapped.incrementAndGet();
                         return;
                     }
-                    if (islandsWithCompletionFiles.contains(islandKey)) {
-                        // The island already has migrated completion-file progress. The previous
-                        // version only fell back to the player-yml data when no completion file
-                        // existed, so importing it here would resurrect stale state.
+                    if (isPlayerYmlSuperseded(path, islandKey, completionFiles)) {
+                        // The previous version only fell back to the player-yml data when no
+                        // completion file existed (per player under player sharing, per island
+                        // under island sharing), so importing it would resurrect stale state.
+                        counters.residue.incrementAndGet();
                         return;
                     }
                     mergeProgress(
@@ -238,12 +241,20 @@ final class ChallengeProgressMigration {
     private @Nullable IslandKey resolveLegacyCompletionOwner(
         @NotNull Path legacyFile,
         @NotNull IslandUuidIndex islandIndex,
+        @NotNull CompletionScanResult result,
         @NotNull MigrationCounters counters
     ) {
         String fileName = legacyFile.getFileName().toString();
         String basename = fileName.substring(0, fileName.length() - 4);
         try {
-            return IslandKey.fromIslandName(basename);
+            IslandKey islandKey = IslandKey.fromIslandName(basename);
+            if (legacyPlayerSharing) {
+                // Island-named files are stale data from a former challengeSharing=island
+                // setup; the player-sharing runtime never read them.
+                counters.residue.incrementAndGet();
+                return null;
+            }
+            return islandKey;
         } catch (IllegalArgumentException ignored) {
             // fall through
         }
@@ -256,21 +267,59 @@ final class ChallengeProgressMigration {
             return null;
         }
         if (legacyPlayerSharing) {
-            // Per-player progress was live data: attach it to the island the player is a member of.
-            IslandKey islandKey = islandIndex.byMember().get(uuid);
+            // Per-player progress was live data: attach it to the player's island. The player's
+            // own recorded island coordinates are authoritative (the source the previous version
+            // keyed progress by); island membership entries are the fallback for missing player files.
+            IslandKey islandKey = resolvePlayerModeOwner(uuid, islandIndex);
             if (islandKey == null) {
                 plugin.getLogger().warning("No island found for legacy per-player challenge progress " + fileName + ". Leaving file in place.");
                 counters.unmapped.incrementAndGet();
+                return null;
             }
+            result.players().add(uuid);
             return islandKey;
         }
-        // Under island sharing the previous version only promoted the leader's per-player file;
-        // other per-player files are stale data from a former challengeSharing=player setup.
+        // Under island sharing the previous version only promoted the leader's per-player file,
+        // and only when no island-named file existed; everything else is stale data from a
+        // former challengeSharing=player setup.
         IslandKey islandKey = islandIndex.byLeader().get(uuid);
-        if (islandKey == null) {
+        if (islandKey == null || Files.isRegularFile(legacyStorageDir.resolve(islandKey.value() + ".yml"))) {
             counters.residue.incrementAndGet();
+            return null;
         }
         return islandKey;
+    }
+
+    private @Nullable IslandKey resolvePlayerModeOwner(@NotNull UUID uuid, @NotNull IslandUuidIndex islandIndex) {
+        Path playerFile = playerStorageDir.resolve(uuid + ".yml");
+        if (Files.isRegularFile(playerFile)) {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(playerFile.toFile());
+            if (config.getInt("player.islandY", 0) != 0) {
+                IslandKey byCoordinates = resolvePlayerIslandKey(config);
+                if (byCoordinates != null) {
+                    return byCoordinates;
+                }
+            }
+        }
+        return islandIndex.byMember().get(uuid);
+    }
+
+    private boolean isPlayerYmlSuperseded(
+        @NotNull Path playerFile,
+        @NotNull IslandKey islandKey,
+        @NotNull CompletionScanResult completionFiles
+    ) {
+        if (!legacyPlayerSharing) {
+            return completionFiles.islands().contains(islandKey);
+        }
+        String fileName = playerFile.getFileName().toString();
+        try {
+            UUID playerUuid = UUID.fromString(fileName.substring(0, fileName.length() - 4));
+            return completionFiles.players().contains(playerUuid);
+        } catch (IllegalArgumentException ignored) {
+            // Name-keyed player files predate per-player completion files entirely.
+            return false;
+        }
     }
 
     private @Nullable IslandKey resolvePlayerIslandKey(@NotNull YamlConfiguration config) {

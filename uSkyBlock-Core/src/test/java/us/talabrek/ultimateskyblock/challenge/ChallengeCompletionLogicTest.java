@@ -126,6 +126,73 @@ public class ChallengeCompletionLogicTest {
     }
 
     @Test
+    public void importsPlayerYmlForMembersWithoutOwnCompletionFileUnderPlayerSharing() throws Exception {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        UUID leaderUuid = UUID.randomUUID();
+        UUID memberUuid = UUID.randomUUID();
+        writeLegacyIsland(leaderUuid, "0,0", memberUuid);
+        writeLegacyCompletionFile(leaderUuid + ".yml", challengeKey, 3, 0, 0L);
+        writeLegacyPlayerProgress(memberUuid + ".yml", 0, 64, 0, challengeKey, 9, 9, 1000L);
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+
+            Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
+
+            // The old player-sharing fallback was gated per player, so the member's
+            // player-yml progress merges even though the leader had a completion file.
+            assertEquals(9, loaded.get(challengeKey).getTimesCompleted());
+        }
+    }
+
+    @Test
+    public void ignoresLeaderCompletionFileWhenIslandFileExistsUnderIslandSharing() throws Exception {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        UUID leaderUuid = UUID.randomUUID();
+        writeLegacyIsland(leaderUuid, "0,0");
+        writeLegacyCompletionFile("0,0.yml", challengeKey, 3, 0, 0L);
+        writeLegacyCompletionFile(leaderUuid + ".yml", challengeKey, 9, 0, 0L);
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("island"), repository);
+
+            Map<ChallengeKey, ChallengeCompletion> loaded = logic.getIslandChallenges("0,0");
+
+            // The old loader only promoted the leader's file when no island file existed.
+            assertEquals(3, loaded.get(challengeKey).getTimesCompleted());
+            assertTrue(Files.exists(tempDir.resolve("completion/" + leaderUuid + ".yml")));
+        }
+    }
+
+    @Test
+    public void leavesIslandNamedCompletionFilesUnderPlayerSharing() throws Exception {
+        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        UUID leaderUuid = UUID.randomUUID();
+        writeLegacyIsland(leaderUuid, "0,0");
+        writeLegacyCompletionFile("0,0.yml", challengeKey, 3, 0, 0L);
+
+        try (ChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        )) {
+            ChallengeLogic challengeLogic = challengeLogic(challengeKey);
+            new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), runtimeConfigs(), challengeConfig("player"), repository);
+
+            // The old player-sharing runtime never read island-named files.
+            assertFalse(repository.hasProgress(IslandKey.fromIslandName("0,0")));
+            assertTrue(Files.exists(tempDir.resolve("completion/0,0.yml")));
+        }
+    }
+
+    @Test
     public void ignoresPlayerYmlChallengesWhenIslandHasCompletionFile() throws Exception {
         ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
         writeLegacyCompletionFile("0,0.yml", challengeKey, 3, 0, 0L);
