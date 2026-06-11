@@ -126,7 +126,7 @@ public class ChatLogicTest {
             new RuntimeConfig.Restart(true, true, true, true, true, true, Duration.ofSeconds(1), List.of()),
             new RuntimeConfig.Advanced(
                 Duration.ofSeconds(10), true, 0.0d, true,
-                "maximumSize=1000", "maximumSize=1000", "maximumSize=1000", "maximumSize=1000",
+                "maximumSize=1000", "maximumSize=1000", "maximumSize=1000",
                 Duration.ofSeconds(30), Duration.ofSeconds(120), "bukkit", 4,
                 Duration.ofSeconds(30), 50.0d, Duration.ofMinutes(10), null,
                 new RuntimeConfig.PlayerDb("yaml", "maximumSize=1000", "maximumSize=1000", Duration.ofSeconds(10))
@@ -145,7 +145,6 @@ public class ChatLogicTest {
                 new RuntimeConfig.Guardians(true, 10, 0.1d),
                 new RuntimeConfig.Phantoms(true, false)
             ),
-            new RuntimeConfig.Placeholder(true, false, false),
             new RuntimeConfig.ToolMenu(true, new ItemStackSpec(new ItemStack(Material.STICK)), List.of()),
             new RuntimeConfig.Signs(true),
             new RuntimeConfig.WorldGuard(false, false),

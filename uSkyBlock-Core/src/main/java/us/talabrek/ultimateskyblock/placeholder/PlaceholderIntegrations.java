@@ -7,6 +7,7 @@ import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,9 +35,14 @@ public class PlaceholderIntegrations {
 
     public void startup(@NotNull uSkyBlock plugin) {
         for (PlaceholderIntegration integration : ServiceLoader.load(PlaceholderIntegration.class, getClass().getClassLoader())) {
-            if (plugin.getServer().getPluginManager().isPluginEnabled(integration.pluginName())) {
+            if (!plugin.getServer().getPluginManager().isPluginEnabled(integration.pluginName())) {
+                continue;
+            }
+            try {
                 integration.enable(source, service, plugin);
                 logger.info("Enabled placeholder integration: " + integration.pluginName());
+            } catch (RuntimeException | LinkageError e) {
+                logger.log(Level.SEVERE, "Failed to enable placeholder integration " + integration.pluginName(), e);
             }
         }
     }

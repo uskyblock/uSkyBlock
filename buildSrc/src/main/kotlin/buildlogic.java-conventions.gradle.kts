@@ -31,12 +31,6 @@ repositories {
     }
 
     maven {
-        url = uri("https://repo.mvdw-software.com/content/groups/public/")
-        // Repo is frequently unreachable; scope it so outages only affect its own artifact.
-        content { includeGroup("be.maximvdw") }
-    }
-
-    maven {
         url = uri("https://www.uskyblock.ovh/maven/dependencies/")
     }
 

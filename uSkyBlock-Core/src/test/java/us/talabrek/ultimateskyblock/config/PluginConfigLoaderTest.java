@@ -449,6 +449,29 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void migratesV124PlaceholderTokensAndDropsSection() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(123);
+        config.set("options.island.chat-format", "&9SKY {usb_island_level} {usb_island_rank} <display-name> <message>");
+        config.set("options.party.chat-format", "[{usb_island_rank}] <display-name>: <message>");
+        config.set("placeholder.mvdwplaceholderapi", true);
+        config.set("options.advanced.placeholderCache", "maximumSize=5");
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals("&9SKY <usb:island_level> <usb:island_rank> <display-name> <message>",
+            migrated.getString("options.island.chat-format"));
+        assertEquals("[<usb:island_rank>] <display-name>: <message>",
+            migrated.getString("options.party.chat-format"));
+        assertFalse(migrated.contains("placeholder"));
+        assertFalse(migrated.contains("options.advanced.placeholderCache"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();

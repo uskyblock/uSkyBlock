@@ -35,9 +35,6 @@ dependencies {
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
     compileOnly(libs.com.google.guava.guava)
     compileOnly(libs.com.google.code.gson.gson.x1)
-    compileOnly(libs.be.maximvdw.mvdwplaceholderapi) {
-        exclude(group = "*", module = "*")
-    }
     compileOnly(libs.net.kyori.adventure.api)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
     compileOnly(libs.net.kyori.adventure.text.minimessage)
