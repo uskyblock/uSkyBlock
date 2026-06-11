@@ -60,6 +60,16 @@ public class PlaceholderServiceTest {
     }
 
     @Test
+    public void throwingSourceRendersTagLiterallyWithoutDegradingRestOfMessage() {
+        when(source.resolve(viewer, "version")).thenReturn(Component.text("1.0"));
+        when(source.resolve(viewer, "island_level")).thenThrow(new IllegalStateException("player data failed to load"));
+
+        Component result = parseMini("v<usb:version> Level <usb:island_level>!", service.resolvers(viewer));
+
+        assertThat(plainText(result), is("v1.0 Level <usb:island_level>!"));
+    }
+
+    @Test
     public void usbTagWithoutArgumentRendersLiterally() {
         Component result = parseMini("Hi <usb>!", service.resolvers(viewer));
 

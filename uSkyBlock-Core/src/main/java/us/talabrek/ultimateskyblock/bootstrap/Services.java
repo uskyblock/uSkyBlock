@@ -68,7 +68,7 @@ public class Services {
 
     public void delayedEnable(uSkyBlock plugin) {
         hookManager.setupHooks();
-        placeholderIntegrations.startup(plugin);
+        placeholderIntegrations.enableIntegrations(plugin);
 
         // TODO: make these non-static objects
         WorldGuardHandler.setupGlobal(plugin.getWorldManager().getWorld());

@@ -36,7 +36,7 @@ public class PlaceholderIntegrationsTest {
         uSkyBlock plugin = mock(uSkyBlock.class, RETURNS_DEEP_STUBS);
         when(plugin.getServer().getPluginManager().isPluginEnabled("RecordingTestPlugin")).thenReturn(true);
 
-        integrations.startup(plugin);
+        integrations.enableIntegrations(plugin);
 
         assertEquals(List.of(plugin), RecordingIntegration.enabledWith);
         assertTrue(logHandler.messages().stream()
@@ -48,7 +48,7 @@ public class PlaceholderIntegrationsTest {
         uSkyBlock plugin = mock(uSkyBlock.class, RETURNS_DEEP_STUBS);
         when(plugin.getServer().getPluginManager().isPluginEnabled("RecordingTestPlugin")).thenReturn(false);
 
-        integrations.startup(plugin);
+        integrations.enableIntegrations(plugin);
 
         assertEquals(List.of(), RecordingIntegration.enabledWith);
     }

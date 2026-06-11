@@ -52,9 +52,14 @@ public class UskyblockExpansion extends PlaceholderExpansion {
     @Override
     public @Nullable String onRequest(@Nullable OfflinePlayer player, @NotNull String params) {
         if (player == null) {
-            return "";
+            return null;
         }
-        Component value = source.resolve(player, params);
+        Component value;
+        try {
+            value = source.resolve(player, params);
+        } catch (RuntimeException e) {
+            return null; // corrupt/unloadable data: PAPI convention keeps the token visible
+        }
         return value != null ? LegacyComponentSerializer.legacySection().serialize(value) : null;
     }
 }

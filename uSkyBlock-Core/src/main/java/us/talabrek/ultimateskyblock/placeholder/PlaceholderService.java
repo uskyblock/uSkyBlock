@@ -55,7 +55,12 @@ public class PlaceholderService {
                 return Tag.selfClosingInserting(Component.text("<usb>"));
             }
             String key = args.pop().value();
-            Component value = source.resolve(viewer, key);
+            Component value;
+            try {
+                value = source.resolve(viewer, key);
+            } catch (RuntimeException e) {
+                value = null; // corrupt/unloadable data: fall through to the literal tag
+            }
             if (value == null) {
                 // Unknown key: render the tag literally so misconfiguration stays visible
                 // without degrading the rest of the message.

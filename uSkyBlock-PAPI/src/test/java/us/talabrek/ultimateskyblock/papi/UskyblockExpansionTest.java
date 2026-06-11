@@ -57,7 +57,14 @@ public class UskyblockExpansionTest {
     }
 
     @Test
-    public void nullPlayerReturnsEmpty() {
-        assertThat(expansion.onRequest(null, "island_level"), is(""));
+    public void throwingSourceReturnsNull() {
+        when(source.resolve(player, "island_level")).thenThrow(new IllegalStateException("player data failed to load"));
+
+        assertNull(expansion.onRequest(player, "island_level"));
+    }
+
+    @Test
+    public void nullPlayerReturnsNull() {
+        assertNull(expansion.onRequest(null, "island_level"));
     }
 }
