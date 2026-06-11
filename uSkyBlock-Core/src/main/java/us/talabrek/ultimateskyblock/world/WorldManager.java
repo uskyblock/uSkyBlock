@@ -30,6 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -209,6 +210,50 @@ public class WorldManager {
             && runtimeConfigs.current().nether().enabled()
             ? getNetherGenerator()
             : getOverworldGenerator();
+    }
+
+    /**
+     * Checks whether the given {@link World} has the expected {@link ChunkGenerator} attached.
+     * A world loaded by the server (default world) or another plugin without a generator keeps
+     * the vanilla generator; Bukkit's createWorld() cannot change it afterwards.
+     *
+     * @param world     World to check.
+     * @param expected  Generator the world should be using.
+     * @return True if the attached generator is of the expected class, false otherwise.
+     */
+    static boolean hasExpectedGenerator(@NotNull World world, @NotNull ChunkGenerator expected) {
+        ChunkGenerator actual = world.getGenerator();
+        return actual != null && actual.getClass().getName().equals(expected.getClass().getName());
+    }
+
+    /**
+     * Builds the admin-facing warning logged when a skyblock world runs without the void generator.
+     *
+     * @param worldName Name of the affected world.
+     * @return Warning message, one entry per log line.
+     */
+    static List<String> wrongGeneratorWarning(@NotNull String worldName) {
+        return List.of(
+            "============================================================",
+            "World '" + worldName + "' is loaded WITHOUT the uSkyBlock void",
+            "generator. New chunks will generate regular vanilla terrain!",
+            "This happens when the world is loaded before uSkyBlock can",
+            "attach its generator. uSkyBlock registers the generator in",
+            "bukkit.yml and Multiverse automatically - usually a RESTART",
+            "fixes this. If the warning persists after a restart:",
+            "- Ensure bukkit.yml contains (and is writable):",
+            "      worlds:",
+            "        " + worldName + ":",
+            "          generator: uSkyBlock",
+            "- Make sure no other plugin loads the world before",
+            "  uSkyBlock created it.",
+            "Already generated terrain can be removed with",
+            "'/usb chunk regen <x> <z> <radius>'.",
+            "============================================================");
+    }
+
+    private void warnWrongGenerator(@NotNull World world) {
+        wrongGeneratorWarning(world.getName()).forEach(logger::severe);
     }
 
     /**
