@@ -48,12 +48,16 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
             statement.setString(1, islandKey.value());
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
-                    Long cooldownUntil = rs.getObject("cooldown_until_ms", Long.class);
+                    // sqlite-jdbc throws "Bad value for type Long" from getObject(..., Long.class) on NULL,
+                    // so NULL cooldowns must be read via getLong + wasNull.
+                    long cooldownMillis = rs.getLong("cooldown_until_ms");
+                    Instant cooldownUntil = rs.wasNull() ? null : Instant.ofEpochMilli(cooldownMillis);
+                    ChallengeKey challengeKey = ChallengeKey.of(rs.getString("challenge_id"));
                     progress.put(
-                        ChallengeKey.of(rs.getString("challenge_id")),
+                        challengeKey,
                         new ChallengeCompletion(
-                            ChallengeKey.of(rs.getString("challenge_id")),
-                            cooldownUntil != null ? Instant.ofEpochMilli(cooldownUntil) : null,
+                            challengeKey,
+                            cooldownUntil,
                             rs.getInt("times_completed"),
                             rs.getInt("times_completed_in_window")
                         )
@@ -108,7 +112,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
                 throw e;
             }
         } catch (SQLException e) {
-            logger.log(Level.FINE, "Unable to store challenge progress for " + islandKey.value(), e);
+            logger.log(Level.WARNING, "Unable to store challenge progress for " + islandKey.value(), e);
             throw new IllegalStateException("Unable to store challenge progress for " + islandKey.value(), e);
         }
     }
@@ -169,7 +173,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
             statement.execute("PRAGMA busy_timeout = " + BUSY_TIMEOUT_MS);
             statement.execute("PRAGMA foreign_keys = ON");
         } catch (SQLException e) {
-            logger.log(Level.FINE, "Unable to apply SQLite connection pragmas", e);
+            logger.log(Level.WARNING, "Unable to apply SQLite connection pragmas", e);
         }
         return connection;
     }
