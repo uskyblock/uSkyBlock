@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -11,8 +12,6 @@ import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ public class ChallengeCompletionLogic {
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
     private final ChallengeProgressRepository repository;
-    private final Path legacyStorageDir;
     private final boolean legacyPlayerSharingConfigured;
     private final LoadingCache<IslandKey, Map<ChallengeKey, ChallengeCompletion>> completionCache;
 
@@ -41,7 +39,6 @@ public class ChallengeCompletionLogic {
         this.challengeLogic = challengeLogic;
         this.plugin = plugin;
         this.repository = repository;
-        this.legacyStorageDir = plugin.getDataFolder().toPath().resolve("completion");
         legacyPlayerSharingConfigured = config.getString("challengeSharing", "island").equalsIgnoreCase("player");
         if (legacyPlayerSharingConfigured) {
             plugin.getLogger().warning("Legacy challengeSharing=player is deprecated. Challenge progress will be migrated to island-owned database records.");
@@ -60,10 +57,7 @@ public class ChallengeCompletionLogic {
                        }
                    }
             );
-        if (!Files.exists(legacyStorageDir)) {
-            legacyStorageDir.toFile().mkdirs();
-        }
-        new ChallengeProgressMigration(plugin, challengeLogic, repository).migrateLegacyDataEagerly();
+        new ChallengeProgressMigration(plugin, challengeLogic, repository, legacyPlayerSharingConfigured).migrateLegacyDataEagerly();
     }
 
     private Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
@@ -154,7 +148,7 @@ public class ChallengeCompletionLogic {
     private @NotNull Map<ChallengeKey, ChallengeCompletion> getCachedChallenges(@NotNull IslandKey islandKey) {
         try {
             return completionCache.get(islandKey);
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | UncheckedExecutionException e) {
             plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + islandKey.value(), e);
             return new HashMap<>();
         }

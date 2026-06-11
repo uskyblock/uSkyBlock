@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SqliteChallengeProgressRepositoryTest {
@@ -37,6 +38,28 @@ public class SqliteChallengeProgressRepositoryTest {
         assertEquals(2, loaded.get(challengeKey).getTimesCompleted());
         assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
         assertEquals(Instant.ofEpochMilli(1234L), loaded.get(challengeKey).cooldownUntil());
+    }
+
+    @Test
+    public void storesAndLoadsProgressWithoutCooldown() {
+        SqliteChallengeProgressRepository repository = new SqliteChallengeProgressRepository(
+            tempDir.resolve("data").resolve("challenge-progress.db"),
+            Logger.getAnonymousLogger()
+        );
+        IslandKey islandKey = IslandKey.fromIslandName("64,-32");
+        ChallengeKey challengeKey = ChallengeKey.of("oncechallenge");
+
+        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 4, 2));
+
+        repository.replace(islandKey, progress);
+
+        Map<ChallengeKey, ChallengeCompletion> loaded = repository.load(islandKey);
+        assertTrue(repository.hasProgress(islandKey));
+        assertNull(loaded.get(challengeKey).cooldownUntil());
+        assertEquals(4, loaded.get(challengeKey).getTimesCompleted());
+        // Without an active cooldown the window counter collapses to 1 (completed) by design.
+        assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
     }
 
     @Test

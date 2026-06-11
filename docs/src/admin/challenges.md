@@ -22,7 +22,7 @@ These control overall challenge behavior:
 | Key | What it does |
 |---|---|
 | `allowChallenges` | Enable or disable the challenge system entirely |
-| `challengeSharing` | Track progress per `island` or per `player` |
+| `challengeSharing` | Ignored since 3.5.0 — progress is always tracked per island. Leave the key in place for the first start after upgrading: the importer reads it to interpret your legacy progress data correctly |
 | `broadcastCompletion` | Announce first completions server-wide |
 | `requirePreviousRank` | Require earlier ranks before later ranks unlock |
 | `rankLeeway` | How many challenges in a rank can be skipped by default |
@@ -32,6 +32,10 @@ These control overall challenge behavior:
 | `resetChallengesOnCreate` | Reset progress when an island is created or restarted |
 
 Some of these act as defaults and can be overridden per rank or per challenge, especially `rankLeeway`, `defaultResetInHours`, `radius`, and `repeatLimit`.
+
+## Progress storage
+
+Since 3.5.0, challenge progress is stored per island in an SQLite database at `plugins/uSkyBlock/data/challenge-progress.db` — include it in your backups. Legacy YAML progress (the `completion/` folder and old per-player data) is imported automatically on the first start after upgrading; imported files are moved to `backup/completion/`. The importer reads your previous `challengeSharing` setting to interpret the legacy data (per-player progress from `challengeSharing: player` setups is merged into each player's island), so do not remove that key before the first start on 3.5.0. Files that cannot be mapped to an island are left in place and summarized in the server log.
 
 The file also defines default GUI colors and locked-menu items.
 

@@ -809,8 +809,9 @@ public class ChallengeLogic implements Listener {
         List<String> permissions = new ArrayList<>();
         for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : completions.entrySet()) {
             if (entry.getValue().getTimesCompleted() > 0) {
-                Challenge challenge = getChallengeById(entry.getKey()).orElseThrow();
-                if (challenge.getReward().getPermissionReward() != null) {
+                // Stored progress may reference challenges removed from challenges.yml.
+                Challenge challenge = getChallengeById(entry.getKey()).orElse(null);
+                if (challenge != null && challenge.getReward().getPermissionReward() != null) {
                     permissions.addAll(Arrays.asList(challenge.getReward().getPermissionReward().split(" ")));
                 }
             }
