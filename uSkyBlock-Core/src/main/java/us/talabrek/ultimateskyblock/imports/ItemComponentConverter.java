@@ -195,7 +195,10 @@ public class ItemComponentConverter {
     private SpecificationCommentPair convertDisplayItem(String oldSpecification, String path) {
         var matcher = DISPLAY_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid display item specification at path " + path);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid display item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
         var itemType = fixMaterial(matcher.group("id"));
         var type = Material.matchMaterial(itemType);
@@ -231,7 +234,10 @@ public class ItemComponentConverter {
     private SpecificationCommentPair convertItemReward(String oldSpecification, String path) {
         var matcher = REWARD_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid reward item specification at path " + path);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid reward item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
         var probability = matcher.group("prob");
 
@@ -279,7 +285,10 @@ public class ItemComponentConverter {
     private SpecificationCommentPair convertItemRequirement(String oldSpecification, String path) {
         var matcher = REQUIREMENT_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid requirement item specification at path " + path + ": " + oldSpecification);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid requirement item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
 
         var itemType = fixMaterial(matcher.group("type"));

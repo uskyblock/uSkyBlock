@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.PluginConfig;
 
 import java.nio.file.Path;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ChallengeCatalogBootstrap {
@@ -25,7 +26,14 @@ public final class ChallengeCatalogBootstrap {
         Path challengesPath = pluginDataDir.resolve(ChallengeCatalogLoader.CHALLENGES_FILE_NAME);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(challengesPath.toFile());
         if (importer.needsImport(config)) {
-            importer.importLegacyFile(challengesPath);
+            try {
+                importer.importLegacyFile(challengesPath);
+            } catch (RuntimeException e) {
+                // Best effort: leave the legacy file untouched so nothing is lost; the catalog
+                // loader runs with an empty catalog until the file is fixed or removed.
+                logger.log(Level.SEVERE, "Unable to import the legacy challenges.yml; the file was left untouched"
+                    + " and challenges are disabled until it is fixed or removed.", e);
+            }
         }
     }
 }

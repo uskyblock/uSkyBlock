@@ -91,6 +91,78 @@ class ChallengeCatalogBootstrapTest {
     }
 
     @Test
+    void importsMessyCustomFilesBestEffort() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        try (var reader = Objects.requireNonNull(
+            getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-default-challenges.yml"))) {
+            Files.copy(reader, tempDir.resolve("challenges.yml"));
+        }
+        Path challengesPath = tempDir.resolve("challenges.yml");
+        YamlConfiguration legacy = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        // A challenge with a broken reward amount and a rank without challenges must not
+        // abort the import of everything else.
+        legacy.set("ranks.Tier1.challenges.brokenchallenge.name", "Broken");
+        legacy.set("ranks.Tier1.challenges.brokenchallenge.type", "onPlayer");
+        legacy.set("ranks.Tier1.challenges.brokenchallenge.requiredItems", java.util.List.of("COBBLESTONE:notanumber"));
+        legacy.set("ranks.Tier1.challenges.brokenchallenge.reward.items", java.util.List.of("LEATHER:alsobroken"));
+        legacy.set("ranks.ZBrokenRank.name", "No challenges here");
+        legacy.save(challengesPath.toFile());
+
+        PluginConfig pluginConfig = new PluginConfig(new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())));
+        pluginConfig.reload();
+
+        new ChallengeCatalogBootstrap(tempDir, Logger.getAnonymousLogger(), pluginConfig).bootstrap();
+
+        YamlConfiguration challenges = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        assertEquals(1, challenges.getInt("schemaVersion"));
+        assertTrue(challenges.contains("ranks.Tier1.challenges.cobblestonegenerator"));
+        assertFalse(challenges.contains("ranks.Tier1.challenges.brokenchallenge"));
+        assertFalse(challenges.contains("ranks.ZBrokenRank"));
+    }
+
+    @Test
+    void translatesBiomePermissionRewardsToBiomeRewards() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        try (var reader = Objects.requireNonNull(
+            getClass().getResourceAsStream("/us/talabrek/ultimateskyblock/imports/old-default-challenges.yml"))) {
+            Files.copy(reader, tempDir.resolve("challenges.yml"));
+        }
+        Path challengesPath = tempDir.resolve("challenges.yml");
+        YamlConfiguration legacy = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        legacy.set("ranks.Tier1.challenges.cobblestonegenerator.reward.permission", "usb.biome.Jungle usb.extra.perk");
+        legacy.save(challengesPath.toFile());
+
+        PluginConfig pluginConfig = new PluginConfig(new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())));
+        pluginConfig.reload();
+
+        new ChallengeCatalogBootstrap(tempDir, Logger.getAnonymousLogger(), pluginConfig).bootstrap();
+
+        YamlConfiguration challenges = YamlConfiguration.loadConfiguration(challengesPath.toFile());
+        var rewards = challenges.getMapList("ranks.Tier1.challenges.cobblestonegenerator.rewards.first");
+        var biomeReward = rewards.stream().filter(reward -> "biome".equals(reward.get("type"))).findFirst().orElseThrow();
+        var permissionReward = rewards.stream().filter(reward -> "permission".equals(reward.get("type"))).findFirst().orElseThrow();
+        assertEquals(java.util.List.of("jungle"), biomeReward.get("biomes"));
+        assertEquals(java.util.List.of("usb.extra.perk"), permissionReward.get("permissions"));
+    }
+
+    @Test
+    void leavesWhollyUnreadableFilesUntouched() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        // No ranks section at all: nothing can be imported.
+        Files.writeString(tempDir.resolve("challenges.yml"), "allowChallenges: true\n");
+
+        PluginConfig pluginConfig = new PluginConfig(new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())));
+        pluginConfig.reload();
+
+        new ChallengeCatalogBootstrap(tempDir, Logger.getAnonymousLogger(), pluginConfig).bootstrap();
+
+        // The file is untouched (no schemaVersion written) so nothing is lost.
+        YamlConfiguration challenges = YamlConfiguration.loadConfiguration(tempDir.resolve("challenges.yml").toFile());
+        assertFalse(challenges.contains("schemaVersion"));
+        assertTrue(challenges.getBoolean("allowChallenges"));
+    }
+
+    @Test
     void preservesLegacyPlayerSharingFlagForProgressMigration() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         try (var reader = Objects.requireNonNull(

@@ -125,9 +125,16 @@ public final class LegacyChallengeCatalogImporter {
         String rootLockedDisplayItem = legacyConfig.getString("lockedDisplayItem", DEFAULT_LOCKED_DISPLAY_ITEM);
 
         ConfigurationSection outputRanks = newConfig.createSection("ranks");
+        ImportStats stats = new ImportStats();
         @Nullable LegacyRankState previousRank = null;
         for (String rankKey : ranksSection.getKeys(false)) {
-            ConfigurationSection legacyRank = requireSection(ranksSection, rankKey, "ranks");
+            ConfigurationSection legacyRank = ranksSection.getConfigurationSection(rankKey);
+            if (legacyRank == null || legacyRank.getConfigurationSection("challenges") == null) {
+                // Best effort for hand-edited files: keep going and report what was dropped.
+                logger.warning("Skipping malformed legacy rank 'ranks." + rankKey + "': missing challenges section.");
+                stats.skippedRanks++;
+                continue;
+            }
             ConfigurationSection outputRank = outputRanks.createSection(rankKey);
             ConfigurationSection display = outputRank.createSection("display");
             display.set("name", convertLegacyText(legacyRank.getString("name", rankKey)));
@@ -167,19 +174,33 @@ public final class LegacyChallengeCatalogImporter {
             ConfigurationSection legacyChallenges = requireSection(legacyRank, "challenges", "ranks." + rankKey);
             int activeChallengeCount = 0;
             for (String challengeKey : legacyChallenges.getKeys(false)) {
-                ConfigurationSection legacyChallenge = requireSection(legacyChallenges, challengeKey, "ranks." + rankKey + ".challenges");
-                if (legacyChallenge.getBoolean("disabled", false)) {
+                ConfigurationSection legacyChallenge = legacyChallenges.getConfigurationSection(challengeKey);
+                if (legacyChallenge == null || legacyChallenge.getBoolean("disabled", false)) {
                     continue;
                 }
-                activeChallengeCount++;
                 ConfigurationSection outputChallenge = outputChallenges.createSection(challengeKey);
-                mapChallenge(legacyConfig, legacyRank, legacyChallenge, challengeKey, outputChallenge, defaultResetInHours, defaultRadius,
-                    defaultRepeatLimit, rootLockedDisplayItem);
+                try {
+                    mapChallenge(legacyConfig, legacyRank, legacyChallenge, challengeKey, outputChallenge, defaultResetInHours, defaultRadius,
+                        defaultRepeatLimit, rootLockedDisplayItem);
+                    activeChallengeCount++;
+                    stats.importedChallenges++;
+                } catch (RuntimeException e) {
+                    // Best effort for hand-edited files: drop the one challenge, keep the rest.
+                    outputChallenges.set(challengeKey, null);
+                    stats.skippedChallenges++;
+                    logger.warning("Skipping malformed legacy challenge 'ranks." + rankKey + ".challenges." + challengeKey
+                        + "': " + e.getMessage());
+                }
             }
 
+            stats.importedRanks++;
             previousRank = new LegacyRankState(rankKey, activeChallengeCount);
         }
 
+        logger.info("Imported " + stats.importedChallenges + " challenges across " + stats.importedRanks + " ranks"
+            + (stats.skippedChallenges > 0 || stats.skippedRanks > 0
+            ? "; skipped " + stats.skippedChallenges + " challenges and " + stats.skippedRanks + " ranks (see warnings above)"
+            : "") + ".");
         return newConfig;
     }
 
@@ -289,7 +310,28 @@ public final class LegacyChallengeCatalogImporter {
         }
         String permission = rewardSection.getString("permission");
         if (permission != null && !permission.isBlank()) {
-            rewards.add(Map.of("type", "permission", "permissions", List.of(permission)));
+            List<String> permissions = new ArrayList<>();
+            List<String> biomes = new ArrayList<>();
+            for (String node : permission.trim().split("\\s+")) {
+                String normalized = node.toLowerCase(Locale.ROOT);
+                if (normalized.startsWith("usb.biome.") && !normalized.endsWith(".*") && !normalized.equals("usb.biome.*")) {
+                    String biome = normalized.substring("usb.biome.".length());
+                    biomes.add(biome);
+                    logger.info("Translated legacy permission reward '" + node + "' into the island biome reward '" + biome + "'.");
+                } else {
+                    if (normalized.startsWith("usb.biome.")) {
+                        logger.warning("Legacy wildcard biome reward '" + node + "' cannot be translated automatically;"
+                            + " it is kept as a permission reward. List the intended biomes in a 'biome' reward instead.");
+                    }
+                    permissions.add(node);
+                }
+            }
+            if (!permissions.isEmpty()) {
+                rewards.add(Map.of("type", "permission", "permissions", permissions));
+            }
+            if (!biomes.isEmpty()) {
+                rewards.add(Map.of("type", "biome", "biomes", biomes));
+            }
         }
         if (rewardSection.getInt("currency", 0) > 0) {
             rewards.add(Map.of("type", "economy", "amount", rewardSection.getInt("currency")));
@@ -491,5 +533,12 @@ public final class LegacyChallengeCatalogImporter {
     }
 
     private record LegacyRankState(String rankKey, int challengeCount) {
+    }
+
+    private static final class ImportStats {
+        private int importedRanks;
+        private int importedChallenges;
+        private int skippedRanks;
+        private int skippedChallenges;
     }
 }
