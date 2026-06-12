@@ -395,69 +395,6 @@ ranks:
           xp: 20
           commands:
             - op:effect give {party} regeneration
-      adeptbuilder:
-        name: '&aAdept Builder'
-        description: Reach island level 50.
-        type: islandLevel
-        requiredLevel: 50
-        displayItem: iron_ore
-        offset: -1
-        reward:
-          text: 10 obsidian, 2 diamonds, 5 emeralds
-          items:
-            - obsidian:10
-            - emerald:5
-            - diamond:2
-          currency: 100
-          xp: 100
-      expertbuilder:
-        name: '&eExpert Builder'
-        description: Reach island level 100.
-        type: islandLevel
-        requiredLevel: 100
-        displayItem: gold_ore
-        offset: -1
-        reward:
-          text: 16 dirt, 16 sand, 3 diamonds, 5 emeralds
-          items:
-            - dirt:16
-            - sand:16
-            - emerald:5
-            - diamond:3
-          currency: 250
-          xp: 250
-      masterbuilder:
-        name: '&cMaster Builder'
-        description: Reach island level 250.
-        type: islandLevel
-        requiredLevel: 250
-        displayItem: diamond_ore
-        offset: -1
-        reward:
-          text: 32 dirt, 32 sand, 4 diamonds, 5 emeralds
-          items:
-            - dirt:32
-            - sand:32
-            - emerald:5
-            - diamond:4
-          currency: 500
-          xp: 500
-      skylord:
-        name: '&4Sky Lord'
-        description: Reach island level 500.
-        type: islandLevel
-        requiredLevel: 500
-        displayItem: emerald_ore
-        offset: -1
-        reward:
-          text: 64 dirt, 64 sand, 5 diamond, 5 emeralds
-          items:
-            - dirt:64
-            - sand:64
-            - diamond:5
-            - emerald:5
-          currency: 1000
-          xp: 1000
   Tier2:
     name: '&aAdept'
     displayItem: lime_terracotta
@@ -1789,6 +1726,83 @@ ranks:
             - gold_ore:1
           currency: 40
           xp: 40
+
+  Builders:
+    name: '&bBuilders'
+    displayItem: bricks
+    resetInHours: 20
+    requires:
+      rankLeeway: 99
+      challenges:
+        - novicebuilder
+    challenges:
+      adeptbuilder:
+        requiredChallenges:
+          - novicebuilder
+        name: '&aAdept Builder'
+        description: Reach island level 50.
+        type: islandLevel
+        requiredLevel: 50
+        displayItem: iron_ore
+        reward:
+          text: 10 obsidian, 2 diamonds, 5 emeralds
+          items:
+            - obsidian:10
+            - emerald:5
+            - diamond:2
+          currency: 100
+          xp: 100
+      expertbuilder:
+        requiredChallenges:
+          - adeptbuilder
+        name: '&eExpert Builder'
+        description: Reach island level 100.
+        type: islandLevel
+        requiredLevel: 100
+        displayItem: gold_ore
+        reward:
+          text: 16 dirt, 16 sand, 3 diamonds, 5 emeralds
+          items:
+            - dirt:16
+            - sand:16
+            - emerald:5
+            - diamond:3
+          currency: 250
+          xp: 250
+      masterbuilder:
+        requiredChallenges:
+          - expertbuilder
+        name: '&cMaster Builder'
+        description: Reach island level 250.
+        type: islandLevel
+        requiredLevel: 250
+        displayItem: diamond_ore
+        reward:
+          text: 32 dirt, 32 sand, 4 diamonds, 5 emeralds
+          items:
+            - dirt:32
+            - sand:32
+            - emerald:5
+            - diamond:4
+          currency: 500
+          xp: 500
+      skylord:
+        requiredChallenges:
+          - masterbuilder
+        name: '&4Sky Lord'
+        description: Reach island level 500.
+        type: islandLevel
+        requiredLevel: 500
+        displayItem: emerald_ore
+        reward:
+          text: 64 dirt, 64 sand, 5 diamond, 5 emeralds
+          items:
+            - dirt:64
+            - sand:64
+            - diamond:5
+            - emerald:5
+          currency: 1000
+          xp: 1000
 
 # DO NOT CHANGE THE VERSION! You will break the conversion and unexpected things will happen!
 version: 107

@@ -274,6 +274,29 @@ public class ChallengeExecutorTest {
     }
 
     @Test
+    public void adminCompleteAllBatchesIntoOneLockAndPersist() {
+        ChallengeExecutor executor = executor(simpleChallenge());
+        ChallengeKey secondId = ChallengeKey.of("secondchallenge");
+        // Build before stubbing: construction touches the mocked server's item factory.
+        Optional<ChallengeDefinition> second = Optional.of(simpleChallenge());
+        when(challengeLogic.getDefinitionById(secondId)).thenReturn(second);
+        progressCache.replaceLoaded(ISLAND, new HashMap<>());
+        Runnable onSuccess = mock(Runnable.class);
+
+        // A per-challenge loop would deadlock on the island's in-flight lock within one tick.
+        executor.adminCompleteAll(playerInfo, List.of(CHALLENGE_ID, secondId), onSuccess, error -> {
+            throw new AssertionError(error);
+        });
+        drainScheduledTasks();
+
+        verify(repository, org.mockito.Mockito.times(1)).replace(eq(ISLAND), any());
+        verify(onSuccess).run();
+        LoadedChallengeProgress loaded = progressCache.getIfLoaded(ISLAND).orElseThrow();
+        assertEquals(1, loaded.snapshot().get(CHALLENGE_ID).getTimesCompleted());
+        assertEquals(1, loaded.snapshot().get(secondId).getTimesCompleted());
+    }
+
+    @Test
     public void adminResetReportsErrorAndLocksWhenPersistFails() {
         ChallengeExecutor executor = executor(simpleChallenge());
         Map<ChallengeKey, ChallengeCompletion> existing = new HashMap<>();

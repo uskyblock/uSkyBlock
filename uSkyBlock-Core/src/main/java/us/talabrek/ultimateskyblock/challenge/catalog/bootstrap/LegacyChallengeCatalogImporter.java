@@ -272,31 +272,45 @@ public final class LegacyChallengeCatalogImporter {
                     completion.add(Map.of("type", "inventory-items", "items", mapItemRequirements(requiredItems)));
                 }
             }
-            case "onisland" -> {
-                List<String> requiredBlocks = legacyChallenge.getStringList("requiredBlocks");
-                if (!requiredBlocks.isEmpty()) {
-                    completion.add(Map.of(
-                        "type", "island-blocks",
-                        "radius", legacyChallenge.getInt("radius", defaultRadius),
-                        "blocks", mapBlockRequirements(requiredBlocks)
-                    ));
-                }
-                List<String> requiredEntities = legacyChallenge.getStringList("requiredEntities");
-                if (!requiredEntities.isEmpty()) {
-                    completion.add(Map.of(
-                        "type", "entity-presence",
-                        "radius", legacyChallenge.getInt("radius", defaultRadius),
-                        "entities", mapEntityRequirements(requiredEntities)
-                    ));
-                }
-            }
+            case "onisland" -> mapIslandRequirements(legacyChallenge, defaultRadius, completion);
             case "islandlevel" -> completion.add(Map.of(
                 "type", "island-level",
                 "minimum", legacyChallenge.getDouble("requiredLevel", 0d)
             ));
-            default -> logger.warning("Unknown legacy challenge type '" + challengeType + "'; skipping completion requirements.");
+            default -> {
+                // The legacy parser treated any unrecognized type as onIsland; importing the
+                // challenge requirement-free would hand out its rewards for a single click.
+                logger.warning("Unknown legacy challenge type '" + challengeType + "'; treating it as 'onIsland' like the legacy parser.");
+                mapIslandRequirements(legacyChallenge, defaultRadius, completion);
+                if (completion.isEmpty()) {
+                    throw new IllegalArgumentException("Unknown legacy challenge type '" + challengeType + "' without island requirements");
+                }
+            }
         }
         return completion;
+    }
+
+    private void mapIslandRequirements(
+        @NotNull ConfigurationSection legacyChallenge,
+        int defaultRadius,
+        @NotNull List<Map<String, Object>> completion
+    ) {
+        List<String> requiredBlocks = legacyChallenge.getStringList("requiredBlocks");
+        if (!requiredBlocks.isEmpty()) {
+            completion.add(Map.of(
+                "type", "island-blocks",
+                "radius", legacyChallenge.getInt("radius", defaultRadius),
+                "blocks", mapBlockRequirements(requiredBlocks)
+            ));
+        }
+        List<String> requiredEntities = legacyChallenge.getStringList("requiredEntities");
+        if (!requiredEntities.isEmpty()) {
+            completion.add(Map.of(
+                "type", "entity-presence",
+                "radius", legacyChallenge.getInt("radius", defaultRadius),
+                "entities", mapEntityRequirements(requiredEntities)
+            ));
+        }
     }
 
     private @NotNull List<Map<String, Object>> mapRewards(@Nullable ConfigurationSection rewardSection) {

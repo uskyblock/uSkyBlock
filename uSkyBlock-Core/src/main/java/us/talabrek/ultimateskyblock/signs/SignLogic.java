@@ -366,7 +366,8 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        challengeLogic.completeChallenge(player, challengeId, List.of(player.getInventory(), chest.getInventory()));
-        updateSignsOnContainer(chest.getLocation());
+        // Repaint only after the completion settles; in-memory progress commits post-persist.
+        challengeLogic.completeChallenge(player, challengeId, List.of(player.getInventory(), chest.getInventory()),
+            () -> updateSignsOnContainer(chest.getLocation()));
     }
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
@@ -76,9 +77,23 @@ public class AdminChallengeCommand extends CompositeCommand {
         add(new RankCommand("rank", null, marktr("complete all challenges in the rank")) {
             @Override
             protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenges) {
-                for (ChallengeDefinition challenge : challenges) {
-                    completeChallenge(sender, playerInfo, ChallengeKey.of(challenge.id().value()));
+                List<ChallengeKey> incomplete = challenges.stream()
+                    .map(challenge -> ChallengeKey.of(challenge.id().value()))
+                    .filter(id -> {
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, id);
+                        return completion == null || completion.getTimesCompleted() == 0;
+                    })
+                    .toList();
+                if (incomplete.isEmpty()) {
+                    sendErrorTr(sender, "All challenges in rank <rank> are already completed", unparsed("rank", rankName));
+                    return;
                 }
+                challengeLogic.completeChallengesForAdmin(playerInfo, incomplete,
+                    () -> sendTr(sender, "Completed <count> challenges in rank <rank> for <player>.",
+                        number("count", incomplete.size()),
+                        unparsed("rank", rankName, PRIMARY),
+                        unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                    error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
             }
         });
         add(new AbstractCommand("show", null, "?page", "show challenges for the chosen player") {

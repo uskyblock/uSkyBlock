@@ -100,6 +100,15 @@ public final class ChallengeExecutor {
     }
 
     public void attempt(@NotNull Player player, @NotNull ChallengeKey challengeId, @NotNull List<Inventory> itemSources) {
+        attempt(player, challengeId, itemSources, () -> {
+        });
+    }
+
+    /**
+     * @param onSettled runs on the main thread once the attempt has terminally settled
+     *                  (success, failure, or rejection) - in-memory state is current by then.
+     */
+    public void attempt(@NotNull Player player, @NotNull ChallengeKey challengeId, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
             sendErrorTr(player, "You can only submit challenges when you have an island!");
@@ -120,7 +129,7 @@ public final class ChallengeExecutor {
         IslandKey islandKey = IslandKey.fromIslandName(playerInfo.locationForParty());
         LoadedChallengeProgress loaded = progressCache.getIfLoaded(islandKey).orElse(null);
         if (loaded != null) {
-            attemptLoaded(player, playerInfo, definition.get(), itemSources, loaded);
+            attemptLoaded(player, playerInfo, definition.get(), itemSources, loaded, onSettled);
             return;
         }
 
@@ -129,9 +138,10 @@ public final class ChallengeExecutor {
             if (error != null) {
                 logger.log(Level.WARNING, "Unable to load challenge progress for " + islandKey.value(), error);
                 sendErrorTr(player, "Unable to load challenge progress right now. Please try again.");
+                onSettled.run();
                 return;
             }
-            attemptLoaded(player, playerInfo, definition.get(), itemSources, state);
+            attemptLoaded(player, playerInfo, definition.get(), itemSources, state, onSettled);
         }));
     }
 
@@ -140,14 +150,17 @@ public final class ChallengeExecutor {
         @NotNull PlayerInfo playerInfo,
         @NotNull ChallengeDefinition challenge,
         @NotNull List<Inventory> itemSources,
-        @NotNull LoadedChallengeProgress loaded
+        @NotNull LoadedChallengeProgress loaded,
+        @NotNull Runnable onSettled
     ) {
         if (loaded.isWriteLocked()) {
             sendErrorTr(player, "Challenge progress is temporarily locked due to a persistence error. Please contact an administrator.");
+            onSettled.run();
             return;
         }
         if (!loaded.tryBeginCompletion()) {
             sendErrorTr(player, "Challenge completion is already in progress for your island.");
+            onSettled.run();
             return;
         }
 
@@ -163,6 +176,7 @@ public final class ChallengeExecutor {
                     component("challenge", ChallengeText.displayName(challenge)));
                 unlockEvaluator.describe(missingUnlocks).forEach(line -> send(player, line));
                 loaded.finishCompletion();
+                onSettled.run();
                 return;
             }
             if (completion.getTimesCompleted() > 0
@@ -170,6 +184,7 @@ public final class ChallengeExecutor {
                 sendErrorTr(player, "The <challenge> challenge is not repeatable!",
                     component("challenge", ChallengeText.displayName(challenge)));
                 loaded.finishCompletion();
+                onSettled.run();
                 return;
             }
             if (completion.isOnCooldown() && !challenge.repeatPolicy().isUnlimited()
@@ -177,6 +192,7 @@ public final class ChallengeExecutor {
                 sendErrorTr(player, "You cannot complete the <challenge> challenge again yet!",
                     component("challenge", ChallengeText.displayName(challenge)));
                 loaded.finishCompletion();
+                onSettled.run();
                 return;
             }
 
@@ -186,6 +202,7 @@ public final class ChallengeExecutor {
             RequirementCheck check = checkAndConsumeRequirements(player, challenge, completion, itemSources);
             if (!check.completed()) {
                 loaded.finishCompletion();
+                onSettled.run();
                 return;
             }
 
@@ -195,11 +212,12 @@ public final class ChallengeExecutor {
             Set<RankId> newlyUnlocked = unlockEvaluator.unlockedRanks(
                 new UnlockContext(progress, player::hasPermission, context.islandLevel()));
             newlyUnlocked.removeAll(previouslyUnlocked);
-            persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems(), newlyUnlocked);
+            persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems(), newlyUnlocked, onSettled);
         } catch (Throwable t) {
             loaded.finishCompletion();
             logger.log(Level.WARNING, "Failed to complete challenge " + challenge.id().value() + " for " + player.getName(), t);
             sendErrorTr(player, "Challenge completion failed unexpectedly.");
+            onSettled.run();
         }
     }
 
@@ -250,7 +268,8 @@ public final class ChallengeExecutor {
         @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
         boolean isFirstCompletion,
         @NotNull Map<ItemStack, Integer> consumedItems,
-        @NotNull Set<RankId> newlyUnlockedRanks
+        @NotNull Set<RankId> newlyUnlockedRanks,
+        @NotNull Runnable onSettled
     ) {
         Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
         scheduler.async(() -> {
@@ -259,11 +278,17 @@ public final class ChallengeExecutor {
                 scheduler.sync(() -> {
                     loaded.replace(progress);
                     loaded.finishCompletion();
-                    rewardApplier.apply(player, playerInfo, challenge, isFirstCompletion);
+                    if (player.isOnline()) {
+                        rewardApplier.apply(player, playerInfo, challenge, isFirstCompletion);
+                    } else {
+                        logger.warning("Player " + player.getName() + " disconnected before the reward for challenge "
+                            + challenge.id().value() + " could be handed out; the completion is recorded.");
+                    }
                     for (RankId rankId : newlyUnlockedRanks) {
                         plugin.getServer().getPluginManager()
                             .callEvent(new ChallengeRankUnlockedEvent(loaded.islandKey().value(), rankId.value()));
                     }
+                    onSettled.run();
                 });
             } catch (Throwable t) {
                 scheduler.sync(() -> {
@@ -271,6 +296,7 @@ public final class ChallengeExecutor {
                     logger.log(Level.WARNING, "Failed to persist challenge progress for island " + loaded.islandKey().value(), t);
                     refundItems(player, consumedItems);
                     sendErrorTr(player, "Challenge progress could not be saved. Challenge completions are locked for this island until the cache is flushed or the server restarts.");
+                    onSettled.run();
                 });
             }
         });
@@ -299,18 +325,37 @@ public final class ChallengeExecutor {
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
-        Optional<ChallengeDefinition> challenge = challengeLogic.getDefinitionById(challengeId);
-        if (challenge.isEmpty()) {
-            onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.id()));
-            return;
+        adminCompleteAll(target, List.of(challengeId), onSuccess, onError);
+    }
+
+    /**
+     * Completes all given challenges in one lock acquisition and one persist; completing them
+     * one by one would fail on the island's in-flight lock from the second challenge onward.
+     */
+    public void adminCompleteAll(
+        @NotNull PlayerInfo target,
+        @NotNull Collection<ChallengeKey> challengeIds,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        Map<ChallengeKey, ChallengeDefinition> challenges = new LinkedHashMap<>();
+        for (ChallengeKey challengeId : challengeIds) {
+            Optional<ChallengeDefinition> challenge = challengeLogic.getDefinitionById(challengeId);
+            if (challenge.isEmpty()) {
+                onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.id()));
+                return;
+            }
+            challenges.put(challengeId, challenge.get());
         }
         mutateProgress(target, progress -> {
-            ChallengeCompletion completion = progress.computeIfAbsent(challengeId, id -> new ChallengeCompletion(id, null, 0, 0));
-            if (!completion.isOnCooldown()) {
-                Duration resetWindow = challenge.get().repeatPolicy().resetWindow();
-                completion.setCooldownUntil(resetWindow.isPositive() ? Instant.now().plus(resetWindow) : null);
+            for (Map.Entry<ChallengeKey, ChallengeDefinition> entry : challenges.entrySet()) {
+                ChallengeCompletion completion = progress.computeIfAbsent(entry.getKey(), id -> new ChallengeCompletion(id, null, 0, 0));
+                if (!completion.isOnCooldown()) {
+                    Duration resetWindow = entry.getValue().repeatPolicy().resetWindow();
+                    completion.setCooldownUntil(resetWindow.isPositive() ? Instant.now().plus(resetWindow) : null);
+                }
+                completion.addTimesCompleted();
             }
-            completion.addTimesCompleted();
         }, onSuccess, onError);
     }
 

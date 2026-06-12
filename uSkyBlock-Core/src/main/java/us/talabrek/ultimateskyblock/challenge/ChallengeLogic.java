@@ -291,6 +291,10 @@ public class ChallengeLogic implements Listener {
         challengeExecutor.attempt(player, id, itemSources);
     }
 
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
+        challengeExecutor.attempt(player, id, itemSources, onSettled);
+    }
+
     public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull Consumer<Throwable> onError) {
         completionLogic.whenChallengesLoaded(playerInfo, onLoaded, onError);
     }
@@ -325,6 +329,11 @@ public class ChallengeLogic implements Listener {
     public void completeChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,
                                           @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
         challengeExecutor.adminComplete(target, challengeId, onSuccess, onError);
+    }
+
+    public void completeChallengesForAdmin(@NotNull PlayerInfo target, @NotNull Collection<ChallengeKey> challengeIds,
+                                           @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
+        challengeExecutor.adminCompleteAll(target, challengeIds, onSuccess, onError);
     }
 
     public void resetChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,

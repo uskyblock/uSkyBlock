@@ -73,13 +73,22 @@ public final class ChallengeProgressCache {
         Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
         challengeLogic.populateChallenges(progress);
         progress.putAll(repository.load(islandKey));
+        // Publish so repeated synchronous reads (e.g. the biome gate) hit the database once.
+        loaded.putIfAbsent(islandKey, new LoadedChallengeProgress(islandKey, progress));
         return progress;
     }
 
     public int clearLoaded() {
-        int size = loaded.size();
-        loaded.clear();
-        return size;
+        int sizeBefore = loaded.size();
+        // Keep islands with an in-flight completion: dropping them would let the orphaned
+        // persist callback race a fresh load and duplicate rewards. Write-locked entries are
+        // cleared deliberately - flushing is the documented recovery for those.
+        loaded.entrySet().removeIf(entry -> !entry.getValue().isCompletionInFlight());
+        int skipped = loaded.size();
+        if (skipped > 0) {
+            logger.info("Flush skipped " + skipped + " island(s) with an in-flight challenge completion; flush again once they settle.");
+        }
+        return sizeBefore - skipped;
     }
 
     public void shutdown() {
