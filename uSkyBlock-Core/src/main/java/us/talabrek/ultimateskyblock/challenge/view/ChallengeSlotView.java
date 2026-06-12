@@ -16,7 +16,8 @@ public record ChallengeSlotView(
     ItemStackSpec icon,
     Component title,
     List<Component> lore,
-    boolean clickable
+    boolean clickable,
+    boolean completed
 ) {
     public ChallengeSlotView {
         if (slotIndex < 0) {

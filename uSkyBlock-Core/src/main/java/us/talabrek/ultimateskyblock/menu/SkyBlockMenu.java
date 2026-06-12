@@ -57,8 +57,6 @@ import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
-import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.CHALLENGE_PAGE_SIZE;
-import static us.talabrek.ultimateskyblock.challenge.ChallengeLogic.COLS_PER_ROW;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 import static us.talabrek.ultimateskyblock.message.Msg.MENU;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
@@ -77,7 +75,6 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 @Singleton
 public class SkyBlockMenu {
     private final Pattern PERM_VALUE_PATTERN = Pattern.compile("(\\[(?<perm>(?<not>[!])?[^\\]]+)\\])?(?<value>.*)");
-    private final Pattern CHALLENGE_PAGE_HEADER = Pattern.compile(trLegacy("Challenge Menu") + ".*\\((?<p>[0-9]+)/(?<max>[0-9]+)\\)");
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
@@ -341,55 +338,6 @@ public class SkyBlockMenu {
             }
         }
         return false;
-    }
-
-    public Inventory displayChallengeGUI(final Player player, int page, String playerName) {
-        int total = challengeLogic.getTotalPages();
-        String title = miniToLegacy("<blue><title> (<page>/<total>)",
-            legacyArg("title", trLegacy("Challenge Menu")),
-            number("page", page),
-            number("total", total));
-        Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), CHALLENGE_PAGE_SIZE + COLS_PER_ROW, title);
-        final PlayerInfo pi = playerName == null ? plugin.getPlayerInfo(player) : plugin.getPlayerInfo(playerName);
-        challengeLogic.populateChallengeRank(menu, pi, page);
-        int[] pages = new int[9];
-        pages[0] = 1;
-        pages[8] = total;
-        int startOffset = 2;
-        if (page > 5) {
-            startOffset = (int) ((Math.round(page / 2d)) - 1);
-            if (startOffset > total - 7) {
-                startOffset = total - 7;
-            }
-        }
-        for (int i = 0; i < 7; i++) {
-            pages[i + 1] = startOffset + i;
-        }
-        for (int i = 0; i < pages.length; i++) {
-            int p = pages[i];
-            if (p >= 1 && p <= total) {
-                ItemStack pageItem;
-                if (p == page) {
-                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.WRITABLE_BOOK, trLegacy("Current page", MUTED));
-                } else {
-                    // I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
-                    pageItem = GuiItemUtil.createGuiDisplayItem(Material.BOOK, trLegacy("Page <page>", MUTED, number("page", p)));
-                }
-                if (i == 0) {
-                    ItemStackUtil.Builder pageItemBuilder = ItemStackUtil.builder(pageItem)
-                        .displayName(trLegacy("First Page", MUTED));
-                    if (playerName != null && !playerName.trim().isEmpty()) {
-                        pageItemBuilder.lore(playerName);
-                    }
-                    pageItem = pageItemBuilder.build();
-                } else if (i == 8) {
-                    pageItem = ItemStackUtil.builder(pageItem).displayName(trLegacy("Last Page", MUTED)).build();
-                }
-                pageItem.setAmount(p);
-                menu.setItem(i + CHALLENGE_PAGE_SIZE, pageItem);
-            }
-        }
-        return menu;
     }
 
     public Inventory displayIslandGUI(final Player player) {
@@ -656,8 +604,6 @@ public class SkyBlockMenu {
             onClickPartyMenu(event, currentItem, p, meta, skull, slotIndex);
         } else if (inventoryName.contains(stripFormatting(trLegacy("Permissions")))) {
             onClickPermissionMenu(event, currentItem, p, inventoryName, slotIndex);
-        } else if (inventoryName.contains(stripFormatting(trLegacy("Challenge Menu")))) {
-            onClickChallengeMenu(event, currentItem, p, inventoryName);
         } else if (inventoryName.equalsIgnoreCase(stripFormatting(trLegacy("Island Log")))) {
             onClickLogMenu(event, p, slotIndex);
         } else if (inventoryName.equalsIgnoreCase(stripFormatting(trLegacy("Island Menu")))) {
@@ -870,62 +816,6 @@ public class SkyBlockMenu {
             return;
         }
         p.performCommand("island");
-    }
-
-    private void onClickChallengeMenu(InventoryClickEvent event, ItemStack currentItem, Player p, String inventoryName) {
-        int slotIndex = event.getRawSlot();
-        event.setCancelled(true);
-        Matcher m = CHALLENGE_PAGE_HEADER.matcher(inventoryName);
-        int page = 1;
-        int max = challengeLogic.getTotalPages();
-        if (m.find()) {
-            page = Integer.parseInt(m.group("p"));
-            max = Integer.parseInt(m.group("max"));
-        }
-        ItemStack item = event.getInventory().getItem(event.getInventory().getSize() - 9);
-        String playerName = item != null && item.hasItemMeta() && requireNonNull(item.getItemMeta()).getLore() != null
-            && !item.getItemMeta().getLore().isEmpty()
-            ? item.getItemMeta().getLore().getFirst()
-            : null;
-        if (playerName != null && playerName.trim().isEmpty()) {
-            playerName = null;
-        }
-        // Last row is pagination
-        if (slotIndex >= CHALLENGE_PAGE_SIZE && slotIndex < CHALLENGE_PAGE_SIZE + COLS_PER_ROW
-            && currentItem != null && currentItem.getType() != Material.AIR) {
-            // Pagination
-            p.openInventory(displayChallengeGUI(p, currentItem.getAmount(), playerName));
-            return;
-        }
-        // If in action bar or anywhere else, just bail out
-        if (slotIndex < 0 || slotIndex > CHALLENGE_PAGE_SIZE || isAirOrLocked(currentItem)) {
-            return;
-        }
-        if ((slotIndex % 9) > 0) { // 0,9... are the rank-headers...
-            if (currentItem.getItemMeta() != null) {
-                String challenge = requireNonNull(currentItem.getItemMeta()).getDisplayName();
-                String challengeName = stripFormatting(challenge);
-                p.performCommand("c c " + challengeName);
-            }
-            p.openInventory(displayChallengeGUI(p, page, playerName));
-        } else {
-            if (slotIndex < (CHALLENGE_PAGE_SIZE / 2)) { // Upper half
-                if (page > 1) {
-                    p.openInventory(displayChallengeGUI(p, page - 1, playerName));
-                } else {
-                    p.performCommand("island");
-                }
-            } else if (page < max) {
-                p.openInventory(displayChallengeGUI(p, page + 1, playerName));
-            } else {
-                p.performCommand("island");
-            }
-        }
-    }
-
-    private boolean isAirOrLocked(ItemStack currentItem) {
-        return currentItem != null && currentItem.getType() == Material.AIR ||
-            currentItem != null && currentItem.getItemMeta() != null && currentItem.getItemMeta().getDisplayName().equals(trLegacy("Locked Challenge", ERROR));
     }
 
     private void onClickPermissionMenu(InventoryClickEvent event, ItemStack currentItem, Player p, String inventoryName, int slotIndex) {

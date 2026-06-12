@@ -2,9 +2,11 @@ package us.talabrek.ultimateskyblock.challenge.view;
 
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +18,11 @@ import us.talabrek.ultimateskyblock.gui.PaginationEntry;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
+
+import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
+import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 
 public class ChallengeGui extends InventoryGui {
     public static final int CHALLENGE_SLOT_COUNT = 9;
@@ -39,7 +46,9 @@ public class ChallengeGui extends InventoryGui {
     }
 
     private static Inventory createInventory(ChallengePageView pageView) {
-        String title = "Challenges (" + pageView.pageNumber() + "/" + pageView.totalPages() + ")";
+        String title = trLegacy("Challenge Menu (<page>/<total>)",
+            number("page", pageView.pageNumber()),
+            number("total", pageView.totalPages()));
         return Bukkit.createInventory(null, INVENTORY_SIZE, title);
     }
 
@@ -68,6 +77,14 @@ public class ChallengeGui extends InventoryGui {
         ItemStack item = slotView.icon().create();
         ItemStackUtil.setComponentDisplayName(item, slotView.title());
         ItemStackUtil.setComponentLore(item, slotView.lore());
+        if (slotView.completed()) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.addEnchant(Enchantment.LOYALTY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                item.setItemMeta(meta);
+            }
+        }
         return item;
     }
 
@@ -81,11 +98,11 @@ public class ChallengeGui extends InventoryGui {
         Material material = entry.current() ? Material.WRITABLE_BOOK : Material.BOOK;
         ItemStack item = new ItemStack(material);
         Component title = switch (entry.kind()) {
-            case FIRST -> Component.text("First Page", NamedTextColor.GRAY);
-            case LAST -> Component.text("Last Page", NamedTextColor.GRAY);
+            case FIRST -> tr("First Page", MUTED);
+            case LAST -> tr("Last Page", MUTED);
             case PAGE -> entry.current()
-                ? Component.text("Current Page", NamedTextColor.GRAY)
-                : Component.text("Page " + entry.pageNumber(), NamedTextColor.GRAY);
+                ? tr("Current page", MUTED)
+                : tr("Page <page>", MUTED, number("page", entry.pageNumber()));
         };
         ItemStackUtil.setComponentDisplayName(item, title);
         item.setAmount(Math.min(entry.pageNumber(), 64));

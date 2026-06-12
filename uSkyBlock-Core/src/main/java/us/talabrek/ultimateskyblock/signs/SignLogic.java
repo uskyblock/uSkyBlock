@@ -11,6 +11,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -41,6 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
@@ -77,7 +84,18 @@ public class SignLogic {
         this.config = FileUtil.getYmlConfiguration("signs.yml");
     }
 
-    void addSign(Sign block, String[] lines, Chest chest) {
+    void addSign(Sign block, String[] lines, Chest chest, Player player) {
+        var result = challengeLogic.resolveChallenge(lines[1].trim());
+        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND) {
+            sendErrorTr(player, "No challenge named <challenge> was found!", unparsed("challenge", lines[1].trim()));
+            return;
+        }
+        ChallengeDefinition challenge = result.getChallenge();
+        if (requirementSpecs(challenge).isEmpty()) {
+            sendErrorTr(player, "The <challenge> challenge has no item hand-in, so it cannot be completed from a sign.",
+                component("challenge", ChallengeText.displayName(challenge)));
+            return;
+        }
         Location loc = block.getLocation();
         ConfigurationSection signs = config.getConfigurationSection("signs");
         if (signs == null) {
@@ -86,7 +104,8 @@ public class SignLogic {
         String signLocation = LocationUtil.asKey(loc);
         ConfigurationSection signSection = signs.createSection(signLocation);
         signSection.set("location", LocationUtil.asString(loc));
-        signSection.set("challenge", lines[1]);
+        // Resolved once: the canonical id survives display-name edits in challenges.yml.
+        signSection.set("challenge", challenge.id().value());
         String chestLocation = LocationUtil.asString(chest.getLocation());
         signSection.set("chest", chestLocation);
         ConfigurationSection chests = config.getConfigurationSection("chests");
@@ -100,6 +119,7 @@ public class SignLogic {
         }
         chests.set(chestPath, signList);
         saveAsync();
+        sendTr(player, "Challenge sign created for <challenge>.", component("challenge", ChallengeText.displayName(challenge), PRIMARY));
         updateSignsOnContainer(chest.getLocation());
     }
 
@@ -262,32 +282,33 @@ public class SignLogic {
                     }
                 }
             }
-            String format = "\u00a72\u00a7l";
-            if (missing > 0) {
-                format = "\u00a74\u00a7l";
-            }
             List<String> lines = wordWrap(ChallengeText.plainName(challenge), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
             if (challengeLocked) {
-                lines.add(trLegacy("Locked Challenge", ERROR));
+                lines.add(null); // placeholder, rendered as the locked label below
             } else {
                 lines.addAll(wordWrap(ChallengeText.plain(challenge.display().description()), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
             }
+            SignSide front = sign.getSide(Side.FRONT);
             for (int i = 0; i < 3; i++) {
                 if (i < lines.size()) {
-                    sign.setLine(i, lines.get(i));
+                    front.setLine(i, lines.get(i) != null ? lines.get(i) : trLegacy("Locked Challenge", ERROR));
                 } else {
-                    sign.setLine(i, "");
+                    front.setLine(i, "");
                 }
             }
             if (missing > 0) {
-                sign.setLine(3, format + missing);
+                front.setLine(3, "\u00a74\u00a7l" + missing);
             } else if (missing == 0) {
                 // I18N: Status label on challenge signs when all requirements are met.
-                sign.setLine(3, format + trLegacy("Ready"));
-            } else if (lines.size() > 3) {
-                sign.setLine(3, lines.get(3));
+                front.setLine(3, "\u00a72\u00a7l" + trLegacy("Ready"));
+            } else if (lines.size() > 3 && lines.get(3) != null) {
+                front.setLine(3, lines.get(3));
             } else {
-                sign.setLine(3, "");
+                front.setLine(3, "");
+            }
+            // Waxed signs cannot be edited by hand, so a stray right-click does not wipe the sign.
+            if (!sign.isWaxed()) {
+                sign.setWaxed(true);
             }
             if (!sign.update()) {
                 logger.info("Unable to update sign at " + LocationUtil.asString(signLoc));

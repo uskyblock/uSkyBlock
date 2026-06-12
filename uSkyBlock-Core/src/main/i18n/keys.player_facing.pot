@@ -17,6 +17,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid " (<chance:'0%'> chance)"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid " - <amount> x <item>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
 msgstr ""
@@ -207,10 +215,6 @@ msgstr ""
 msgid "<success>Congratulations!</success> Your island is ready."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
-msgid "All required items must be placed on your island, within <radius> blocks of you."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
@@ -263,8 +267,8 @@ msgstr ""
 msgid "But your fantasy friends are gone!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Challenge Menu"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeGui.java
+msgid "Challenge Menu (<page>/<total>)"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
@@ -285,6 +289,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 msgid "Challenge progress is temporarily locked due to a persistence error. Please contact an administrator."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+msgid "Challenge sign created for <challenge>."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -359,14 +367,6 @@ msgstr ""
 msgid "Click here to return to<newline>your island group's info."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Click here to show the next page."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Click here to show the previous page."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click here to unlock your island."
 msgstr ""
@@ -375,16 +375,16 @@ msgstr ""
 msgid "Click here to view challenges."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
+msgid "Click to attempt this challenge."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Click to change this player's permissions."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Click to change to this biome."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Click to complete this challenge."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -416,17 +416,15 @@ msgid "Command is currently disabled!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <remaining> more <rank> challenges"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <requirements>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-msgid "Complete most challenges in<newline>this rank to unlock the next rank."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Completed <count> times"
 msgstr ""
 
 #. I18N: Creature category label shown in island mob-limit summary.
@@ -450,8 +448,8 @@ msgstr ""
 msgid "Creating an island at your location"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Currency reward: <currency:'#,##0'>"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Currency reward: <amount:'#,##0'>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
@@ -467,7 +465,7 @@ msgstr ""
 msgid "Current level: <level:'#,##0'>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeGui.java
 msgid "Current page"
 msgstr ""
 
@@ -487,7 +485,7 @@ msgstr ""
 msgid "Either send a message directly to your group, or toggle it on/off."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeGui.java
 msgid "First Page"
 msgstr ""
 
@@ -634,16 +632,8 @@ msgstr ""
 msgid "It's a bad idea to replace your lava!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Item reward: <reward-line>"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "Item rewards: <items>"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Items will be traded for the reward."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
@@ -654,7 +644,7 @@ msgstr ""
 msgid "Kick Players"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeGui.java
 msgid "Last Page"
 msgstr ""
 
@@ -695,10 +685,13 @@ msgstr ""
 msgid "Lock status: Inactive<newline>Your island is currently <secondary>unlocked</secondary>.<newline>All players can enter your island,<newline>but only you and your group<newline>members may build there."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Locked Challenge"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
+msgid "Locked Rank: <rank>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/WorldGuardEvents.java
@@ -736,16 +729,17 @@ msgstr ""
 msgid "More players can be invited to this island."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Must be within <radius> meters."
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "No access!<newline><muted>(<permission>)</muted>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeCompleteCommand.java
 msgid "No challenge matched: <input>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+msgid "No challenge named <challenge> was found!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
@@ -812,8 +806,7 @@ msgstr ""
 msgid "Owner: <player>"
 msgstr ""
 
-#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeGui.java
 msgid "Page <page>"
 msgstr ""
 
@@ -855,8 +848,7 @@ msgstr ""
 msgid "Rank is <rank>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeLogic.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
 msgid "Rank: <rank>"
 msgstr ""
 
@@ -869,29 +861,28 @@ msgstr ""
 msgid "Repeat <command> to toggle it off."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <days> days."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Repeatable again in <time>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <hours> hours."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Required items:"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requirements will reset in <minutes> minutes."
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Required nearby (within <radius> blocks):"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Requires <requirement>"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Required on your island (within <radius> blocks):"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
 msgid "Requires island level <level>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Requires permission <permission>"
 msgstr ""
 
@@ -917,6 +908,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary>Click here to return home.</primary>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Reward: <amount> x <item>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
@@ -1051,6 +1046,10 @@ msgstr ""
 msgid "That player's island is currently generating, so you cannot warp to it right now."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
+msgid "The <challenge> challenge has no item hand-in, so it cannot be completed from a sign."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
 msgid "The <challenge> challenge is not available yet!"
@@ -1108,16 +1107,8 @@ msgstr ""
 msgid "The two most powerful warriors are patience and time."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "This challenge is currently unavailable."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
-msgid "This challenge is not repeatable!"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "This challenge requires:"
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "This challenge is not repeatable."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/message/Msg.java
@@ -1152,10 +1143,6 @@ msgstr ""
 msgid "To trust or untrust on your island, use <cmd>/is trust [player]</cmd>."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
-msgid "To unlock this rank, complete:"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Toggle Island Lock"
 msgstr ""
@@ -1185,10 +1172,6 @@ msgstr ""
 msgid "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "Total completions: <times>"
-msgstr ""
-
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "Trading isn't allowed on other islands. <muted>Use spawn instead."
 msgstr ""
@@ -1206,8 +1189,7 @@ msgid "Unable to find a safe home location on your island!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminChallengeCommand.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenu.java
 msgid "Unable to load challenge progress right now. Please try again."
 msgstr ""
 
@@ -1236,8 +1218,20 @@ msgstr ""
 msgid "Unknown player <player>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
+msgid "Unlock this challenge to continue."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeMenuViewAssembler.java
+msgid "Unlock this rank to access its challenges."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "Unlocked island biome: <biomes>"
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
+msgid "Unlocks island biome: <biomes>"
 msgstr ""
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/CompositeCommand.java
@@ -1337,8 +1331,8 @@ msgstr ""
 msgid "When your warp is activated,<newline>other players will be taken to<newline>this point when they teleport<newline>to your island."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/view/ChallengeLore.java
 msgid "XP reward: <experience:'0'>"
 msgstr ""
 
@@ -1373,22 +1367,6 @@ msgstr ""
 #. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You can change your biome again in <seconds> seconds."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this <remaining> more time(s)."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <days> days."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <hours> hours."
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can complete this again in <minutes> minutes."
 msgstr ""
 
 #. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
@@ -1456,10 +1434,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/KickCommand.java
 msgid "You can't remove the leader from the island!"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "You can't repeat this challenge."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/InviteHandler.java
@@ -1780,10 +1754,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/IslandCommand.java
 msgid "allows users to use [usb] signs"
-msgstr ""
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-msgid "and more..."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BanCommand.java

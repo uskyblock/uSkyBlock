@@ -10,6 +10,7 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.view.ChallengeMenu;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -30,12 +31,14 @@ public class AdminChallengeCommand extends CompositeCommand {
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
+    private final ChallengeMenu challengeMenu;
 
     @Inject
-    public AdminChallengeCommand(@NotNull uSkyBlock plugin, @NotNull ChallengeLogic challengeLogic) {
+    public AdminChallengeCommand(@NotNull uSkyBlock plugin, @NotNull ChallengeLogic challengeLogic, @NotNull ChallengeMenu challengeMenu) {
         super("challenge|ch", "usb.mod.challenges", "player", marktr("Manage challenges for a player"));
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
+        this.challengeMenu = challengeMenu;
         add(new ChallengeCommand("complete", null, "completes the challenge for the player") {
             @Override
             protected void doExecute(CommandSender sender, PlayerInfo playerInfo, ChallengeCompletion completion) {
@@ -88,10 +91,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 }
                 if (commandSender instanceof Player player) {
                     int page = args.length > 0 && args[0].matches("[0-9]+") ? Integer.parseInt(args[0], 10) : 1;
-                    String playerName = (String) data.get("playerName");
-                    challengeLogic.whenChallengesLoaded(playerInfo,
-                        () -> player.openInventory(plugin.getMenu().displayChallengeGUI(player, page, playerName)),
-                        error -> sendErrorTr(player, "Unable to load challenge progress right now. Please try again."));
+                    challengeMenu.open(player, playerInfo, page);
                     return true;
                 }
                 return false;

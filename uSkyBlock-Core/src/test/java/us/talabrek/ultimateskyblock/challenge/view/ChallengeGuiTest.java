@@ -63,7 +63,7 @@ class ChallengeGuiTest {
                 ))
             )),
             new ChallengePresentationSnapshot(Set.of(RankId.of("starter"), RankId.of("adept")), Set.of(ChallengeId.of("alpha"))),
-            1
+            java.util.Map.of(), false, 1
         );
         ChallengeGui gui = new ChallengeGui(pageView, page -> {}, (player, slot) -> {});
 
@@ -93,7 +93,7 @@ class ChallengeGuiTest {
                 Set.of(RankId.of("starter"), RankId.of("adept"), RankId.of("expert"), RankId.of("master"), RankId.of("legend"), RankId.of("mythic")),
                 Set.of(ChallengeId.of("alpha"), ChallengeId.of("beta"), ChallengeId.of("gamma"), ChallengeId.of("delta"), ChallengeId.of("epsilon"), ChallengeId.of("zeta"))
             ),
-            1
+            java.util.Map.of(), false, 1
         );
 
         AtomicInteger clickedPage = new AtomicInteger(-1);
@@ -116,7 +116,7 @@ class ChallengeGuiTest {
                 challenge("alpha", Material.STONE, Material.OBSIDIAN)
             )))),
             new ChallengePresentationSnapshot(Set.of(), Set.of()),
-            1
+            java.util.Map.of(), false, 1
         );
 
         AtomicReference<ChallengeId> clickedChallenge = new AtomicReference<>();

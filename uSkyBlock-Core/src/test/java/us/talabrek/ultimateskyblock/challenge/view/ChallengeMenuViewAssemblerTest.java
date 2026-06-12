@@ -38,7 +38,7 @@ class ChallengeMenuViewAssemblerTest {
         ChallengePageView page = assembler.assemblePage(
             catalog,
             new ChallengePresentationSnapshot(Set.of(), Set.of()),
-            1
+            java.util.Map.of(), false, 1
         );
 
         ChallengeRankRowView row = page.rows().getFirst();
@@ -61,7 +61,7 @@ class ChallengeMenuViewAssemblerTest {
         ChallengePageView page = assembler.assemblePage(
             catalog,
             new ChallengePresentationSnapshot(Set.of(RankId.of("starter")), Set.of()),
-            1
+            java.util.Map.of(), false, 1
         );
 
         ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
@@ -82,7 +82,7 @@ class ChallengeMenuViewAssemblerTest {
         ChallengePageView page = assembler.assemblePage(
             catalog,
             new ChallengePresentationSnapshot(Set.of(RankId.of("starter")), Set.of(ChallengeId.of("alpha"))),
-            1
+            java.util.Map.of(), false, 1
         );
 
         ChallengeSlotView slot = page.rows().getFirst().slots().getFirst();
@@ -98,8 +98,8 @@ class ChallengeMenuViewAssemblerTest {
             rank("starter", Material.BARRIER, List.of(challenge("alpha", Material.STONE, Material.OBSIDIAN)))
         ));
 
-        assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 0));
-        assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 2));
+        assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), java.util.Map.of(), false, 0));
+        assertThrows(IllegalArgumentException.class, () -> assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), java.util.Map.of(), false, 2));
     }
 
     @Test
@@ -113,8 +113,8 @@ class ChallengeMenuViewAssemblerTest {
             rank("r6", Material.BARRIER, List.of(challenge("c6", Material.STONE, Material.OBSIDIAN)))
         ));
 
-        ChallengePageView firstPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 1);
-        ChallengePageView secondPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), 2);
+        ChallengePageView firstPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), java.util.Map.of(), false, 1);
+        ChallengePageView secondPage = assembler.assemblePage(catalog, ChallengePresentationState.allUnlocked(), java.util.Map.of(), false, 2);
 
         assertEquals(2, firstPage.totalPages());
         assertEquals(5, firstPage.rows().size());

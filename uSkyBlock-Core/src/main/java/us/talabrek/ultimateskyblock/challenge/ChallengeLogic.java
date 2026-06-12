@@ -2,19 +2,12 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import dk.lockfuglsang.minecraft.po.I18nUtil;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
@@ -28,47 +21,30 @@ import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
 import us.talabrek.ultimateskyblock.challenge.catalog.RewardBundle;
 import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogLoader;
-import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogRuntimeAdapter;
 import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
-import us.talabrek.ultimateskyblock.util.ComponentLineSplitter;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
-import static net.kyori.adventure.text.format.TextDecoration.BOLD;
-import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
-import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 
 /**
  * The home of challenge business logic.
  */
 @Singleton
 public class ChallengeLogic implements Listener {
-    public static final int COLS_PER_ROW = 9;
-    public static final int ROWS_OF_RANKS = 5;
-    public static final int CHALLENGE_PAGE_SIZE = ROWS_OF_RANKS * COLS_PER_ROW;
-
     private final Logger logger;
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
@@ -77,11 +53,7 @@ public class ChallengeLogic implements Listener {
 
     private final ChallengeCatalog catalog;
     private final ChallengeUnlockEvaluator unlockEvaluator;
-    private final Map<String, Rank> ranks;
-    // Fast O(1) lookup for challenges by canonical id
-    private final Map<ChallengeKey, Challenge> byId = new HashMap<>();
 
-    public final ChallengeDefaults defaults;
     public final ChallengeCompletionLogic completionLogic;
     private final ChallengeExecutor challengeExecutor;
 
@@ -103,9 +75,6 @@ public class ChallengeLogic implements Listener {
         this.hookManager = hookManager;
         this.catalog = challengeCatalogLoader.load();
         this.unlockEvaluator = new ChallengeUnlockEvaluator(catalog);
-        this.defaults = ChallengeCatalogRuntimeAdapter.legacyDefaults(runtimeConfigs.current().challenges());
-        ranks = new ChallengeCatalogRuntimeAdapter().adapt(catalog, runtimeConfigs.current().challenges());
-        rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, challengeProgressRepository);
         RewardApplier rewardApplier = new RewardApplier(plugin, runtimeConfigs, hookManager, perkLogic);
         challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, unlockEvaluator, rewardApplier,
@@ -126,15 +95,6 @@ public class ChallengeLogic implements Listener {
      */
     public Optional<ChallengeDefinition> getDefinitionById(@NotNull ChallengeKey key) {
         return catalog.challenge(ChallengeId.of(key.id()));
-    }
-
-    private void rebuildIndex() {
-        byId.clear();
-        for (Rank rank : ranks.values()) {
-            for (Challenge challenge : rank.getChallenges()) {
-                byId.put(challenge.getId(), challenge);
-            }
-        }
     }
 
     public boolean isEnabled() {
@@ -202,12 +162,7 @@ public class ChallengeLogic implements Listener {
     private static final int MIN_PREFIX_LENGTH = 6;
     private static final int MAX_SUGGESTIONS = 5;
 
-    /**
-     * Fast-path exact lookup by {@link ChallengeKey} id.
-     */
-    public Optional<Challenge> getChallengeById(@NotNull ChallengeKey key) {
-        return Optional.ofNullable(byId.get(key));
-    }
+
 
     /**
      * Resolve a user-provided input into a challenge, returning detailed status.
@@ -290,10 +245,6 @@ public class ChallengeLogic implements Listener {
         return list;
     }
 
-    public @NotNull List<Rank> getRanks() {
-        return List.copyOf(ranks.values());
-    }
-
     public @NotNull List<ChallengeKey> getAvailableChallenges(PlayerInfo playerInfo) {
         List<ChallengeKey> list = new ArrayList<>();
         if (playerInfo == null || !playerInfo.getHasIsland()) {
@@ -350,20 +301,6 @@ public class ChallengeLogic implements Listener {
             .mapToInt(ItemStack::getAmount).sum();
     }
 
-    private ItemStack getItemStack(ChallengeCompletion completion, Challenge challenge) {
-        ItemStack currentChallengeItem = challenge.getDisplayItem(completion, defaults.enableEconomyPlugin);
-        ItemMeta meta = currentChallengeItem.getItemMeta();
-        if (meta == null) {
-            return currentChallengeItem;
-        }
-        if (completion.getTimesCompleted() > 0) {
-            meta.addEnchant(Enchantment.LOYALTY, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
-        currentChallengeItem.setItemMeta(meta);
-        return currentChallengeItem;
-    }
-
     public void populateChallenges(Map<ChallengeKey, ChallengeCompletion> challengeMap) {
         for (ChallengeId challengeId : catalog.index().challengesById().keySet()) {
             ChallengeKey id = ChallengeKey.of(challengeId.value());
@@ -373,146 +310,8 @@ public class ChallengeLogic implements Listener {
         }
     }
 
-    public void populateChallengeRank(Inventory menu, PlayerInfo pi, int page) {
-        List<Rank> ranksOnPage = new ArrayList<>(ranks.values());
-        // page 1 = 0-4, 2 = 5-8, ...
-        if (page > 0) {
-            ranksOnPage = getRanksForPage(page, ranksOnPage);
-        }
-        int location = 0;
-        for (Rank rank : ranksOnPage) {
-            location = populateChallengeRank(menu, rank, location, pi);
-            if ((location % 9) != 0) {
-                location += (9 - (location % 9)); // Skip the rest of that line
-            }
-            if (location >= CHALLENGE_PAGE_SIZE) {
-                break;
-            }
-        }
-    }
-
-    private List<Rank> getRanksForPage(int page, List<Rank> ranksOnPage) {
-        int rowsToSkip = (page - 1) * ROWS_OF_RANKS;
-        List<Rank> allRanks = new ArrayList<>(ranksOnPage);
-
-        int i = 1;
-        for (Iterator<Rank> it = ranksOnPage.iterator(); it.hasNext(); i++) {
-            it.next();
-            int rowsInRanks = calculateRows(allRanks.subList(0, i));
-            if (rowsToSkip <= 0 || ((rowsToSkip - rowsInRanks) < 0)) {
-                return ranksOnPage;
-            }
-            it.remove();
-        }
-        return ranksOnPage;
-    }
-
-    private int calculateRows(List<Rank> ranksOnPage) {
-        int totalRows = 0;
-        int previousRowsOnPage = 0;
-        int currentRows;
-
-        for (Rank rank : ranksOnPage) {
-            currentRows = getRows(rank);
-            totalRows += currentRows;
-
-            if (previousRowsOnPage < 5 && (currentRows + previousRowsOnPage) > 5) {
-                totalRows = totalRows + (5 - previousRowsOnPage);
-                previousRowsOnPage = currentRows;
-            } else {
-                previousRowsOnPage = previousRowsOnPage + currentRows;
-            }
-        }
-        return totalRows;
-    }
-
-    private int getRows(Rank rank) {
-        int rankSize = 0;
-        for (Challenge challenge : rank.getChallenges()) {
-            rankSize += challenge.getOffset() + 1;
-        }
-        return (int) Math.ceil(rankSize / 8f);
-    }
-
-    public int populateChallengeRank(Inventory menu, final Rank rank, int location, final PlayerInfo playerInfo) {
-        populateChallengeHeader(rank, location, menu);
-        List<String> missingRankRequirements = rank.getMissingRequirements(playerInfo);
-        // Tracks if the previous challenge was completed. Relevant for progression through challenge chains, e.g. novice/adept/expert builder.
-        boolean wasPreviousChallengeCompleted = false;
-        for (Challenge challenge : rank.getChallenges()) {
-            if (challenge.getOffset() == -1 && !wasPreviousChallengeCompleted) {
-                continue; // skip
-            }
-            location += challenge.getOffset() + 1;
-            if ((location % 9) == 0) {
-                location++; // Skip rank-row
-            }
-            if (location >= CHALLENGE_PAGE_SIZE) {
-                break;
-            }
-
-            ChallengeCompletion completion = getChallengeCompletion(playerInfo, challenge.getId());
-            wasPreviousChallengeCompleted = completion != null && completion.getTimesCompleted() > 0;
-
-            try {
-                List<String> missingReqs = challenge.getMissingRequirements(playerInfo);
-                boolean challengeLocked = !missingRankRequirements.isEmpty() || !missingReqs.isEmpty();
-
-                ItemStack displayItem;
-
-                if (!challengeLocked) {
-                    displayItem = getItemStack(completion, challenge);
-                } else {
-                    displayItem = renderLockedChallengeItem(challenge, missingReqs, missingRankRequirements);
-                }
-                menu.setItem(location, displayItem);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Invalid challenge " + challenge, e);
-            }
-        }
-        return location;
-    }
-
-    private void populateChallengeHeader(Rank rank, int location, Inventory menu) {
-        ItemStack displayItem = rank.getDisplayItem();
-        ItemStackUtil.setComponentDisplayName(displayItem,
-            tr("Rank: <rank>", Style.style(YELLOW, BOLD), legacyArg("rank", rank.getName())));
-        List<Component> lores = new ArrayList<>(
-            ComponentLineSplitter.splitLines(tr("Complete most challenges in<newline>this rank to unlock the next rank.", MUTED))
-        );
-        if (location < (CHALLENGE_PAGE_SIZE / 2)) {
-            lores.add(tr("Click here to show the previous page.", PRIMARY));
-        } else {
-            lores.add(tr("Click here to show the next page.", PRIMARY));
-        }
-        ItemStackUtil.setComponentLore(displayItem, lores);
-        menu.setItem(location, displayItem);
-    }
-
-    private ItemStack renderLockedChallengeItem(Challenge challenge, List<String> missingReqs, List<String> missingRankRequirements) {
-        ItemStack locked = challenge.getLockedDisplayItem();
-        if (locked == null) {
-            locked = new ItemStack(challenge.getDisplayItem());
-        }
-
-        ItemStackUtil.setComponentDisplayName(locked, tr("Locked Challenge", ERROR));
-        List<String> lores = new ArrayList<>();
-        if (defaults.showLockedChallengeName) {
-            lores.add(challenge.getDisplayName());
-        }
-        lores.addAll(missingReqs);
-        lores.addAll(missingRankRequirements);
-        ItemStackUtil.setComponentLore(locked, lores.stream().map(I18nUtil::fromLegacy).toList());
-        return locked;
-    }
-
     public boolean isResetOnCreate() {
         return runtimeConfigs.current().challenges().resetOnCreate();
-    }
-
-    public int getTotalPages() {
-        int totalRows = calculateRows(getRanks());
-        return (int) Math.ceil(1f * totalRows / ROWS_OF_RANKS);
     }
 
     public Collection<ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
