@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 
 import java.nio.file.Path;
@@ -36,8 +37,8 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
     }
 
     @Override
-    public @NotNull Map<ChallengeKey, ChallengeCompletion> load(@NotNull IslandKey islandKey) {
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+    public @NotNull Map<ChallengeId, ChallengeCompletion> load(@NotNull IslandKey islandKey) {
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         String sql = """
             SELECT challenge_id, cooldown_until_ms, times_completed, times_completed_in_window
             FROM challenge_progress
@@ -52,7 +53,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
                     // so NULL cooldowns must be read via getLong + wasNull.
                     long cooldownMillis = rs.getLong("cooldown_until_ms");
                     Instant cooldownUntil = rs.wasNull() ? null : Instant.ofEpochMilli(cooldownMillis);
-                    ChallengeKey challengeKey = ChallengeKey.of(rs.getString("challenge_id"));
+                    ChallengeId challengeKey = ChallengeId.of(rs.getString("challenge_id"));
                     progress.put(
                         challengeKey,
                         new ChallengeCompletion(
@@ -71,7 +72,7 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
     }
 
     @Override
-    public void replace(@NotNull IslandKey islandKey, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
+    public void replace(@NotNull IslandKey islandKey, @NotNull Map<ChallengeId, ChallengeCompletion> progress) {
         String deleteSql = "DELETE FROM challenge_progress WHERE island_key = ?";
         String insertSql = """
             INSERT INTO challenge_progress (
@@ -87,13 +88,13 @@ public class SqliteChallengeProgressRepository implements ChallengeProgressRepos
                 }
                 try (PreparedStatement insert = connection.prepareStatement(insertSql)) {
                     long updatedAt = System.currentTimeMillis();
-                    for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : progress.entrySet()) {
+                    for (Map.Entry<ChallengeId, ChallengeCompletion> entry : progress.entrySet()) {
                         ChallengeCompletion completion = entry.getValue();
                         if (isDefault(completion)) {
                             continue;
                         }
                         insert.setString(1, islandKey.value());
-                        insert.setString(2, entry.getKey().id());
+                        insert.setString(2, entry.getKey().value());
                         if (completion.cooldownUntil() != null) {
                             insert.setLong(3, completion.cooldownUntil().toEpochMilli());
                         } else {

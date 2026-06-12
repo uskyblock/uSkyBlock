@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -21,13 +22,13 @@ import static org.mockito.Mockito.when;
 class ChallengeProgressCacheTest {
     @Test
     void loadAsyncDeduplicatesAndCachesLoadedProgress() {
-        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        ChallengeId challengeKey = ChallengeId.of("cobblestonegenerator");
         AtomicInteger loadCalls = new AtomicInteger();
 
         ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
-            Map<ChallengeKey, ChallengeCompletion> progress = invocation.getArgument(0);
+            Map<ChallengeId, ChallengeCompletion> progress = invocation.getArgument(0);
             progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 0, 0));
             return null;
         }).when(challengeLogic).populateChallenges(any());
@@ -57,11 +58,11 @@ class ChallengeProgressCacheTest {
 
     @Test
     void replaceLoadedUpdatesWarmSnapshot() {
-        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        ChallengeId challengeKey = ChallengeId.of("cobblestonegenerator");
         ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
         doAnswer(invocation -> {
             @SuppressWarnings("unchecked")
-            Map<ChallengeKey, ChallengeCompletion> progress = invocation.getArgument(0);
+            Map<ChallengeId, ChallengeCompletion> progress = invocation.getArgument(0);
             progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 0, 0));
             return null;
         }).when(challengeLogic).populateChallenges(any());
@@ -74,7 +75,7 @@ class ChallengeProgressCacheTest {
         );
 
         IslandKey islandKey = IslandKey.fromIslandName("0,0");
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 3, 1));
 
         cache.replaceLoaded(islandKey, progress);

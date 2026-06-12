@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.BiomeReward;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.RewardAction;
 import us.talabrek.ultimateskyblock.challenge.catalog.RewardBundle;
@@ -42,8 +43,8 @@ public class IslandBiomeUnlocks {
         if (island == null) {
             return unlocked;
         }
-        Map<ChallengeKey, ChallengeCompletion> progress = challengeLogic.completionLogic.getIslandChallenges(island.getName());
-        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : progress.entrySet()) {
+        Map<ChallengeId, ChallengeCompletion> progress = challengeLogic.completionLogic.getIslandChallenges(island.getName());
+        for (Map.Entry<ChallengeId, ChallengeCompletion> entry : progress.entrySet()) {
             if (entry.getValue().getTimesCompleted() > 0) {
                 challengeLogic.getDefinitionById(entry.getKey()).ifPresent(challenge -> {
                     collectBiomes(challenge.firstCompletionReward(), unlocked);

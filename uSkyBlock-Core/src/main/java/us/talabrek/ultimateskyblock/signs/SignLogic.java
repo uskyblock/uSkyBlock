@@ -25,7 +25,7 @@ import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -227,7 +227,7 @@ public class SignLogic {
             return;  // TODO: proper player feedback
         }
         ChallengeDefinition challenge = result.getChallenge();
-        ChallengeKey challengeId = result.getChallengeKey();
+        ChallengeId challengeId = result.getChallengeId();
         if (requirementSpecs(challenge).isEmpty()) {
             // Signs only support item hand-in challenges.
             return;
@@ -352,12 +352,12 @@ public class SignLogic {
                     return; // TODO: proper player feedback
                 }
                 // Availability and unlock checks happen in the executor on the main thread.
-                scheduler.sync(() -> tryComplete(player, chestLoc, lookupResult.getChallengeKey()));
+                scheduler.sync(() -> tryComplete(player, chestLoc, lookupResult.getChallengeId()));
             }
         }
     }
 
-    private void tryComplete(Player player, Location chestLoc, ChallengeKey challengeId) {
+    private void tryComplete(Player player, Location chestLoc, ChallengeId challengeId) {
         BlockState state = chestLoc.getBlock().getState();
         if (!(state instanceof Chest chest)) {
             return;

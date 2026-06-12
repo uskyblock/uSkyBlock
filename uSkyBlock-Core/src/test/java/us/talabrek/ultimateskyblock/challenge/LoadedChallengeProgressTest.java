@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 
 import java.time.Duration;
@@ -13,21 +14,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoadedChallengeProgressTest {
     private static final IslandKey ISLAND = IslandKey.fromIslandName("2,3");
-    private static final ChallengeKey CHALLENGE_ID = ChallengeKey.of("testchallenge");
+    private static final ChallengeId CHALLENGE_ID = ChallengeId.of("testchallenge");
 
     @Test
     public void snapshotIsDefensiveCopy() {
-        Map<ChallengeKey, ChallengeCompletion> initial = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> initial = new HashMap<>();
         initial.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 1, 1));
         LoadedChallengeProgress loaded = new LoadedChallengeProgress(ISLAND, initial);
 
-        Map<ChallengeKey, ChallengeCompletion> snapshot = loaded.snapshot();
+        Map<ChallengeId, ChallengeCompletion> snapshot = loaded.snapshot();
         snapshot.get(CHALLENGE_ID).addTimesCompleted();
-        snapshot.put(ChallengeKey.of("other"), new ChallengeCompletion(ChallengeKey.of("other"), null, 5, 0));
+        snapshot.put(ChallengeId.of("other"), new ChallengeCompletion(ChallengeId.of("other"), null, 5, 0));
 
-        Map<ChallengeKey, ChallengeCompletion> fresh = loaded.snapshot();
+        Map<ChallengeId, ChallengeCompletion> fresh = loaded.snapshot();
         assertEquals(1, fresh.get(CHALLENGE_ID).getTimesCompleted());
-        assertFalse(fresh.containsKey(ChallengeKey.of("other")));
+        assertFalse(fresh.containsKey(ChallengeId.of("other")));
     }
 
     @Test

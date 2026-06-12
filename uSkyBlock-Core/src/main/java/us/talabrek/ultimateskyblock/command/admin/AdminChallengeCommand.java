@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.challenge.view.ChallengeMenu;
@@ -55,7 +55,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 } else {
                     challengeLogic.resetChallengeForAdmin(pi, completion.getId(),
                         () -> sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
-                            unparsed("challenge-id", completion.getId().id(), PRIMARY),
+                            unparsed("challenge-id", completion.getId().value(), PRIMARY),
                             unparsed("player", playerName, PRIMARY)),
                         error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
                 }
@@ -77,8 +77,8 @@ public class AdminChallengeCommand extends CompositeCommand {
         add(new RankCommand("rank", null, marktr("complete all challenges in the rank")) {
             @Override
             protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenges) {
-                List<ChallengeKey> incomplete = challenges.stream()
-                    .map(challenge -> ChallengeKey.of(challenge.id().value()))
+                List<ChallengeId> incomplete = challenges.stream()
+                    .map(challenge -> challenge.id())
                     .filter(id -> {
                         ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, id);
                         return completion == null || completion.getTimesCompleted() == 0;
@@ -114,15 +114,15 @@ public class AdminChallengeCommand extends CompositeCommand {
         });
     }
 
-    private void completeChallenge(CommandSender sender, PlayerInfo playerInfo, ChallengeKey challengeId) {
+    private void completeChallenge(CommandSender sender, PlayerInfo playerInfo, ChallengeId challengeId) {
         ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challengeId);
         Objects.requireNonNull(completion);
         if (completion.getTimesCompleted() > 0) {
-            sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.id()));
+            sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.value()));
         } else {
             challengeLogic.completeChallengeForAdmin(playerInfo, challengeId,
                 () -> sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
-                    unparsed("challenge-id", challengeId.id(), PRIMARY),
+                    unparsed("challenge-id", challengeId.value(), PRIMARY),
                     unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
                 error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
         }
@@ -157,7 +157,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 var result = challengeLogic.resolveChallenge(userInput);
                 switch (result.getStatus()) {
                     case FOUND -> {
-                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeKey());
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeId());
                         if (completion != null) {
                             doExecute(sender, playerInfo, completion);
                             return true;

@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 public class ChallengeExecutorTest {
     private static final IslandKey ISLAND = IslandKey.fromIslandName("1,1");
-    private static final ChallengeKey CHALLENGE_ID = ChallengeKey.of("testchallenge");
+    private static final ChallengeId CHALLENGE_ID = ChallengeId.of("testchallenge");
 
     private final ChallengeProgressRepository repository = mock(ChallengeProgressRepository.class);
     private final ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
@@ -119,7 +119,7 @@ public class ChallengeExecutorTest {
     ) {
         ItemStackSpec stone = gameObjects.itemStack("minecraft:stone");
         return new ChallengeDefinition(
-            ChallengeId.of(CHALLENGE_ID.id()),
+            CHALLENGE_ID,
             new DisplaySpec(TextSpec.miniMessage("Test Challenge"), TextSpec.empty(), stone),
             stone,
             unlock,
@@ -276,7 +276,7 @@ public class ChallengeExecutorTest {
     @Test
     public void adminCompleteAllBatchesIntoOneLockAndPersist() {
         ChallengeExecutor executor = executor(simpleChallenge());
-        ChallengeKey secondId = ChallengeKey.of("secondchallenge");
+        ChallengeId secondId = ChallengeId.of("secondchallenge");
         // Build before stubbing: construction touches the mocked server's item factory.
         Optional<ChallengeDefinition> second = Optional.of(simpleChallenge());
         when(challengeLogic.getDefinitionById(secondId)).thenReturn(second);
@@ -299,7 +299,7 @@ public class ChallengeExecutorTest {
     @Test
     public void adminResetReportsErrorAndLocksWhenPersistFails() {
         ChallengeExecutor executor = executor(simpleChallenge());
-        Map<ChallengeKey, ChallengeCompletion> existing = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> existing = new HashMap<>();
         existing.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 3, 1));
         progressCache.replaceLoaded(ISLAND, existing);
         doThrow(new IllegalStateException("database unavailable")).when(repository).replace(any(), any());
@@ -338,11 +338,11 @@ public class ChallengeExecutorTest {
     @Test
     public void adminResetAllRestoresDefaultProgress() {
         ChallengeExecutor executor = executor(simpleChallenge());
-        Map<ChallengeKey, ChallengeCompletion> existing = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> existing = new HashMap<>();
         existing.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 3, 1));
         progressCache.replaceLoaded(ISLAND, existing);
         org.mockito.Mockito.doAnswer(invocation -> {
-            Map<ChallengeKey, ChallengeCompletion> map = invocation.getArgument(0);
+            Map<ChallengeId, ChallengeCompletion> map = invocation.getArgument(0);
             map.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 0, 0));
             return null;
         }).when(challengeLogic).populateChallenges(any());

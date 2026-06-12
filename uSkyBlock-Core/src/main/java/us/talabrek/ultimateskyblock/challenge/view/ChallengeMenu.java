@@ -5,11 +5,10 @@ import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
-import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
 import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -57,7 +56,7 @@ public class ChallengeMenu {
     private void show(@NotNull Player viewer, @NotNull PlayerInfo target, int page) {
         ChallengeUnlockEvaluator.UnlockContext context = challengeLogic.unlockContextFor(target);
         ChallengePresentationState state = presentationState(context);
-        Map<ChallengeKey, ChallengeCompletion> progress = context.progress();
+        Map<ChallengeId, ChallengeCompletion> progress = context.progress();
         boolean economyEnabled = runtimeConfigs.current().challenges().enableEconomyRewards();
         int totalPages = Math.max(1, (int) Math.ceil(
             challengeLogic.getCatalog().ranks().size() / (double) ChallengeMenuViewAssembler.RANKS_PER_PAGE));

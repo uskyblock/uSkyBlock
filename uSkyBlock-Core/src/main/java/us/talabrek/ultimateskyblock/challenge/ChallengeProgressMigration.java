@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.BackupFileUtil;
@@ -66,7 +67,7 @@ final class ChallengeProgressMigration {
             return;
         }
 
-        Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress = new HashMap<>();
+        Map<IslandKey, Map<ChallengeId, ChallengeCompletion>> migratedProgress = new HashMap<>();
         Map<IslandKey, List<Path>> migratedFiles = new HashMap<>();
         Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs = new HashMap<>();
         MigrationCounters counters = new MigrationCounters();
@@ -75,9 +76,9 @@ final class ChallengeProgressMigration {
         migrateLegacyPlayerFiles(migratedProgress, migratedPlayerConfigs, completionFiles, counters);
 
         int migratedIslands = 0;
-        for (Map.Entry<IslandKey, Map<ChallengeKey, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
+        for (Map.Entry<IslandKey, Map<ChallengeId, ChallengeCompletion>> entry : migratedProgress.entrySet()) {
             IslandKey islandKey = entry.getKey();
-            Map<ChallengeKey, ChallengeCompletion> merged = loadOrPopulateProgress(islandKey);
+            Map<ChallengeId, ChallengeCompletion> merged = loadOrPopulateProgress(islandKey);
             mergeProgress(merged, entry.getValue());
             repository.replace(islandKey, merged);
 
@@ -108,15 +109,15 @@ final class ChallengeProgressMigration {
         }
     }
 
-    private @NotNull Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
-        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
+    private @NotNull Map<ChallengeId, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
+        Map<ChallengeId, ChallengeCompletion> challengeMap = new HashMap<>();
         challengeLogic.populateChallenges(challengeMap);
         challengeMap.putAll(repository.load(islandKey));
         return challengeMap;
     }
 
     private @NotNull CompletionScanResult migrateLegacyCompletionFiles(
-        @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
+        @NotNull Map<IslandKey, Map<ChallengeId, ChallengeCompletion>> migratedProgress,
         @NotNull Map<IslandKey, List<Path>> migratedFiles,
         @NotNull MigrationCounters counters
     ) {
@@ -146,7 +147,7 @@ final class ChallengeProgressMigration {
     }
 
     private void migrateLegacyPlayerFiles(
-        @NotNull Map<IslandKey, Map<ChallengeKey, ChallengeCompletion>> migratedProgress,
+        @NotNull Map<IslandKey, Map<ChallengeId, ChallengeCompletion>> migratedProgress,
         @NotNull Map<IslandKey, List<LegacyPlayerProgress>> migratedPlayerConfigs,
         @NotNull CompletionScanResult completionFiles,
         @NotNull MigrationCounters counters
@@ -332,7 +333,7 @@ final class ChallengeProgressMigration {
         }
     }
 
-    private @NotNull Map<ChallengeKey, ChallengeCompletion> loadLegacyFile(@NotNull File configFile) {
+    private @NotNull Map<ChallengeId, ChallengeCompletion> loadLegacyFile(@NotNull File configFile) {
         FileConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
         if (fileConfiguration.getRoot() == null) {
             return Collections.emptyMap();
@@ -340,13 +341,13 @@ final class ChallengeProgressMigration {
         return loadFromConfiguration(fileConfiguration.getRoot());
     }
 
-    private @NotNull Map<ChallengeKey, ChallengeCompletion> loadFromConfiguration(ConfigurationSection root) {
-        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
+    private @NotNull Map<ChallengeId, ChallengeCompletion> loadFromConfiguration(ConfigurationSection root) {
+        Map<ChallengeId, ChallengeCompletion> challengeMap = new HashMap<>();
         if (root != null) {
             for (String challengeName : root.getKeys(false)) {
                 long firstCompleted = root.getLong(challengeName + ".firstCompleted", 0);
                 Instant firstCompletedDuration = firstCompleted > 0 ? Instant.ofEpochMilli(firstCompleted) : null;
-                ChallengeKey challengeId = ChallengeKey.of(challengeName);
+                ChallengeId challengeId = ChallengeId.of(challengeName);
                 challengeMap.put(challengeId, new ChallengeCompletion(
                     challengeId,
                     firstCompletedDuration,
@@ -358,8 +359,8 @@ final class ChallengeProgressMigration {
         return challengeMap;
     }
 
-    private void mergeProgress(@NotNull Map<ChallengeKey, ChallengeCompletion> target, @NotNull Map<ChallengeKey, ChallengeCompletion> incoming) {
-        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : incoming.entrySet()) {
+    private void mergeProgress(@NotNull Map<ChallengeId, ChallengeCompletion> target, @NotNull Map<ChallengeId, ChallengeCompletion> incoming) {
+        for (Map.Entry<ChallengeId, ChallengeCompletion> entry : incoming.entrySet()) {
             ChallengeCompletion existing = target.get(entry.getKey());
             if (existing == null) {
                 target.put(entry.getKey(), entry.getValue());
@@ -370,7 +371,7 @@ final class ChallengeProgressMigration {
     }
 
     private ChallengeCompletion mergeCompletion(
-        @NotNull ChallengeKey challengeKey,
+        @NotNull ChallengeId challengeKey,
         @NotNull ChallengeCompletion left,
         @NotNull ChallengeCompletion right
     ) {

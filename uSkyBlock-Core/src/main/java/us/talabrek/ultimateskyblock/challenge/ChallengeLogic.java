@@ -93,8 +93,8 @@ public class ChallengeLogic implements Listener {
     /**
      * Catalog definition lookup by canonical id.
      */
-    public Optional<ChallengeDefinition> getDefinitionById(@NotNull ChallengeKey key) {
-        return catalog.challenge(ChallengeId.of(key.id()));
+    public Optional<ChallengeDefinition> getDefinitionById(@NotNull ChallengeId id) {
+        return catalog.challenge(id);
     }
 
     public boolean isEnabled() {
@@ -144,9 +144,9 @@ public class ChallengeLogic implements Listener {
             return challenge;
         }
 
-        public @NotNull ChallengeKey getChallengeKey() {
+        public @NotNull ChallengeId getChallengeId() {
             Objects.requireNonNull(challenge, "challenge");
-            return ChallengeKey.of(challenge.id().value());
+            return challenge.id();
         }
 
         public @NotNull List<String> getSuggestions() {
@@ -245,15 +245,15 @@ public class ChallengeLogic implements Listener {
         return list;
     }
 
-    public @NotNull List<ChallengeKey> getAvailableChallenges(PlayerInfo playerInfo) {
-        List<ChallengeKey> list = new ArrayList<>();
+    public @NotNull List<ChallengeId> getAvailableChallenges(PlayerInfo playerInfo) {
+        List<ChallengeId> list = new ArrayList<>();
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return list;
         }
         ChallengeUnlockEvaluator.UnlockContext context = unlockContextFor(playerInfo);
         for (ChallengeDefinition challenge : catalog.index().challengesById().values()) {
             if (unlockEvaluator.isChallengeUnlocked(challenge, context)) {
-                list.add(ChallengeKey.of(challenge.id().value()));
+                list.add(challenge.id());
             }
         }
         return list;
@@ -273,25 +273,23 @@ public class ChallengeLogic implements Listener {
         );
     }
 
-    public @NotNull List<ChallengeKey> getAllChallengeIds() {
-        return catalog.index().challengesById().keySet().stream()
-            .map(id -> ChallengeKey.of(id.value()))
-            .toList();
+    public @NotNull List<ChallengeId> getAllChallengeIds() {
+        return List.copyOf(catalog.index().challengesById().keySet());
     }
 
     public @NotNull List<ChallengeDefinition> getChallengesForRank(String rank) {
         return catalog.rank(RankId.of(rank)).map(RankDefinition::challenges).orElse(List.of());
     }
 
-    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeId id) {
         challengeExecutor.attempt(player, id);
     }
 
-    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id, @NotNull List<Inventory> itemSources) {
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeId id, @NotNull List<Inventory> itemSources) {
         challengeExecutor.attempt(player, id, itemSources);
     }
 
-    public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
+    public void completeChallenge(@NotNull Player player, @NotNull ChallengeId id, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
         challengeExecutor.attempt(player, id, itemSources, onSettled);
     }
 
@@ -305,9 +303,8 @@ public class ChallengeLogic implements Listener {
             .mapToInt(ItemStack::getAmount).sum();
     }
 
-    public void populateChallenges(Map<ChallengeKey, ChallengeCompletion> challengeMap) {
-        for (ChallengeId challengeId : catalog.index().challengesById().keySet()) {
-            ChallengeKey id = ChallengeKey.of(challengeId.value());
+    public void populateChallenges(Map<ChallengeId, ChallengeCompletion> challengeMap) {
+        for (ChallengeId id : catalog.index().challengesById().keySet()) {
             if (!challengeMap.containsKey(id)) {
                 challengeMap.put(id, new ChallengeCompletion(id, null, 0, 0));
             }
@@ -326,17 +323,17 @@ public class ChallengeLogic implements Listener {
         return runtimeConfigs.current().challenges().broadcast().prefix();
     }
 
-    public void completeChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,
+    public void completeChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeId challengeId,
                                           @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
         challengeExecutor.adminComplete(target, challengeId, onSuccess, onError);
     }
 
-    public void completeChallengesForAdmin(@NotNull PlayerInfo target, @NotNull Collection<ChallengeKey> challengeIds,
+    public void completeChallengesForAdmin(@NotNull PlayerInfo target, @NotNull Collection<ChallengeId> challengeIds,
                                            @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
         challengeExecutor.adminCompleteAll(target, challengeIds, onSuccess, onError);
     }
 
-    public void resetChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,
+    public void resetChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeId challengeId,
                                        @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
         challengeExecutor.adminReset(target, challengeId, onSuccess, onError);
     }
@@ -346,16 +343,16 @@ public class ChallengeLogic implements Listener {
         challengeExecutor.adminResetAll(target, onSuccess, onError);
     }
 
-    public int checkChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
+    public int checkChallenge(PlayerInfo playerInfo, ChallengeId challengeId) {
         return completionLogic.checkChallenge(playerInfo, challengeId);
     }
 
-    public @Nullable ChallengeCompletion getChallengeCompletion(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey challengeId) {
+    public @Nullable ChallengeCompletion getChallengeCompletion(@NotNull PlayerInfo playerInfo, @NotNull ChallengeId challengeId) {
         return completionLogic.getChallenge(playerInfo, challengeId);
     }
 
-    public @Nullable ChallengeCompletion getIslandCompletion(@NotNull String islandName, @NotNull ChallengeKey challengeId) {
-        Map<ChallengeKey, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
+    public @Nullable ChallengeCompletion getIslandCompletion(@NotNull String islandName, @NotNull ChallengeId challengeId) {
+        Map<ChallengeId, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
         return challenges.get(challengeId);
     }
 
@@ -372,9 +369,9 @@ public class ChallengeLogic implements Listener {
         if (!(e.getPlayerInfo() instanceof PlayerInfo playerInfo)) {
             return;
         }
-        Map<ChallengeKey, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
+        Map<ChallengeId, ChallengeCompletion> completions = completionLogic.getIslandChallenges(e.getIslandInfo().getName());
         List<String> permissions = new ArrayList<>();
-        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : completions.entrySet()) {
+        for (Map.Entry<ChallengeId, ChallengeCompletion> entry : completions.entrySet()) {
             if (entry.getValue().getTimesCompleted() > 0) {
                 // Stored progress may reference challenges removed from challenges.yml.
                 getDefinitionById(entry.getKey()).ifPresent(challenge -> {

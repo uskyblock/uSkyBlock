@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 
 import java.time.Duration;
@@ -11,12 +12,12 @@ import java.util.Objects;
 
 public final class LoadedChallengeProgress {
     private final IslandKey islandKey;
-    private Map<ChallengeKey, ChallengeCompletion> progress;
+    private Map<ChallengeId, ChallengeCompletion> progress;
     private Instant lastAccessAt;
     private boolean completionInFlight;
     private boolean writeLocked;
 
-    public LoadedChallengeProgress(@NotNull IslandKey islandKey, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
+    public LoadedChallengeProgress(@NotNull IslandKey islandKey, @NotNull Map<ChallengeId, ChallengeCompletion> progress) {
         this.islandKey = Objects.requireNonNull(islandKey, "islandKey");
         this.progress = copyProgress(progress);
         this.lastAccessAt = Instant.now();
@@ -26,12 +27,12 @@ public final class LoadedChallengeProgress {
         return islandKey;
     }
 
-    public synchronized @NotNull Map<ChallengeKey, ChallengeCompletion> snapshot() {
+    public synchronized @NotNull Map<ChallengeId, ChallengeCompletion> snapshot() {
         touch();
         return copyProgress(progress);
     }
 
-    public synchronized void replace(@NotNull Map<ChallengeKey, ChallengeCompletion> newProgress) {
+    public synchronized void replace(@NotNull Map<ChallengeId, ChallengeCompletion> newProgress) {
         this.progress = copyProgress(newProgress);
         touch();
     }
@@ -77,9 +78,9 @@ public final class LoadedChallengeProgress {
         lastAccessAt = Instant.now();
     }
 
-    public static @NotNull Map<ChallengeKey, ChallengeCompletion> copyProgress(@NotNull Map<ChallengeKey, ChallengeCompletion> source) {
-        Map<ChallengeKey, ChallengeCompletion> copy = new HashMap<>();
-        for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : source.entrySet()) {
+    public static @NotNull Map<ChallengeId, ChallengeCompletion> copyProgress(@NotNull Map<ChallengeId, ChallengeCompletion> source) {
+        Map<ChallengeId, ChallengeCompletion> copy = new HashMap<>();
+        for (Map.Entry<ChallengeId, ChallengeCompletion> entry : source.entrySet()) {
             ChallengeCompletion completion = entry.getValue();
             copy.put(entry.getKey(), new ChallengeCompletion(
                 completion.getId(),

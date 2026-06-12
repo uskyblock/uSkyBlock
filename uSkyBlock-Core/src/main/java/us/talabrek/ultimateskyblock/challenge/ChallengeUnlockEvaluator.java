@@ -46,7 +46,7 @@ public final class ChallengeUnlockEvaluator {
      *                        (e.g. evaluating for an offline island leader).
      */
     public record UnlockContext(
-        @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
+        @NotNull Map<ChallengeId, ChallengeCompletion> progress,
         @NotNull Predicate<String> permissionCheck,
         double islandLevel
     ) {
@@ -128,10 +128,10 @@ public final class ChallengeUnlockEvaluator {
         return unlocked;
     }
 
-    public int completedChallenges(@NotNull RankDefinition rank, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
+    public int completedChallenges(@NotNull RankDefinition rank, @NotNull Map<ChallengeId, ChallengeCompletion> progress) {
         int completed = 0;
         for (ChallengeDefinition challenge : rank.challenges()) {
-            ChallengeCompletion completion = progress.get(ChallengeKey.of(challenge.id().value()));
+            ChallengeCompletion completion = progress.get(challenge.id());
             if (completion != null && completion.getTimesCompleted() > 0) {
                 completed++;
             }
@@ -160,7 +160,7 @@ public final class ChallengeUnlockEvaluator {
     private void checkChallenges(@NotNull List<ChallengeId> challengeIds, @NotNull UnlockContext context, @NotNull List<MissingRequirement> missing) {
         List<ChallengeId> notCompleted = new ArrayList<>();
         for (ChallengeId challengeId : challengeIds) {
-            ChallengeCompletion completion = context.progress().get(ChallengeKey.of(challengeId.value()));
+            ChallengeCompletion completion = context.progress().get(challengeId);
             if (completion == null || completion.getTimesCompleted() == 0) {
                 notCompleted.add(challengeId);
             }

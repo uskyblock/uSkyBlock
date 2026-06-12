@@ -38,7 +38,7 @@ public class ChallengeCompleteCommand extends AbstractCommand {
         String challengeName = String.join(" ", args);
         var result = challengeLogic.resolveChallenge(challengeName);
         switch (result.getStatus()) {
-            case FOUND -> challengeLogic.completeChallenge(player, result.getChallengeKey());
+            case FOUND -> challengeLogic.completeChallenge(player, result.getChallengeId());
             case AMBIGUOUS -> {
                 String hint = result.getSuggestions().isEmpty() ? "" : " " + String.join(", ", result.getSuggestions());
                 sendErrorTr(player, "Ambiguous challenge name: <input>. Did you mean:<suggestions>",

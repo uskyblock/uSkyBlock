@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.challenge;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -59,7 +60,7 @@ public final class ChallengeProgressCache {
         return loading.computeIfAbsent(islandKey, this::startLoad);
     }
 
-    public void replaceLoaded(@NotNull IslandKey islandKey, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
+    public void replaceLoaded(@NotNull IslandKey islandKey, @NotNull Map<ChallengeId, ChallengeCompletion> progress) {
         loaded.compute(islandKey, (key, existing) -> {
             if (existing == null) {
                 return new LoadedChallengeProgress(key, progress);
@@ -69,8 +70,8 @@ public final class ChallengeProgressCache {
         });
     }
 
-    public @NotNull Map<ChallengeKey, ChallengeCompletion> loadSynchronously(@NotNull IslandKey islandKey) {
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+    public @NotNull Map<ChallengeId, ChallengeCompletion> loadSynchronously(@NotNull IslandKey islandKey) {
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         challengeLogic.populateChallenges(progress);
         progress.putAll(repository.load(islandKey));
         // Publish so repeated synchronous reads (e.g. the biome gate) hit the database once.

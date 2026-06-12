@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -74,21 +75,21 @@ public class ChallengeCompletionLogic {
         }));
     }
 
-    public Map<ChallengeKey, ChallengeCompletion> getIslandChallenges(@Nullable String islandName) {
+    public Map<ChallengeId, ChallengeCompletion> getIslandChallenges(@Nullable String islandName) {
         if (islandName == null) {
             return new HashMap<>();
         }
         return getLoadedOrLoad(IslandKey.fromIslandName(islandName));
     }
 
-    public Map<ChallengeKey, ChallengeCompletion> getChallenges(@Nullable PlayerInfo playerInfo) {
+    public Map<ChallengeId, ChallengeCompletion> getChallenges(@Nullable PlayerInfo playerInfo) {
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
             return new HashMap<>();
         }
         return getLoadedOrLoad(getIslandKey(playerInfo));
     }
 
-    private @NotNull Map<ChallengeKey, ChallengeCompletion> getLoadedOrLoad(@NotNull IslandKey islandKey) {
+    private @NotNull Map<ChallengeId, ChallengeCompletion> getLoadedOrLoad(@NotNull IslandKey islandKey) {
         try {
             return progressCache.getIfLoaded(islandKey)
                 .map(LoadedChallengeProgress::snapshot)
@@ -99,11 +100,11 @@ public class ChallengeCompletionLogic {
         }
     }
 
-    public int checkChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey id) {
+    public int checkChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeId id) {
         return getChallenges(playerInfo).getOrDefault(id, new ChallengeCompletion(id, null, 0, 0)).getTimesCompleted();
     }
 
-    public @Nullable ChallengeCompletion getChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeKey id) {
+    public @Nullable ChallengeCompletion getChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeId id) {
         return getChallenges(playerInfo).get(id);
     }
 

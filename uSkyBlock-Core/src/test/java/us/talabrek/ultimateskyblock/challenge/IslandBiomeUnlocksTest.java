@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class IslandBiomeUnlocksTest {
-    private static final ChallengeKey CHALLENGE_ID = ChallengeKey.of("fisherman");
+    private static final ChallengeId CHALLENGE_ID = ChallengeId.of("fisherman");
 
     private final ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
     private final ChallengeCompletionLogic completionLogic = mock(ChallengeCompletionLogic.class);
@@ -57,7 +57,7 @@ public class IslandBiomeUnlocksTest {
 
     @Test
     public void derivesUnlocksFromCompletedChallengeRewards() {
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 1, 0));
         // Build before stubbing: construction touches the mocked server's item factory.
         Optional<ChallengeDefinition> challenge = Optional.of(biomeRewardChallenge("deep_ocean"));
@@ -70,7 +70,7 @@ public class IslandBiomeUnlocksTest {
 
     @Test
     public void uncompletedChallengesUnlockNothing() {
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 0, 0));
         when(completionLogic.getIslandChallenges("0,0")).thenReturn(progress);
 
@@ -128,7 +128,7 @@ public class IslandBiomeUnlocksTest {
     private ChallengeDefinition biomeRewardChallenge(String biome) {
         ItemStackSpec stone = new GameObjectFactory().itemStack("minecraft:stone");
         return new ChallengeDefinition(
-            ChallengeId.of(CHALLENGE_ID.id()),
+            CHALLENGE_ID,
             new DisplaySpec(TextSpec.miniMessage("Fisherman"), TextSpec.empty(), stone),
             stone,
             List.of(),

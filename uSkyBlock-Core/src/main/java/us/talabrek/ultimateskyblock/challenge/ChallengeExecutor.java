@@ -17,6 +17,7 @@ import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.MissingRequirement;
 import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.UnlockContext;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.BlockRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletionRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityPresenceRequirement;
@@ -95,11 +96,11 @@ public final class ChallengeExecutor {
         this.repository = Objects.requireNonNull(repository, "repository");
     }
 
-    public void attempt(@NotNull Player player, @NotNull ChallengeKey challengeId) {
+    public void attempt(@NotNull Player player, @NotNull ChallengeId challengeId) {
         attempt(player, challengeId, List.of(player.getInventory()));
     }
 
-    public void attempt(@NotNull Player player, @NotNull ChallengeKey challengeId, @NotNull List<Inventory> itemSources) {
+    public void attempt(@NotNull Player player, @NotNull ChallengeId challengeId, @NotNull List<Inventory> itemSources) {
         attempt(player, challengeId, itemSources, () -> {
         });
     }
@@ -108,7 +109,7 @@ public final class ChallengeExecutor {
      * @param onSettled runs on the main thread once the attempt has terminally settled
      *                  (success, failure, or rejection) - in-memory state is current by then.
      */
-    public void attempt(@NotNull Player player, @NotNull ChallengeKey challengeId, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
+    public void attempt(@NotNull Player player, @NotNull ChallengeId challengeId, @NotNull List<Inventory> itemSources, @NotNull Runnable onSettled) {
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
             sendErrorTr(player, "You can only submit challenges when you have an island!");
@@ -117,7 +118,7 @@ public final class ChallengeExecutor {
 
         Optional<ChallengeDefinition> definition = challengeLogic.getDefinitionById(challengeId);
         if (definition.isEmpty()) {
-            sendErrorTr(player, "No challenge with id <challenge-id> found", unparsed("challenge-id", challengeId.id()));
+            sendErrorTr(player, "No challenge with id <challenge-id> found", unparsed("challenge-id", challengeId.value()));
             return;
         }
 
@@ -165,8 +166,8 @@ public final class ChallengeExecutor {
         }
 
         try {
-            Map<ChallengeKey, ChallengeCompletion> progress = loaded.snapshot();
-            ChallengeKey challengeKey = ChallengeKey.of(challenge.id().value());
+            Map<ChallengeId, ChallengeCompletion> progress = loaded.snapshot();
+            ChallengeId challengeKey = challenge.id();
             ChallengeCompletion completion = progress.computeIfAbsent(challengeKey, id -> new ChallengeCompletion(id, null, 0, 0));
 
             UnlockContext context = new UnlockContext(progress, player::hasPermission, islandLevel(player));
@@ -265,13 +266,13 @@ public final class ChallengeExecutor {
         @NotNull PlayerInfo playerInfo,
         @NotNull ChallengeDefinition challenge,
         @NotNull LoadedChallengeProgress loaded,
-        @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
+        @NotNull Map<ChallengeId, ChallengeCompletion> progress,
         boolean isFirstCompletion,
         @NotNull Map<ItemStack, Integer> consumedItems,
         @NotNull Set<RankId> newlyUnlockedRanks,
         @NotNull Runnable onSettled
     ) {
-        Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
+        Map<ChallengeId, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
         scheduler.async(() -> {
             try {
                 repository.replace(loaded.islandKey(), snapshot);
@@ -321,7 +322,7 @@ public final class ChallengeExecutor {
 
     public void adminComplete(
         @NotNull PlayerInfo target,
-        @NotNull ChallengeKey challengeId,
+        @NotNull ChallengeId challengeId,
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
@@ -334,21 +335,21 @@ public final class ChallengeExecutor {
      */
     public void adminCompleteAll(
         @NotNull PlayerInfo target,
-        @NotNull Collection<ChallengeKey> challengeIds,
+        @NotNull Collection<ChallengeId> challengeIds,
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
-        Map<ChallengeKey, ChallengeDefinition> challenges = new LinkedHashMap<>();
-        for (ChallengeKey challengeId : challengeIds) {
+        Map<ChallengeId, ChallengeDefinition> challenges = new LinkedHashMap<>();
+        for (ChallengeId challengeId : challengeIds) {
             Optional<ChallengeDefinition> challenge = challengeLogic.getDefinitionById(challengeId);
             if (challenge.isEmpty()) {
-                onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.id()));
+                onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.value()));
                 return;
             }
             challenges.put(challengeId, challenge.get());
         }
         mutateProgress(target, progress -> {
-            for (Map.Entry<ChallengeKey, ChallengeDefinition> entry : challenges.entrySet()) {
+            for (Map.Entry<ChallengeId, ChallengeDefinition> entry : challenges.entrySet()) {
                 ChallengeCompletion completion = progress.computeIfAbsent(entry.getKey(), id -> new ChallengeCompletion(id, null, 0, 0));
                 if (!completion.isOnCooldown()) {
                     Duration resetWindow = entry.getValue().repeatPolicy().resetWindow();
@@ -361,7 +362,7 @@ public final class ChallengeExecutor {
 
     public void adminReset(
         @NotNull PlayerInfo target,
-        @NotNull ChallengeKey challengeId,
+        @NotNull ChallengeId challengeId,
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
@@ -389,7 +390,7 @@ public final class ChallengeExecutor {
      */
     private void mutateProgress(
         @NotNull PlayerInfo target,
-        @NotNull Consumer<Map<ChallengeKey, ChallengeCompletion>> mutation,
+        @NotNull Consumer<Map<ChallengeId, ChallengeCompletion>> mutation,
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
@@ -414,7 +415,7 @@ public final class ChallengeExecutor {
 
     private void mutateLoaded(
         @NotNull LoadedChallengeProgress loaded,
-        @NotNull Consumer<Map<ChallengeKey, ChallengeCompletion>> mutation,
+        @NotNull Consumer<Map<ChallengeId, ChallengeCompletion>> mutation,
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
@@ -428,7 +429,7 @@ public final class ChallengeExecutor {
                 + loaded.islandKey().value()));
             return;
         }
-        Map<ChallengeKey, ChallengeCompletion> progress = loaded.snapshot();
+        Map<ChallengeId, ChallengeCompletion> progress = loaded.snapshot();
         try {
             mutation.accept(progress);
         } catch (Throwable t) {
@@ -436,7 +437,7 @@ public final class ChallengeExecutor {
             onError.accept(t);
             return;
         }
-        Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
+        Map<ChallengeId, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
         scheduler.async(() -> {
             try {
                 repository.replace(loaded.islandKey(), snapshot);
@@ -456,8 +457,8 @@ public final class ChallengeExecutor {
     }
 
     private void applyCompletion(
-        @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
-        @NotNull ChallengeKey challengeKey,
+        @NotNull Map<ChallengeId, ChallengeCompletion> progress,
+        @NotNull ChallengeId challengeKey,
         @NotNull ChallengeDefinition challenge,
         @NotNull ChallengeCompletion completion
     ) {

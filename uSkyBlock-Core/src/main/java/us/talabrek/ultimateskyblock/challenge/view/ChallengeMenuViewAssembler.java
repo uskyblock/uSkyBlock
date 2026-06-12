@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.challenge.view;
 
 import net.kyori.adventure.text.Component;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeText;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
@@ -28,7 +28,7 @@ public final class ChallengeMenuViewAssembler {
     public ChallengePageView assemblePage(
         ChallengeCatalog catalog,
         ChallengePresentationState presentationState,
-        Map<ChallengeKey, ChallengeCompletion> progress,
+        Map<ChallengeId, ChallengeCompletion> progress,
         boolean economyEnabled,
         int pageNumber
     ) {
@@ -71,11 +71,11 @@ public final class ChallengeMenuViewAssembler {
         boolean rankUnlocked,
         ChallengeDefinition challenge,
         ChallengePresentationState presentationState,
-        Map<ChallengeKey, ChallengeCompletion> progress,
+        Map<ChallengeId, ChallengeCompletion> progress,
         boolean economyEnabled
     ) {
         int slotIndex = rowIndex * CHALLENGES_PER_RANK_ROW + columnIndex;
-        ChallengeCompletion completion = progress.get(ChallengeKey.of(challenge.id().value()));
+        ChallengeCompletion completion = progress.get(challenge.id());
         boolean completed = completion != null && completion.getTimesCompleted() > 0;
         if (!rankUnlocked) {
             return new ChallengeSlotView(

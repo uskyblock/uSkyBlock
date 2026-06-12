@@ -1,15 +1,16 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 
 import java.util.Map;
 import java.util.Optional;
 
 public interface ChallengeProgressRepository extends AutoCloseable {
-    @NotNull Map<ChallengeKey, ChallengeCompletion> load(@NotNull IslandKey islandKey);
+    @NotNull Map<ChallengeId, ChallengeCompletion> load(@NotNull IslandKey islandKey);
 
-    void replace(@NotNull IslandKey islandKey, @NotNull Map<ChallengeKey, ChallengeCompletion> progress);
+    void replace(@NotNull IslandKey islandKey, @NotNull Map<ChallengeId, ChallengeCompletion> progress);
 
     boolean hasProgress(@NotNull IslandKey islandKey);
 

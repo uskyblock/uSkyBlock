@@ -71,7 +71,7 @@ public class ChallengeInfoCommand extends AbstractCommand {
                         component("challenge", ChallengeText.displayName(challenge)));
                     return true;
                 }
-                ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeKey());
+                ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeId());
                 sendTr(player, "Challenge name: <challenge>",
                     component("challenge", ChallengeText.displayName(challenge), PRIMARY));
                 boolean economyEnabled = runtimeConfigs.current().challenges().enableEconomyRewards();
