@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.hook.permissions.PermissionsHook;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Placeholder;
@@ -38,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.plainText;
@@ -179,19 +177,6 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
         this.islandLocation = l != null ? l.clone() : null;
         // TODO: 09/09/2015 - R4zorax: Use the leaders home instead
         this.homeLocation = l != null ? l.clone() : null;
-    }
-
-    public void completeChallenge(Challenge challenge, boolean silent) {
-        uSkyBlock.getInstance().getChallengeLogic().completeChallenge(this, challenge.getId());
-        if (silent) {
-            return;
-        }
-        IslandInfo island = getIslandInfo();
-        if (island != null) {
-            island.sendMessageToOnlineMembers(trLegacy("<player> has completed the <challenge> challenge!",
-                unparsed("player", getPlayerName(), PRIMARY),
-                Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
-        }
     }
 
     private void setupPlayer() {

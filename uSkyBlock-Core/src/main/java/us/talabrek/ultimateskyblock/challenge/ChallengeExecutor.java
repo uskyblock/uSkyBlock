@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -65,6 +66,7 @@ public final class ChallengeExecutor {
     private final uSkyBlock plugin;
     private final Scheduler scheduler;
     private final ChallengeLogic challengeLogic;
+    private final ChallengeDefaults defaults;
     private final HookManager hookManager;
     private final PerkLogic perkLogic;
     private final ChallengeProgressCache progressCache;
@@ -75,6 +77,7 @@ public final class ChallengeExecutor {
         @NotNull uSkyBlock plugin,
         @NotNull Scheduler scheduler,
         @NotNull ChallengeLogic challengeLogic,
+        @NotNull ChallengeDefaults defaults,
         @NotNull HookManager hookManager,
         @NotNull PerkLogic perkLogic,
         @NotNull ChallengeProgressCache progressCache,
@@ -84,6 +87,7 @@ public final class ChallengeExecutor {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.scheduler = Objects.requireNonNull(scheduler, "scheduler");
         this.challengeLogic = Objects.requireNonNull(challengeLogic, "challengeLogic");
+        this.defaults = Objects.requireNonNull(defaults, "defaults");
         this.hookManager = Objects.requireNonNull(hookManager, "hookManager");
         this.perkLogic = Objects.requireNonNull(perkLogic, "perkLogic");
         this.progressCache = Objects.requireNonNull(progressCache, "progressCache");
@@ -170,20 +174,19 @@ public final class ChallengeExecutor {
             sendTr(player, "Trying to complete challenge <challenge>.",
                 Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
 
-            boolean completed = switch (challenge.getType()) {
+            RequirementCheck check = switch (challenge.getType()) {
                 case PLAYER -> tryCompleteOnPlayer(player, challenge, completion, itemSources);
-                case ISLAND -> tryCompleteOnIsland(player, challenge);
-                case ISLAND_LEVEL -> tryCompleteIslandLevel(player, challenge);
+                case ISLAND -> new RequirementCheck(tryCompleteOnIsland(player, challenge), Map.of());
+                case ISLAND_LEVEL -> new RequirementCheck(tryCompleteIslandLevel(player, challenge), Map.of());
             };
-            if (!completed) {
+            if (!check.completed()) {
                 loaded.finishCompletion();
                 return;
             }
 
-            applyReward(player, playerInfo, challenge, completion);
+            boolean isFirstCompletion = completion.getTimesCompleted() == 0;
             applyCompletion(progress, challenge, completion);
-            loaded.replace(progress);
-            persistAsync(player, loaded, progress);
+            persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems());
         } catch (Throwable t) {
             loaded.finishCompletion();
             logger.log(Level.WARNING, "Failed to complete challenge " + challenge.getId().id() + " for " + player.getName(), t);
@@ -191,24 +194,175 @@ public final class ChallengeExecutor {
         }
     }
 
-    private void persistAsync(
+    /**
+     * The in-memory state is only updated and rewards are only handed out once the completion is
+     * durable; on a persistence failure the consumed items are returned and memory still matches
+     * the database.
+     */
+    private void persistCompletion(
         @NotNull Player player,
+        @NotNull PlayerInfo playerInfo,
+        @NotNull Challenge challenge,
         @NotNull LoadedChallengeProgress loaded,
-        @NotNull Map<ChallengeKey, ChallengeCompletion> progress
+        @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
+        boolean isFirstCompletion,
+        @NotNull Map<ItemStack, Integer> consumedItems
     ) {
         Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
         scheduler.async(() -> {
             try {
                 repository.replace(loaded.islandKey(), snapshot);
-                scheduler.sync(loaded::finishCompletion);
+                scheduler.sync(() -> {
+                    loaded.replace(progress);
+                    loaded.finishCompletion();
+                    applyReward(player, playerInfo, challenge, isFirstCompletion);
+                });
             } catch (Throwable t) {
                 scheduler.sync(() -> {
                     loaded.lockWrites();
                     logger.log(Level.WARNING, "Failed to persist challenge progress for island " + loaded.islandKey().value(), t);
-                    sendErrorTr(player, "Challenge progress could not be saved. Challenge completions are now locked for this island until restart.");
+                    refundItems(player, consumedItems);
+                    sendErrorTr(player, "Challenge progress could not be saved. Challenge completions are locked for this island until the cache is flushed or the server restarts.");
                 });
             }
         });
+    }
+
+    private void refundItems(@NotNull Player player, @NotNull Map<ItemStack, Integer> consumedItems) {
+        if (consumedItems.isEmpty()) {
+            return;
+        }
+        ItemStack[] items = ItemStackUtil.asValidItemStacksWithAmount(consumedItems);
+        if (!player.isOnline()) {
+            logger.warning("Unable to return challenge hand-in items to offline player " + player.getName()
+                + ": " + Arrays.toString(items));
+            return;
+        }
+        HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(items);
+        for (ItemStack item : leftOvers.values()) {
+            player.getWorld().dropItem(player.getLocation(), item);
+        }
+        sendTr(player, "Your handed-in items were returned.");
+    }
+
+    public void adminComplete(
+        @NotNull PlayerInfo target,
+        @NotNull ChallengeKey challengeId,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        Optional<Challenge> challenge = challengeLogic.getChallengeById(challengeId);
+        if (challenge.isEmpty()) {
+            onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.id()));
+            return;
+        }
+        mutateProgress(target, progress -> {
+            ChallengeCompletion completion = progress.computeIfAbsent(challengeId, id -> new ChallengeCompletion(id, null, 0, 0));
+            if (!completion.isOnCooldown()) {
+                Duration resetDuration = challenge.get().getResetDuration();
+                completion.setCooldownUntil(resetDuration.isPositive() ? Instant.now().plus(resetDuration) : null);
+            }
+            completion.addTimesCompleted();
+        }, onSuccess, onError);
+    }
+
+    public void adminReset(
+        @NotNull PlayerInfo target,
+        @NotNull ChallengeKey challengeId,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        mutateProgress(target, progress -> {
+            ChallengeCompletion completion = progress.computeIfAbsent(challengeId, id -> new ChallengeCompletion(id, null, 0, 0));
+            completion.setTimesCompleted(0);
+            completion.setCooldownUntil(null);
+        }, onSuccess, onError);
+    }
+
+    public void adminResetAll(
+        @NotNull PlayerInfo target,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        mutateProgress(target, progress -> {
+            progress.clear();
+            challengeLogic.populateChallenges(progress);
+        }, onSuccess, onError);
+    }
+
+    /**
+     * Administrative mutations share the player completion flow's island lock and async
+     * persistence so they cannot race a completion's write-behind and silently lose either update.
+     */
+    private void mutateProgress(
+        @NotNull PlayerInfo target,
+        @NotNull Consumer<Map<ChallengeKey, ChallengeCompletion>> mutation,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        if (!target.getHasIsland() || target.locationForParty() == null) {
+            onError.accept(new IllegalStateException("Player has no island"));
+            return;
+        }
+        IslandKey islandKey = IslandKey.fromIslandName(target.locationForParty());
+        LoadedChallengeProgress existing = progressCache.getIfLoaded(islandKey).orElse(null);
+        if (existing != null) {
+            mutateLoaded(existing, mutation, onSuccess, onError);
+            return;
+        }
+        progressCache.loadAsync(islandKey).whenComplete((loaded, error) -> scheduler.sync(() -> {
+            if (error != null) {
+                onError.accept(error);
+                return;
+            }
+            mutateLoaded(loaded, mutation, onSuccess, onError);
+        }));
+    }
+
+    private void mutateLoaded(
+        @NotNull LoadedChallengeProgress loaded,
+        @NotNull Consumer<Map<ChallengeKey, ChallengeCompletion>> mutation,
+        @NotNull Runnable onSuccess,
+        @NotNull Consumer<Throwable> onError
+    ) {
+        if (loaded.isWriteLocked()) {
+            onError.accept(new IllegalStateException("Challenge progress for island " + loaded.islandKey().value()
+                + " is locked after a persistence error; flush the cache or restart the server"));
+            return;
+        }
+        if (!loaded.tryBeginCompletion()) {
+            onError.accept(new IllegalStateException("A challenge completion is already in progress for island "
+                + loaded.islandKey().value()));
+            return;
+        }
+        Map<ChallengeKey, ChallengeCompletion> progress = loaded.snapshot();
+        try {
+            mutation.accept(progress);
+        } catch (Throwable t) {
+            loaded.finishCompletion();
+            onError.accept(t);
+            return;
+        }
+        Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
+        scheduler.async(() -> {
+            try {
+                repository.replace(loaded.islandKey(), snapshot);
+                scheduler.sync(() -> {
+                    loaded.replace(progress);
+                    loaded.finishCompletion();
+                    onSuccess.run();
+                });
+            } catch (Throwable t) {
+                scheduler.sync(() -> {
+                    loaded.lockWrites();
+                    logger.log(Level.WARNING, "Failed to persist challenge progress for island " + loaded.islandKey().value(), t);
+                    onError.accept(t);
+                });
+            }
+        });
+    }
+
+    private record RequirementCheck(boolean completed, @NotNull Map<ItemStack, Integer> consumedItems) {
     }
 
     private void applyCompletion(
@@ -305,7 +459,7 @@ public final class ChallengeExecutor {
         return countMap.isEmpty();
     }
 
-    private boolean tryCompleteOnPlayer(
+    private @NotNull RequirementCheck tryCompleteOnPlayer(
         @NotNull Player player,
         @NotNull Challenge challenge,
         @NotNull ChallengeCompletion completion,
@@ -328,12 +482,13 @@ public final class ChallengeExecutor {
         }
         if (!hasAll) {
             sendTr(player, "You are still missing the following items:<items>", component("items", missingItems));
-            return false;
+            return new RequirementCheck(false, Map.of());
         }
         if (challenge.isTakeItems()) {
             removeRequiredItems(itemSources, requiredItems);
+            return new RequirementCheck(true, requiredItems);
         }
-        return true;
+        return new RequirementCheck(true, Map.of());
     }
 
     private int countOf(@NotNull Collection<Inventory> inventories, @NotNull ItemStack required) {
@@ -379,16 +534,15 @@ public final class ChallengeExecutor {
         @NotNull Player player,
         @NotNull PlayerInfo playerInfo,
         @NotNull Challenge challenge,
-        @NotNull ChallengeCompletion completion
+        boolean isFirstCompletion
     ) {
         sendTr(player, "You completed the <challenge> challenge!",
             Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
-        boolean isFirstCompletion = completion.getTimesCompleted() == 0;
         Reward reward = isFirstCompletion ? challenge.getReward() : challenge.getRepeatReward();
         player.giveExp(reward.getXpReward());
 
         boolean wasBroadcast = false;
-        if (challengeLogic.defaults.broadcastCompletion && isFirstCompletion) {
+        if (defaults.broadcastCompletion && isFirstCompletion) {
             Bukkit.getServer().broadcastMessage(FormatUtil.normalize(challengeLogic.getBroadcastText()) +
                 trLegacy("<player> has completed the <challenge> challenge!",
                     unparsed("player", player.getName(), PRIMARY),
@@ -398,7 +552,7 @@ public final class ChallengeExecutor {
 
         sendTr(player, "Item rewards: <items>", Placeholder.legacy("items", reward.getRewardText(), PRIMARY));
         sendTr(player, "XP reward: <experience:'0'>", number("experience", reward.getXpReward(), PRIMARY));
-        if (challengeLogic.defaults.enableEconomyPlugin) {
+        if (defaults.enableEconomyPlugin) {
             double rewBonus = 1;
             Perk perk = perkLogic.getPerk(player);
             rewBonus += perk.getRewBonus();

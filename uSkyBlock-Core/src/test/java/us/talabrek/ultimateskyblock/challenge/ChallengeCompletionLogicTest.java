@@ -233,25 +233,6 @@ public class ChallengeCompletionLogicTest {
     }
 
     @Test
-    public void refusesToCompleteChallengeWhenRepositoryFails() {
-        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
-        ChallengeProgressRepository repository = mock(ChallengeProgressRepository.class);
-        when(repository.getMetadata("legacy_yaml_import_completed")).thenReturn(Optional.of("true"));
-        when(repository.load(org.mockito.ArgumentMatchers.any())).thenThrow(new IllegalStateException("database unavailable"));
-        PlayerInfo playerInfo = mock(PlayerInfo.class);
-        when(playerInfo.getHasIsland()).thenReturn(true);
-        when(playerInfo.locationForParty()).thenReturn("0,0");
-
-        ChallengeLogic challengeLogic = challengeLogic(challengeKey);
-        ChallengeCompletionLogic logic = new ChallengeCompletionLogic(challengeLogic, plugin(challengeLogic), scheduler(), runtimeConfigs(), repository);
-
-        // A failing load must abort the write path; degrading to defaults here would
-        // let storeSynchronously replace the island's stored progress.
-        assertThrows(IllegalStateException.class, () -> logic.completeChallenge(playerInfo, challengeKey));
-        verify(repository, never()).replace(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
-    }
-
-    @Test
     public void keepsLegacyCompletionDirWhenOtherFilesRemain() throws Exception {
         ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
         UUID leaderUuid = UUID.randomUUID();

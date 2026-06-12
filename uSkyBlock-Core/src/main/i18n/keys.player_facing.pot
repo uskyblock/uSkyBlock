@@ -106,7 +106,6 @@ msgid "<player> has been removed from the island!"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/PlayerInfo.java
 msgid "<player> has completed the <challenge> challenge!"
 msgstr ""
 
@@ -277,7 +276,7 @@ msgid "Challenge name: <challenge>"
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
-msgid "Challenge progress could not be saved. Challenge completions are now locked for this island until restart."
+msgid "Challenge progress could not be saved. Challenge completions are locked for this island until the cache is flushed or the server restarts."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
@@ -1665,6 +1664,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/SetHomeCommand.java
 msgid "Your current location is not a safe home location."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Your handed-in items were returned."
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/WarpCommand.java

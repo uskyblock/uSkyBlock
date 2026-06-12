@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,7 +97,7 @@ public class ChallengeLogic implements Listener {
         ranks = new ChallengeCatalogRuntimeAdapter().adapt(catalog, runtimeConfigs.current().challenges());
         rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, challengeProgressRepository);
-        challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, hookManager, perkLogic, completionLogic.progressCache(), challengeProgressRepository);
+        challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, defaults, hookManager, perkLogic, completionLogic.progressCache(), challengeProgressRepository);
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -292,7 +293,7 @@ public class ChallengeLogic implements Listener {
         challengeExecutor.attempt(player, id, itemSources);
     }
 
-    public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull java.util.function.Consumer<Throwable> onError) {
+    public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull Consumer<Throwable> onError) {
         completionLogic.whenChallengesLoaded(playerInfo, onLoaded, onError);
     }
 
@@ -477,12 +478,19 @@ public class ChallengeLogic implements Listener {
         return runtimeConfigs.current().challenges().broadcast().prefix();
     }
 
-    public void completeChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
-        completionLogic.completeChallenge(playerInfo, challengeId);
+    public void completeChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,
+                                          @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
+        challengeExecutor.adminComplete(target, challengeId, onSuccess, onError);
     }
 
-    public void resetChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
-        completionLogic.resetChallenge(playerInfo, challengeId);
+    public void resetChallengeForAdmin(@NotNull PlayerInfo target, @NotNull ChallengeKey challengeId,
+                                       @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
+        challengeExecutor.adminReset(target, challengeId, onSuccess, onError);
+    }
+
+    public void resetAllChallengesForAdmin(@NotNull PlayerInfo target,
+                                           @NotNull Runnable onSuccess, @NotNull Consumer<Throwable> onError) {
+        challengeExecutor.adminResetAll(target, onSuccess, onError);
     }
 
     public int checkChallenge(PlayerInfo playerInfo, ChallengeKey challengeId) {
@@ -496,10 +504,6 @@ public class ChallengeLogic implements Listener {
     public @Nullable ChallengeCompletion getIslandCompletion(@NotNull String islandName, @NotNull ChallengeKey challengeId) {
         Map<ChallengeKey, ChallengeCompletion> challenges = completionLogic.getIslandChallenges(islandName);
         return challenges.get(challengeId);
-    }
-
-    public void resetAllChallenges(PlayerInfo playerInfo) {
-        completionLogic.resetAllChallenges(playerInfo);
     }
 
     public void shutdown() {

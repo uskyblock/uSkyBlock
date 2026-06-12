@@ -49,11 +49,11 @@ public class AdminChallengeCommand extends CompositeCommand {
                 if (completion.getTimesCompleted() == 0) {
                     sendErrorTr(sender, "This challenge has never been completed");
                 } else {
-                    challengeLogic.resetChallenge(pi, completion.getId());
-                    pi.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
-                        unparsed("challenge-id", completion.getId().id(), PRIMARY),
-                        unparsed("player", playerName, PRIMARY));
+                    challengeLogic.resetChallengeForAdmin(pi, completion.getId(),
+                        () -> sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
+                            unparsed("challenge-id", completion.getId().id(), PRIMARY),
+                            unparsed("player", playerName, PRIMARY)),
+                        error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
                 }
             }
         });
@@ -62,9 +62,9 @@ public class AdminChallengeCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
                 if (playerInfo != null) {
-                    challengeLogic.resetAllChallenges(playerInfo);
-                    playerInfo.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "<player> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+                    challengeLogic.resetAllChallengesForAdmin(playerInfo,
+                        () -> sendTr(sender, "<player> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                        error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
                     return true;
                 }
                 return false;
@@ -100,17 +100,16 @@ public class AdminChallengeCommand extends CompositeCommand {
     }
 
     private void completeChallenge(CommandSender sender, PlayerInfo playerInfo, ChallengeKey challengeId) {
-        Challenge challenge = challengeLogic.getChallengeById(challengeId).orElseThrow();
         ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challengeId);
         Objects.requireNonNull(completion);
         if (completion.getTimesCompleted() > 0) {
             sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.id()));
         } else {
-            playerInfo.completeChallenge(challenge, true);
-            playerInfo.save();
-            sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
-                unparsed("challenge-id", challengeId.id(), PRIMARY),
-                unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+            challengeLogic.completeChallengeForAdmin(playerInfo, challengeId,
+                () -> sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
+                    unparsed("challenge-id", challengeId.id(), PRIMARY),
+                    unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
         }
     }
 
