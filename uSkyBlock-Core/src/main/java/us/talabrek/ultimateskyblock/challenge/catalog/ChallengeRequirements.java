@@ -14,7 +14,7 @@ public final class ChallengeRequirements {
     private ChallengeRequirements() {
     }
 
-    public sealed interface RankUnlockRequirement permits CompletedChallengesRequirement, CompletedRankRequirement, PermissionRequirement {
+    public sealed interface RankUnlockRequirement permits CompletedChallengesRequirement, CompletedRankRequirement, PermissionRequirement, IslandLevelRequirement {
     }
 
     public sealed interface ChallengeUnlockRequirement permits CompletedChallengesRequirement, CompletedRankRequirement, PermissionRequirement, IslandLevelRequirement {
@@ -51,7 +51,7 @@ public final class ChallengeRequirements {
     }
 
     public record IslandLevelRequirement(double minimumLevel)
-        implements ChallengeUnlockRequirement, CompletionRequirement {
+        implements RankUnlockRequirement, ChallengeUnlockRequirement, CompletionRequirement {
         public IslandLevelRequirement {
             if (minimumLevel < 0) {
                 throw new IllegalArgumentException("minimumLevel cannot be negative");

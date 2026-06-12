@@ -8,7 +8,6 @@ import org.bukkit.Registry;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
@@ -57,12 +56,6 @@ public class BiomeConfig {
 
     public @NotNull List<BiomeEntry> getConfiguredBiomeEntries() {
         return configuredBiomeEntries;
-    }
-
-    public @NotNull List<BiomeEntry> getAvailableBiomes(@NotNull Player player) {
-        return configuredBiomeEntries.stream()
-            .filter(entry -> player.hasPermission("usb.biome." + entry.biome().getKey().getKey()))
-            .toList();
     }
 
     public @NotNull List<String> getConfiguredBiomeKeys() {

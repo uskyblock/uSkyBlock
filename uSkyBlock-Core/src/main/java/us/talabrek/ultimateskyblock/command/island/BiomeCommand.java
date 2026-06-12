@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.biome.BiomeConfig;
 import us.talabrek.ultimateskyblock.biome.Biomes;
+import us.talabrek.ultimateskyblock.challenge.IslandBiomeUnlocks;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -35,14 +36,17 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 public class BiomeCommand extends RequireIslandCommand {
     private final Biomes biomes;
     private final BiomeConfig biomeConfig;
+    private final IslandBiomeUnlocks biomeUnlocks;
     private final Scheduler scheduler;
     private final RuntimeConfigs runtimeConfigs;
 
     @Inject
-    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig, @NotNull Scheduler scheduler, @NotNull RuntimeConfigs runtimeConfigs) {
+    public BiomeCommand(@NotNull uSkyBlock plugin, @NotNull Biomes biomes, @NotNull BiomeConfig biomeConfig,
+                        @NotNull IslandBiomeUnlocks biomeUnlocks, @NotNull Scheduler scheduler, @NotNull RuntimeConfigs runtimeConfigs) {
         super(plugin, "biome|b", null, "biome ?radius", marktr("change the biome of the island"));
         this.biomes = biomes;
         this.biomeConfig = biomeConfig;
+        this.biomeUnlocks = biomeUnlocks;
         this.scheduler = scheduler;
         this.runtimeConfigs = runtimeConfigs;
         addFeaturePermission("usb.exempt.cooldown.biome", trLegacy("exempt player from biome-cooldown"));
@@ -86,7 +90,8 @@ public class BiomeCommand extends RequireIslandCommand {
                     number("seconds", cooldown.toSeconds(), PRIMARY));
                 return true;
             }
-            if (!player.hasPermission("usb.biome." + biomeKey.toLowerCase())) {
+            // Gate on the Registry-matched key, not the raw argument.
+            if (!biomeUnlocks.canUseBiome(player, island, biome.getKey().getKey())) {
                 sendErrorTr(player, "You do not have permission to change your biome to that type.");
                 return true;
             }

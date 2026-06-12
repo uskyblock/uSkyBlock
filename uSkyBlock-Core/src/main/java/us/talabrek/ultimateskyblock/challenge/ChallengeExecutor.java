@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.api.event.ChallengeRankUnlockedEvent;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
 import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.MissingRequirement;
 import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.UnlockContext;
@@ -24,6 +25,7 @@ import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.Inve
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandBlocksRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandLevelRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -188,8 +190,12 @@ public final class ChallengeExecutor {
             }
 
             boolean isFirstCompletion = completion.getTimesCompleted() == 0;
+            Set<RankId> previouslyUnlocked = unlockEvaluator.unlockedRanks(context);
             applyCompletion(progress, challengeKey, challenge, completion);
-            persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems());
+            Set<RankId> newlyUnlocked = unlockEvaluator.unlockedRanks(
+                new UnlockContext(progress, player::hasPermission, context.islandLevel()));
+            newlyUnlocked.removeAll(previouslyUnlocked);
+            persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems(), newlyUnlocked);
         } catch (Throwable t) {
             loaded.finishCompletion();
             logger.log(Level.WARNING, "Failed to complete challenge " + challenge.id().value() + " for " + player.getName(), t);
@@ -243,7 +249,8 @@ public final class ChallengeExecutor {
         @NotNull LoadedChallengeProgress loaded,
         @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
         boolean isFirstCompletion,
-        @NotNull Map<ItemStack, Integer> consumedItems
+        @NotNull Map<ItemStack, Integer> consumedItems,
+        @NotNull Set<RankId> newlyUnlockedRanks
     ) {
         Map<ChallengeKey, ChallengeCompletion> snapshot = LoadedChallengeProgress.copyProgress(progress);
         scheduler.async(() -> {
@@ -253,6 +260,10 @@ public final class ChallengeExecutor {
                     loaded.replace(progress);
                     loaded.finishCompletion();
                     rewardApplier.apply(player, playerInfo, challenge, isFirstCompletion);
+                    for (RankId rankId : newlyUnlockedRanks) {
+                        plugin.getServer().getPluginManager()
+                            .callEvent(new ChallengeRankUnlockedEvent(loaded.islandKey().value(), rankId.value()));
+                    }
                 });
             } catch (Throwable t) {
                 scheduler.sync(() -> {

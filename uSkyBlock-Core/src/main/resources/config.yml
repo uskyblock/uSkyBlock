@@ -177,6 +177,13 @@ options:
       # Legacy-format prefix prepended to first-completion broadcasts.
       prefix: ''
 
+  biomes:
+
+    # Biomes every island can use without earning a challenge biome reward or holding a
+    # usb.biome.<key> permission node.
+    default-unlocked:
+      - ocean
+
   # Protection flags. When true, the protection is active (the action is blocked).
   protection:
 

@@ -83,11 +83,12 @@ public class ChallengeCatalogYamlParser {
     }
 
     private RankDefinition parseRank(String rankKey, ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
-        warnUnknownKeys(section, path, diagnostics, "display", "lockedDisplayItem", "unlock", "challenges");
+        warnUnknownKeys(section, path, diagnostics, "display", "lockedDisplayItem", "unlock", "challengeDefaults", "challenges");
 
         RankDisplaySpec display = parseRankDisplay(rankKey, section.getConfigurationSection("display"), path + ".display", diagnostics);
         ItemStackSpec lockedDisplayItem = parseRankLockedDisplayItem(section, path, diagnostics);
         List<ChallengeRequirements.RankUnlockRequirement> unlockRequirements = parseRankUnlockRequirements(section.getMapList("unlock"), path + ".unlock", diagnostics);
+        Duration defaultResetWindow = parseRankChallengeDefaults(section.getConfigurationSection("challengeDefaults"), path + ".challengeDefaults", diagnostics);
 
         List<ChallengeDefinition> challenges = new ArrayList<>();
         ConfigurationSection challengesSection = section.getConfigurationSection("challenges");
@@ -96,17 +97,35 @@ public class ChallengeCatalogYamlParser {
         } else {
             for (String challengeKey : challengesSection.getKeys(false)) {
                 ConfigurationSection challengeSection = requiredSection(challengesSection, challengeKey, path + ".challenges");
-                challenges.add(parseChallenge(challengeKey, challengeSection, lockedDisplayItem, path + ".challenges." + challengeKey, diagnostics));
+                challenges.add(parseChallenge(challengeKey, challengeSection, lockedDisplayItem, defaultResetWindow, path + ".challenges." + challengeKey, diagnostics));
             }
         }
 
         return new RankDefinition(RankId.of(rankKey), display, lockedDisplayItem, unlockRequirements, challenges);
     }
 
+    /**
+     * Authoring convenience: a rank-wide default repeat reset window, so a tier's shared cooldown
+     * does not have to be repeated on every challenge.
+     */
+    private Duration parseRankChallengeDefaults(@Nullable ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+        if (section == null) {
+            return Duration.ZERO;
+        }
+        warnUnknownKeys(section, path, diagnostics, "repeat");
+        ConfigurationSection repeatSection = section.getConfigurationSection("repeat");
+        if (repeatSection == null) {
+            return Duration.ZERO;
+        }
+        warnUnknownKeys(repeatSection, path + ".repeat", diagnostics, "resetWindow");
+        return parseDuration(repeatSection.getString("resetWindow", "0s"), path + ".repeat.resetWindow");
+    }
+
     private ChallengeDefinition parseChallenge(
         String challengeKey,
         ConfigurationSection section,
         ItemStackSpec rankLockedDisplayItem,
+        Duration defaultResetWindow,
         String path,
         List<ChallengeCatalogDiagnostic> diagnostics
     ) {
@@ -117,7 +136,7 @@ public class ChallengeCatalogYamlParser {
         List<ChallengeRequirements.ChallengeUnlockRequirement> unlockRequirements = parseChallengeUnlockRequirements(section.getMapList("unlock"), path + ".unlock", diagnostics);
         List<ChallengeRequirements.CompletionRequirement> completionRequirements = parseCompletionRequirements(section.getMapList("complete"), path + ".complete", diagnostics);
         ChallengeProperties properties = parseProperties(section.getConfigurationSection("properties"), path + ".properties", diagnostics);
-        RepeatPolicy repeatPolicy = parseRepeatPolicy(section.getConfigurationSection("repeat"), path + ".repeat", diagnostics);
+        RepeatPolicy repeatPolicy = parseRepeatPolicy(section.getConfigurationSection("repeat"), path + ".repeat", diagnostics, defaultResetWindow);
         RewardBundle firstReward = parseRewardBundle(section.getMapList("rewards.first"), path + ".rewards.first", diagnostics);
         RewardBundle repeatReward = parseRewardBundle(section.getMapList("rewards.repeat"), path + ".rewards.repeat", diagnostics);
 
@@ -214,13 +233,16 @@ public class ChallengeCatalogYamlParser {
         return new ChallengeProperties(section.getBoolean("consumeItemsOnCompletion", true));
     }
 
-    private RepeatPolicy parseRepeatPolicy(@Nullable ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
+    private RepeatPolicy parseRepeatPolicy(@Nullable ConfigurationSection section, String path, List<ChallengeCatalogDiagnostic> diagnostics, Duration defaultResetWindow) {
         if (section == null) {
             return new RepeatPolicy(false, Duration.ZERO, 0);
         }
         warnUnknownKeys(section, path, diagnostics, "enabled", "resetWindow", "limit");
         boolean enabled = section.getBoolean("enabled", false);
-        Duration resetWindow = parseDuration(section.getString("resetWindow", "0s"), path + ".resetWindow");
+        String rawResetWindow = section.getString("resetWindow", null);
+        Duration resetWindow = rawResetWindow != null
+            ? parseDuration(rawResetWindow, path + ".resetWindow")
+            : defaultResetWindow;
         int limit = section.getInt("limit", 0);
         if (limit < 0) {
             throw new IllegalArgumentException("Invalid negative repeat limit at " + path + ".limit");
@@ -242,6 +264,10 @@ public class ChallengeCatalogYamlParser {
                 case "economy" -> actions.add(new ChallengeRewards.EconomyReward(requiredInt(entry, "amount", itemPath)));
                 case "experience" -> actions.add(new ChallengeRewards.ExperienceReward(requiredInt(entry, "amount", itemPath)));
                 case "permission" -> actions.add(new ChallengeRewards.PermissionReward(requiredStringList(entry, "permissions", itemPath)));
+                case "biome" -> {
+                    warnUnknownKeys(entry, itemPath, diagnostics, "type", "biomes");
+                    actions.add(new ChallengeRewards.BiomeReward(requiredStringList(entry, "biomes", itemPath)));
+                }
                 case "command" -> actions.add(parseCommandReward(entry, itemPath, diagnostics));
                 default -> throw new IllegalArgumentException("Unsupported reward type '" + type + "' at " + itemPath);
             }

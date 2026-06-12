@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.BiomeReward;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.CommandReward;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.CommandSpec;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards.EconomyReward;
@@ -84,6 +85,9 @@ public final class RewardApplier {
                 case ExperienceReward experienceReward -> grantExperience(player, experienceReward.amount());
                 case EconomyReward economyReward -> grantCurrency(player, economyReward.amount());
                 case PermissionReward permissionReward -> grantPermissions(playerInfo, permissionReward.permissions());
+                // Biome unlocks are derived from completion state; only announce them.
+                case BiomeReward biomeReward -> sendTr(player, "Unlocked island biome: <biomes>",
+                    unparsed("biomes", String.join(", ", biomeReward.biomes()), PRIMARY));
                 case CommandReward commandReward -> runCommands(player, challenge, commandReward.commands());
             }
         }

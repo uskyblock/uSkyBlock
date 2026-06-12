@@ -326,6 +326,74 @@ class ChallengeCatalogYamlParserTest {
     }
 
     @Test
+    void parsesIslandLevelRankGatesAndRankRepeatDefaults() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              tier2:
+                display:
+                  name: "<green>Homesteader"
+                lockedDisplayItem: "minecraft:barrier"
+                unlock:
+                  - type: island-level
+                    minimum: 20
+                  - type: completed-rank
+                    rank: tier1
+                    minimumCompletedChallenges: 7
+                challengeDefaults:
+                  repeat:
+                    resetWindow: 20h
+                challenges:
+                  alpha:
+                    display:
+                      name: "<gray>Alpha"
+                      item: "minecraft:stone"
+                    repeat:
+                      enabled: true
+                  beta:
+                    display:
+                      name: "<gray>Beta"
+                      item: "minecraft:cobblestone"
+                    repeat:
+                      enabled: true
+                      resetWindow: 4h
+            """));
+
+        var rank = result.catalog().rank(RankId.of("tier2")).orElseThrow();
+        assertInstanceOf(ChallengeRequirements.IslandLevelRequirement.class, rank.unlockRequirements().get(0));
+        assertEquals(20d, ((ChallengeRequirements.IslandLevelRequirement) rank.unlockRequirements().get(0)).minimumLevel());
+        // Rank-wide default applies when a challenge does not set its own reset window.
+        assertEquals(Duration.ofHours(20), result.catalog().challenge(ChallengeId.of("alpha")).orElseThrow().repeatPolicy().resetWindow());
+        assertEquals(Duration.ofHours(4), result.catalog().challenge(ChallengeId.of("beta")).orElseThrow().repeatPolicy().resetWindow());
+    }
+
+    @Test
+    void parsesBiomeRewards() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  fisherman:
+                    display:
+                      name: "<gray>Fisherman"
+                      item: "minecraft:fishing_rod"
+                    rewards:
+                      first:
+                        - type: biome
+                          biomes: [Deep_Ocean, jungle]
+            """));
+
+        var challenge = result.catalog().challenge(ChallengeId.of("fisherman")).orElseThrow();
+        var reward = (ChallengeRewards.BiomeReward) challenge.firstCompletionReward().actions().getFirst();
+        // Keys are normalized to lower case.
+        assertEquals(List.of("deep_ocean", "jungle"), reward.biomes());
+    }
+
+    @Test
     void rejectsMissingSchemaVersion() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () -> parser.parse(load("""
             ranks:

@@ -164,6 +164,7 @@ public final class RuntimeConfigFactory {
                         root.string("options.challenges.broadcast.prefix", "")
                     )
                 ),
+                new RuntimeConfig.Biomes(root.stringList("options.biomes.default-unlocked")),
                 new RuntimeConfig.Nether(
                     root.boolWithDefault("nether.enabled"),
                     root.integerWithDefault("nether.lava-level", 0),

@@ -16,9 +16,11 @@ import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
@@ -81,6 +83,11 @@ public final class ChallengeUnlockEvaluator {
                 case CompletedChallengesRequirement required -> checkChallenges(required.challengeIds(), context, missing);
                 case CompletedRankRequirement required -> checkRankCompletion(required, context, missing);
                 case PermissionRequirement required -> checkPermission(required.permission(), context, missing);
+                case IslandLevelRequirement required -> {
+                    if (context.islandLevel() < required.minimumLevel()) {
+                        missing.add(new MissingIslandLevel(required.minimumLevel()));
+                    }
+                }
             }
         }
         return missing;
@@ -109,6 +116,16 @@ public final class ChallengeUnlockEvaluator {
             }
         }
         return missing;
+    }
+
+    public @NotNull Set<RankId> unlockedRanks(@NotNull UnlockContext context) {
+        Set<RankId> unlocked = new LinkedHashSet<>();
+        for (RankDefinition rank : catalog.ranks()) {
+            if (isRankUnlocked(rank, context)) {
+                unlocked.add(rank.id());
+            }
+        }
+        return unlocked;
     }
 
     public int completedChallenges(@NotNull RankDefinition rank, @NotNull Map<ChallengeKey, ChallengeCompletion> progress) {
