@@ -71,10 +71,9 @@ public final class ChallengeLore {
                 case InventoryItemsRequirement items -> {
                     lines.add(tr("Required items:", MUTED));
                     for (ItemRequirementSpec spec : items.items()) {
-                        ItemStack item = spec.item().create();
                         lines.add(tr(" - <amount> x <item>", MUTED,
                             number("amount", spec.amountForRepetitions(repetitions), PRIMARY),
-                            component("item", ItemStackUtil.getItemName(item), PRIMARY)));
+                            component("item", ChallengeText.itemName(spec), PRIMARY)));
                     }
                 }
                 case IslandBlocksRequirement blocks -> {

@@ -4,6 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -401,12 +405,28 @@ public class ChallengeCatalogYamlParser {
             String itemPath = path + ".items[" + i + "]";
             Map<String, Object> item = items.get(i);
             warnUnknownKeys(item, itemPath, diagnostics, "item", "amount", "progression");
-            ItemStackSpec itemSpec = gameObjects.itemStack(requiredString(item, "item", itemPath));
+            ChallengeRequirements.ItemMatcher matcher = parseItemMatcher(requiredString(item, "item", itemPath), itemPath);
             int amount = requiredInt(item, "amount", itemPath);
             ChallengeRequirements.ItemAmountProgression progression = parseItemProgression(item.get("progression"), itemPath + ".progression", diagnostics);
-            parsed.add(new ChallengeRequirements.ItemRequirementSpec(itemSpec, amount, progression));
+            parsed.add(new ChallengeRequirements.ItemRequirementSpec(matcher, amount, progression));
         }
         return new ChallengeRequirements.InventoryItemsRequirement(parsed);
+    }
+
+    /**
+     * Item requirements starting with '#' match any item carrying the data pack tag, e.g.
+     * {@code #minecraft:beds} for any bed color.
+     */
+    private ChallengeRequirements.ItemMatcher parseItemMatcher(String rawItem, String path) {
+        if (!rawItem.startsWith("#")) {
+            return new ChallengeRequirements.ExactItem(gameObjects.itemStack(rawItem));
+        }
+        NamespacedKey key = NamespacedKey.fromString(rawItem.substring(1).toLowerCase(Locale.ROOT));
+        Tag<Material> tag = key != null ? Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class) : null;
+        if (tag == null) {
+            throw new IllegalArgumentException("Unknown item tag '" + rawItem + "' at " + path + ".item");
+        }
+        return new ChallengeRequirements.ItemTag(tag, key.toString());
     }
 
     private ChallengeRequirements.IslandBlocksRequirement parseIslandBlocksRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {

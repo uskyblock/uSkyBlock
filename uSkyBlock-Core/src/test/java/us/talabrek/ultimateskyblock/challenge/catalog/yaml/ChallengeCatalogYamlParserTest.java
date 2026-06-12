@@ -24,9 +24,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class ChallengeCatalogYamlParserTest {
@@ -49,6 +52,19 @@ class ChallengeCatalogYamlParserTest {
             when(blockData.clone()).thenReturn(blockData);
             return blockData;
         });
+        when(server.getTag(eq(org.bukkit.Tag.REGISTRY_ITEMS), any(org.bukkit.NamespacedKey.class), eq(Material.class)))
+            .thenAnswer(invocation -> {
+                org.bukkit.NamespacedKey key = invocation.getArgument(1);
+                if (!key.getKey().equals("beds")) {
+                    return null;
+                }
+                @SuppressWarnings("unchecked")
+                org.bukkit.Tag<Material> tag = mock(org.bukkit.Tag.class);
+                when(tag.isTagged(any(Material.class)))
+                    .thenAnswer(check -> check.getArgument(0).toString().endsWith("_BED"));
+                when(tag.getKey()).thenReturn(key);
+                return tag;
+            });
     }
 
     @Test
@@ -391,6 +407,59 @@ class ChallengeCatalogYamlParserTest {
         var reward = (ChallengeRewards.BiomeReward) challenge.firstCompletionReward().actions().getFirst();
         // Keys are normalized to lower case.
         assertEquals(List.of("deep_ocean", "jungle"), reward.biomes());
+    }
+
+    @Test
+    void parsesTagItemRequirements() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  homeowner:
+                    display:
+                      name: "<gray>Homeowner"
+                      item: "minecraft:white_bed"
+                    complete:
+                      - type: inventory-items
+                        items:
+                          - item: "#minecraft:beds"
+                            amount: 1
+            """));
+
+        var challenge = result.catalog().challenge(ChallengeId.of("homeowner")).orElseThrow();
+        var items = (ChallengeRequirements.InventoryItemsRequirement) challenge.completionRequirements().getFirst();
+        var matcher = (ChallengeRequirements.ItemTag) items.items().getFirst().matcher();
+        assertEquals("minecraft:beds", matcher.key());
+        assertTrue(items.items().getFirst().matches(new org.bukkit.inventory.ItemStack(Material.RED_BED)));
+        assertFalse(items.items().getFirst().matches(new org.bukkit.inventory.ItemStack(Material.STONE)));
+    }
+
+    @Test
+    void rejectsUnknownItemTags() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () -> parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  alpha:
+                    display:
+                      name: "<gray>Alpha"
+                      item: "minecraft:stone"
+                    complete:
+                      - type: inventory-items
+                        items:
+                          - item: "#minecraft:nosuchtag"
+                            amount: 1
+            """)));
+
+        assertTrue(error.getMessage().contains("Unknown item tag"));
     }
 
     @Test

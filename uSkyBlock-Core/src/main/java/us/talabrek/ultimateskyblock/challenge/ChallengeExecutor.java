@@ -1,7 +1,6 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
-import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -233,7 +232,7 @@ public final class ChallengeExecutor {
         @NotNull List<Inventory> itemSources
     ) {
         boolean fulfilled = true;
-        Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
+        Map<ItemRequirementSpec, Integer> requiredItems = new LinkedHashMap<>();
         for (CompletionRequirement requirement : challenge.completionRequirements()) {
             switch (requirement) {
                 case IslandBlocksRequirement blocks -> fulfilled &= checkIslandBlocks(player, blocks);
@@ -247,13 +246,12 @@ public final class ChallengeExecutor {
             fulfilled &= hasAllItems(player, requiredItems, itemSources);
         }
         if (!fulfilled) {
-            return new RequirementCheck(false, Map.of());
+            return new RequirementCheck(false, List.of());
         }
         if (!requiredItems.isEmpty() && challenge.properties().consumeItemsOnCompletion()) {
-            removeRequiredItems(itemSources, requiredItems);
-            return new RequirementCheck(true, requiredItems);
+            return new RequirementCheck(true, removeRequiredItems(itemSources, requiredItems));
         }
-        return new RequirementCheck(true, Map.of());
+        return new RequirementCheck(true, List.of());
     }
 
     /**
@@ -268,7 +266,7 @@ public final class ChallengeExecutor {
         @NotNull LoadedChallengeProgress loaded,
         @NotNull Map<ChallengeId, ChallengeCompletion> progress,
         boolean isFirstCompletion,
-        @NotNull Map<ItemStack, Integer> consumedItems,
+        @NotNull List<ItemStack> consumedItems,
         @NotNull Set<RankId> newlyUnlockedRanks,
         @NotNull Runnable onSettled
     ) {
@@ -303,11 +301,11 @@ public final class ChallengeExecutor {
         });
     }
 
-    private void refundItems(@NotNull Player player, @NotNull Map<ItemStack, Integer> consumedItems) {
+    private void refundItems(@NotNull Player player, @NotNull List<ItemStack> consumedItems) {
         if (consumedItems.isEmpty()) {
             return;
         }
-        ItemStack[] items = ItemStackUtil.asValidItemStacksWithAmount(consumedItems);
+        ItemStack[] items = consumedItems.toArray(new ItemStack[0]);
         if (!player.isOnline()) {
             logger.warning("Unable to return challenge hand-in items to offline player " + player.getName()
                 + ": " + Arrays.toString(items));
@@ -577,29 +575,28 @@ public final class ChallengeExecutor {
     private void collectRequiredItems(
         @NotNull InventoryItemsRequirement requirement,
         int timesCompletedInCooldown,
-        @NotNull Map<ItemStack, Integer> requiredItems
+        @NotNull Map<ItemRequirementSpec, Integer> requiredItems
     ) {
         for (ItemRequirementSpec spec : requirement.items()) {
-            requiredItems.put(spec.item().create(), spec.amountForRepetitions(timesCompletedInCooldown));
+            requiredItems.put(spec, spec.amountForRepetitions(timesCompletedInCooldown));
         }
     }
 
     private boolean hasAllItems(
         @NotNull Player player,
-        @NotNull Map<ItemStack, Integer> requiredItems,
+        @NotNull Map<ItemRequirementSpec, Integer> requiredItems,
         @NotNull List<Inventory> itemSources
     ) {
         Component missingItems = Component.empty();
         boolean hasAll = true;
-        for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-            ItemStack requiredType = required.getKey();
+        for (Map.Entry<ItemRequirementSpec, Integer> required : requiredItems.entrySet()) {
+            ItemRequirementSpec spec = required.getKey();
             int requiredAmount = required.getValue();
-            int available = countOf(itemSources, requiredType);
+            int available = countOf(itemSources, spec);
             if (available < requiredAmount) {
-                Component name = ItemStackUtil.getItemName(requiredType);
                 missingItems = missingItems.append(parseMini(" <count> <item>",
                     number("count", requiredAmount - available, ERROR),
-                    component("item", name, PRIMARY)));
+                    component("item", ChallengeText.itemName(spec), PRIMARY)));
                 hasAll = false;
             }
         }
@@ -609,29 +606,37 @@ public final class ChallengeExecutor {
         return hasAll;
     }
 
-    private int countOf(@NotNull Collection<Inventory> inventories, @NotNull ItemStack required) {
+    private int countOf(@NotNull Collection<Inventory> inventories, @NotNull ItemRequirementSpec spec) {
         int total = 0;
         for (Inventory inventory : inventories) {
             total += Arrays.stream(inventory.getContents())
-                .filter(item -> item != null && item.isSimilar(required))
+                .filter(item -> item != null && spec.matches(item))
                 .mapToInt(ItemStack::getAmount)
                 .sum();
         }
         return total;
     }
 
-    private void removeRequiredItems(@NotNull List<Inventory> inventories, @NotNull Map<ItemStack, Integer> requiredItems) {
-        for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
+    /**
+     * @return the actually removed stacks (clones), so a refund can restore exactly what was
+     * taken - with tag matchers there is no single prototype to rebuild them from.
+     */
+    private @NotNull List<ItemStack> removeRequiredItems(@NotNull List<Inventory> inventories, @NotNull Map<ItemRequirementSpec, Integer> requiredItems) {
+        List<ItemStack> removedItems = new ArrayList<>();
+        for (Map.Entry<ItemRequirementSpec, Integer> required : requiredItems.entrySet()) {
             int remaining = required.getValue();
             for (Inventory inventory : inventories) {
                 if (remaining <= 0) {
                     break;
                 }
                 for (ItemStack item : inventory.getContents()) {
-                    if (item == null || !item.isSimilar(required.getKey())) {
+                    if (item == null || !required.getKey().matches(item)) {
                         continue;
                     }
                     int removed = Math.min(item.getAmount(), remaining);
+                    ItemStack removedStack = item.clone();
+                    removedStack.setAmount(removed);
+                    removedItems.add(removedStack);
                     item.setAmount(item.getAmount() - removed);
                     remaining -= removed;
                     if (item.getAmount() <= 0) {
@@ -646,8 +651,9 @@ public final class ChallengeExecutor {
                 throw new IllegalStateException("Could not remove required items for challenge hand-in");
             }
         }
+        return removedItems;
     }
 
-    private record RequirementCheck(boolean completed, @NotNull Map<ItemStack, Integer> consumedItems) {
+    private record RequirementCheck(boolean completed, @NotNull List<ItemStack> consumedItems) {
     }
 }

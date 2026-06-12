@@ -232,11 +232,11 @@ public class SignLogic {
             // Signs only support item hand-in challenges.
             return;
         }
-        Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
+        Map<ItemRequirementSpec, Integer> requiredItems = new LinkedHashMap<>();
         ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
         if (completion != null) {
             for (ItemRequirementSpec spec : requirementSpecs(challenge)) {
-                requiredItems.put(spec.item().create(), spec.amountForRepetitions(completion.getTimesCompletedInCooldown()));
+                requiredItems.put(spec, spec.amountForRepetitions(completion.getTimesCompletedInCooldown()));
             }
         }
         boolean isChallengeAvailable = false;
@@ -251,7 +251,7 @@ public class SignLogic {
         String signLocString = config.getString("signs." + signLoc + ".location", null);
         final Location signLocation = LocationUtil.fromString(signLocString);
         final boolean challengeLocked = !isChallengeAvailable;
-        final Map<ItemStack, Integer> requiredItemsFinal = requiredItems;
+        final Map<ItemRequirementSpec, Integer> requiredItemsFinal = requiredItems;
         // Back to sync
         scheduler.sync(() -> updateSignFromChestSync(chestLoc, signLocation, challenge, requiredItemsFinal, challengeLocked));
     }
@@ -264,7 +264,7 @@ public class SignLogic {
             .toList();
     }
 
-    private void updateSignFromChestSync(Location chestLoc, Location signLoc, ChallengeDefinition challenge, Map<ItemStack, Integer> requiredItems, boolean challengeLocked) {
+    private void updateSignFromChestSync(Location chestLoc, Location signLoc, ChallengeDefinition challenge, Map<ItemRequirementSpec, Integer> requiredItems, boolean challengeLocked) {
         Block chestBlock = chestLoc.getBlock();
         Block signBlock = signLoc != null ? signLoc.getBlock() : null;
         if (signBlock != null && isChest(chestBlock) && signBlock.getState().getBlockData() instanceof WallSign) {
@@ -273,13 +273,9 @@ public class SignLogic {
             int missing = -1;
             if (!requiredItems.isEmpty() && !challengeLocked) {
                 missing = 0;
-                for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-                    ItemStack requiredType = required.getKey();
-                    int requiredAmount = required.getValue();
-                    if (!chest.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                        // Max shouldn't be needed, provided containsAtLeast matches getCountOf... but it might not
-                        missing += Math.max(0, requiredAmount - challengeLogic.getCountOf(chest.getInventory(), requiredType));
-                    }
+                for (Map.Entry<ItemRequirementSpec, Integer> required : requiredItems.entrySet()) {
+                    int available = countMatching(chest.getInventory(), required.getKey());
+                    missing += Math.max(0, required.getValue() - available);
                 }
             }
             List<String> lines = wordWrap(ChallengeText.plainName(challenge), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
@@ -314,6 +310,16 @@ public class SignLogic {
                 logger.info("Unable to update sign at " + LocationUtil.asString(signLoc));
             }
         }
+    }
+
+    private static int countMatching(Inventory inventory, ItemRequirementSpec spec) {
+        int total = 0;
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && spec.matches(item)) {
+                total += item.getAmount();
+            }
+        }
+        return total;
     }
 
     private boolean isChest(Block chestBlock) {

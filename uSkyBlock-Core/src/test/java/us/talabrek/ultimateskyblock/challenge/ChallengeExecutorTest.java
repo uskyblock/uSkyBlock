@@ -217,8 +217,11 @@ public class ChallengeExecutorTest {
         doThrow(new IllegalStateException("database unavailable")).when(repository).replace(any(), any());
 
         ItemStack inInventory = mock(ItemStack.class);
+        ItemStack removedClone = mock(ItemStack.class);
         when(inInventory.isSimilar(any())).thenReturn(true);
         when(inInventory.getAmount()).thenReturn(5);
+        // Refunds restore clones of the actually removed stacks.
+        when(inInventory.clone()).thenReturn(removedClone);
         Inventory source = mock(Inventory.class);
         when(source.getContents()).thenReturn(new ItemStack[]{inInventory});
 
@@ -226,6 +229,7 @@ public class ChallengeExecutorTest {
         drainScheduledTasks();
 
         verify(inInventory).setAmount(3);
+        verify(removedClone).setAmount(2);
         verify(playerInventory).addItem(any(ItemStack[].class));
         verify(rewardApplier, never()).apply(any(), any(), any(), anyBoolean());
         assertTrue(progressCache.getIfLoaded(ISLAND).orElseThrow().isWriteLocked());
@@ -359,12 +363,7 @@ public class ChallengeExecutorTest {
     private ItemStackSpec mockItemSpec() {
         ItemStackSpec spec = mock(ItemStackSpec.class);
         ItemStack required = mock(ItemStack.class);
-        ItemStack refunded = mock(ItemStack.class);
         when(spec.create()).thenReturn(required);
-        when(required.clone()).thenReturn(refunded);
-        when(required.getMaxStackSize()).thenReturn(64);
-        when(refunded.getMaxStackSize()).thenReturn(64);
-        when(refunded.getAmount()).thenReturn(2);
         return spec;
     }
 

@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
@@ -29,7 +28,6 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -295,12 +293,6 @@ public class ChallengeLogic implements Listener {
 
     public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull Consumer<Throwable> onError) {
         completionLogic.whenChallengesLoaded(playerInfo, onLoaded, onError);
-    }
-
-    public int getCountOf(Inventory inventory, ItemStack required) {
-        return Arrays.stream(inventory.getContents())
-            .filter(item -> item != null && item.isSimilar(required))
-            .mapToInt(ItemStack::getAmount).sum();
     }
 
     public void populateChallenges(Map<ChallengeId, ChallengeCompletion> challengeMap) {

@@ -1,12 +1,16 @@
 package us.talabrek.ultimateskyblock.challenge.catalog;
 
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
+import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
 import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -83,13 +87,47 @@ public final class ChallengeRequirements {
         }
     }
 
-    public record ItemRequirementSpec(ItemStackSpec item, int amount, ItemAmountProgression progression) {
-        public ItemRequirementSpec {
+    /**
+     * What an inventory hand-in accepts: one exact item, or any item carrying a data pack tag
+     * (e.g. {@code #minecraft:beds}).
+     */
+    public sealed interface ItemMatcher permits ExactItem, ItemTag {
+    }
+
+    public record ExactItem(ItemStackSpec item) implements ItemMatcher {
+        public ExactItem {
             item = Objects.requireNonNull(item, "item");
+        }
+    }
+
+    public record ItemTag(Tag<Material> tag, String key) implements ItemMatcher {
+        public ItemTag {
+            tag = Objects.requireNonNull(tag, "tag");
+            key = Objects.requireNonNull(key, "key").trim().toLowerCase(Locale.ROOT);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("key cannot be blank");
+            }
+        }
+    }
+
+    public record ItemRequirementSpec(ItemMatcher matcher, int amount, ItemAmountProgression progression) {
+        public ItemRequirementSpec {
+            matcher = Objects.requireNonNull(matcher, "matcher");
             progression = Objects.requireNonNull(progression, "progression");
             if (amount < 0) {
                 throw new IllegalArgumentException("amount cannot be negative");
             }
+        }
+
+        public ItemRequirementSpec(ItemStackSpec item, int amount, ItemAmountProgression progression) {
+            this(new ExactItem(item), amount, progression);
+        }
+
+        public boolean matches(ItemStack candidate) {
+            return switch (matcher) {
+                case ExactItem exact -> candidate.isSimilar(exact.item().create());
+                case ItemTag itemTag -> itemTag.tag().isTagged(candidate.getType());
+            };
         }
 
         public int amountForRepetitions(int repetitions) {
