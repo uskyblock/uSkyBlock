@@ -18,7 +18,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
+import us.talabrek.ultimateskyblock.challenge.ChallengeText;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
@@ -38,11 +41,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
  * Responsible for keeping track of signs.
@@ -202,23 +203,29 @@ public class SignLogic {
             return;
         }
         var result = challengeLogic.resolveChallenge(challengeName);
-        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND || result.getChallenge().getType() != Challenge.Type.PLAYER) {
+        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND) {
             return;  // TODO: proper player feedback
         }
-        Challenge challenge = result.getChallenge();
-        ChallengeKey challengeId = challenge.getId();
+        ChallengeDefinition challenge = result.getChallenge();
+        ChallengeKey challengeId = result.getChallengeKey();
+        if (requirementSpecs(challenge).isEmpty()) {
+            // Signs only support item hand-in challenges.
+            return;
+        }
         Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
-        boolean isChallengeAvailable = false;
         ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
         if (completion != null) {
-            requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
+            for (ItemRequirementSpec spec : requirementSpecs(challenge)) {
+                requiredItems.put(spec.item().create(), spec.amountForRepetitions(completion.getTimesCompletedInCooldown()));
+            }
         }
+        boolean isChallengeAvailable = false;
         IslandInfo islandInfo = plugin.getIslandInfo(islandName);
         if (islandInfo != null && islandInfo.getLeaderUniqueId() != null) {
             PlayerInfo playerInfo = plugin.getPlayerInfo(islandInfo.getLeaderUniqueId());
             if (playerInfo != null) {
-                isChallengeAvailable = challenge.getRank().isAvailable(playerInfo);
-                isChallengeAvailable &= challenge.getMissingRequirements(playerInfo).isEmpty();
+                isChallengeAvailable = challengeLogic.getUnlockEvaluator()
+                    .isChallengeUnlocked(challenge, challengeLogic.unlockContextFor(playerInfo));
             }
         }
         String signLocString = config.getString("signs." + signLoc + ".location", null);
@@ -229,7 +236,15 @@ public class SignLogic {
         scheduler.sync(() -> updateSignFromChestSync(chestLoc, signLocation, challenge, requiredItemsFinal, challengeLocked));
     }
 
-    private void updateSignFromChestSync(Location chestLoc, Location signLoc, Challenge challenge, Map<ItemStack, Integer> requiredItems, boolean challengeLocked) {
+    private static List<ItemRequirementSpec> requirementSpecs(ChallengeDefinition challenge) {
+        return challenge.completionRequirements().stream()
+            .filter(InventoryItemsRequirement.class::isInstance)
+            .map(InventoryItemsRequirement.class::cast)
+            .flatMap(requirement -> requirement.items().stream())
+            .toList();
+    }
+
+    private void updateSignFromChestSync(Location chestLoc, Location signLoc, ChallengeDefinition challenge, Map<ItemStack, Integer> requiredItems, boolean challengeLocked) {
         Block chestBlock = chestLoc.getBlock();
         Block signBlock = signLoc != null ? signLoc.getBlock() : null;
         if (signBlock != null && isChest(chestBlock) && signBlock.getState().getBlockData() instanceof WallSign) {
@@ -251,11 +266,11 @@ public class SignLogic {
             if (missing > 0) {
                 format = "\u00a74\u00a7l";
             }
-            List<String> lines = wordWrap(challenge.getDisplayName(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
+            List<String> lines = wordWrap(ChallengeText.plainName(challenge), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
             if (challengeLocked) {
                 lines.add(trLegacy("Locked Challenge", ERROR));
             } else {
-                lines.addAll(wordWrap(challenge.getDescription(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
+                lines.addAll(wordWrap(ChallengeText.plain(challenge.display().description()), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
             }
             for (int i = 0; i < 3; i++) {
                 if (i < lines.size()) {
@@ -312,25 +327,16 @@ public class SignLogic {
             if (islandName != null && chestLoc != null) {
                 var lookupResult = challengeLogic.resolveChallenge(challengeName);
                 if (lookupResult.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND
-                    || lookupResult.getChallenge().getType() != Challenge.Type.PLAYER) {
+                    || requirementSpecs(lookupResult.getChallenge()).isEmpty()) {
                     return; // TODO: proper player feedback
                 }
-                Challenge challenge = lookupResult.getChallenge();
-                PlayerInfo playerInfo = plugin.getPlayerInfo(player);
-                if (playerInfo == null) {
-                    return;
-                }
-                if (!challenge.getRank().isAvailable(playerInfo)) {
-                    sendErrorTr(player, "The <challenge> challenge is not available yet!",
-                        legacyArg("challenge", challenge.getDisplayName()));
-                    return;
-                }
-                scheduler.sync(() -> tryComplete(player, chestLoc, challenge));
+                // Availability and unlock checks happen in the executor on the main thread.
+                scheduler.sync(() -> tryComplete(player, chestLoc, lookupResult.getChallengeKey()));
             }
         }
     }
 
-    private void tryComplete(Player player, Location chestLoc, Challenge challenge) {
+    private void tryComplete(Player player, Location chestLoc, ChallengeKey challengeId) {
         BlockState state = chestLoc.getBlock().getState();
         if (!(state instanceof Chest chest)) {
             return;
@@ -339,7 +345,7 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        challengeLogic.completeChallenge(player, challenge.getId(), List.of(player.getInventory(), chest.getInventory()));
+        challengeLogic.completeChallenge(player, challengeId, List.of(player.getInventory(), chest.getInventory()));
         updateSignsOnContainer(chest.getLocation());
     }
 }

@@ -75,9 +75,9 @@ public final class ChallengeCatalogValidator {
             }
         }
         if (kinds.size() > 1) {
-            diagnostics.add(error(challengePath + ".complete",
+            diagnostics.add(warn(challengePath + ".complete",
                 "Mixes completion requirement kinds (" + String.join(", ", kinds)
-                    + "), which the runtime does not support yet; the challenge is skipped"));
+                    + "); the challenge menu cannot display it until the new menu ships"));
         }
     }
 

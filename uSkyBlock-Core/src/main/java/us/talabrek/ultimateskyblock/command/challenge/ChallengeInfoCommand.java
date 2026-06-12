@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
+import us.talabrek.ultimateskyblock.challenge.ChallengeText;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.message.Placeholder;
@@ -52,8 +53,12 @@ public class ChallengeInfoCommand extends AbstractCommand {
         String challengeQuery = String.join(" ", args);
         var result = challengeLogic.resolveChallenge(challengeQuery);
         PlayerInfo playerInfo = playerLogic.getPlayerInfo(player);
-        if (result.getStatus() == ChallengeLogic.ChallengeLookupResult.Status.FOUND && result.getChallenge().getRank().isAvailable(playerInfo)) {
-            Challenge challenge = result.getChallenge();
+        // Display still renders from the legacy model until the new menu ships.
+        Challenge legacyChallenge = result.getStatus() == ChallengeLogic.ChallengeLookupResult.Status.FOUND
+            ? challengeLogic.getChallengeById(result.getChallengeKey()).orElse(null)
+            : null;
+        if (legacyChallenge != null && legacyChallenge.getRank().isAvailable(playerInfo)) {
+            Challenge challenge = legacyChallenge;
             sendTr(player, "Challenge name: <challenge>", Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
             if (challengeLogic.getRanks().size() > 1) {
                 sendTr(player, "Rank: <rank>", unparsed("rank", challenge.getRank().getName(), PRIMARY));
@@ -86,9 +91,9 @@ public class ChallengeInfoCommand extends AbstractCommand {
                         unparsed("suggestions", hint));
                 }
                 case NOT_FOUND -> sendErrorTr(player, "Invalid challenge name! Use /c help for more information");
-                case FOUND -> // FOUND but rank not available
+                case FOUND -> // FOUND but rank not available (or hidden from the legacy menu)
                     sendErrorTr(player, "The <challenge> challenge is not available yet!",
-                        legacyArg("challenge", result.getChallenge().getDisplayName()));
+                        unparsed("challenge", ChallengeText.plainName(result.getChallenge())));
             }
         }
         return true;

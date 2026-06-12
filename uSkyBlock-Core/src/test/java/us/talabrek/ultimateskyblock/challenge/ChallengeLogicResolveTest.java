@@ -4,16 +4,27 @@ import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeProperties;
+import us.talabrek.ultimateskyblock.challenge.catalog.DisplaySpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDisplaySpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
+import us.talabrek.ultimateskyblock.challenge.catalog.RepeatPolicy;
+import us.talabrek.ultimateskyblock.challenge.catalog.RewardBundle;
+import us.talabrek.ultimateskyblock.challenge.catalog.TextSpec;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for ChallengeLogic.resolveChallenge matching behavior.
@@ -22,9 +33,9 @@ public class ChallengeLogicResolveTest {
 
     private ChallengeLogic logic;
 
-    private Challenge chCobbleGen;      // id: cobblestonegenerator, display: §aCobblestone Generator
-    private Challenge chCobbleGolem;    // id: cobblegolem,          display: §aCobblestone Golem
-    private Challenge chSandCastle;     // id: sandcastle,           display: §eSand Castle
+    private ChallengeDefinition chCobbleGen;      // id: cobblestonegenerator, display: Cobblestone Generator
+    private ChallengeDefinition chCobbleGolem;    // id: cobblegolem,          display: Cobblestone Golem
+    private ChallengeDefinition chSandCastle;     // id: sandcastle,           display: Sand Castle
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -33,33 +44,36 @@ public class ChallengeLogicResolveTest {
         // Create a mock that calls real methods but does not invoke the real constructor
         logic = Mockito.mock(ChallengeLogic.class, Mockito.CALLS_REAL_METHODS);
 
-        // Prepare test challenge doubles with minimal behavior used by resolver
-        chCobbleGen = Mockito.mock(Challenge.class);
-        when(chCobbleGen.getId()).thenReturn(ChallengeKey.of("cobblestonegenerator"));
-        when(chCobbleGen.getDisplayName()).thenReturn("\u00a7aCobblestone Generator");
+        chCobbleGen = definition("cobblestonegenerator", "<green>Cobblestone Generator");
+        chCobbleGolem = definition("cobblegolem", "<green>Cobblestone Golem");
+        chSandCastle = definition("sandcastle", "<yellow>Sand Castle");
 
-        chCobbleGolem = Mockito.mock(Challenge.class);
-        when(chCobbleGolem.getId()).thenReturn(ChallengeKey.of("cobblegolem"));
-        when(chCobbleGolem.getDisplayName()).thenReturn("\u00a7aCobblestone Golem");
+        ChallengeCatalog catalog = new ChallengeCatalog(List.of(new RankDefinition(
+            RankId.of("starter"),
+            new RankDisplaySpec(TextSpec.miniMessage("Starter"), TextSpec.empty()),
+            new GameObjectFactory().itemStack("minecraft:barrier"),
+            List.of(),
+            List.of(chCobbleGen, chCobbleGolem, chSandCastle)
+        )));
 
-        chSandCastle = Mockito.mock(Challenge.class);
-        when(chSandCastle.getId()).thenReturn(ChallengeKey.of("sandcastle"));
-        when(chSandCastle.getDisplayName()).thenReturn("\u00a7eSand Castle");
+        Field catalogField = ChallengeLogic.class.getDeclaredField("catalog");
+        catalogField.setAccessible(true);
+        catalogField.set(logic, catalog);
+    }
 
-        // Inject into the private byId map
-        Field byIdField = ChallengeLogic.class.getDeclaredField("byId");
-        byIdField.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        Map<ChallengeKey, Challenge> byId = (Map<ChallengeKey, Challenge>) byIdField.get(logic);
-        if (byId == null) {
-            byId = new HashMap<>();
-            byIdField.set(logic, byId);
-        } else {
-            byId.clear();
-        }
-        byId.put(chCobbleGen.getId(), chCobbleGen);
-        byId.put(chCobbleGolem.getId(), chCobbleGolem);
-        byId.put(chSandCastle.getId(), chSandCastle);
+    private static ChallengeDefinition definition(String id, String miniMessageName) {
+        ItemStackSpec stone = new GameObjectFactory().itemStack("minecraft:stone");
+        return new ChallengeDefinition(
+            ChallengeId.of(id),
+            new DisplaySpec(TextSpec.miniMessage(miniMessageName), TextSpec.empty(), stone),
+            stone,
+            List.of(),
+            List.of(),
+            new ChallengeProperties(true),
+            new RepeatPolicy(false, Duration.ZERO, 0),
+            RewardBundle.empty(),
+            RewardBundle.empty()
+        );
     }
 
     @Test

@@ -261,7 +261,7 @@ class ChallengeCatalogYamlParserTest {
     }
 
     @Test
-    void flagsMixedCompletionRequirementKindsAsError() {
+    void warnsOnMixedCompletionRequirementKinds() {
         ChallengeCatalogParseResult result = parser.parse(load("""
             schemaVersion: 1
             ranks:
@@ -287,8 +287,9 @@ class ChallengeCatalogYamlParserTest {
             """));
 
         assertTrue(result.diagnostics().stream().anyMatch(d ->
-            d.severity() == ChallengeCatalogDiagnostic.Severity.ERROR
-                && d.path().equals("$.ranks.starter.challenges.brewer.complete")));
+            d.severity() == ChallengeCatalogDiagnostic.Severity.WARNING
+                && d.path().equals("$.ranks.starter.challenges.brewer.complete")
+                && d.message().contains("Mixes completion requirement kinds")));
     }
 
     @Test

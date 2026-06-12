@@ -1,10 +1,8 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import dk.lockfuglsang.minecraft.util.BlockRequirement;
-import dk.lockfuglsang.minecraft.util.FormatUtil;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -15,12 +13,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.block.BlockCollection;
-import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.MissingRequirement;
+import us.talabrek.ultimateskyblock.challenge.ChallengeUnlockEvaluator.UnlockContext;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.BlockRequirementSpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletionRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityPresenceRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityRequirementSpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandBlocksRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandLevelRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.island.IslandKey;
-import us.talabrek.ultimateskyblock.message.Placeholder;
-import us.talabrek.ultimateskyblock.player.Perk;
-import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -40,35 +45,31 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
-import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
-import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
-import static us.talabrek.ultimateskyblock.message.Msg.sendError;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
 import static us.talabrek.ultimateskyblock.message.Placeholder.component;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 
+/**
+ * The only write path for challenge progress. Evaluates catalog completion requirements, holds the
+ * per-island completion lock, and persists asynchronously before any reward is handed out.
+ */
 public final class ChallengeExecutor {
     private final Logger logger;
     private final uSkyBlock plugin;
     private final Scheduler scheduler;
     private final ChallengeLogic challengeLogic;
-    private final ChallengeDefaults defaults;
-    private final HookManager hookManager;
-    private final PerkLogic perkLogic;
+    private final ChallengeUnlockEvaluator unlockEvaluator;
+    private final RewardApplier rewardApplier;
     private final ChallengeProgressCache progressCache;
     private final ChallengeProgressRepository repository;
 
@@ -77,9 +78,8 @@ public final class ChallengeExecutor {
         @NotNull uSkyBlock plugin,
         @NotNull Scheduler scheduler,
         @NotNull ChallengeLogic challengeLogic,
-        @NotNull ChallengeDefaults defaults,
-        @NotNull HookManager hookManager,
-        @NotNull PerkLogic perkLogic,
+        @NotNull ChallengeUnlockEvaluator unlockEvaluator,
+        @NotNull RewardApplier rewardApplier,
         @NotNull ChallengeProgressCache progressCache,
         @NotNull ChallengeProgressRepository repository
     ) {
@@ -87,9 +87,8 @@ public final class ChallengeExecutor {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.scheduler = Objects.requireNonNull(scheduler, "scheduler");
         this.challengeLogic = Objects.requireNonNull(challengeLogic, "challengeLogic");
-        this.defaults = Objects.requireNonNull(defaults, "defaults");
-        this.hookManager = Objects.requireNonNull(hookManager, "hookManager");
-        this.perkLogic = Objects.requireNonNull(perkLogic, "perkLogic");
+        this.unlockEvaluator = Objects.requireNonNull(unlockEvaluator, "unlockEvaluator");
+        this.rewardApplier = Objects.requireNonNull(rewardApplier, "rewardApplier");
         this.progressCache = Objects.requireNonNull(progressCache, "progressCache");
         this.repository = Objects.requireNonNull(repository, "repository");
     }
@@ -105,8 +104,8 @@ public final class ChallengeExecutor {
             return;
         }
 
-        Optional<Challenge> opt = challengeLogic.getChallengeById(challengeId);
-        if (opt.isEmpty()) {
+        Optional<ChallengeDefinition> definition = challengeLogic.getDefinitionById(challengeId);
+        if (definition.isEmpty()) {
             sendErrorTr(player, "No challenge with id <challenge-id> found", unparsed("challenge-id", challengeId.id()));
             return;
         }
@@ -119,7 +118,7 @@ public final class ChallengeExecutor {
         IslandKey islandKey = IslandKey.fromIslandName(playerInfo.locationForParty());
         LoadedChallengeProgress loaded = progressCache.getIfLoaded(islandKey).orElse(null);
         if (loaded != null) {
-            attemptLoaded(player, playerInfo, opt.get(), itemSources, loaded);
+            attemptLoaded(player, playerInfo, definition.get(), itemSources, loaded);
             return;
         }
 
@@ -130,14 +129,14 @@ public final class ChallengeExecutor {
                 sendErrorTr(player, "Unable to load challenge progress right now. Please try again.");
                 return;
             }
-            attemptLoaded(player, playerInfo, opt.get(), itemSources, state);
+            attemptLoaded(player, playerInfo, definition.get(), itemSources, state);
         }));
     }
 
     private void attemptLoaded(
         @NotNull Player player,
         @NotNull PlayerInfo playerInfo,
-        @NotNull Challenge challenge,
+        @NotNull ChallengeDefinition challenge,
         @NotNull List<Inventory> itemSources,
         @NotNull LoadedChallengeProgress loaded
     ) {
@@ -152,46 +151,84 @@ public final class ChallengeExecutor {
 
         try {
             Map<ChallengeKey, ChallengeCompletion> progress = loaded.snapshot();
-            ChallengeCompletion completion = progress.computeIfAbsent(challenge.getId(), id -> new ChallengeCompletion(id, null, 0, 0));
-            if (!challenge.getRank().isAvailable(playerInfo)) {
+            ChallengeKey challengeKey = ChallengeKey.of(challenge.id().value());
+            ChallengeCompletion completion = progress.computeIfAbsent(challengeKey, id -> new ChallengeCompletion(id, null, 0, 0));
+
+            UnlockContext context = new UnlockContext(progress, player::hasPermission, islandLevel(player));
+            List<MissingRequirement> missingUnlocks = unlockEvaluator.missingChallengeRequirements(challenge, context);
+            if (!missingUnlocks.isEmpty()) {
                 sendErrorTr(player, "The <challenge> challenge is not available yet!",
-                    legacyArg("challenge", challenge.getDisplayName()));
+                    component("challenge", ChallengeText.displayName(challenge)));
+                unlockEvaluator.describe(missingUnlocks).forEach(line -> send(player, line));
                 loaded.finishCompletion();
                 return;
             }
-            if (completion.getTimesCompleted() > 0 && (!challenge.isRepeatable() || challenge.getType() == Challenge.Type.ISLAND)) {
-                sendErrorTr(player, "The <challenge> challenge is not repeatable!", legacyArg("challenge", challenge.getDisplayName()));
+            if (completion.getTimesCompleted() > 0
+                && (!challenge.repeatPolicy().repeatable() || !hasInventoryHandIn(challenge))) {
+                sendErrorTr(player, "The <challenge> challenge is not repeatable!",
+                    component("challenge", ChallengeText.displayName(challenge)));
                 loaded.finishCompletion();
                 return;
             }
-            if (completion.isOnCooldown() && completion.getTimesCompletedInCooldown() >= challenge.getRepeatLimit() && challenge.getRepeatLimit() > 0) {
+            if (completion.isOnCooldown() && !challenge.repeatPolicy().isUnlimited()
+                && completion.getTimesCompletedInCooldown() >= challenge.repeatPolicy().repeatLimit()) {
                 sendErrorTr(player, "You cannot complete the <challenge> challenge again yet!",
-                    legacyArg("challenge", challenge.getDisplayName()));
+                    component("challenge", ChallengeText.displayName(challenge)));
                 loaded.finishCompletion();
                 return;
             }
 
             sendTr(player, "Trying to complete challenge <challenge>.",
-                Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
+                component("challenge", ChallengeText.displayName(challenge), PRIMARY));
 
-            RequirementCheck check = switch (challenge.getType()) {
-                case PLAYER -> tryCompleteOnPlayer(player, challenge, completion, itemSources);
-                case ISLAND -> new RequirementCheck(tryCompleteOnIsland(player, challenge), Map.of());
-                case ISLAND_LEVEL -> new RequirementCheck(tryCompleteIslandLevel(player, challenge), Map.of());
-            };
+            RequirementCheck check = checkAndConsumeRequirements(player, challenge, completion, itemSources);
             if (!check.completed()) {
                 loaded.finishCompletion();
                 return;
             }
 
             boolean isFirstCompletion = completion.getTimesCompleted() == 0;
-            applyCompletion(progress, challenge, completion);
+            applyCompletion(progress, challengeKey, challenge, completion);
             persistCompletion(player, playerInfo, challenge, loaded, progress, isFirstCompletion, check.consumedItems());
         } catch (Throwable t) {
             loaded.finishCompletion();
-            logger.log(Level.WARNING, "Failed to complete challenge " + challenge.getId().id() + " for " + player.getName(), t);
+            logger.log(Level.WARNING, "Failed to complete challenge " + challenge.id().value() + " for " + player.getName(), t);
             sendErrorTr(player, "Challenge completion failed unexpectedly.");
         }
+    }
+
+    /**
+     * Checks every completion requirement, reporting all shortfalls, and only consumes hand-in
+     * items once everything else has passed.
+     */
+    private @NotNull RequirementCheck checkAndConsumeRequirements(
+        @NotNull Player player,
+        @NotNull ChallengeDefinition challenge,
+        @NotNull ChallengeCompletion completion,
+        @NotNull List<Inventory> itemSources
+    ) {
+        boolean fulfilled = true;
+        Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
+        for (CompletionRequirement requirement : challenge.completionRequirements()) {
+            switch (requirement) {
+                case IslandBlocksRequirement blocks -> fulfilled &= checkIslandBlocks(player, blocks);
+                case EntityPresenceRequirement entities -> fulfilled &= checkEntities(player, entities);
+                case IslandLevelRequirement level -> fulfilled &= checkIslandLevel(player, level);
+                case InventoryItemsRequirement items ->
+                    collectRequiredItems(items, completion.getTimesCompletedInCooldown(), requiredItems);
+            }
+        }
+        if (!requiredItems.isEmpty()) {
+            fulfilled &= hasAllItems(player, requiredItems, itemSources);
+        }
+        if (!fulfilled) {
+            return new RequirementCheck(false, Map.of());
+        }
+        if (!requiredItems.isEmpty() && challenge.properties().consumeItemsOnCompletion()) {
+            removeRequiredItems(itemSources, requiredItems);
+            return new RequirementCheck(true, requiredItems);
+        }
+        return new RequirementCheck(true, Map.of());
     }
 
     /**
@@ -202,7 +239,7 @@ public final class ChallengeExecutor {
     private void persistCompletion(
         @NotNull Player player,
         @NotNull PlayerInfo playerInfo,
-        @NotNull Challenge challenge,
+        @NotNull ChallengeDefinition challenge,
         @NotNull LoadedChallengeProgress loaded,
         @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
         boolean isFirstCompletion,
@@ -215,7 +252,7 @@ public final class ChallengeExecutor {
                 scheduler.sync(() -> {
                     loaded.replace(progress);
                     loaded.finishCompletion();
-                    applyReward(player, playerInfo, challenge, isFirstCompletion);
+                    rewardApplier.apply(player, playerInfo, challenge, isFirstCompletion);
                 });
             } catch (Throwable t) {
                 scheduler.sync(() -> {
@@ -251,7 +288,7 @@ public final class ChallengeExecutor {
         @NotNull Runnable onSuccess,
         @NotNull Consumer<Throwable> onError
     ) {
-        Optional<Challenge> challenge = challengeLogic.getChallengeById(challengeId);
+        Optional<ChallengeDefinition> challenge = challengeLogic.getDefinitionById(challengeId);
         if (challenge.isEmpty()) {
             onError.accept(new IllegalArgumentException("Unknown challenge " + challengeId.id()));
             return;
@@ -259,8 +296,8 @@ public final class ChallengeExecutor {
         mutateProgress(target, progress -> {
             ChallengeCompletion completion = progress.computeIfAbsent(challengeId, id -> new ChallengeCompletion(id, null, 0, 0));
             if (!completion.isOnCooldown()) {
-                Duration resetDuration = challenge.get().getResetDuration();
-                completion.setCooldownUntil(resetDuration.isPositive() ? Instant.now().plus(resetDuration) : null);
+                Duration resetWindow = challenge.get().repeatPolicy().resetWindow();
+                completion.setCooldownUntil(resetWindow.isPositive() ? Instant.now().plus(resetWindow) : null);
             }
             completion.addTimesCompleted();
         }, onSuccess, onError);
@@ -362,40 +399,61 @@ public final class ChallengeExecutor {
         });
     }
 
-    private record RequirementCheck(boolean completed, @NotNull Map<ItemStack, Integer> consumedItems) {
-    }
-
     private void applyCompletion(
         @NotNull Map<ChallengeKey, ChallengeCompletion> progress,
-        @NotNull Challenge challenge,
+        @NotNull ChallengeKey challengeKey,
+        @NotNull ChallengeDefinition challenge,
         @NotNull ChallengeCompletion completion
     ) {
         if (!completion.isOnCooldown()) {
-            Duration resetDuration = challenge.getResetDuration();
-            if (resetDuration.isPositive()) {
-                completion.setCooldownUntil(Instant.now().plus(resetDuration));
+            Duration resetWindow = challenge.repeatPolicy().resetWindow();
+            if (resetWindow.isPositive()) {
+                completion.setCooldownUntil(Instant.now().plus(resetWindow));
             } else {
                 completion.setCooldownUntil(null);
             }
         }
         completion.addTimesCompleted();
-        progress.put(challenge.getId(), completion);
+        progress.put(challengeKey, completion);
     }
 
-    private boolean tryCompleteIslandLevel(@NotNull Player player, @NotNull Challenge challenge) {
-        return plugin.getIslandInfo(player).getLevel() >= challenge.getRequiredLevel();
+    private double islandLevel(@NotNull Player player) {
+        IslandInfo islandInfo = plugin.getIslandInfo(player);
+        return islandInfo != null ? islandInfo.getLevel() : 0d;
     }
 
-    private boolean tryCompleteOnIsland(@NotNull Player player, @NotNull Challenge challenge) {
-        List<BlockRequirement> requiredBlocks = challenge.getRequiredBlocks();
-        int radius = challenge.getRadius();
-        if (islandContains(player, requiredBlocks, radius) && hasEntitiesNear(player, challenge.getRequiredEntities(), radius)) {
+    private static boolean hasInventoryHandIn(@NotNull ChallengeDefinition challenge) {
+        return challenge.completionRequirements().stream().anyMatch(InventoryItemsRequirement.class::isInstance);
+    }
+
+    private boolean checkIslandLevel(@NotNull Player player, @NotNull IslandLevelRequirement requirement) {
+        if (islandLevel(player) >= requirement.minimumLevel()) {
             return true;
         }
-        sendError(player, dk.lockfuglsang.minecraft.po.I18nUtil.fromLegacy(challenge.getDescription()));
-        sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
-            number("radius", challenge.getRadius()));
+        sendErrorTr(player, "Your island must be level <level> to complete this challenge!",
+            number("level", requirement.minimumLevel()));
         return false;
+    }
+
+    private boolean checkIslandBlocks(@NotNull Player player, @NotNull IslandBlocksRequirement requirement) {
+        List<BlockRequirement> requiredBlocks = new ArrayList<>();
+        for (BlockRequirementSpec spec : requirement.blocks()) {
+            requiredBlocks.add(new BlockRequirement(spec.prototype(), spec.amount()));
+        }
+        if (islandContains(player, requiredBlocks, requirement.radius())) {
+            return true;
+        }
+        sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
+            number("radius", requirement.radius()));
+        return false;
+    }
+
+    private boolean checkEntities(@NotNull Player player, @NotNull EntityPresenceRequirement requirement) {
+        List<EntityMatch> requiredEntities = new ArrayList<>();
+        for (EntityRequirementSpec spec : requirement.entities()) {
+            requiredEntities.add(new EntityMatch(spec.type(), spec.metadata(), spec.count()));
+        }
+        return hasEntitiesNear(player, requiredEntities, requirement.radius());
     }
 
     private boolean islandContains(@NotNull Player player, @NotNull List<BlockRequirement> itemStacks, int radius) {
@@ -459,15 +517,23 @@ public final class ChallengeExecutor {
         return countMap.isEmpty();
     }
 
-    private @NotNull RequirementCheck tryCompleteOnPlayer(
+    private void collectRequiredItems(
+        @NotNull InventoryItemsRequirement requirement,
+        int timesCompletedInCooldown,
+        @NotNull Map<ItemStack, Integer> requiredItems
+    ) {
+        for (ItemRequirementSpec spec : requirement.items()) {
+            requiredItems.put(spec.item().create(), spec.amountForRepetitions(timesCompletedInCooldown));
+        }
+    }
+
+    private boolean hasAllItems(
         @NotNull Player player,
-        @NotNull Challenge challenge,
-        @NotNull ChallengeCompletion completion,
+        @NotNull Map<ItemStack, Integer> requiredItems,
         @NotNull List<Inventory> itemSources
     ) {
         Component missingItems = Component.empty();
         boolean hasAll = true;
-        Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
         for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
             ItemStack requiredType = required.getKey();
             int requiredAmount = required.getValue();
@@ -482,13 +548,8 @@ public final class ChallengeExecutor {
         }
         if (!hasAll) {
             sendTr(player, "You are still missing the following items:<items>", component("items", missingItems));
-            return new RequirementCheck(false, Map.of());
         }
-        if (challenge.isTakeItems()) {
-            removeRequiredItems(itemSources, requiredItems);
-            return new RequirementCheck(true, requiredItems);
-        }
-        return new RequirementCheck(true, Map.of());
+        return hasAll;
     }
 
     private int countOf(@NotNull Collection<Inventory> inventories, @NotNull ItemStack required) {
@@ -530,77 +591,6 @@ public final class ChallengeExecutor {
         }
     }
 
-    private void applyReward(
-        @NotNull Player player,
-        @NotNull PlayerInfo playerInfo,
-        @NotNull Challenge challenge,
-        boolean isFirstCompletion
-    ) {
-        sendTr(player, "You completed the <challenge> challenge!",
-            Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY));
-        Reward reward = isFirstCompletion ? challenge.getReward() : challenge.getRepeatReward();
-        player.giveExp(reward.getXpReward());
-
-        boolean wasBroadcast = false;
-        if (defaults.broadcastCompletion && isFirstCompletion) {
-            Bukkit.getServer().broadcastMessage(FormatUtil.normalize(challengeLogic.getBroadcastText()) +
-                trLegacy("<player> has completed the <challenge> challenge!",
-                    unparsed("player", player.getName(), PRIMARY),
-                    Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
-            wasBroadcast = true;
-        }
-
-        sendTr(player, "Item rewards: <items>", Placeholder.legacy("items", reward.getRewardText(), PRIMARY));
-        sendTr(player, "XP reward: <experience:'0'>", number("experience", reward.getXpReward(), PRIMARY));
-        if (defaults.enableEconomyPlugin) {
-            double rewBonus = 1;
-            Perk perk = perkLogic.getPerk(player);
-            rewBonus += perk.getRewBonus();
-            double currencyReward = reward.getCurrencyReward() * rewBonus;
-            double percentage = rewBonus - 1.0;
-
-            hookManager.getEconomyHook().ifPresent(hook -> {
-                hook.depositPlayer(player, currencyReward);
-                sendTr(player, "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>",
-                    number("amount", currencyReward),
-                    unparsed("currency", hook.getCurrenyName()),
-                    number("bonus", percentage));
-            });
-        }
-
-        if (reward.getPermissionReward() != null) {
-            List<String> perms = Arrays.asList(reward.getPermissionReward().trim().split(" "));
-            IslandInfo islandInfo = playerInfo.getIslandInfo();
-            for (UUID memberUUID : islandInfo.getMemberUUIDs()) {
-                if (memberUUID == null) {
-                    continue;
-                }
-                PlayerInfo pi = plugin.getPlayerInfo(memberUUID);
-                if (pi != null) {
-                    pi.addPermissions(perms);
-                }
-            }
-        }
-
-        HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(reward.getItemReward().toArray(new ItemStack[0]));
-        for (ItemStack item : leftOvers.values()) {
-            player.getWorld().dropItem(player.getLocation(), item);
-        }
-        if (!leftOvers.isEmpty()) {
-            sendErrorTr(player, "Your inventory is full. <muted>Items were dropped on the ground.");
-        }
-        for (String cmd : reward.getCommands()) {
-            String command = cmd.replaceAll("\\{challenge\\}", Matcher.quoteReplacement(challenge.getName()));
-            command = command.replaceAll("\\{challengeName\\}", Matcher.quoteReplacement(challenge.getDisplayName()));
-            plugin.execCommand(player, command, true);
-        }
-        if (!wasBroadcast) {
-            IslandInfo island = playerInfo.getIslandInfo();
-            if (island != null) {
-                island.sendMessageToOnlineMembers(trLegacy("<player> has completed the <challenge> challenge!",
-                    unparsed("player", playerInfo.getPlayerName(), PRIMARY),
-                    Placeholder.legacy("challenge", challenge.getDisplayName(), PRIMARY)));
-            }
-        }
+    private record RequirementCheck(boolean completed, @NotNull Map<ItemStack, Integer> consumedItems) {
     }
 }

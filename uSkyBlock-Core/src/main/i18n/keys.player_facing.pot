@@ -33,6 +33,10 @@ msgstr ""
 msgid "** You are leaving an abandoned island."
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
+msgid "<amount> x <item>"
+msgstr ""
+
 #. I18N: A summary of block limits on an island
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
 msgid "<block-type>: <count> (max. <max>)"
@@ -105,7 +109,7 @@ msgstr ""
 msgid "<player> has been removed from the island!"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "<player> has completed the <challenge> challenge!"
 msgstr ""
 
@@ -411,10 +415,12 @@ msgstr ""
 msgid "Command is currently disabled!"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <remaining> more <rank> challenges"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Complete <requirements>"
 msgstr ""
@@ -448,7 +454,7 @@ msgstr ""
 msgid "Currency reward: <currency:'#,##0'>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "Currency reward: <primary><amount:'#,##0'><currency></primary> <secondary>(<bonus:'0%'>)</secondary>"
 msgstr ""
 
@@ -632,7 +638,7 @@ msgstr ""
 msgid "Item reward: <reward-line>"
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "Item rewards: <items>"
 msgstr ""
 
@@ -879,7 +885,12 @@ msgstr ""
 msgid "Requires <requirement>"
 msgstr ""
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
+msgid "Requires island level <level>"
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeUnlockEvaluator.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Rank.java
 msgid "Requires permission <permission>"
 msgstr ""
@@ -1042,7 +1053,6 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/challenge/ChallengeInfoCommand.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "The <challenge> challenge is not available yet!"
 msgstr ""
 
@@ -1324,7 +1334,7 @@ msgid "When your warp is activated,<newline>other players will be taken to<newli
 msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/Challenge.java
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "XP reward: <experience:'0'>"
 msgstr ""
 
@@ -1476,7 +1486,7 @@ msgstr ""
 msgid "You cannot use another island's portals."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "You completed the <challenge> challenge!"
 msgstr ""
 
@@ -1678,7 +1688,7 @@ msgstr ""
 msgid "Your incoming warp is inactive, players may not warp to your island."
 msgstr ""
 
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/RewardApplier.java
 msgid "Your inventory is full. <muted>Items were dropped on the ground."
 msgstr ""
 
@@ -1717,6 +1727,10 @@ msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "Your island is now <secondary>unlocked</secondary>. Anyone may enter, but only you and your party members may build or remove blocks."
+msgstr ""
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/challenge/ChallengeExecutor.java
+msgid "Your island must be level <level> to complete this challenge!"
 msgstr ""
 
 #. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".

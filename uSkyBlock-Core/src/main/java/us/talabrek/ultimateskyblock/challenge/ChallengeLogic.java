@@ -21,9 +21,16 @@ import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.api.event.MemberJoinedEvent;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRewards;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
+import us.talabrek.ultimateskyblock.challenge.catalog.RewardBundle;
 import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogLoader;
 import us.talabrek.ultimateskyblock.challenge.catalog.bootstrap.ChallengeCatalogRuntimeAdapter;
 import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -39,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -46,7 +54,6 @@ import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.tr;
-import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
@@ -68,6 +75,8 @@ public class ChallengeLogic implements Listener {
     private final PerkLogic perkLogic;
     private final HookManager hookManager;
 
+    private final ChallengeCatalog catalog;
+    private final ChallengeUnlockEvaluator unlockEvaluator;
     private final Map<String, Rank> ranks;
     // Fast O(1) lookup for challenges by canonical id
     private final Map<ChallengeKey, Challenge> byId = new HashMap<>();
@@ -92,13 +101,31 @@ public class ChallengeLogic implements Listener {
         this.runtimeConfigs = runtimeConfigs;
         this.perkLogic = perkLogic;
         this.hookManager = hookManager;
-        ChallengeCatalog catalog = challengeCatalogLoader.load();
+        this.catalog = challengeCatalogLoader.load();
+        this.unlockEvaluator = new ChallengeUnlockEvaluator(catalog);
         this.defaults = ChallengeCatalogRuntimeAdapter.legacyDefaults(runtimeConfigs.current().challenges());
         ranks = new ChallengeCatalogRuntimeAdapter().adapt(catalog, runtimeConfigs.current().challenges());
         rebuildIndex();
         completionLogic = new ChallengeCompletionLogic(this, plugin, scheduler, runtimeConfigs, challengeProgressRepository);
-        challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, defaults, hookManager, perkLogic, completionLogic.progressCache(), challengeProgressRepository);
+        RewardApplier rewardApplier = new RewardApplier(plugin, runtimeConfigs, hookManager, perkLogic);
+        challengeExecutor = new ChallengeExecutor(logger, plugin, scheduler, this, unlockEvaluator, rewardApplier,
+            completionLogic.progressCache(), challengeProgressRepository);
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public @NotNull ChallengeCatalog getCatalog() {
+        return catalog;
+    }
+
+    public @NotNull ChallengeUnlockEvaluator getUnlockEvaluator() {
+        return unlockEvaluator;
+    }
+
+    /**
+     * Catalog definition lookup by canonical id.
+     */
+    public Optional<ChallengeDefinition> getDefinitionById(@NotNull ChallengeKey key) {
+        return catalog.challenge(ChallengeId.of(key.id()));
     }
 
     private void rebuildIndex() {
@@ -121,13 +148,13 @@ public class ChallengeLogic implements Listener {
         public enum Status {FOUND, NOT_FOUND, AMBIGUOUS}
 
         private final Status status;
-        private final @Nullable Challenge challenge;
+        private final @Nullable ChallengeDefinition challenge;
         private final @NotNull List<String> suggestions;
         private final @NotNull String normalizedInput;
 
         private ChallengeLookupResult(
             Status status,
-            @Nullable Challenge challenge,
+            @Nullable ChallengeDefinition challenge,
             @NotNull List<String> suggestions,
             @NotNull String normalizedInput
         ) {
@@ -137,7 +164,7 @@ public class ChallengeLogic implements Listener {
             this.normalizedInput = normalizedInput;
         }
 
-        public static ChallengeLookupResult found(@NotNull Challenge c, @NotNull String normalizedInput) {
+        public static ChallengeLookupResult found(@NotNull ChallengeDefinition c, @NotNull String normalizedInput) {
             return new ChallengeLookupResult(Status.FOUND, c, Collections.emptyList(), normalizedInput);
         }
 
@@ -153,8 +180,13 @@ public class ChallengeLogic implements Listener {
             return status;
         }
 
-        public @Nullable Challenge getChallenge() {
+        public @Nullable ChallengeDefinition getChallenge() {
             return challenge;
+        }
+
+        public @NotNull ChallengeKey getChallengeKey() {
+            Objects.requireNonNull(challenge, "challenge");
+            return ChallengeKey.of(challenge.id().value());
         }
 
         public @NotNull List<String> getSuggestions() {
@@ -189,27 +221,29 @@ public class ChallengeLogic implements Listener {
 
         String inputLower = normalizeLower(userInput);
         String inputSlug = toSlug(userInput);
+        if (inputLower.isEmpty()) {
+            return ChallengeLookupResult.notFound(inputLower);
+        }
 
         // 1) exact internal id
-        Optional<Challenge> exactId = getChallengeById(ChallengeKey.of(inputLower));
+        Optional<ChallengeDefinition> exactId = catalog.challenge(ChallengeId.of(inputLower));
         if (exactId.isPresent()) {
             return ChallengeLookupResult.found(exactId.get(), inputLower);
         }
 
-        Collection<Challenge> all = List.copyOf(byId.values());
+        Collection<ChallengeDefinition> all = catalog.index().challengesById().values();
 
-        // 2) exact display name (color-stripped)
-        for (Challenge c : all) {
-            String display = stripFormatting(c.getDisplayName());
-            if (normalizeLower(display).equals(inputLower)) {
+        // 2) exact display name (formatting-stripped)
+        for (ChallengeDefinition c : all) {
+            if (normalizeLower(ChallengeText.plainName(c)).equals(inputLower)) {
                 return ChallengeLookupResult.found(c, inputLower);
             }
         }
 
         // 3) exact slug match – collect candidates
-        List<Challenge> candidates = new ArrayList<>();
-        for (Challenge c : all) {
-            if (toSlug(c.getId().id()).equals(inputSlug) || toSlug(stripFormatting(c.getDisplayName())).equals(inputSlug)) {
+        List<ChallengeDefinition> candidates = new ArrayList<>();
+        for (ChallengeDefinition c : all) {
+            if (toSlug(c.id().value()).equals(inputSlug) || toSlug(ChallengeText.plainName(c)).equals(inputSlug)) {
                 candidates.add(c);
             }
         }
@@ -221,9 +255,9 @@ public class ChallengeLogic implements Listener {
 
         // 4) unique prefix on slug
         if (inputSlug.length() >= MIN_PREFIX_LENGTH) {
-            for (Challenge c : all) {
-                String idSlug = toSlug(c.getId().id());
-                String dnSlug = toSlug(stripFormatting(c.getDisplayName()));
+            for (ChallengeDefinition c : all) {
+                String idSlug = toSlug(c.id().value());
+                String dnSlug = toSlug(ChallengeText.plainName(c));
                 if (idSlug.startsWith(inputSlug) || dnSlug.startsWith(inputSlug)) {
                     candidates.add(c);
                 }
@@ -247,10 +281,10 @@ public class ChallengeLogic implements Listener {
         return normalizeLower(s).replaceAll("\\s+", "");
     }
 
-    private static List<String> toSuggestionList(List<Challenge> candidates, int max) {
+    private static List<String> toSuggestionList(List<ChallengeDefinition> candidates, int max) {
         List<String> list = new ArrayList<>();
-        for (Challenge c : candidates) {
-            list.add(stripFormatting(c.getDisplayName()));
+        for (ChallengeDefinition c : candidates) {
+            list.add(ChallengeText.plainName(c));
             if (list.size() >= max) break;
         }
         return list;
@@ -265,24 +299,37 @@ public class ChallengeLogic implements Listener {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return list;
         }
-        for (Rank rank : ranks.values()) {
-            if (rank.isAvailable(playerInfo)) {
-                for (Challenge challenge : rank.getChallenges()) {
-                    if (challenge.getMissingRequirements(playerInfo).isEmpty()) {
-                        list.add(challenge.getId());
-                    }
-                }
+        ChallengeUnlockEvaluator.UnlockContext context = unlockContextFor(playerInfo);
+        for (ChallengeDefinition challenge : catalog.index().challengesById().values()) {
+            if (unlockEvaluator.isChallengeUnlocked(challenge, context)) {
+                list.add(ChallengeKey.of(challenge.id().value()));
             }
         }
         return list;
     }
 
-    public @NotNull List<ChallengeKey> getAllChallengeIds() {
-        return List.copyOf(byId.keySet());
+    /**
+     * Builds an unlock context from the player's island progress; permission checks degrade to
+     * false when the player is offline.
+     */
+    public @NotNull ChallengeUnlockEvaluator.UnlockContext unlockContextFor(@NotNull PlayerInfo playerInfo) {
+        Player player = playerInfo.getPlayer();
+        IslandInfo islandInfo = playerInfo.getIslandInfo();
+        return new ChallengeUnlockEvaluator.UnlockContext(
+            completionLogic.getChallenges(playerInfo),
+            player != null ? player::hasPermission : permission -> false,
+            islandInfo != null ? islandInfo.getLevel() : 0d
+        );
     }
 
-    public @NotNull List<Challenge> getChallengesForRank(String rank) {
-        return ranks.containsKey(rank) ? ranks.get(rank).getChallenges() : Collections.emptyList();
+    public @NotNull List<ChallengeKey> getAllChallengeIds() {
+        return catalog.index().challengesById().keySet().stream()
+            .map(id -> ChallengeKey.of(id.value()))
+            .toList();
+    }
+
+    public @NotNull List<ChallengeDefinition> getChallengesForRank(String rank) {
+        return catalog.rank(RankId.of(rank)).map(RankDefinition::challenges).orElse(List.of());
     }
 
     public void completeChallenge(@NotNull Player player, @NotNull ChallengeKey id) {
@@ -318,12 +365,10 @@ public class ChallengeLogic implements Listener {
     }
 
     public void populateChallenges(Map<ChallengeKey, ChallengeCompletion> challengeMap) {
-        for (Rank rank : ranks.values()) {
-            for (Challenge challenge : rank.getChallenges()) {
-                ChallengeKey id = challenge.getId();
-                if (!challengeMap.containsKey(id)) {
-                    challengeMap.put(id, new ChallengeCompletion(id, null, 0, 0));
-                }
+        for (ChallengeId challengeId : catalog.index().challengesById().keySet()) {
+            ChallengeKey id = ChallengeKey.of(challengeId.value());
+            if (!challengeMap.containsKey(id)) {
+                challengeMap.put(id, new ChallengeCompletion(id, null, 0, 0));
             }
         }
     }
@@ -524,14 +569,22 @@ public class ChallengeLogic implements Listener {
         for (Map.Entry<ChallengeKey, ChallengeCompletion> entry : completions.entrySet()) {
             if (entry.getValue().getTimesCompleted() > 0) {
                 // Stored progress may reference challenges removed from challenges.yml.
-                Challenge challenge = getChallengeById(entry.getKey()).orElse(null);
-                if (challenge != null && challenge.getReward().getPermissionReward() != null) {
-                    permissions.addAll(Arrays.asList(challenge.getReward().getPermissionReward().split(" ")));
-                }
+                getDefinitionById(entry.getKey()).ifPresent(challenge -> {
+                    collectPermissionRewards(challenge.firstCompletionReward(), permissions);
+                    collectPermissionRewards(challenge.repeatReward(), permissions);
+                });
             }
         }
         if (!permissions.isEmpty()) {
             playerInfo.addPermissions(permissions);
+        }
+    }
+
+    private static void collectPermissionRewards(@NotNull RewardBundle bundle, @NotNull List<String> permissions) {
+        for (ChallengeRewards.RewardAction action : bundle.actions()) {
+            if (action instanceof ChallengeRewards.PermissionReward permissionReward) {
+                permissions.addAll(permissionReward.permissions());
+            }
         }
     }
 }

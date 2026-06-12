@@ -6,10 +6,10 @@ import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -72,9 +72,9 @@ public class AdminChallengeCommand extends CompositeCommand {
         });
         add(new RankCommand("rank", null, marktr("complete all challenges in the rank")) {
             @Override
-            protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<Challenge> challenges) {
-                for (Challenge challenge : challenges) {
-                    completeChallenge(sender, playerInfo, challenge.getId());
+            protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenges) {
+                for (ChallengeDefinition challenge : challenges) {
+                    completeChallenge(sender, playerInfo, ChallengeKey.of(challenge.id().value()));
                 }
             }
         });
@@ -142,8 +142,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 var result = challengeLogic.resolveChallenge(userInput);
                 switch (result.getStatus()) {
                     case FOUND -> {
-                        Challenge challenge = result.getChallenge();
-                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeKey());
                         if (completion != null) {
                             doExecute(sender, playerInfo, completion);
                             return true;
@@ -171,14 +170,14 @@ public class AdminChallengeCommand extends CompositeCommand {
             super(name, permission, "rank", description);
         }
 
-        protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<Challenge> challenge);
+        protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenge);
 
         @Override
         public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
             if (playerInfo != null && args.length > 0) {
                 String rankName = String.join(" ", args);
-                List<Challenge> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
+                List<ChallengeDefinition> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
                 if (challenges == null || challenges.isEmpty()) {
                     sendErrorTr(sender, "No rank named <rank> was found!", unparsed("rank", rankName));
                 } else {

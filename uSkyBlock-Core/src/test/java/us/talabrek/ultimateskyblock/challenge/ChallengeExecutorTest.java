@@ -1,6 +1,7 @@
 package us.talabrek.ultimateskyblock.challenge;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -9,9 +10,26 @@ import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import us.talabrek.ultimateskyblock.hook.HookManager;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeCatalog;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeProperties;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ChallengeUnlockRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletionRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandLevelRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemAmountProgression;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.DisplaySpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDisplaySpec;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankId;
+import us.talabrek.ultimateskyblock.challenge.catalog.RepeatPolicy;
+import us.talabrek.ultimateskyblock.challenge.catalog.RewardBundle;
+import us.talabrek.ultimateskyblock.challenge.catalog.TextSpec;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gameobject.ItemStackSpec;
 import us.talabrek.ultimateskyblock.island.IslandKey;
-import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -31,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
@@ -46,67 +64,88 @@ public class ChallengeExecutorTest {
 
     private final ChallengeProgressRepository repository = mock(ChallengeProgressRepository.class);
     private final ChallengeLogic challengeLogic = mock(ChallengeLogic.class);
+    private final RewardApplier rewardApplier = mock(RewardApplier.class);
     private final uSkyBlock plugin = mock(uSkyBlock.class);
     private final Player player = mock(Player.class);
     private final PlayerInfo playerInfo = mock(PlayerInfo.class);
     private final PlayerInventory playerInventory = mock(PlayerInventory.class);
-    private final Challenge challenge = mock(Challenge.class);
-    private final Rank rank = mock(Rank.class);
-    private final Reward reward = new Reward("", List.of(), null, 0, 0, List.of());
+    private final GameObjectFactory gameObjects = new GameObjectFactory();
 
     private ChallengeProgressCache progressCache;
-    private ChallengeExecutor executor;
     /**
      * Tasks handed to the mocked scheduler; drained after each executor call. Deferring (instead
      * of running inline) mirrors the real scheduler and avoids re-entrant cache updates.
      */
     private final Deque<Runnable> scheduledTasks = new ArrayDeque<>();
+    private Scheduler scheduler;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        BukkitServerMock.setupServerMock();
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
-        Scheduler scheduler = deferringScheduler();
+        scheduler = deferringScheduler();
         progressCache = new ChallengeProgressCache(Logger.getAnonymousLogger(), scheduler, repository, challengeLogic);
-        executor = new ChallengeExecutor(Logger.getAnonymousLogger(), plugin, scheduler, challengeLogic,
-            defaults(), mock(HookManager.class), mock(PerkLogic.class), progressCache, repository);
 
         when(plugin.getPlayerInfo(player)).thenReturn(playerInfo);
         when(plugin.playerIsOnOwnIsland(player)).thenReturn(true);
+        when(plugin.getIslandInfo(player)).thenReturn(null);
         when(playerInfo.getHasIsland()).thenReturn(true);
         when(playerInfo.locationForParty()).thenReturn("1,1");
-        when(playerInfo.getIslandInfo()).thenReturn(null);
         when(player.getName()).thenReturn("Tester");
         when(player.isOnline()).thenReturn(true);
         when(player.getInventory()).thenReturn(playerInventory);
         when(playerInventory.addItem(any(ItemStack[].class))).thenReturn(new HashMap<>());
         when(playerInventory.getContents()).thenReturn(new ItemStack[0]);
+    }
 
-        when(challengeLogic.getChallengeById(CHALLENGE_ID)).thenReturn(Optional.of(challenge));
-        when(challenge.getId()).thenReturn(CHALLENGE_ID);
-        when(challenge.getType()).thenReturn(Challenge.Type.PLAYER);
-        when(challenge.getRank()).thenReturn(rank);
-        when(challenge.isRepeatable()).thenReturn(true);
-        when(challenge.getRepeatLimit()).thenReturn(0);
-        when(challenge.getResetDuration()).thenReturn(Duration.ZERO);
-        when(challenge.getRequiredItems(anyInt())).thenReturn(Map.of());
-        when(challenge.isTakeItems()).thenReturn(false);
-        when(challenge.getReward()).thenReturn(reward);
-        when(challenge.getRepeatReward()).thenReturn(reward);
-        when(challenge.getDisplayName()).thenReturn("Test Challenge");
-        when(challenge.getName()).thenReturn("testchallenge");
-        when(rank.isAvailable(playerInfo)).thenReturn(true);
+    private ChallengeExecutor executor(ChallengeDefinition definition) {
+        ChallengeCatalog catalog = new ChallengeCatalog(List.of(new RankDefinition(
+            RankId.of("starter"),
+            new RankDisplaySpec(TextSpec.miniMessage("Starter"), TextSpec.empty()),
+            gameObjects.itemStack("minecraft:barrier"),
+            List.of(),
+            List.of(definition)
+        )));
+        when(challengeLogic.getDefinitionById(CHALLENGE_ID)).thenReturn(Optional.of(definition));
+        return new ChallengeExecutor(Logger.getAnonymousLogger(), plugin, scheduler, challengeLogic,
+            new ChallengeUnlockEvaluator(catalog), rewardApplier, progressCache, repository);
+    }
+
+    private ChallengeDefinition challenge(
+        List<ChallengeUnlockRequirement> unlock,
+        List<CompletionRequirement> completion,
+        boolean consumeItems,
+        boolean repeatable
+    ) {
+        ItemStackSpec stone = gameObjects.itemStack("minecraft:stone");
+        return new ChallengeDefinition(
+            ChallengeId.of(CHALLENGE_ID.id()),
+            new DisplaySpec(TextSpec.miniMessage("Test Challenge"), TextSpec.empty(), stone),
+            stone,
+            unlock,
+            completion,
+            new ChallengeProperties(consumeItems),
+            new RepeatPolicy(repeatable, Duration.ZERO, 0),
+            RewardBundle.empty(),
+            RewardBundle.empty()
+        );
+    }
+
+    private ChallengeDefinition simpleChallenge() {
+        return challenge(List.of(), List.of(), false, true);
     }
 
     @Test
     public void appliesRewardOnlyAfterSuccessfulPersist() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
 
         executor.attempt(player, CHALLENGE_ID);
         drainScheduledTasks();
 
-        InOrder order = inOrder(repository, player);
+        InOrder order = inOrder(repository, rewardApplier);
         order.verify(repository).replace(eq(ISLAND), any());
-        order.verify(player).giveExp(0);
+        order.verify(rewardApplier).apply(eq(player), eq(playerInfo), any(ChallengeDefinition.class), eq(true));
         LoadedChallengeProgress loaded = progressCache.getIfLoaded(ISLAND).orElseThrow();
         assertEquals(1, loaded.snapshot().get(CHALLENGE_ID).getTimesCompleted());
         assertFalse(loaded.isCompletionInFlight());
@@ -114,13 +153,14 @@ public class ChallengeExecutorTest {
 
     @Test
     public void withholdsRewardAndKeepsMemoryWhenPersistFails() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
         doThrow(new IllegalStateException("database unavailable")).when(repository).replace(any(), any());
 
         executor.attempt(player, CHALLENGE_ID);
         drainScheduledTasks();
 
-        verify(player, never()).giveExp(anyInt());
+        verify(rewardApplier, never()).apply(any(), any(), any(), anyBoolean());
         LoadedChallengeProgress loaded = progressCache.getIfLoaded(ISLAND).orElseThrow();
         // In-memory state must still match the database: the completion never happened.
         assertFalse(loaded.snapshot().containsKey(CHALLENGE_ID));
@@ -128,36 +168,72 @@ public class ChallengeExecutorTest {
     }
 
     @Test
+    public void enforcesChallengeUnlockRequirementsOnCommandPath() {
+        // Island level 0 (no island info stubbed) < 10: the attempt must be rejected.
+        ChallengeExecutor executor = executor(challenge(
+            List.of(new IslandLevelRequirement(10)), List.of(), false, true));
+        progressCache.replaceLoaded(ISLAND, new HashMap<>());
+
+        executor.attempt(player, CHALLENGE_ID);
+        drainScheduledTasks();
+
+        verify(repository, never()).replace(any(), any());
+        assertFalse(progressCache.getIfLoaded(ISLAND).orElseThrow().isCompletionInFlight());
+    }
+
+    @Test
+    public void evaluatesMixedCompletionRequirementKinds() {
+        // Items + island level in one challenge: natively supported, but the level is not met.
+        ItemStackSpec cobble = mockItemSpec();
+        ChallengeExecutor executor = executor(challenge(
+            List.of(),
+            List.of(
+                new InventoryItemsRequirement(List.of(new ItemRequirementSpec(cobble, 1, ItemAmountProgression.none()))),
+                new IslandLevelRequirement(10)
+            ),
+            true, true));
+        progressCache.replaceLoaded(ISLAND, new HashMap<>());
+        ItemStack inInventory = mock(ItemStack.class);
+        when(inInventory.isSimilar(any())).thenReturn(true);
+        when(inInventory.getAmount()).thenReturn(5);
+        when(playerInventory.getContents()).thenReturn(new ItemStack[]{inInventory});
+
+        executor.attempt(player, CHALLENGE_ID);
+        drainScheduledTasks();
+
+        // Level requirement failed: nothing persists, and crucially no items were consumed.
+        verify(repository, never()).replace(any(), any());
+        verify(inInventory, never()).setAmount(org.mockito.ArgumentMatchers.anyInt());
+    }
+
+    @Test
     public void refundsConsumedItemsWhenPersistFails() {
+        ItemStackSpec cobble = mockItemSpec();
+        ChallengeExecutor executor = executor(challenge(
+            List.of(),
+            List.of(new InventoryItemsRequirement(List.of(new ItemRequirementSpec(cobble, 2, ItemAmountProgression.none())))),
+            true, true));
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
         doThrow(new IllegalStateException("database unavailable")).when(repository).replace(any(), any());
 
-        ItemStack required = mock(ItemStack.class);
-        ItemStack refunded = mock(ItemStack.class);
-        when(required.clone()).thenReturn(refunded);
-        when(required.getMaxStackSize()).thenReturn(64);
-        when(refunded.getMaxStackSize()).thenReturn(64);
-        when(refunded.getAmount()).thenReturn(2);
         ItemStack inInventory = mock(ItemStack.class);
-        when(inInventory.isSimilar(required)).thenReturn(true);
+        when(inInventory.isSimilar(any())).thenReturn(true);
         when(inInventory.getAmount()).thenReturn(5);
         Inventory source = mock(Inventory.class);
         when(source.getContents()).thenReturn(new ItemStack[]{inInventory});
-
-        when(challenge.getRequiredItems(anyInt())).thenReturn(Map.of(required, 2));
-        when(challenge.isTakeItems()).thenReturn(true);
 
         executor.attempt(player, CHALLENGE_ID, List.of(source));
         drainScheduledTasks();
 
         verify(inInventory).setAmount(3);
-        verify(playerInventory).addItem(refunded);
-        verify(player, never()).giveExp(anyInt());
+        verify(playerInventory).addItem(any(ItemStack[].class));
+        verify(rewardApplier, never()).apply(any(), any(), any(), anyBoolean());
         assertTrue(progressCache.getIfLoaded(ISLAND).orElseThrow().isWriteLocked());
     }
 
     @Test
     public void rejectsAttemptWhileCompletionInFlight() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
         assertTrue(progressCache.getIfLoaded(ISLAND).orElseThrow().tryBeginCompletion());
 
@@ -169,6 +245,7 @@ public class ChallengeExecutorTest {
 
     @Test
     public void rejectsAttemptWhileWriteLocked() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
         progressCache.getIfLoaded(ISLAND).orElseThrow().lockWrites();
 
@@ -180,6 +257,7 @@ public class ChallengeExecutorTest {
 
     @Test
     public void adminCompletePersistsThroughTheIslandLock() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         progressCache.replaceLoaded(ISLAND, new HashMap<>());
         Runnable onSuccess = mock(Runnable.class);
 
@@ -197,6 +275,7 @@ public class ChallengeExecutorTest {
 
     @Test
     public void adminResetReportsErrorAndLocksWhenPersistFails() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         Map<ChallengeKey, ChallengeCompletion> existing = new HashMap<>();
         existing.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 3, 1));
         progressCache.replaceLoaded(ISLAND, existing);
@@ -217,6 +296,7 @@ public class ChallengeExecutorTest {
 
     @Test
     public void adminMutationReportsErrorWhenLoadFails() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         // No loaded entry: the mutation must load first, and a failing load must abort the
         // write path rather than write a near-default map over the island's stored progress.
         when(repository.load(any())).thenThrow(new IllegalStateException("database unavailable"));
@@ -234,6 +314,7 @@ public class ChallengeExecutorTest {
 
     @Test
     public void adminResetAllRestoresDefaultProgress() {
+        ChallengeExecutor executor = executor(simpleChallenge());
         Map<ChallengeKey, ChallengeCompletion> existing = new HashMap<>();
         existing.put(CHALLENGE_ID, new ChallengeCompletion(CHALLENGE_ID, null, 3, 1));
         progressCache.replaceLoaded(ISLAND, existing);
@@ -252,8 +333,16 @@ public class ChallengeExecutorTest {
         assertEquals(0, progressCache.getIfLoaded(ISLAND).orElseThrow().snapshot().get(CHALLENGE_ID).getTimesCompleted());
     }
 
-    private static ChallengeDefaults defaults() {
-        return new ChallengeDefaults(Duration.ofHours(144), false, "", "", "", 0, false, false, 10, false, 0);
+    private ItemStackSpec mockItemSpec() {
+        ItemStackSpec spec = mock(ItemStackSpec.class);
+        ItemStack required = mock(ItemStack.class);
+        ItemStack refunded = mock(ItemStack.class);
+        when(spec.create()).thenReturn(required);
+        when(required.clone()).thenReturn(refunded);
+        when(required.getMaxStackSize()).thenReturn(64);
+        when(refunded.getMaxStackSize()).thenReturn(64);
+        when(refunded.getAmount()).thenReturn(2);
+        return spec;
     }
 
     private void drainScheduledTasks() {
