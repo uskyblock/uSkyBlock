@@ -375,9 +375,10 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        // Drain the chest before the player's own inventory: the chest is the hand-in container.
+        // Signs consume only the chest they sit on - the player's own inventory is never touched,
+        // so the hand-in is predictable: stock the chest, click the sign.
         // Repaint only after the completion settles; in-memory progress commits post-persist.
-        challengeLogic.completeChallenge(player, challengeId, List.of(chest.getInventory(), player.getInventory()),
+        challengeLogic.completeChallenge(player, challengeId, List.of(chest.getInventory()),
             () -> updateSignsOnContainer(chest.getLocation()));
     }
 }
