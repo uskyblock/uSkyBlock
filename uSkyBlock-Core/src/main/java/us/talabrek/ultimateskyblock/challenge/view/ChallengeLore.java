@@ -81,7 +81,7 @@ public final class ChallengeLore {
                     for (BlockRequirementSpec spec : blocks.blocks()) {
                         lines.add(tr(" - <amount> x <item>", MUTED,
                             number("amount", spec.amount(), PRIMARY),
-                            unparsed("item", humanize(spec.prototype().getMaterial().getKey().getKey()), PRIMARY)));
+                            component("item", ChallengeText.blockName(spec.matcher()), PRIMARY)));
                     }
                 }
                 case EntityPresenceRequirement entities -> {

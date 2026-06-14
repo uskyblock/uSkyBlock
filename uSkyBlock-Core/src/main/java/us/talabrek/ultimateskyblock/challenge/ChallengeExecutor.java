@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import dk.lockfuglsang.minecraft.util.BlockRequirement;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -491,16 +490,24 @@ public final class ChallengeExecutor {
     }
 
     private boolean checkIslandBlocks(@NotNull Player player, @NotNull IslandBlocksRequirement requirement) {
-        List<BlockRequirement> requiredBlocks = new ArrayList<>();
+        BlockCollection blockCollection = scanBlocks(player, requirement.radius());
+        Component missingBlocks = Component.empty();
+        boolean hasAll = true;
         for (BlockRequirementSpec spec : requirement.blocks()) {
-            requiredBlocks.add(new BlockRequirement(spec.prototype(), spec.amount()));
+            int available = blockCollection.count(spec::matches);
+            if (available < spec.amount()) {
+                missingBlocks = missingBlocks.append(parseMini(" <count> <block>",
+                    number("count", spec.amount() - available, ERROR),
+                    component("block", ChallengeText.blockName(spec.matcher()), PRIMARY)));
+                hasAll = false;
+            }
         }
-        if (islandContains(player, requiredBlocks, requirement.radius())) {
-            return true;
+        if (!hasAll) {
+            sendTr(player, "Still missing the following blocks:<blocks>", component("blocks", missingBlocks));
+            sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
+                number("radius", requirement.radius()));
         }
-        sendErrorTr(player, "You must be standing within <radius> blocks of all required items.",
-            number("radius", requirement.radius()));
-        return false;
+        return hasAll;
     }
 
     private boolean checkEntities(@NotNull Player player, @NotNull EntityPresenceRequirement requirement) {
@@ -511,7 +518,7 @@ public final class ChallengeExecutor {
         return hasEntitiesNear(player, requiredEntities, requirement.radius());
     }
 
-    private boolean islandContains(@NotNull Player player, @NotNull List<BlockRequirement> itemStacks, int radius) {
+    private @NotNull BlockCollection scanBlocks(@NotNull Player player, int radius) {
         final Location location = player.getLocation();
         final int px = location.getBlockX();
         final int py = location.getBlockY();
@@ -526,12 +533,7 @@ public final class ChallengeExecutor {
                 }
             }
         }
-        Component diff = blockCollection.diff(itemStacks);
-        if (diff != null) {
-            send(player, diff);
-            return false;
-        }
-        return true;
+        return blockCollection;
     }
 
     private boolean hasEntitiesNear(@NotNull Player player, @NotNull List<EntityMatch> requiredEntities, int radius) {

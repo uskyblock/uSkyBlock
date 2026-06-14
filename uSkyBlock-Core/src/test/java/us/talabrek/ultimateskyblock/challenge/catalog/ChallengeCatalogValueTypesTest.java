@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,21 +37,37 @@ class ChallengeCatalogValueTypesTest {
     }
 
     @Test
-    void blockRequirementSpecDefensivelyClonesBlockData() {
-        BlockData original = mock(BlockData.class);
-        BlockData storedClone = mock(BlockData.class);
-        BlockData returnedClone = mock(BlockData.class);
-        when(original.clone()).thenReturn(storedClone);
-        when(storedClone.clone()).thenReturn(returnedClone);
-        when(returnedClone.clone()).thenReturn(mock(BlockData.class));
-        BlockRequirementSpec spec = new BlockRequirementSpec(original, 12);
+    void blockRequirementSpecMatchesByMaterial() {
+        BlockData prototype = mock(BlockData.class);
+        when(prototype.getMaterial()).thenReturn(Material.OAK_LOG);
+        BlockRequirementSpec spec = new BlockRequirementSpec(prototype, 12);
 
-        var first = spec.prototype();
-        var second = spec.prototype();
-
-        assertNotSame(original, first);
-        assertNotSame(original, second);
         assertEquals(12, spec.amount());
+        assertEquals(Material.OAK_LOG, ((ChallengeRequirements.ExactBlock) spec.matcher()).material());
+        assertTrue(spec.matches(Material.OAK_LOG));
+        assertFalse(spec.matches(Material.STONE));
+    }
+
+    @Test
+    void anyOfMatchersAcceptAnyMember() {
+        ChallengeRequirements.AnyOfBlocks blocks = new ChallengeRequirements.AnyOfBlocks(List.of(
+            new ChallengeRequirements.ExactBlock(Material.RED_BED),
+            new ChallengeRequirements.ExactBlock(Material.BLUE_BED)
+        ));
+        assertTrue(blocks.matches(Material.RED_BED));
+        assertTrue(blocks.matches(Material.BLUE_BED));
+        assertFalse(blocks.matches(Material.GREEN_BED));
+
+        ItemRequirementSpec items = new ItemRequirementSpec(
+            new ChallengeRequirements.AnyOfItems(List.of(
+                new ChallengeRequirements.ExactItem(new ItemStackSpec(new org.bukkit.inventory.ItemStack(Material.OAK_DOOR))),
+                new ChallengeRequirements.ExactItem(new ItemStackSpec(new org.bukkit.inventory.ItemStack(Material.SPRUCE_DOOR)))
+            )), 1, ItemAmountProgression.none());
+        assertTrue(items.matches(new org.bukkit.inventory.ItemStack(Material.OAK_DOOR)));
+        assertTrue(items.matches(new org.bukkit.inventory.ItemStack(Material.SPRUCE_DOOR)));
+        assertFalse(items.matches(new org.bukkit.inventory.ItemStack(Material.IRON_DOOR)));
+
+        assertThrows(IllegalArgumentException.class, () -> new ChallengeRequirements.AnyOfBlocks(List.of()));
     }
 
     @Test

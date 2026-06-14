@@ -88,15 +88,21 @@ public final class ChallengeRequirements {
     }
 
     /**
-     * What an inventory hand-in accepts: one exact item, or any item carrying a data pack tag
-     * (e.g. {@code #minecraft:beds}).
+     * What an inventory hand-in item accepts: one exact item, any item carrying a data pack tag
+     * ({@code #minecraft:beds}), or any-of an explicit list of matchers.
      */
-    public sealed interface ItemMatcher permits ExactItem, ItemTag {
+    public sealed interface ItemMatcher permits ExactItem, ItemTag, AnyOfItems {
+        boolean matches(ItemStack candidate);
     }
 
     public record ExactItem(ItemStackSpec item) implements ItemMatcher {
         public ExactItem {
             item = Objects.requireNonNull(item, "item");
+        }
+
+        @Override
+        public boolean matches(ItemStack candidate) {
+            return candidate.isSimilar(item.create());
         }
     }
 
@@ -107,6 +113,25 @@ public final class ChallengeRequirements {
             if (key.isEmpty()) {
                 throw new IllegalArgumentException("key cannot be blank");
             }
+        }
+
+        @Override
+        public boolean matches(ItemStack candidate) {
+            return tag.isTagged(candidate.getType());
+        }
+    }
+
+    public record AnyOfItems(List<ItemMatcher> matchers) implements ItemMatcher {
+        public AnyOfItems {
+            matchers = List.copyOf(Objects.requireNonNull(matchers, "matchers"));
+            if (matchers.isEmpty()) {
+                throw new IllegalArgumentException("matchers cannot be empty");
+            }
+        }
+
+        @Override
+        public boolean matches(ItemStack candidate) {
+            return matchers.stream().anyMatch(matcher -> matcher.matches(candidate));
         }
     }
 
@@ -124,10 +149,7 @@ public final class ChallengeRequirements {
         }
 
         public boolean matches(ItemStack candidate) {
-            return switch (matcher) {
-                case ExactItem exact -> candidate.isSimilar(exact.item().create());
-                case ItemTag itemTag -> itemTag.tag().isTagged(candidate.getType());
-            };
+            return matcher.matches(candidate);
         }
 
         public int amountForRepetitions(int repetitions) {
@@ -145,24 +167,69 @@ public final class ChallengeRequirements {
         }
     }
 
-    public static final class BlockRequirementSpec {
-        private final BlockData prototype;
-        private final int amount;
+    /**
+     * What an on-island block requirement accepts: one exact block material, any block carrying a
+     * data pack tag ({@code #minecraft:wooden_doors}), or any-of an explicit list of matchers.
+     * Island block scans only ever compare materials, so a matcher tests a {@link Material}.
+     */
+    public sealed interface BlockMatcher permits ExactBlock, BlockTag, AnyOfBlocks {
+        boolean matches(Material candidate);
+    }
 
-        public BlockRequirementSpec(BlockData prototype, int amount) {
-            this.prototype = Objects.requireNonNull(prototype, "prototype").clone();
+    public record ExactBlock(Material material) implements BlockMatcher {
+        public ExactBlock {
+            material = Objects.requireNonNull(material, "material");
+        }
+
+        @Override
+        public boolean matches(Material candidate) {
+            return candidate == material;
+        }
+    }
+
+    public record BlockTag(Tag<Material> tag, String key) implements BlockMatcher {
+        public BlockTag {
+            tag = Objects.requireNonNull(tag, "tag");
+            key = Objects.requireNonNull(key, "key").trim().toLowerCase(Locale.ROOT);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("key cannot be blank");
+            }
+        }
+
+        @Override
+        public boolean matches(Material candidate) {
+            return tag.isTagged(candidate);
+        }
+    }
+
+    public record AnyOfBlocks(List<BlockMatcher> matchers) implements BlockMatcher {
+        public AnyOfBlocks {
+            matchers = List.copyOf(Objects.requireNonNull(matchers, "matchers"));
+            if (matchers.isEmpty()) {
+                throw new IllegalArgumentException("matchers cannot be empty");
+            }
+        }
+
+        @Override
+        public boolean matches(Material candidate) {
+            return matchers.stream().anyMatch(matcher -> matcher.matches(candidate));
+        }
+    }
+
+    public record BlockRequirementSpec(BlockMatcher matcher, int amount) {
+        public BlockRequirementSpec {
+            matcher = Objects.requireNonNull(matcher, "matcher");
             if (amount < 0) {
                 throw new IllegalArgumentException("amount cannot be negative");
             }
-            this.amount = amount;
         }
 
-        public BlockData prototype() {
-            return prototype.clone();
+        public BlockRequirementSpec(BlockData prototype, int amount) {
+            this(new ExactBlock(Objects.requireNonNull(prototype, "prototype").getMaterial()), amount);
         }
 
-        public int amount() {
-            return amount;
+        public boolean matches(Material candidate) {
+            return matcher.matches(candidate);
         }
     }
 

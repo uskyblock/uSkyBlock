@@ -405,7 +405,7 @@ public class ChallengeCatalogYamlParser {
             String itemPath = path + ".items[" + i + "]";
             Map<String, Object> item = items.get(i);
             warnUnknownKeys(item, itemPath, diagnostics, "item", "amount", "progression");
-            ChallengeRequirements.ItemMatcher matcher = parseItemMatcher(requiredString(item, "item", itemPath), itemPath);
+            ChallengeRequirements.ItemMatcher matcher = parseItemMatcher(item.get("item"), itemPath + ".item");
             int amount = requiredInt(item, "amount", itemPath);
             ChallengeRequirements.ItemAmountProgression progression = parseItemProgression(item.get("progression"), itemPath + ".progression", diagnostics);
             parsed.add(new ChallengeRequirements.ItemRequirementSpec(matcher, amount, progression));
@@ -414,17 +414,26 @@ public class ChallengeCatalogYamlParser {
     }
 
     /**
-     * Item requirements starting with '#' match any item carrying the data pack tag, e.g.
-     * {@code #minecraft:beds} for any bed color.
+     * Item matchers: a plain item id, a data pack tag prefixed with '#' ({@code #minecraft:beds}),
+     * or a YAML list of either, accepted as an any-of group.
      */
-    private ChallengeRequirements.ItemMatcher parseItemMatcher(String rawItem, String path) {
-        if (!rawItem.startsWith("#")) {
-            return new ChallengeRequirements.ExactItem(gameObjects.itemStack(rawItem));
+    private ChallengeRequirements.ItemMatcher parseItemMatcher(@Nullable Object rawItem, String path) {
+        if (rawItem instanceof List<?> rawList) {
+            List<ChallengeRequirements.ItemMatcher> matchers = parseMatcherList(rawList, path, this::parseSingleItemMatcher);
+            return matchers.size() == 1 ? matchers.getFirst() : new ChallengeRequirements.AnyOfItems(matchers);
         }
-        NamespacedKey key = NamespacedKey.fromString(rawItem.substring(1).toLowerCase(Locale.ROOT));
+        return parseSingleItemMatcher(rawItem, path);
+    }
+
+    private ChallengeRequirements.ItemMatcher parseSingleItemMatcher(@Nullable Object rawItem, String path) {
+        String spec = requiredString(rawItem, path);
+        if (!spec.startsWith("#")) {
+            return new ChallengeRequirements.ExactItem(gameObjects.itemStack(spec));
+        }
+        NamespacedKey key = NamespacedKey.fromString(spec.substring(1).toLowerCase(Locale.ROOT));
         Tag<Material> tag = key != null ? Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class) : null;
         if (tag == null) {
-            throw new IllegalArgumentException("Unknown item tag '" + rawItem + "' at " + path + ".item");
+            throw new IllegalArgumentException("Unknown item tag '" + spec + "' at " + path);
         }
         return new ChallengeRequirements.ItemTag(tag, key.toString());
     }
@@ -438,12 +447,49 @@ public class ChallengeCatalogYamlParser {
             String blockPath = path + ".blocks[" + i + "]";
             Map<String, Object> block = blocks.get(i);
             warnUnknownKeys(block, blockPath, diagnostics, "block", "amount");
-            String blockSpec = requiredString(block, "block", blockPath);
+            ChallengeRequirements.BlockMatcher matcher = parseBlockMatcher(block.get("block"), blockPath + ".block");
             int amount = requiredInt(block, "amount", blockPath);
-            BlockRequirement requirement = ItemStackUtil.createBlockRequirement(blockSpec + ":" + amount);
-            parsed.add(new ChallengeRequirements.BlockRequirementSpec(requirement.type(), requirement.amount()));
+            parsed.add(new ChallengeRequirements.BlockRequirementSpec(matcher, amount));
         }
         return new ChallengeRequirements.IslandBlocksRequirement(parsed, radius);
+    }
+
+    /**
+     * Block matchers: a plain block id, a data pack tag prefixed with '#'
+     * ({@code #minecraft:wooden_doors}), or a YAML list of either, accepted as an any-of group.
+     */
+    private ChallengeRequirements.BlockMatcher parseBlockMatcher(@Nullable Object rawBlock, String path) {
+        if (rawBlock instanceof List<?> rawList) {
+            List<ChallengeRequirements.BlockMatcher> matchers = parseMatcherList(rawList, path, this::parseSingleBlockMatcher);
+            return matchers.size() == 1 ? matchers.getFirst() : new ChallengeRequirements.AnyOfBlocks(matchers);
+        }
+        return parseSingleBlockMatcher(rawBlock, path);
+    }
+
+    private ChallengeRequirements.BlockMatcher parseSingleBlockMatcher(@Nullable Object rawBlock, String path) {
+        String spec = requiredString(rawBlock, path);
+        if (!spec.startsWith("#")) {
+            // Reuse the legacy block parser for material + namespace + ignored block-data resolution.
+            BlockRequirement requirement = ItemStackUtil.createBlockRequirement(spec + ":1");
+            return new ChallengeRequirements.ExactBlock(requirement.type().getMaterial());
+        }
+        NamespacedKey key = NamespacedKey.fromString(spec.substring(1).toLowerCase(Locale.ROOT));
+        Tag<Material> tag = key != null ? Bukkit.getTag(Tag.REGISTRY_BLOCKS, key, Material.class) : null;
+        if (tag == null) {
+            throw new IllegalArgumentException("Unknown block tag '" + spec + "' at " + path);
+        }
+        return new ChallengeRequirements.BlockTag(tag, key.toString());
+    }
+
+    private static <T> List<T> parseMatcherList(List<?> rawList, String path, java.util.function.BiFunction<Object, String, T> elementParser) {
+        if (rawList.isEmpty()) {
+            throw new IllegalArgumentException("Any-of group at " + path + " cannot be empty");
+        }
+        List<T> matchers = new ArrayList<>();
+        for (int i = 0; i < rawList.size(); i++) {
+            matchers.add(elementParser.apply(rawList.get(i), path + "[" + i + "]"));
+        }
+        return matchers;
     }
 
     private ChallengeRequirements.EntityPresenceRequirement parseEntityPresenceRequirement(Map<String, Object> entry, String path, List<ChallengeCatalogDiagnostic> diagnostics) {
@@ -532,6 +578,13 @@ public class ChallengeCatalogYamlParser {
         Object value = map.get(key);
         if (!(value instanceof String stringValue) || stringValue.isBlank()) {
             throw new IllegalArgumentException("Missing required string '" + path + "." + key + "'");
+        }
+        return stringValue;
+    }
+
+    private static String requiredString(@Nullable Object value, String path) {
+        if (!(value instanceof String stringValue) || stringValue.isBlank()) {
+            throw new IllegalArgumentException("Missing required string at '" + path + "'");
         }
         return stringValue;
     }

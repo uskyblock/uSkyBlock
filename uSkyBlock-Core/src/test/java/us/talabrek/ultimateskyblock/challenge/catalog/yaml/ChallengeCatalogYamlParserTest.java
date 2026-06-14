@@ -53,18 +53,21 @@ class ChallengeCatalogYamlParserTest {
             return blockData;
         });
         when(server.getTag(eq(org.bukkit.Tag.REGISTRY_ITEMS), any(org.bukkit.NamespacedKey.class), eq(Material.class)))
-            .thenAnswer(invocation -> {
-                org.bukkit.NamespacedKey key = invocation.getArgument(1);
-                if (!key.getKey().equals("beds")) {
-                    return null;
-                }
-                @SuppressWarnings("unchecked")
-                org.bukkit.Tag<Material> tag = mock(org.bukkit.Tag.class);
-                when(tag.isTagged(any(Material.class)))
-                    .thenAnswer(check -> check.getArgument(0).toString().endsWith("_BED"));
-                when(tag.getKey()).thenReturn(key);
-                return tag;
-            });
+            .thenAnswer(invocation -> tagFor(invocation.getArgument(1), "beds", "_BED"));
+        when(server.getTag(eq(org.bukkit.Tag.REGISTRY_BLOCKS), any(org.bukkit.NamespacedKey.class), eq(Material.class)))
+            .thenAnswer(invocation -> tagFor(invocation.getArgument(1), "wooden_doors", "_DOOR"));
+    }
+
+    private static org.bukkit.Tag<Material> tagFor(org.bukkit.NamespacedKey key, String knownKey, String suffix) {
+        if (!key.getKey().equals(knownKey)) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        org.bukkit.Tag<Material> tag = mock(org.bukkit.Tag.class);
+        when(tag.isTagged(any(Material.class)))
+            .thenAnswer(check -> check.getArgument(0).toString().endsWith(suffix));
+        when(tag.getKey()).thenReturn(key);
+        return tag;
     }
 
     @Test
@@ -463,6 +466,76 @@ class ChallengeCatalogYamlParserTest {
             """)));
 
         assertTrue(error.getMessage().contains("Unknown item tag"));
+    }
+
+    @Test
+    void parsesAnyOfItemAndBlockGroups() {
+        ChallengeCatalogParseResult result = parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  homeowner:
+                    display:
+                      name: "<gray>Homeowner"
+                      item: "minecraft:white_bed"
+                    complete:
+                      - type: inventory-items
+                        items:
+                          - item: ["minecraft:oak_door", "minecraft:spruce_door"]
+                            amount: 1
+                      - type: island-blocks
+                        radius: 10
+                        blocks:
+                          - block: "#minecraft:wooden_doors"
+                            amount: 1
+                          - block: ["minecraft:lectern", "minecraft:smithing_table"]
+                            amount: 1
+            """));
+
+        var challenge = result.catalog().challenge(ChallengeId.of("homeowner")).orElseThrow();
+        var items = (ChallengeRequirements.InventoryItemsRequirement) challenge.completionRequirements().get(0);
+        var itemMatcher = (ChallengeRequirements.AnyOfItems) items.items().getFirst().matcher();
+        assertEquals(2, itemMatcher.matchers().size());
+        assertTrue(items.items().getFirst().matches(new org.bukkit.inventory.ItemStack(Material.OAK_DOOR)));
+        assertFalse(items.items().getFirst().matches(new org.bukkit.inventory.ItemStack(Material.IRON_DOOR)));
+
+        var blocks = (ChallengeRequirements.IslandBlocksRequirement) challenge.completionRequirements().get(1);
+        var blockTag = (ChallengeRequirements.BlockTag) blocks.blocks().get(0).matcher();
+        assertEquals("minecraft:wooden_doors", blockTag.key());
+        assertTrue(blocks.blocks().get(0).matches(Material.SPRUCE_DOOR));
+        var blockAnyOf = (ChallengeRequirements.AnyOfBlocks) blocks.blocks().get(1).matcher();
+        assertTrue(blockAnyOf.matches(Material.LECTERN));
+        assertTrue(blockAnyOf.matches(Material.SMITHING_TABLE));
+        assertFalse(blockAnyOf.matches(Material.STONE));
+    }
+
+    @Test
+    void rejectsUnknownBlockTags() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () -> parser.parse(load("""
+            schemaVersion: 1
+            ranks:
+              starter:
+                display:
+                  name: "<green>Starter"
+                lockedDisplayItem: "minecraft:barrier"
+                challenges:
+                  alpha:
+                    display:
+                      name: "<gray>Alpha"
+                      item: "minecraft:stone"
+                    complete:
+                      - type: island-blocks
+                        radius: 10
+                        blocks:
+                          - block: "#minecraft:nosuchblocktag"
+                            amount: 1
+            """)));
+
+        assertTrue(error.getMessage().contains("Unknown block tag"));
     }
 
     @Test
