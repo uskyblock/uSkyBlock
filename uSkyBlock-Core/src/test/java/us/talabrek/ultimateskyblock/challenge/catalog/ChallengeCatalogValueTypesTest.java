@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock.challenge.catalog;
 
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import dk.lockfuglsang.minecraft.util.ItemRequirement;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.BlockRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityRequirementSpec;
@@ -23,6 +25,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ChallengeCatalogValueTypesTest {
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        // Item matching routes through ItemStack.isSimilar, which needs Bukkit.getItemFactory().
+        BukkitServerMock.setupServerMock();
+    }
+
     @Test
     void itemRequirementSpecComputesRepeatedAmounts() {
         ItemRequirementSpec requirement = new ItemRequirementSpec(

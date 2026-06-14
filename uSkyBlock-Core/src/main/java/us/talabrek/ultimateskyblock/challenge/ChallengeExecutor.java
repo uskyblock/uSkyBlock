@@ -623,8 +623,15 @@ public final class ChallengeExecutor {
      * @return the actually removed stacks (clones), so a refund can restore exactly what was
      * taken - with tag matchers there is no single prototype to rebuild them from.
      */
+    /**
+     * Removes the required items, returning clones of what was taken. Consumption is atomic: if a
+     * later requirement cannot be satisfied (sibling requirements can claim the same items, e.g. an
+     * any-of group overlapping an exact requirement), everything removed so far is restored to its
+     * source inventory before aborting, so the player never loses items.
+     */
     private @NotNull List<ItemStack> removeRequiredItems(@NotNull List<Inventory> inventories, @NotNull Map<ItemRequirementSpec, Integer> requiredItems) {
         List<ItemStack> removedItems = new ArrayList<>();
+        List<Map.Entry<Inventory, ItemStack>> removalLog = new ArrayList<>();
         for (Map.Entry<ItemRequirementSpec, Integer> required : requiredItems.entrySet()) {
             int remaining = required.getValue();
             for (Inventory inventory : inventories) {
@@ -639,6 +646,7 @@ public final class ChallengeExecutor {
                     ItemStack removedStack = item.clone();
                     removedStack.setAmount(removed);
                     removedItems.add(removedStack);
+                    removalLog.add(Map.entry(inventory, removedStack));
                     item.setAmount(item.getAmount() - removed);
                     remaining -= removed;
                     if (item.getAmount() <= 0) {
@@ -650,6 +658,9 @@ public final class ChallengeExecutor {
                 }
             }
             if (remaining > 0) {
+                for (Map.Entry<Inventory, ItemStack> removal : removalLog) {
+                    removal.getKey().addItem(removal.getValue().clone());
+                }
                 throw new IllegalStateException("Could not remove required items for challenge hand-in");
             }
         }
