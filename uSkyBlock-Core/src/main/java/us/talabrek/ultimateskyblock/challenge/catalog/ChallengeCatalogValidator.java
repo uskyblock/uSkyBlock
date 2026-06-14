@@ -4,16 +4,11 @@ import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.Chal
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletedChallengesRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletedRankRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.CompletionRequirement;
-import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityPresenceRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
-import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandBlocksRequirement;
-import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandLevelRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.RankUnlockRequirement;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public final class ChallengeCatalogValidator {
     public List<ChallengeCatalogDiagnostic> validate(ChallengeCatalog catalog) {
@@ -55,29 +50,6 @@ public final class ChallengeCatalogValidator {
         }
         if (challenge.repeatPolicy().repeatable() && hasNoInventoryHandIn(challenge.completionRequirements())) {
             diagnostics.add(warn(challengePath + ".repeat", "Repeatable challenge has no inventory hand-in requirement"));
-        }
-        validateCompletionKinds(challenge, challengePath, diagnostics);
-    }
-
-    private void validateCompletionKinds(
-        ChallengeDefinition challenge,
-        String challengePath,
-        List<ChallengeCatalogDiagnostic> diagnostics
-    ) {
-        Set<String> kinds = new HashSet<>();
-        for (CompletionRequirement requirement : challenge.completionRequirements()) {
-            if (requirement instanceof InventoryItemsRequirement) {
-                kinds.add("inventory-items");
-            } else if (requirement instanceof IslandBlocksRequirement || requirement instanceof EntityPresenceRequirement) {
-                kinds.add("island-blocks/entity-presence");
-            } else if (requirement instanceof IslandLevelRequirement) {
-                kinds.add("island-level");
-            }
-        }
-        if (kinds.size() > 1) {
-            diagnostics.add(warn(challengePath + ".complete",
-                "Mixes completion requirement kinds (" + String.join(", ", kinds)
-                    + "); the challenge menu cannot display it until the new menu ships"));
         }
     }
 
@@ -133,9 +105,5 @@ public final class ChallengeCatalogValidator {
 
     private static ChallengeCatalogDiagnostic warn(String path, String message) {
         return new ChallengeCatalogDiagnostic(ChallengeCatalogDiagnostic.Severity.WARNING, path, message);
-    }
-
-    private static ChallengeCatalogDiagnostic error(String path, String message) {
-        return new ChallengeCatalogDiagnostic(ChallengeCatalogDiagnostic.Severity.ERROR, path, message);
     }
 }

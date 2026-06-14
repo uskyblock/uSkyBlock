@@ -277,7 +277,9 @@ class ChallengeCatalogYamlParserTest {
     }
 
     @Test
-    void warnsOnMixedCompletionRequirementKinds() {
+    void parsesMixedCompletionRequirementKindsWithoutWarning() {
+        // Mixed completion kinds (items + island blocks) are fully supported: the executor
+        // evaluates each requirement and the menu renders each, so they parse cleanly.
         ChallengeCatalogParseResult result = parser.parse(load("""
             schemaVersion: 1
             ranks:
@@ -302,10 +304,11 @@ class ChallengeCatalogYamlParserTest {
                             amount: 1
             """));
 
-        assertTrue(result.diagnostics().stream().anyMatch(d ->
-            d.severity() == ChallengeCatalogDiagnostic.Severity.WARNING
-                && d.path().equals("$.ranks.starter.challenges.brewer.complete")
-                && d.message().contains("Mixes completion requirement kinds")));
+        ChallengeDefinition challenge = result.catalog().challenge(ChallengeId.of("brewer")).orElseThrow();
+        assertEquals(2, challenge.completionRequirements().size());
+        assertInstanceOf(ChallengeRequirements.InventoryItemsRequirement.class, challenge.completionRequirements().get(0));
+        assertInstanceOf(ChallengeRequirements.IslandBlocksRequirement.class, challenge.completionRequirements().get(1));
+        assertFalse(result.warnings().stream().anyMatch(w -> w.contains("Mixes completion requirement kinds")));
     }
 
     @Test
