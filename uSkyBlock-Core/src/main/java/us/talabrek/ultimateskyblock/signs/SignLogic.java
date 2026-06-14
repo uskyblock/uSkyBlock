@@ -22,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.challenge.ChallengeText;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.EntityPresenceRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.IslandBlocksRequirement;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
@@ -264,6 +266,12 @@ public class SignLogic {
             .toList();
     }
 
+    private static boolean hasIslandPresenceRequirement(ChallengeDefinition challenge) {
+        return challenge.completionRequirements().stream()
+            .anyMatch(requirement -> requirement instanceof IslandBlocksRequirement
+                || requirement instanceof EntityPresenceRequirement);
+    }
+
     private void updateSignFromChestSync(Location chestLoc, Location signLoc, ChallengeDefinition challenge, Map<ItemRequirementSpec, Integer> requiredItems, boolean challengeLocked) {
         Block chestBlock = chestLoc.getBlock();
         Block signBlock = signLoc != null ? signLoc.getBlock() : null;
@@ -294,6 +302,13 @@ public class SignLogic {
             }
             if (missing > 0) {
                 front.setLine(3, "\u00a74\u00a7l" + missing);
+            } else if (missing == 0 && hasIslandPresenceRequirement(challenge)) {
+                // The chest items are present, but the challenge also needs blocks or entities on
+                // the island, which the executor checks around the player - the sign cannot verify
+                // those, so it states only what it knows rather than claiming "Ready".
+                // I18N: Status label on challenge signs when the handed-in items are present but
+                // the challenge also has on-island requirements the sign cannot verify.
+                front.setLine(3, "\u00a76\u00a7l" + trLegacy("Items ready"));
             } else if (missing == 0) {
                 // I18N: Status label on challenge signs when all requirements are met.
                 front.setLine(3, "\u00a72\u00a7l" + trLegacy("Ready"));
