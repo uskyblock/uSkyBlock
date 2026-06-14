@@ -375,8 +375,9 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
+        // Drain the chest before the player's own inventory: the chest is the hand-in container.
         // Repaint only after the completion settles; in-memory progress commits post-persist.
-        challengeLogic.completeChallenge(player, challengeId, List.of(player.getInventory(), chest.getInventory()),
+        challengeLogic.completeChallenge(player, challengeId, List.of(chest.getInventory(), player.getInventory()),
             () -> updateSignsOnContainer(chest.getLocation()));
     }
 }
