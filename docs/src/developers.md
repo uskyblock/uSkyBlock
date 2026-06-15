@@ -24,21 +24,39 @@ Output: `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`
 
 ## API integration
 
-Add the APIv2 artifact from Maven Central as a provided/compileOnly dependency:
+The API is published to the uSkyBlock Maven repository (not Maven Central). Add the
+repository and the `uSkyBlock-APIv2` artifact as a `provided`/`compileOnly` dependency.
+Browse the classes and methods in the [API Reference](https://uskyblock.ovh/javadocs/release/uSkyBlock-APIv2/).
+
+Replace `VERSION` with the latest release listed in the
+[repository](https://uskyblock.ovh/maven/uskyblock/ovh/uskyblock/uSkyBlock-APIv2/).
 
 ```xml
 <!-- Maven -->
+<repositories>
+  <repository>
+    <id>uskyblock</id>
+    <url>https://uskyblock.ovh/maven/uskyblock/</url>
+  </repository>
+</repositories>
+
 <dependency>
   <groupId>ovh.uskyblock</groupId>
   <artifactId>uSkyBlock-APIv2</artifactId>
-  <version>LATEST</version>
+  <version>VERSION</version>
   <scope>provided</scope>
 </dependency>
 ```
 
 ```kotlin
-// Gradle
-compileOnly("ovh.uskyblock:uSkyBlock-APIv2:LATEST")
+// Gradle (Kotlin DSL)
+repositories {
+    maven("https://uskyblock.ovh/maven/uskyblock/")
+}
+
+dependencies {
+    compileOnly("ovh.uskyblock:uSkyBlock-APIv2:VERSION")
+}
 ```
 
 Declare a soft dependency so uSkyBlock loads first:
