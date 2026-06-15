@@ -1,0 +1,22 @@
+name: Notify docs site
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'docs/**'
+      - 'uSkyBlock-Core/src/main/resources/config.yml'
+
+permissions: {}
+
+jobs:
+  notify:
+    if: github.repository_owner == 'uskyblock'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Trigger docs site rebuild
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.DOCS_DISPATCH_TOKEN }}
+          repository: uskyblock/uskyblock.github.io
+          event-type: docs-updated
