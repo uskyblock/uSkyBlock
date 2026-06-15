@@ -74,7 +74,7 @@ public class SignEvents implements Listener {
             BlockFace attached = data.getFacing().getOppositeFace();
             Block wallBlock = sign.getBlock().getRelative(attached);
             if (isChest(wallBlock)) {
-                logic.addSign(sign, e.getLines(), (Chest) wallBlock.getState());
+                logic.addSign(sign, e.getLines(), (Chest) wallBlock.getState(), e.getPlayer());
             }
         }
     }

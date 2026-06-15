@@ -5,21 +5,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 
 public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.ChallengeCompletion {
-    private final ChallengeKey id;
+    private final ChallengeId id;
     private Instant cooldownUntil;
     private int timesCompleted;
     private int timesCompletedInCooldown;
 
-    public ChallengeCompletion(@NotNull ChallengeKey id, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
+    public ChallengeCompletion(@NotNull ChallengeId id, @Nullable Instant cooldownUntil, final int timesCompleted, final int timesCompletedInCooldown) {
         this.id = id;
         this.cooldownUntil = cooldownUntil;
         this.timesCompleted = timesCompleted;
         this.timesCompletedInCooldown = timesCompletedInCooldown;
     }
 
-    public ChallengeKey getId() {
+    public ChallengeId getId() {
         return id;
     }
 
@@ -29,7 +30,7 @@ public class ChallengeCompletion implements us.talabrek.ultimateskyblock.api.Cha
     @Deprecated
     @Override
     public String getName() {
-        return this.getId().id();
+        return this.getId().value();
     }
 
     @Override

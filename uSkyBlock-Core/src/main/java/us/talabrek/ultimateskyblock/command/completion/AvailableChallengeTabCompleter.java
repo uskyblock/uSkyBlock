@@ -5,7 +5,7 @@ import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
@@ -31,7 +31,7 @@ public class AvailableChallengeTabCompleter extends AbstractTabCompleter {
 
     @Override
     protected List<String> getTabList(CommandSender commandSender, String term) {
-        List<ChallengeKey> validChallenges = null;
+        List<ChallengeId> validChallenges = null;
         if (commandSender instanceof Player player) {
             PlayerInfo pi = playerLogic.getPlayerInfo(player);
             if (pi != null) {
@@ -41,6 +41,6 @@ public class AvailableChallengeTabCompleter extends AbstractTabCompleter {
         if (validChallenges == null) {
             validChallenges = challengeLogic.getAllChallengeIds();
         }
-        return validChallenges.stream().map(ChallengeKey::id).toList();
+        return validChallenges.stream().map(ChallengeId::value).toList();
     }
 }

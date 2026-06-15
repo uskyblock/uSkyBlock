@@ -1,156 +1,123 @@
 package us.talabrek.ultimateskyblock.challenge;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.util.concurrent.UncheckedExecutionException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
- * Responsible for handling ChallengeCompletions
+ * Read-side access to challenge progress plus the one-shot legacy migration. All mutations go
+ * through {@link ChallengeExecutor}, which owns the island lock and async persistence.
  */
 public class ChallengeCompletionLogic {
+    /**
+     * Config flag written by the legacy challenges.yml importer when the server previously ran
+     * challengeSharing=player; consumed (and cleared) by the one-shot SQLite progress migration.
+     */
+    public static final String LEGACY_PLAYER_SHARING_CONFIG_KEY = "options.challenges.legacy-player-sharing";
+
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
+    private final Scheduler scheduler;
     private final ChallengeProgressRepository repository;
-    private final boolean legacyPlayerSharingConfigured;
-    private final LoadingCache<IslandKey, Map<ChallengeKey, ChallengeCompletion>> completionCache;
+    private final ChallengeProgressCache progressCache;
 
     public ChallengeCompletionLogic(
-        ChallengeLogic challengeLogic,
-        uSkyBlock plugin,
-        RuntimeConfigs runtimeConfigs,
-        FileConfiguration config,
-        ChallengeProgressRepository repository
+        @NotNull ChallengeLogic challengeLogic,
+        @NotNull uSkyBlock plugin,
+        @NotNull Scheduler scheduler,
+        @NotNull RuntimeConfigs runtimeConfigs,
+        @NotNull ChallengeProgressRepository repository
     ) {
-        this.challengeLogic = challengeLogic;
-        this.plugin = plugin;
-        this.repository = repository;
-        legacyPlayerSharingConfigured = config.getString("challengeSharing", "island").equalsIgnoreCase("player");
-        if (legacyPlayerSharingConfigured) {
-            plugin.getLogger().warning("Legacy challengeSharing=player is deprecated. Challenge progress will be migrated to island-owned database records.");
+        this.challengeLogic = Objects.requireNonNull(challengeLogic, "challengeLogic");
+        this.plugin = Objects.requireNonNull(plugin, "plugin");
+        this.scheduler = Objects.requireNonNull(scheduler, "scheduler");
+        this.repository = Objects.requireNonNull(repository, "repository");
+        this.progressCache = new ChallengeProgressCache(plugin.getLogger(), scheduler, repository, challengeLogic);
+        boolean legacyPlayerSharing = plugin.getConfig().getBoolean(LEGACY_PLAYER_SHARING_CONFIG_KEY, false);
+        new ChallengeProgressMigration(plugin, challengeLogic, repository, legacyPlayerSharing).migrateLegacyDataEagerly();
+        clearLegacyPlayerSharingFlag();
+    }
+
+    private void clearLegacyPlayerSharingFlag() {
+        if (plugin.getConfig().contains(LEGACY_PLAYER_SHARING_CONFIG_KEY)) {
+            plugin.getConfig().set(LEGACY_PLAYER_SHARING_CONFIG_KEY, null);
+            plugin.saveConfig();
         }
-        completionCache = CacheBuilder
-            .from(runtimeConfigs.current().advanced().completionCacheSpec())
-            .removalListener((RemovalListener<IslandKey, Map<ChallengeKey, ChallengeCompletion>>) removal -> {
-                if (removal.getKey() != null && removal.getValue() != null) {
-                    repository.replace(removal.getKey(), removal.getValue());
-                }
-            })
-            .build(new CacheLoader<>() {
-                       @Override
-                       public @NotNull Map<ChallengeKey, ChallengeCompletion> load(@NotNull IslandKey id) {
-                           return loadOrPopulateProgress(id);
-                       }
-                   }
-            );
-        new ChallengeProgressMigration(plugin, challengeLogic, repository, legacyPlayerSharingConfigured).migrateLegacyDataEagerly();
     }
 
-    private Map<ChallengeKey, ChallengeCompletion> loadOrPopulateProgress(IslandKey islandKey) {
-        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
-        challengeLogic.populateChallenges(challengeMap);
-        challengeMap.putAll(repository.load(islandKey));
-        return challengeMap;
+    public @NotNull ChallengeProgressCache progressCache() {
+        return progressCache;
     }
 
-    public Map<ChallengeKey, ChallengeCompletion> getIslandChallenges(String islandName) {
+    public void whenChallengesLoaded(@Nullable PlayerInfo playerInfo, @NotNull Runnable onLoaded, @NotNull Consumer<Throwable> onError) {
+        if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
+            onError.accept(new IllegalStateException("Player has no island"));
+            return;
+        }
+        IslandKey islandKey = getIslandKey(playerInfo);
+        progressCache.loadAsync(islandKey).whenComplete((ignored, error) -> scheduler.sync(() -> {
+            if (error != null) {
+                onError.accept(error);
+            } else {
+                onLoaded.run();
+            }
+        }));
+    }
+
+    public Map<ChallengeId, ChallengeCompletion> getIslandChallenges(@Nullable String islandName) {
         if (islandName == null) {
             return new HashMap<>();
         }
-        return getCachedChallenges(IslandKey.fromIslandName(islandName));
+        return getLoadedOrLoad(IslandKey.fromIslandName(islandName));
     }
 
-    public Map<ChallengeKey, ChallengeCompletion> getChallenges(PlayerInfo playerInfo) {
+    public Map<ChallengeId, ChallengeCompletion> getChallenges(@Nullable PlayerInfo playerInfo) {
         if (playerInfo == null || !playerInfo.getHasIsland() || playerInfo.locationForParty() == null) {
             return new HashMap<>();
         }
-        return getCachedChallenges(getIslandKey(playerInfo));
+        return getLoadedOrLoad(getIslandKey(playerInfo));
     }
 
-    public void completeChallenge(PlayerInfo playerInfo, ChallengeKey id) {
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(id)) {
-            ChallengeCompletion completion = challenges.get(id);
-            if (!completion.isOnCooldown()) {
-                Duration resetDuration = challengeLogic.getChallengeById(id).orElseThrow().getResetDuration();
-                if (resetDuration.isPositive()) {
-                    Instant now = Instant.now();
-                    completion.setCooldownUntil(now.plus(resetDuration));
-                } else {
-                    completion.setCooldownUntil(null);
-                }
-            }
-            completion.addTimesCompleted();
+    private @NotNull Map<ChallengeId, ChallengeCompletion> getLoadedOrLoad(@NotNull IslandKey islandKey) {
+        try {
+            return progressCache.getIfLoaded(islandKey)
+                .map(LoadedChallengeProgress::snapshot)
+                .orElseGet(() -> progressCache.loadSynchronously(islandKey));
+        } catch (RuntimeException e) {
+            plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + islandKey.value(), e);
+            return new HashMap<>();
         }
     }
 
-    public void resetChallenge(PlayerInfo playerInfo, ChallengeKey id) {
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(id)) {
-            challenges.get(id).setTimesCompleted(0);
-            challenges.get(id).setCooldownUntil(null);
-        }
+    public int checkChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeId id) {
+        return getChallenges(playerInfo).getOrDefault(id, new ChallengeCompletion(id, null, 0, 0)).getTimesCompleted();
     }
 
-    public int checkChallenge(PlayerInfo playerInfo, ChallengeKey id) {
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        if (challenges.containsKey(id)) {
-            return challenges.get(id).getTimesCompleted();
-        }
-        return 0;
-    }
-
-    public ChallengeCompletion getChallenge(PlayerInfo playerInfo, ChallengeKey id) {
-        Map<ChallengeKey, ChallengeCompletion> challenges = getChallenges(playerInfo);
-        return challenges.get(id);
-    }
-
-    public void resetAllChallenges(PlayerInfo playerInfo) {
-        Map<ChallengeKey, ChallengeCompletion> challengeMap = new HashMap<>();
-        challengeLogic.populateChallenges(challengeMap);
-        IslandKey islandKey = getIslandKey(playerInfo);
-        completionCache.put(islandKey, challengeMap);
+    public @Nullable ChallengeCompletion getChallenge(@NotNull PlayerInfo playerInfo, @NotNull ChallengeId id) {
+        return getChallenges(playerInfo).get(id);
     }
 
     public void shutdown() {
-        flushCache();
+        progressCache.shutdown();
         repository.shutdown();
     }
 
     public long flushCache() {
-        long size = completionCache.size();
-        completionCache.invalidateAll();
-        return size;
-    }
-
-    public boolean isIslandSharing() {
-        return true;
+        return progressCache.clearLoaded();
     }
 
     private @NotNull IslandKey getIslandKey(@NotNull PlayerInfo playerInfo) {
         return IslandKey.fromIslandName(playerInfo.locationForParty());
-    }
-
-    private @NotNull Map<ChallengeKey, ChallengeCompletion> getCachedChallenges(@NotNull IslandKey islandKey) {
-        try {
-            return completionCache.get(islandKey);
-        } catch (ExecutionException | UncheckedExecutionException e) {
-            plugin.getLogger().log(Level.WARNING, "Error fetching challenge-completion for id " + islandKey.value(), e);
-            return new HashMap<>();
-        }
     }
 }

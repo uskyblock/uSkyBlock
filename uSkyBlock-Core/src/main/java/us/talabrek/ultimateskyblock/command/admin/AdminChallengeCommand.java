@@ -6,10 +6,11 @@ import dk.lockfuglsang.minecraft.command.CompositeCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.view.ChallengeMenu;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
@@ -30,12 +32,14 @@ public class AdminChallengeCommand extends CompositeCommand {
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
+    private final ChallengeMenu challengeMenu;
 
     @Inject
-    public AdminChallengeCommand(@NotNull uSkyBlock plugin, @NotNull ChallengeLogic challengeLogic) {
+    public AdminChallengeCommand(@NotNull uSkyBlock plugin, @NotNull ChallengeLogic challengeLogic, @NotNull ChallengeMenu challengeMenu) {
         super("challenge|ch", "usb.mod.challenges", "player", marktr("Manage challenges for a player"));
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
+        this.challengeMenu = challengeMenu;
         add(new ChallengeCommand("complete", null, "completes the challenge for the player") {
             @Override
             protected void doExecute(CommandSender sender, PlayerInfo playerInfo, ChallengeCompletion completion) {
@@ -49,11 +53,11 @@ public class AdminChallengeCommand extends CompositeCommand {
                 if (completion.getTimesCompleted() == 0) {
                     sendErrorTr(sender, "This challenge has never been completed");
                 } else {
-                    challengeLogic.resetChallenge(pi, completion.getId());
-                    pi.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
-                        unparsed("challenge-id", completion.getId().id(), PRIMARY),
-                        unparsed("player", playerName, PRIMARY));
+                    challengeLogic.resetChallengeForAdmin(pi, completion.getId(),
+                        () -> sendTr(sender, "Challenge <challenge-id> has been reset for <player>.",
+                            unparsed("challenge-id", completion.getId().value(), PRIMARY),
+                            unparsed("player", playerName, PRIMARY)),
+                        error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
                 }
             }
         });
@@ -62,9 +66,9 @@ public class AdminChallengeCommand extends CompositeCommand {
             public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
                 PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
                 if (playerInfo != null) {
-                    challengeLogic.resetAllChallenges(playerInfo);
-                    playerInfo.save(); // TODO: is it really PlayerInfo that should be saved?
-                    sendTr(sender, "<player> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+                    challengeLogic.resetAllChallengesForAdmin(playerInfo,
+                        () -> sendTr(sender, "<player> has had all challenges reset.", unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                        error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
                     return true;
                 }
                 return false;
@@ -72,10 +76,24 @@ public class AdminChallengeCommand extends CompositeCommand {
         });
         add(new RankCommand("rank", null, marktr("complete all challenges in the rank")) {
             @Override
-            protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<Challenge> challenges) {
-                for (Challenge challenge : challenges) {
-                    completeChallenge(sender, playerInfo, challenge.getId());
+            protected void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenges) {
+                List<ChallengeId> incomplete = challenges.stream()
+                    .map(challenge -> challenge.id())
+                    .filter(id -> {
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, id);
+                        return completion == null || completion.getTimesCompleted() == 0;
+                    })
+                    .toList();
+                if (incomplete.isEmpty()) {
+                    sendErrorTr(sender, "All challenges in rank <rank> are already completed", unparsed("rank", rankName));
+                    return;
                 }
+                challengeLogic.completeChallengesForAdmin(playerInfo, incomplete,
+                    () -> sendTr(sender, "Completed <count> challenges in rank <rank> for <player>.",
+                        number("count", incomplete.size()),
+                        unparsed("rank", rankName, PRIMARY),
+                        unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                    error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
             }
         });
         add(new AbstractCommand("show", null, "?page", "show challenges for the chosen player") {
@@ -88,8 +106,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 }
                 if (commandSender instanceof Player player) {
                     int page = args.length > 0 && args[0].matches("[0-9]+") ? Integer.parseInt(args[0], 10) : 1;
-                    String playerName = (String) data.get("playerName");
-                    player.openInventory(plugin.getMenu().displayChallengeGUI(player, page, playerName));
+                    challengeMenu.open(player, playerInfo, page);
                     return true;
                 }
                 return false;
@@ -97,18 +114,17 @@ public class AdminChallengeCommand extends CompositeCommand {
         });
     }
 
-    private void completeChallenge(CommandSender sender, PlayerInfo playerInfo, ChallengeKey challengeId) {
-        Challenge challenge = challengeLogic.getChallengeById(challengeId).orElseThrow();
+    private void completeChallenge(CommandSender sender, PlayerInfo playerInfo, ChallengeId challengeId) {
         ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challengeId);
         Objects.requireNonNull(completion);
         if (completion.getTimesCompleted() > 0) {
-            sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.id()));
+            sendErrorTr(sender, "Challenge <challenge-id> has already been completed", unparsed("challenge-id", challengeId.value()));
         } else {
-            playerInfo.completeChallenge(challenge, true);
-            playerInfo.save();
-            sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
-                unparsed("challenge-id", challengeId.id(), PRIMARY),
-                unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+            challengeLogic.completeChallengeForAdmin(playerInfo, challengeId,
+                () -> sendTr(sender, "Challenge <challenge-id> has been completed for <player>.",
+                    unparsed("challenge-id", challengeId.value(), PRIMARY),
+                    unparsed("player", playerInfo.getPlayerName(), PRIMARY)),
+                error -> sendErrorTr(sender, "Unable to save challenge progress. Check the server log."));
         }
     }
 
@@ -141,8 +157,7 @@ public class AdminChallengeCommand extends CompositeCommand {
                 var result = challengeLogic.resolveChallenge(userInput);
                 switch (result.getStatus()) {
                     case FOUND -> {
-                        Challenge challenge = result.getChallenge();
-                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
+                        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, result.getChallengeId());
                         if (completion != null) {
                             doExecute(sender, playerInfo, completion);
                             return true;
@@ -170,14 +185,14 @@ public class AdminChallengeCommand extends CompositeCommand {
             super(name, permission, "rank", description);
         }
 
-        protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<Challenge> challenge);
+        protected abstract void doExecute(CommandSender sender, PlayerInfo playerInfo, String rankName, List<ChallengeDefinition> challenge);
 
         @Override
         public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
             if (playerInfo != null && args.length > 0) {
                 String rankName = String.join(" ", args);
-                List<Challenge> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
+                List<ChallengeDefinition> challenges = plugin.getChallengeLogic().getChallengesForRank(rankName);
                 if (challenges == null || challenges.isEmpty()) {
                     sendErrorTr(sender, "No rank named <rank> was found!", unparsed("rank", rankName));
                 } else {

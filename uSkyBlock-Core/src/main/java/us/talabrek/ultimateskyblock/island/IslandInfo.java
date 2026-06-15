@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.island;
 
+import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.TimeUtil;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.Validate;
@@ -1171,7 +1172,11 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     }
 
     public void sendMessageToOnlineMembers(String msg) {
-        Component message = tr("<primary>SKY</primary><muted> ></muted> <message>", legacyArg("message", msg));
+        sendMessageToOnlineMembers(I18nUtil.fromLegacy(msg));
+    }
+
+    public void sendMessageToOnlineMembers(Component msg) {
+        Component message = tr("<primary>SKY</primary><muted> ></muted> <message>", component("message", msg));
         for (Player player : getOnlineMembers()) {
             send(player, message);
         }

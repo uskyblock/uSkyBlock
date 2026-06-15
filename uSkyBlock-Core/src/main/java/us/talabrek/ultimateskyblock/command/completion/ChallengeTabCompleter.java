@@ -2,7 +2,7 @@ package us.talabrek.ultimateskyblock.command.completion;
 
 import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
 import java.util.List;
@@ -13,6 +13,6 @@ import java.util.List;
 public class ChallengeTabCompleter extends AbstractTabCompleter {
     @Override
     protected List<String> getTabList(CommandSender commandSender, String term) {
-        return uSkyBlock.getInstance().getChallengeLogic().getAllChallengeIds().stream().map(ChallengeKey::id).toList();
+        return uSkyBlock.getInstance().getChallengeLogic().getAllChallengeIds().stream().map(ChallengeId::value).toList();
     }
 }

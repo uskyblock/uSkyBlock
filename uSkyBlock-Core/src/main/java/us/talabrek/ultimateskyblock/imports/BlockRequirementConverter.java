@@ -57,10 +57,10 @@ public class BlockRequirementConverter {
         }
         logger.info("Converting challenges.yml to new block requirement format.");
 
-        convertBlockRequirements(config);
+        convertBlockRequirementsInMemory(config);
     }
 
-    private void convertBlockRequirements(FileConfiguration config) {
+    public void convertBlockRequirementsInMemory(FileConfiguration config) {
         var ranks = config.getConfigurationSection("ranks");
         if (ranks != null) {
             for (var rank : ranks.getKeys(false)) {

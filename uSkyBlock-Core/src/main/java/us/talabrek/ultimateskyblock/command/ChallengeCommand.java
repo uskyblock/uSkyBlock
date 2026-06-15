@@ -11,7 +11,7 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.command.challenge.ChallengeCompleteCommand;
 import us.talabrek.ultimateskyblock.command.challenge.ChallengeInfoCommand;
 import us.talabrek.ultimateskyblock.command.completion.AvailableChallengeTabCompleter;
-import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
+import us.talabrek.ultimateskyblock.challenge.view.ChallengeMenu;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -30,7 +30,7 @@ public class ChallengeCommand extends BaseCommandExecutor {
     private final ChallengeLogic challengeLogic;
     private final WorldManager worldManager;
     private final PlayerLogic playerLogic;
-    private final SkyBlockMenu mainMenu;
+    private final ChallengeMenu challengeMenu;
 
     @Inject
     public ChallengeCommand(
@@ -41,14 +41,14 @@ public class ChallengeCommand extends BaseCommandExecutor {
         @NotNull ChallengeLogic challengeLogic,
         @NotNull WorldManager worldManager,
         @NotNull PlayerLogic playerLogic,
-        @NotNull SkyBlockMenu mainMenu
+        @NotNull ChallengeMenu challengeMenu
     ) {
         super("challenges|c", "usb.island.challenges", marktr("complete and list challenges"));
         this.plugin = plugin;
         this.challengeLogic = challengeLogic;
         this.worldManager = worldManager;
         this.playerLogic = playerLogic;
-        this.mainMenu = mainMenu;
+        this.challengeMenu = challengeMenu;
         addTab("challenge", availableChallengeTabCompleter);
         add(challengeCompleteCommand);
         add(challengeInfoCommand);
@@ -77,7 +77,7 @@ public class ChallengeCommand extends BaseCommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            player.openInventory(mainMenu.displayChallengeGUI(player, 1, null));
+            challengeMenu.open(player, playerInfo, 1);
             return true;
         } else {
             return super.onCommand(sender, command, alias, args);

@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.challenge;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.island.IslandKey;
 
 import java.nio.file.Path;
@@ -26,14 +27,14 @@ public class SqliteChallengeProgressRepositoryTest {
             Logger.getAnonymousLogger()
         );
         IslandKey islandKey = IslandKey.fromIslandName("0,0");
-        ChallengeKey challengeKey = ChallengeKey.of("cobblestonegenerator");
+        ChallengeId challengeKey = ChallengeId.of("cobblestonegenerator");
 
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(challengeKey, new ChallengeCompletion(challengeKey, Instant.ofEpochMilli(1234L), 2, 1));
 
         repository.replace(islandKey, progress);
 
-        Map<ChallengeKey, ChallengeCompletion> loaded = repository.load(islandKey);
+        Map<ChallengeId, ChallengeCompletion> loaded = repository.load(islandKey);
         assertTrue(repository.hasProgress(islandKey));
         assertEquals(2, loaded.get(challengeKey).getTimesCompleted());
         assertEquals(1, loaded.get(challengeKey).getTimesCompletedInCooldown());
@@ -47,14 +48,14 @@ public class SqliteChallengeProgressRepositoryTest {
             Logger.getAnonymousLogger()
         );
         IslandKey islandKey = IslandKey.fromIslandName("64,-32");
-        ChallengeKey challengeKey = ChallengeKey.of("oncechallenge");
+        ChallengeId challengeKey = ChallengeId.of("oncechallenge");
 
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 4, 2));
 
         repository.replace(islandKey, progress);
 
-        Map<ChallengeKey, ChallengeCompletion> loaded = repository.load(islandKey);
+        Map<ChallengeId, ChallengeCompletion> loaded = repository.load(islandKey);
         assertTrue(repository.hasProgress(islandKey));
         assertNull(loaded.get(challengeKey).cooldownUntil());
         assertEquals(4, loaded.get(challengeKey).getTimesCompleted());
@@ -69,9 +70,9 @@ public class SqliteChallengeProgressRepositoryTest {
             Logger.getAnonymousLogger()
         );
         IslandKey islandKey = IslandKey.fromIslandName("128,256");
-        ChallengeKey challengeKey = ChallengeKey.of("applecollector");
+        ChallengeId challengeKey = ChallengeId.of("applecollector");
 
-        Map<ChallengeKey, ChallengeCompletion> progress = new HashMap<>();
+        Map<ChallengeId, ChallengeCompletion> progress = new HashMap<>();
         progress.put(challengeKey, new ChallengeCompletion(challengeKey, null, 0, 0));
 
         repository.replace(islandKey, progress);

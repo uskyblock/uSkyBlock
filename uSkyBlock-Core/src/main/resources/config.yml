@@ -158,6 +158,32 @@ options:
     # Only works on the player's own island and not near other obsidian (e.g. portals).
     obsidianToLava: true
 
+  challenges:
+
+    # [true/false] Enable challenge commands, menus, and progression.
+    enabled: true
+
+    # [true/false] Reset challenge progress when a new island is created.
+    reset-on-create: true
+
+    # [true/false] Apply configured economy challenge rewards when an economy hook is available.
+    enable-economy-rewards: true
+
+    broadcast:
+
+      # [true/false] Broadcast first-time challenge completions server-wide.
+      enabled: true
+
+      # Legacy-format prefix prepended to first-completion broadcasts.
+      prefix: ''
+
+  biomes:
+
+    # Biomes every island can use without earning a challenge biome reward or holding a
+    # usb.biome.<key> permission node.
+    default-unlocked:
+      - ocean
+
   # Protection flags. When true, the protection is active (the action is blocked).
   protection:
 
@@ -507,4 +533,4 @@ plugin-updates:
   branch: RELEASE
 
 # DO NOT TOUCH THE FIELDS BELOW
-version: 124
+version: 125

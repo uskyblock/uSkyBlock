@@ -5,12 +5,10 @@ import dk.lockfuglsang.minecraft.command.completion.AbstractTabCompleter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
-import us.talabrek.ultimateskyblock.challenge.Rank;
+import us.talabrek.ultimateskyblock.challenge.catalog.RankDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static dk.lockfuglsang.minecraft.util.FormatUtil.stripFormatting;
 
 /**
  * Rank name tab completer
@@ -26,8 +24,8 @@ public class RankTabCompleter extends AbstractTabCompleter {
     @Override
     protected List<String> getTabList(CommandSender commandSender, String term) {
         List<String> rankNames = new ArrayList<>();
-        for (Rank rank : challengeLogic.getRanks()) {
-            rankNames.add(stripFormatting(rank.getRankKey()));
+        for (RankDefinition rank : challengeLogic.getCatalog().ranks()) {
+            rankNames.add(rank.id().value());
         }
         return rankNames;
     }

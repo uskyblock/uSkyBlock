@@ -12,8 +12,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.uSkyBlock;
@@ -26,7 +24,6 @@ import java.util.Map;
  */
 @Singleton
 public class ToolMenuEvents implements Listener {
-    public static final String COMPLETE_CHALLENGE_CMD = "challenges complete ";
     private final uSkyBlock plugin;
     private final ItemStack tool;
     private final Map<String, String> commandMap = new HashMap<>();
@@ -38,7 +35,6 @@ public class ToolMenuEvents implements Listener {
         this.runtimeConfigs = runtimeConfigs;
         RuntimeConfig.ToolMenu toolMenu = runtimeConfigs.current().toolMenu();
         tool = toolMenu.tool().create();
-        registerChallenges();
         registerCommands();
     }
 
@@ -47,19 +43,6 @@ public class ToolMenuEvents implements Listener {
             ItemStack item = entry.item().create();
             if (item.getType().isBlock()) {
                 commandMap.put(item.getType().toString(), entry.command());
-            }
-        }
-    }
-
-    private void registerChallenges() {
-        for (ChallengeKey challengeId : plugin.getChallengeLogic().getAllChallengeIds()) {
-            Challenge challenge = plugin.getChallengeLogic().getChallengeById(challengeId).orElseThrow();
-            ItemStack displayItem = challenge.getDisplayItem();
-            ItemStack toolItem = challenge.getTool();
-            if (toolItem != null) {
-                commandMap.put(toolItem.getType().toString(), COMPLETE_CHALLENGE_CMD + challengeId.id());
-            } else if (displayItem != null && displayItem.getType().isBlock()) {
-                commandMap.put(displayItem.getType().toString(), COMPLETE_CHALLENGE_CMD + challengeId.id());
             }
         }
     }
@@ -84,17 +67,8 @@ public class ToolMenuEvents implements Listener {
 
     private void doCmd(PlayerInteractEvent e, Player player, String itemId) {
         String command = commandMap.get(itemId);
-        if (command.startsWith(COMPLETE_CHALLENGE_CMD)) {
-            String challengeName = command.substring(COMPLETE_CHALLENGE_CMD.length());
-            var challengeId = ChallengeKey.of(challengeName);
-            if (plugin.getChallengeLogic().getAvailableChallenges(plugin.getPlayerInfo(player)).contains(challengeId)) {
-                e.setCancelled(true);
-                plugin.execCommand(player, command, true);
-            }
-        } else {
-            e.setCancelled(true);
-            plugin.execCommand(player, command, false);
-        }
+        e.setCancelled(true);
+        plugin.execCommand(player, command, false);
     }
 
     /**

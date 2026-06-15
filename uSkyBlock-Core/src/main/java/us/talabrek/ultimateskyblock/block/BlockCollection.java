@@ -53,4 +53,18 @@ public class BlockCollection {
     private int count(Material type) {
         return blockCount.getOrDefault(type, 0);
     }
+
+    /**
+     * Counts every collected block whose material satisfies the predicate, so a tag- or any-of
+     * matcher can sum across all the materials it accepts.
+     */
+    public int count(java.util.function.Predicate<Material> matcher) {
+        int total = 0;
+        for (Map.Entry<Material, Integer> entry : blockCount.entrySet()) {
+            if (matcher.test(entry.getKey())) {
+                total += entry.getValue();
+            }
+        }
+        return total;
+    }
 }

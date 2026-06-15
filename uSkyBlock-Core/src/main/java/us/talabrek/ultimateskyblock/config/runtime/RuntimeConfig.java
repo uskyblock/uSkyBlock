@@ -18,6 +18,8 @@ public record RuntimeConfig(
     @NotNull Island island,
     @NotNull Extras extras,
     @NotNull Protection protection,
+    @NotNull Challenges challenges,
+    @NotNull Biomes biomes,
     @NotNull Nether nether,
     @NotNull Restart restart,
     @NotNull Advanced advanced,
@@ -131,6 +133,28 @@ public record RuntimeConfig(
     ) {
     }
 
+    public record Challenges(
+        boolean enabled,
+        boolean resetOnCreate,
+        boolean enableEconomyRewards,
+        @NotNull Broadcast broadcast
+    ) {
+    }
+
+    public record Broadcast(
+        boolean enabled,
+        @NotNull String prefix
+    ) {
+    }
+
+    public record Biomes(
+        @NotNull List<String> defaultUnlocked
+    ) {
+        public Biomes {
+            defaultUnlocked = defaultUnlocked.stream().map(key -> key.toLowerCase(Locale.ROOT)).toList();
+        }
+    }
+
     public record Nether(
         boolean enabled,
         int lavaLevel,
@@ -178,7 +202,6 @@ public record RuntimeConfig(
         boolean manageSpawn,
         @NotNull String playerCacheSpec,
         @NotNull String islandCacheSpec,
-        @NotNull String completionCacheSpec,
         @NotNull Duration islandSaveEvery,
         @NotNull Duration playerSaveEvery,
         @NotNull String chunkGenerator,

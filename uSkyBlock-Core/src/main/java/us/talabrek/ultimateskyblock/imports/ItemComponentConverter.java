@@ -121,12 +121,12 @@ public class ItemComponentConverter {
         }
         logger.info("Converting challenges.yml to new item component format for Minecraft 1.20.5 and later.");
 
-        convertChallengeItems(config);
+        convertChallengeItemsInMemory(config);
         updateHeaderAndVersion(config);
     }
 
 
-    private void convertChallengeItems(FileConfiguration config) {
+    public void convertChallengeItemsInMemory(FileConfiguration config) {
         for (var path : config.getKeys(true)) {
             if (path.endsWith("displayItem") || path.endsWith("lockedDisplayItem")) {
                 var oldSpecification = config.getString(path);
@@ -190,12 +190,15 @@ public class ItemComponentConverter {
 
     private static final Pattern DISPLAY_PATTERN = Pattern.compile("(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?\\s*(?<meta>\\{.*})?");
     private static final Pattern REWARD_PATTERN = Pattern.compile("(\\{p=(?<prob>0\\.[0-9]+)})?(?<id>[0-9A-Z_]+)(:(?<sub>[0-9]+))?:(?<amount>[0-9]+)\\s*(?<meta>\\{.*})?");
-    public static final Pattern REQUIREMENT_PATTERN = Pattern.compile("(?<itemstack>(?<type>[0-9A-Z_]+)(:(?<subtype>[0-9]+))?(?<meta>\\{.*})?):(?<amount>[0-9]+)(;(?<op>[-+*^])(?<inc>[0-9]+))?");
+    public static final Pattern REQUIREMENT_PATTERN = Pattern.compile("(?<itemstack>(?<type>[0-9A-Z_]+)(:(?<subtype>[0-9]+))?(?<meta>\\{.*})?):(?<amount>[0-9]+)(;(?<op>[-+*^/])(?<inc>[0-9]+))?");
 
     private SpecificationCommentPair convertDisplayItem(String oldSpecification, String path) {
         var matcher = DISPLAY_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid display item specification at path " + path);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid display item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
         var itemType = fixMaterial(matcher.group("id"));
         var type = Material.matchMaterial(itemType);
@@ -231,7 +234,10 @@ public class ItemComponentConverter {
     private SpecificationCommentPair convertItemReward(String oldSpecification, String path) {
         var matcher = REWARD_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid reward item specification at path " + path);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid reward item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
         var probability = matcher.group("prob");
 
@@ -279,7 +285,10 @@ public class ItemComponentConverter {
     private SpecificationCommentPair convertItemRequirement(String oldSpecification, String path) {
         var matcher = REQUIREMENT_PATTERN.matcher(oldSpecification);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid requirement item specification at path " + path + ": " + oldSpecification);
+            // Best effort: pass unparseable specifications through so a single bad entry
+            // does not abort the conversion of everything else.
+            logger.warning("Invalid requirement item specification at path " + path + ": " + oldSpecification);
+            return new SpecificationCommentPair(oldSpecification, null);
         }
 
         var itemType = fixMaterial(matcher.group("type"));

@@ -29,7 +29,6 @@ public final class RuntimeConfigFactory {
     private static final Duration DEFAULT_INIT_DELAY = Duration.ofMillis(2500);
     private static final String DEFAULT_PLAYER_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final String DEFAULT_ISLAND_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
-    private static final String DEFAULT_COMPLETION_CACHE_SPEC = "maximumSize=200,expireAfterWrite=15m,expireAfterAccess=10m";
     private static final Duration DEFAULT_ISLAND_SAVE_EVERY = Duration.ofSeconds(30);
     private static final Duration DEFAULT_PLAYER_SAVE_EVERY = Duration.ofSeconds(120);
     private static final String DEFAULT_OVERWORLD_CHUNK_GENERATOR = "us.talabrek.ultimateskyblock.world.SkyBlockChunkGenerator";
@@ -156,6 +155,16 @@ public final class RuntimeConfigFactory {
                     root.boolWithDefault("options.protection.visitors.vehicle-damage"),
                     root.boolWithDefault("options.protection.visitors.block-banned-entry")
                 ),
+                new RuntimeConfig.Challenges(
+                    root.bool("options.challenges.enabled", true),
+                    root.bool("options.challenges.reset-on-create", true),
+                    root.bool("options.challenges.enable-economy-rewards", true),
+                    new RuntimeConfig.Broadcast(
+                        root.bool("options.challenges.broadcast.enabled", true),
+                        root.string("options.challenges.broadcast.prefix", "")
+                    )
+                ),
+                new RuntimeConfig.Biomes(root.stringList("options.biomes.default-unlocked")),
                 new RuntimeConfig.Nether(
                     root.boolWithDefault("nether.enabled"),
                     root.integerWithDefault("nether.lava-level", 0),
@@ -193,7 +202,6 @@ public final class RuntimeConfigFactory {
                     root.boolWithDefault("options.advanced.manageSpawn"),
                 root.string("options.advanced.playerCache", DEFAULT_PLAYER_CACHE_SPEC),
                 root.string("options.advanced.islandCache", DEFAULT_ISLAND_CACHE_SPEC),
-                root.string("options.advanced.completionCache", DEFAULT_COMPLETION_CACHE_SPEC),
                 root.duration("options.advanced.island.saveEvery", DEFAULT_ISLAND_SAVE_EVERY),
                 root.duration("options.advanced.player.saveEvery", DEFAULT_PLAYER_SAVE_EVERY),
                 root.string("options.advanced.chunk-generator", DEFAULT_OVERWORLD_CHUNK_GENERATOR),

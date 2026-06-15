@@ -11,6 +11,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -18,9 +20,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
+import us.talabrek.ultimateskyblock.challenge.ChallengeText;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.InventoryItemsRequirement;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeRequirements.ItemRequirementSpec;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -38,11 +43,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
+import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
+import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
+import static us.talabrek.ultimateskyblock.message.Msg.sendTr;
+import static us.talabrek.ultimateskyblock.message.Placeholder.component;
+import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static dk.lockfuglsang.minecraft.util.FormatUtil.wordWrap;
 import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
-import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
  * Responsible for keeping track of signs.
@@ -76,7 +84,18 @@ public class SignLogic {
         this.config = FileUtil.getYmlConfiguration("signs.yml");
     }
 
-    void addSign(Sign block, String[] lines, Chest chest) {
+    void addSign(Sign block, String[] lines, Chest chest, Player player) {
+        var result = challengeLogic.resolveChallenge(lines[1].trim());
+        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND) {
+            sendErrorTr(player, "No challenge named <challenge> was found!", unparsed("challenge", lines[1].trim()));
+            return;
+        }
+        ChallengeDefinition challenge = result.getChallenge();
+        if (requirementSpecs(challenge).isEmpty()) {
+            sendErrorTr(player, "The <challenge> challenge has no item hand-in, so it cannot be completed from a sign.",
+                component("challenge", ChallengeText.displayName(challenge)));
+            return;
+        }
         Location loc = block.getLocation();
         ConfigurationSection signs = config.getConfigurationSection("signs");
         if (signs == null) {
@@ -85,7 +104,8 @@ public class SignLogic {
         String signLocation = LocationUtil.asKey(loc);
         ConfigurationSection signSection = signs.createSection(signLocation);
         signSection.set("location", LocationUtil.asString(loc));
-        signSection.set("challenge", lines[1]);
+        // Resolved once: the canonical id survives display-name edits in challenges.yml.
+        signSection.set("challenge", challenge.id().value());
         String chestLocation = LocationUtil.asString(chest.getLocation());
         signSection.set("chest", chestLocation);
         ConfigurationSection chests = config.getConfigurationSection("chests");
@@ -99,6 +119,7 @@ public class SignLogic {
         }
         chests.set(chestPath, signList);
         saveAsync();
+        sendTr(player, "Challenge sign created for <challenge>.", component("challenge", ChallengeText.displayName(challenge), PRIMARY));
         updateSignsOnContainer(chest.getLocation());
     }
 
@@ -202,36 +223,48 @@ public class SignLogic {
             return;
         }
         var result = challengeLogic.resolveChallenge(challengeName);
-        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND || result.getChallenge().getType() != Challenge.Type.PLAYER) {
+        if (result.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND) {
             return;  // TODO: proper player feedback
         }
-        Challenge challenge = result.getChallenge();
-        ChallengeKey challengeId = challenge.getId();
-        Map<ItemStack, Integer> requiredItems = new LinkedHashMap<>();
-        boolean isChallengeAvailable = false;
-        if (challengeLogic.isIslandSharing()) {
-            final ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
-            if (completion != null) {
-                requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
+        ChallengeDefinition challenge = result.getChallenge();
+        ChallengeId challengeId = result.getChallengeId();
+        if (requirementSpecs(challenge).isEmpty()) {
+            // Signs only support item hand-in challenges.
+            return;
+        }
+        Map<ItemRequirementSpec, Integer> requiredItems = new LinkedHashMap<>();
+        ChallengeCompletion completion = challengeLogic.getIslandCompletion(islandName, challengeId);
+        if (completion != null) {
+            for (ItemRequirementSpec spec : requirementSpecs(challenge)) {
+                requiredItems.put(spec, spec.amountForRepetitions(completion.getTimesCompletedInCooldown()));
             }
         }
+        boolean isChallengeAvailable = false;
         IslandInfo islandInfo = plugin.getIslandInfo(islandName);
         if (islandInfo != null && islandInfo.getLeaderUniqueId() != null) {
             PlayerInfo playerInfo = plugin.getPlayerInfo(islandInfo.getLeaderUniqueId());
             if (playerInfo != null) {
-                isChallengeAvailable = challenge.getRank().isAvailable(playerInfo);
-                isChallengeAvailable &= challenge.getMissingRequirements(playerInfo).isEmpty();
+                isChallengeAvailable = challengeLogic.getUnlockEvaluator()
+                    .isChallengeUnlocked(challenge, challengeLogic.unlockContextFor(playerInfo));
             }
         }
         String signLocString = config.getString("signs." + signLoc + ".location", null);
         final Location signLocation = LocationUtil.fromString(signLocString);
         final boolean challengeLocked = !isChallengeAvailable;
-        final Map<ItemStack, Integer> requiredItemsFinal = requiredItems;
+        final Map<ItemRequirementSpec, Integer> requiredItemsFinal = requiredItems;
         // Back to sync
         scheduler.sync(() -> updateSignFromChestSync(chestLoc, signLocation, challenge, requiredItemsFinal, challengeLocked));
     }
 
-    private void updateSignFromChestSync(Location chestLoc, Location signLoc, Challenge challenge, Map<ItemStack, Integer> requiredItems, boolean challengeLocked) {
+    private static List<ItemRequirementSpec> requirementSpecs(ChallengeDefinition challenge) {
+        return challenge.completionRequirements().stream()
+            .filter(InventoryItemsRequirement.class::isInstance)
+            .map(InventoryItemsRequirement.class::cast)
+            .flatMap(requirement -> requirement.items().stream())
+            .toList();
+    }
+
+    private void updateSignFromChestSync(Location chestLoc, Location signLoc, ChallengeDefinition challenge, Map<ItemRequirementSpec, Integer> requiredItems, boolean challengeLocked) {
         Block chestBlock = chestLoc.getBlock();
         Block signBlock = signLoc != null ? signLoc.getBlock() : null;
         if (signBlock != null && isChest(chestBlock) && signBlock.getState().getBlockData() instanceof WallSign) {
@@ -240,46 +273,56 @@ public class SignLogic {
             int missing = -1;
             if (!requiredItems.isEmpty() && !challengeLocked) {
                 missing = 0;
-                for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-                    ItemStack requiredType = required.getKey();
-                    int requiredAmount = required.getValue();
-                    if (!chest.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                        // Max shouldn't be needed, provided containsAtLeast matches getCountOf... but it might not
-                        missing += Math.max(0, requiredAmount - challengeLogic.getCountOf(chest.getInventory(), requiredType));
-                    }
+                for (Map.Entry<ItemRequirementSpec, Integer> required : requiredItems.entrySet()) {
+                    int available = countMatching(chest.getInventory(), required.getKey());
+                    missing += Math.max(0, required.getValue() - available);
                 }
             }
-            String format = "\u00a72\u00a7l";
-            if (missing > 0) {
-                format = "\u00a74\u00a7l";
-            }
-            List<String> lines = wordWrap(challenge.getDisplayName(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
+            List<String> lines = wordWrap(ChallengeText.plainName(challenge), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH);
             if (challengeLocked) {
-                lines.add(trLegacy("Locked Challenge", ERROR));
+                lines.add(null); // placeholder, rendered as the locked label below
             } else {
-                lines.addAll(wordWrap(challenge.getDescription(), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
+                lines.addAll(wordWrap(ChallengeText.plain(challenge.display().description()), SIGN_LINE_WIDTH, SIGN_LINE_WIDTH));
             }
+            SignSide front = sign.getSide(Side.FRONT);
             for (int i = 0; i < 3; i++) {
                 if (i < lines.size()) {
-                    sign.setLine(i, lines.get(i));
+                    front.setLine(i, lines.get(i) != null ? lines.get(i) : trLegacy("Locked Challenge", ERROR));
                 } else {
-                    sign.setLine(i, "");
+                    front.setLine(i, "");
                 }
             }
             if (missing > 0) {
-                sign.setLine(3, format + missing);
+                front.setLine(3, "\u00a74\u00a7l" + missing);
             } else if (missing == 0) {
-                // I18N: Status label on challenge signs when all requirements are met.
-                sign.setLine(3, format + trLegacy("Ready"));
-            } else if (lines.size() > 3) {
-                sign.setLine(3, lines.get(3));
+                // The sign can only verify the chest items; a challenge may also need blocks or
+                // entities on the island, so the label states the items are in rather than
+                // claiming the whole challenge is complete.
+                // I18N: Status label on challenge signs when the handed-in items are all present.
+                front.setLine(3, "\u00a72\u00a7l" + trLegacy("Items ready"));
+            } else if (lines.size() > 3 && lines.get(3) != null) {
+                front.setLine(3, lines.get(3));
             } else {
-                sign.setLine(3, "");
+                front.setLine(3, "");
+            }
+            // Waxed signs cannot be edited by hand, so a stray right-click does not wipe the sign.
+            if (!sign.isWaxed()) {
+                sign.setWaxed(true);
             }
             if (!sign.update()) {
                 logger.info("Unable to update sign at " + LocationUtil.asString(signLoc));
             }
         }
+    }
+
+    private static int countMatching(Inventory inventory, ItemRequirementSpec spec) {
+        int total = 0;
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && spec.matches(item)) {
+                total += item.getAmount();
+            }
+        }
+        return total;
     }
 
     private boolean isChest(Block chestBlock) {
@@ -314,29 +357,16 @@ public class SignLogic {
             if (islandName != null && chestLoc != null) {
                 var lookupResult = challengeLogic.resolveChallenge(challengeName);
                 if (lookupResult.getStatus() != ChallengeLogic.ChallengeLookupResult.Status.FOUND
-                    || lookupResult.getChallenge().getType() != Challenge.Type.PLAYER) {
+                    || requirementSpecs(lookupResult.getChallenge()).isEmpty()) {
                     return; // TODO: proper player feedback
                 }
-                Challenge challenge = lookupResult.getChallenge();
-                PlayerInfo playerInfo = plugin.getPlayerInfo(player);
-                if (playerInfo == null) {
-                    return;
-                }
-                if (!challenge.getRank().isAvailable(playerInfo)) {
-                    sendErrorTr(player, "The <challenge> challenge is not available yet!",
-                        legacyArg("challenge", challenge.getDisplayName()));
-                    return;
-                }
-                scheduler.sync(() -> tryComplete(player, chestLoc, challenge));
+                // Availability and unlock checks happen in the executor on the main thread.
+                scheduler.sync(() -> tryComplete(player, chestLoc, lookupResult.getChallengeId()));
             }
         }
     }
 
-    // This logic is duplicated in ChallengeLogic.tryCompleteOnPlayer. It has a lot of the same checks. If they
-    // pass, it moves the items to the player inventory and then calls the challengeLogic to complete the challenge.
-    // This is prone to bugs and exploits, and should be refactored. Ideally we get rid of the transfer and just
-    // refactor the challenge logic to accept multiple inventories as source.
-    private void tryComplete(Player player, Location chestLoc, Challenge challenge) {
+    private void tryComplete(Player player, Location chestLoc, ChallengeId challengeId) {
         BlockState state = chestLoc.getBlock().getState();
         if (!(state instanceof Chest chest)) {
             return;
@@ -345,55 +375,10 @@ public class SignLogic {
         if (playerInfo == null || !playerInfo.getHasIsland()) {
             return;
         }
-        ChallengeCompletion completion = challengeLogic.getChallengeCompletion(playerInfo, challenge.getId());
-        Map<ItemStack, Integer> requiredItems = challenge.getRequiredItems(completion.getTimesCompletedInCooldown());
-        int missing = 0;
-        for (Map.Entry<ItemStack, Integer> required : requiredItems.entrySet()) {
-            ItemStack requiredType = required.getKey();
-            int requiredAmount = required.getValue();
-            int diff = 0;
-            if (!player.getInventory().containsAtLeast(requiredType, requiredAmount)) {
-                diff = requiredAmount - challengeLogic.getCountOf(player.getInventory(), requiredType);
-            }
-            if (diff > 0 && !chest.getInventory().containsAtLeast(requiredType, diff)) {
-                diff -= challengeLogic.getCountOf(chest.getInventory(), requiredType);
-            } else {
-                diff = 0;
-            }
-            missing += diff;
-        }
-        if (missing == 0) {
-            boolean successfulItemTransfer = attemptToMoveItemsToPlayerInventory(player.getInventory(), chest.getInventory(), requiredItems);
-            if (successfulItemTransfer) {
-                challengeLogic.completeChallenge(player, challenge.getId());
-            } else {
-                sendErrorTr(player, "Warning: <muted>Could not transfer all required items to your inventory.");
-            }
-            updateSignsOnContainer(chest.getLocation());
-        } else {
-            sendErrorTr(player, "Not enough items in chest to complete challenge!");
-        }
-    }
-
-    // This is a counter-intuitive way transfer the required items from the chest to the player inventory.
-    // It's prone to bugs and exploits, and should be refactored. Ideally we get rid of the transfer and just
-    // refactor the challenge logic to accept multiple inventories as source.
-    private static boolean attemptToMoveItemsToPlayerInventory(Inventory player, Inventory chest, Map<ItemStack, Integer> requiredItems) {
-        ItemStack[] itemsToRemove = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
-        ItemStack[] itemCopy = ItemStackUtil.asValidItemStacksWithAmount(requiredItems);
-
-        HashMap<Integer, ItemStack> missingItems = player.removeItem(itemsToRemove);
-        missingItems = chest.removeItem(missingItems.values().toArray(new ItemStack[0]));
-        if (!missingItems.isEmpty()) {
-            // This effectively means, we just donated some items to the player (exploit!!)
-            throw new IllegalStateException("Not all items removed from chest and player: " + missingItems.values());
-        }
-        HashMap<Integer, ItemStack> leftOvers = player.addItem(itemCopy);
-        if (leftOvers.isEmpty()) {
-            return true;
-        } else {
-            chest.addItem(leftOvers.values().toArray(new ItemStack[0]));
-            return false;
-        }
+        // Signs consume only the chest they sit on - the player's own inventory is never touched,
+        // so the hand-in is predictable: stock the chest, click the sign.
+        // Repaint only after the completion settles; in-memory progress commits post-persist.
+        challengeLogic.completeChallenge(player, challengeId, List.of(chest.getInventory()),
+            () -> updateSignsOnContainer(chest.getLocation()));
     }
 }

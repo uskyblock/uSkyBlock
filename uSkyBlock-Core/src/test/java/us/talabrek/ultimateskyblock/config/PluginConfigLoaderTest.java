@@ -472,6 +472,25 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void migratesV125ChallengeDefaultsWithoutOverwriting() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(124);
+        config.set("options.challenges.enabled", false);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertFalse(migrated.getBoolean("options.challenges.enabled"));
+        assertTrue(migrated.getBoolean("options.challenges.reset-on-create"));
+        assertTrue(migrated.getBoolean("options.challenges.enable-economy-rewards"));
+        assertTrue(migrated.getBoolean("options.challenges.broadcast.enabled"));
+        assertEquals("", migrated.getString("options.challenges.broadcast.prefix"));
+    }
+
+    @Test
     public void rejectsFutureConfigVersions() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();
