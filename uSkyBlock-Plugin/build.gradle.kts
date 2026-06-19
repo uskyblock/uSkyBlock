@@ -5,6 +5,7 @@ import org.gradle.api.GradleException
 plugins {
     id("buildlogic.java-conventions")
     id("io.papermc.hangar-publish-plugin") version "0.1.4"
+    id("com.modrinth.minotaur") version "2.9.0"
     alias(libs.plugins.shadow)
 }
 
@@ -110,4 +111,32 @@ hangarPublish {
             }
         }
     }
+}
+
+val modrinthJarOverride = providers.environmentVariable("MODRINTH_JAR").orNull
+val modrinthVersion = providers.environmentVariable("MODRINTH_VERSION")
+    .orElse(providers.provider { project.version.toString() })
+val modrinthChannel = providers.environmentVariable("MODRINTH_CHANNEL")
+    .orElse(
+        providers.provider {
+            if (project.version.toString().contains('-')) "beta" else "release"
+        }
+    )
+val modrinthChangelog = providers.environmentVariable("MODRINTH_CHANGELOG")
+    .orElse("See the canonical GitHub release notes.")
+
+modrinth {
+    token.set(providers.environmentVariable("MODRINTH_API_TOKEN"))
+    projectId.set("uskyblock")
+    versionNumber.set(modrinthVersion)
+    versionType.set(modrinthChannel)
+    if (modrinthJarOverride != null) {
+        uploadFile.set(rootProject.layout.projectDirectory.file(modrinthJarOverride))
+    } else {
+        uploadFile.set(shadowJar.flatMap { it.archiveFile })
+    }
+    gameVersions.set(minecraftVersions)
+    loaders.set(listOf("paper", "spigot"))
+    changelog.set(modrinthChangelog)
+    detectLoaders.set(false)
 }
