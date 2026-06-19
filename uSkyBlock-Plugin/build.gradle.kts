@@ -132,6 +132,7 @@ modrinth {
     versionType.set(modrinthChannel)
     if (modrinthJarOverride != null) {
         uploadFile.set(rootProject.layout.projectDirectory.file(modrinthJarOverride))
+        autoAddDependsOn.set(false)
     } else {
         uploadFile.set(shadowJar.flatMap { it.archiveFile })
     }
@@ -139,4 +140,14 @@ modrinth {
     loaders.set(listOf("paper", "spigot"))
     changelog.set(modrinthChangelog)
     detectLoaders.set(false)
+}
+
+// Minotaur hardcodes `modrinth.dependsOn(assemble)`, dragging the full build chain
+// (incl. the gettext-dependent extractTranslation) into the task. When publishing a
+// prebuilt release asset, drop those dependencies so the task only uploads the jar
+// (no rebuild, no gettext needed), mirroring the Hangar publish path.
+if (modrinthJarOverride != null) {
+    tasks.named("modrinth") {
+        setDependsOn(emptyList<Any>())
+    }
 }
