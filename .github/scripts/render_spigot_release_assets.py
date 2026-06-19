@@ -88,7 +88,7 @@ class HtmlToBbcodeParser(HTMLParser):
         elif tag == "code":
             if self.pre_depth == 0:
                 self.inline_code_depth += 1
-                self.append("`")
+                self.append("[ICODE]")
         elif tag == "hr":
             self.ensure_newlines(2)
             self.append("---")
@@ -138,7 +138,7 @@ class HtmlToBbcodeParser(HTMLParser):
                 self.pre_depth -= 1
         elif tag == "code":
             if self.pre_depth == 0 and self.inline_code_depth > 0:
-                self.append("`")
+                self.append("[/ICODE]")
                 self.inline_code_depth -= 1
         elif tag in {"tr", "table"}:
             self.ensure_newlines(1)
