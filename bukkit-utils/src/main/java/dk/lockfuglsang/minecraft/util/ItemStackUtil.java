@@ -288,9 +288,19 @@ public enum ItemStackUtil {
     }
 
     @SuppressWarnings("deprecation")
+    private static String formatItemStack(@NotNull ItemStack itemStack, String dataComponentString) {
+        if (VersionUtil.BUKKIT_VERSION.isLT("26.1")) {
+            return itemStack.getType().getKey() + dataComponentString;
+        }
+        else {
+            return dataComponentString;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
     private static void applyUnsafeDisplayName(@NotNull ItemStack itemStack, @NotNull Component name) {
         String nameJson = GSON_COMPONENT_SERIALIZER.serialize(name);
-        String args = itemStack.getType().getKey() + "[custom_name=" + nameJson + "]";
+        String args = formatItemStack(itemStack, "[custom_name=" + nameJson + "]");
         Bukkit.getUnsafe().modifyItemStack(itemStack, args);
     }
 
@@ -299,7 +309,7 @@ public enum ItemStackUtil {
         String loreEntries = lore.stream()
             .map(GSON_COMPONENT_SERIALIZER::serialize)
             .collect(joining(","));
-        String args = itemStack.getType().getKey() + "[lore=[" + loreEntries + "]]";
+        String args = formatItemStack(itemStack, "[lore=[" + loreEntries + "]]");
         Bukkit.getUnsafe().modifyItemStack(itemStack, args);
     }
 

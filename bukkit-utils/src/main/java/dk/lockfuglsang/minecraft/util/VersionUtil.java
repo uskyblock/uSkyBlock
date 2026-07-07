@@ -1,5 +1,7 @@
 package dk.lockfuglsang.minecraft.util;
 
+import org.bukkit.Bukkit;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +10,9 @@ import java.util.regex.Pattern;
  * @since v1.15
  */
 public enum VersionUtil {;
+
+    public static final Version BUKKIT_VERSION = getVersion(Bukkit.getBukkitVersion());
+
     private static final Pattern VERSION_PATTERN = Pattern.compile("v?(?<major>[0-9]+)[\\._](?<minor>[0-9]+)(?:[\\._](?<micro>[0-9]+))?(?<sub>.*)");
     public static Version getVersion(String versionString) {
         Matcher m = VERSION_PATTERN.matcher(versionString);
