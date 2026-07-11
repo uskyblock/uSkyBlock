@@ -3,6 +3,12 @@ name: Live-server integration harness
 on:
   schedule:
     - cron: '17 3 * * *'
+  pull_request:
+    paths:
+      - 'uSkyBlock-ittest/**'
+      - 'uSkyBlock-itclient/**'
+      - 'scripts/ittest/**'
+      - '.github/workflows/live-server-ittest.yml'
   workflow_dispatch:
     inputs:
       lane:
@@ -84,7 +90,7 @@ jobs:
 
       - name: Run ${{ matrix.lane }}
         id: harness
-        if: github.event_name == 'schedule' || inputs.lane == 'both' || inputs.lane == matrix.lane
+        if: github.event_name == 'schedule' || (github.event_name == 'pull_request' && matrix.lane == 'core-stable') || inputs.lane == 'both' || inputs.lane == matrix.lane
         continue-on-error: true
         env:
           OVERRIDE_MINECRAFT: ${{ inputs.minecraft_version }}
