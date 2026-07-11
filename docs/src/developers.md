@@ -14,7 +14,7 @@ uSkyBlock is a standard Bukkit plugin. The main components:
 
 ## Building
 
-Requires Java 21. The Gradle wrapper is included.
+Requires Java 21, the [gettext tools](https://www.gnu.org/software/gettext/) and [Perl](https://www.perl.org/get.html). The Gradle wrapper is included.
 
 ```bash
 ./gradlew build
