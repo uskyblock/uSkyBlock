@@ -1,0 +1,393 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly PASS=0
+readonly FAIL=10
+readonly HARNESS_ERROR=20
+readonly FIXTURE_REVISION=1
+readonly PLAYER_NAME=UsbItPlayer
+readonly USER_AGENT="uSkyBlock-ittest/1 (+https://github.com/uskyblock/uSkyBlock)"
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+LANE=core-stable
+MINECRAFT_VERSION=""
+PAPER_BUILD=""
+REPLAY_MANIFEST=""
+RUN_DIRECTORY=""
+CACHE_DIRECTORY="${USKYBLOCK_ITTEST_CACHE:-${ROOT}/build/ittest-cache}"
+KEEP=false
+MANIFEST=""
+SERVER_PID=""
+CLIENT_PID=""
+
+cleanup_processes() {
+  [[ -n "${CLIENT_PID}" ]] && kill "${CLIENT_PID}" 2>/dev/null || true
+  [[ -n "${SERVER_PID}" ]] && kill "${SERVER_PID}" 2>/dev/null || true
+}
+
+finalize_manifest() {
+  local exit_code=$?
+  cleanup_processes
+  if [[ -n "${MANIFEST}" && -f "${MANIFEST}" ]]; then
+    local outcome=HARNESS-ERROR
+    if [[ "${exit_code}" -eq "${PASS}" ]]; then outcome=PASS; fi
+    if [[ "${exit_code}" -eq "${FAIL}" ]]; then outcome=FAIL; fi
+    if jq --arg status "${outcome}" '.status=$status' "${MANIFEST}" > "${MANIFEST}.tmp" 2>/dev/null; then
+      mv "${MANIFEST}.tmp" "${MANIFEST}" 2>/dev/null || true
+    fi
+  fi
+  return "${exit_code}"
+}
+trap finalize_manifest EXIT
+trap 'cleanup_processes; exit 130' INT
+trap 'cleanup_processes; exit 143' TERM
+
+usage() {
+  echo "Usage: scripts/ittest/run [--lane core-stable|latest-canary] [--manifest file]" >&2
+  echo "       [--minecraft version] [--paper-build id] [--run-dir path] [--cache-dir path] [--keep]" >&2
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --lane) LANE="$2"; shift 2 ;;
+    --manifest) REPLAY_MANIFEST="$2"; shift 2 ;;
+    --minecraft) MINECRAFT_VERSION="$2"; shift 2 ;;
+    --paper-build) PAPER_BUILD="$2"; shift 2 ;;
+    --run-dir) RUN_DIRECTORY="$2"; shift 2 ;;
+    --cache-dir) CACHE_DIRECTORY="$2"; shift 2 ;;
+    --keep) KEEP=true; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage; exit "${HARNESS_ERROR}" ;;
+  esac
+done
+
+if [[ "${LANE}" != core-stable && "${LANE}" != latest-canary ]]; then
+  echo "Unknown lane: ${LANE}" >&2
+  exit "${HARNESS_ERROR}"
+fi
+if ! command -v xgettext >/dev/null 2>&1; then
+  for gettext_bin in /opt/homebrew/opt/gettext/bin /usr/local/opt/gettext/bin /usr/local/bin; do
+    if [[ -x "${gettext_bin}/xgettext" ]]; then export PATH="${gettext_bin}:${PATH}"; break; fi
+  done
+fi
+for command in java curl jq shasum xgettext; do
+  if ! command -v "${command}" >/dev/null 2>&1; then
+    echo "Required command is unavailable: ${command}" >&2
+    exit "${HARNESS_ERROR}"
+  fi
+done
+
+JAVA_FEATURE="$(java -version 2>&1 | awk -F '[".]' '/version/ {print $2; exit}')"
+if [[ "${JAVA_FEATURE}" != 25 ]]; then
+  echo "The live-server harness requires Java 25; found Java ${JAVA_FEATURE}." >&2
+  exit "${HARNESS_ERROR}"
+fi
+
+if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  if ! jq -e '.schema == 1 and .lane and .minecraft.version and .paper.url and .paper.sha256 and .dependencies.worldedit.sha256 and .dependencies.worldguard.sha256 and .mcProtocolLib.version' "${REPLAY_MANIFEST}" >/dev/null; then
+    echo "Malformed or unsupported replay manifest: ${REPLAY_MANIFEST}" >&2
+    exit "${HARNESS_ERROR}"
+  fi
+  LANE="$(jq -r '.lane' "${REPLAY_MANIFEST}")"
+  MINECRAFT_VERSION="$(jq -r '.minecraft.version' "${REPLAY_MANIFEST}")"
+  PAPER_BUILD="$(jq -r '.paper.buildId' "${REPLAY_MANIFEST}")"
+fi
+
+mkdir -p "${CACHE_DIRECTORY}"
+if [[ -z "${RUN_DIRECTORY}" ]]; then
+  RUN_DIRECTORY="${ROOT}/build/ittest/runs/$(date -u +%Y%m%dT%H%M%SZ)-${LANE}-$$"
+fi
+mkdir -p "${RUN_DIRECTORY}/results" "${RUN_DIRECTORY}/logs"
+RUN_DIRECTORY="$(cd "${RUN_DIRECTORY}" && pwd)"
+RESULTS_DIRECTORY="${RUN_DIRECTORY}/results"
+
+if [[ -z "${MINECRAFT_VERSION}" ]]; then
+  if [[ "${LANE}" == core-stable ]]; then
+    MINECRAFT_VERSION=1.21.11
+  else
+    PROJECT_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" https://fill.papermc.io/v3/projects/paper)"
+    MINECRAFT_VERSION="$(jq -er '[.versions[]? | .[]? | select(test("-(?:pre|rc)") | not)] | first' <<<"${PROJECT_JSON}")"
+  fi
+fi
+
+MC_PROTOCOL_VERSION="$(jq -r --arg minecraft "${MINECRAFT_VERSION}" '.mappings[$minecraft] // empty' "${ROOT}/scripts/ittest/protocol-mapping.json")"
+PLAYER_FLOWS=true
+if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  MC_PROTOCOL_VERSION="$(jq -r '.mcProtocolLib.version' "${REPLAY_MANIFEST}")"
+  PLAYER_FLOWS="$(jq -r '.mcProtocolLib.playerFlows' "${REPLAY_MANIFEST}")"
+fi
+if [[ -z "${MC_PROTOCOL_VERSION}" ]]; then
+  if [[ "${LANE}" == core-stable ]]; then
+    echo "No pinned MCProtocolLib mapping for core-stable Minecraft ${MINECRAFT_VERSION}." >&2
+    exit "${HARNESS_ERROR}"
+  fi
+  PLAYER_FLOWS=false
+  MC_PROTOCOL_VERSION=1.21.11-1
+  echo "USKYBLOCK-TEST player flows unsupported for canary Minecraft ${MINECRAFT_VERSION}"
+fi
+
+download_verified() {
+  local url="$1" expected="$2" target="$3"
+  mkdir -p "$(dirname "${target}")"
+  if [[ -f "${target}" ]] && [[ "$(shasum -a 256 "${target}" | awk '{print $1}')" == "${expected}" ]]; then
+    return
+  fi
+  local temporary="${target}.tmp.$$"
+  curl --fail --location --silent --show-error -H "User-Agent: ${USER_AGENT}" --output "${temporary}" "${url}"
+  local actual
+  actual="$(shasum -a 256 "${temporary}" | awk '{print $1}')"
+  if [[ "${actual}" != "${expected}" ]]; then
+    echo "SHA-256 mismatch for ${url}: expected ${expected}, got ${actual}" >&2
+    rm -f "${temporary}"
+    exit "${HARNESS_ERROR}"
+  fi
+  mv "${temporary}" "${target}"
+}
+
+if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  PAPER_URL="$(jq -r '.paper.url' "${REPLAY_MANIFEST}")"
+  PAPER_SHA="$(jq -r '.paper.sha256' "${REPLAY_MANIFEST}")"
+  PAPER_BUILD="$(jq -r '.paper.buildId' "${REPLAY_MANIFEST}")"
+else
+  if [[ -n "${PAPER_BUILD}" ]]; then
+    PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/${PAPER_BUILD}"
+  else
+    PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/latest"
+  fi
+  PAPER_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" "${PAPER_ENDPOINT}")"
+  PAPER_BUILD="$(jq -er '.id' <<<"${PAPER_JSON}")"
+  PAPER_URL="$(jq -er '.downloads["server:default"].url' <<<"${PAPER_JSON}")"
+  PAPER_SHA="$(jq -er '.downloads["server:default"].checksums.sha256' <<<"${PAPER_JSON}")"
+fi
+PAPER_JAR="${CACHE_DIRECTORY}/paper-${MINECRAFT_VERSION}-${PAPER_BUILD}.jar"
+
+artifact_value() {
+  jq -er "$1" "${ROOT}/scripts/ittest/artifacts.json"
+}
+if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  WE_VERSION="$(jq -r '.dependencies.worldedit.version' "${REPLAY_MANIFEST}")"
+  WE_URL="$(jq -r '.dependencies.worldedit.url' "${REPLAY_MANIFEST}")"
+  WE_SHA="$(jq -r '.dependencies.worldedit.sha256' "${REPLAY_MANIFEST}")"
+  WG_VERSION="$(jq -r '.dependencies.worldguard.version' "${REPLAY_MANIFEST}")"
+  WG_URL="$(jq -r '.dependencies.worldguard.url' "${REPLAY_MANIFEST}")"
+  WG_SHA="$(jq -r '.dependencies.worldguard.sha256' "${REPLAY_MANIFEST}")"
+else
+  WE_VERSION="$(artifact_value '.worldedit.version')"
+  WE_URL="$(artifact_value '.worldedit.url')"
+  WE_SHA="$(artifact_value '.worldedit.sha256')"
+  WG_VERSION="$(artifact_value '.worldguard.version')"
+  WG_URL="$(artifact_value '.worldguard.url')"
+  WG_SHA="$(artifact_value '.worldguard.sha256')"
+fi
+if [[ "${WE_SHA}" == TO_BE_RECORDED || "${WG_SHA}" == TO_BE_RECORDED ]]; then
+  echo "Pinned dependency hashes have not been recorded." >&2
+  exit "${HARNESS_ERROR}"
+fi
+WE_JAR="${CACHE_DIRECTORY}/worldedit-bukkit-${WE_VERSION}.jar"
+WG_JAR="${CACHE_DIRECTORY}/worldguard-bukkit-${WG_VERSION}.jar"
+pick_free_port() {
+  local candidate
+  for _ in $(seq 1 64); do
+    candidate=$((49152 + RANDOM % 12000))
+    # A successful connect means something is already listening; skip it.
+    if ! (exec 3<>"/dev/tcp/127.0.0.1/${candidate}") 2>/dev/null; then
+      printf '%s' "${candidate}"; return 0
+    fi
+  done
+  printf '%s' "${candidate}"
+}
+PORT="$(pick_free_port)"
+GIT_SHA="$(git -C "${ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)"
+MANIFEST="${RUN_DIRECTORY}/run-manifest.json"
+jq -n \
+  --arg lane "${LANE}" \
+  --arg minecraft "${MINECRAFT_VERSION}" \
+  --arg paperBuild "${PAPER_BUILD}" \
+  --arg paperUrl "${PAPER_URL}" \
+  --arg paperSha "${PAPER_SHA}" \
+  --arg weVersion "${WE_VERSION}" --arg weSha "${WE_SHA}" --arg weUrl "${WE_URL}" \
+  --arg wgVersion "${WG_VERSION}" --arg wgSha "${WG_SHA}" --arg wgUrl "${WG_URL}" \
+  --arg protocol "${MC_PROTOCOL_VERSION}" --arg gitSha "${GIT_SHA}" \
+  --arg javaVersion "$(java -version 2>&1 | head -n 1)" \
+  --argjson port "${PORT}" --argjson fixtureRevision "${FIXTURE_REVISION}" \
+  --argjson playerFlows "${PLAYER_FLOWS}" \
+  '{schema:1,lane:$lane,minecraft:{version:$minecraft},paper:{buildId:$paperBuild,url:$paperUrl,sha256:$paperSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
+  > "${MANIFEST}"
+
+download_verified "${PAPER_URL}" "${PAPER_SHA}" "${PAPER_JAR}"
+download_verified "${WE_URL}" "${WE_SHA}" "${WE_JAR}"
+download_verified "${WG_URL}" "${WG_SHA}" "${WG_JAR}"
+
+"${ROOT}/gradlew" :uSkyBlock-Plugin:shadowJar :uSkyBlock-ittest:jar :uSkyBlock-itclient:shadowJar \
+  -PmcProtocolLibVersion="${MC_PROTOCOL_VERSION}" --no-daemon --no-configuration-cache
+PROJECT_VERSION="$(awk -F= '$1 == "version" { print $2; exit }' "${ROOT}/gradle.properties")"
+if [[ -z "${PROJECT_VERSION}" ]]; then
+  echo "Could not determine the project version from gradle.properties." >&2
+  exit "${HARNESS_ERROR}"
+fi
+PLUGIN_JAR="${ROOT}/uSkyBlock-Plugin/build/libs/uSkyBlock-${PROJECT_VERSION}.jar"
+DRIVER_JAR="${ROOT}/uSkyBlock-ittest/build/libs/uSkyBlock-ittest-${PROJECT_VERSION}.jar"
+CLIENT_JAR="${ROOT}/uSkyBlock-itclient/build/libs/uSkyBlock-itclient-${PROJECT_VERSION}.jar"
+for artifact in "${PLUGIN_JAR}" "${DRIVER_JAR}" "${CLIENT_JAR}"; do
+  if [[ ! -f "${artifact}" ]]; then
+    echo "Harness build artifact is missing: ${artifact}" >&2
+    exit "${HARNESS_ERROR}"
+  fi
+done
+PLUGIN_SHA="$(shasum -a 256 "${PLUGIN_JAR}" | awk '{print $1}')"
+DRIVER_SHA="$(shasum -a 256 "${DRIVER_JAR}" | awk '{print $1}')"
+CLIENT_SHA="$(shasum -a 256 "${CLIENT_JAR}" | awk '{print $1}')"
+jq --arg pluginSha "${PLUGIN_SHA}" --arg driverSha "${DRIVER_SHA}" --arg clientSha "${CLIENT_SHA}" \
+  '.artifacts={plugin:{sha256:$pluginSha},driver:{sha256:$driverSha},client:{sha256:$clientSha}} | .status="READY"' \
+  "${MANIFEST}" > "${MANIFEST}.tmp"
+mv "${MANIFEST}.tmp" "${MANIFEST}"
+
+SERVER_DIRECTORY="${RUN_DIRECTORY}/server"
+mkdir -p "${SERVER_DIRECTORY}/plugins/uSkyBlock/schematics" "${SERVER_DIRECTORY}/plugins/bStats"
+cp "${PAPER_JAR}" "${SERVER_DIRECTORY}/paper.jar"
+cp "${WE_JAR}" "${SERVER_DIRECTORY}/plugins/"
+cp "${WG_JAR}" "${SERVER_DIRECTORY}/plugins/"
+cp "${PLUGIN_JAR}" "${SERVER_DIRECTORY}/plugins/"
+cp "${DRIVER_JAR}" "${SERVER_DIRECTORY}/plugins/"
+cp "${ROOT}/uSkyBlock-Core/src/main/resources/config.yml" "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
+cp "${ROOT}/scripts/ittest/fixtures/challenges.yml" "${SERVER_DIRECTORY}/plugins/uSkyBlock/challenges.yml"
+cp "${ROOT}/uSkyBlock-Core/src/main/resources/schematics/default.schematic" "${SERVER_DIRECTORY}/plugins/uSkyBlock/schematics/ittest.schematic"
+
+sed -i.bak 's/default-scheme: default/default-scheme: ittest/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
+sed -i.bak 's/check: true/check: false/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
+rm -f "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml.bak"
+awk '
+  /^confirmation:/ && !inserted {
+    print "  ittest:"
+    print "    schematic: ittest.schematic"
+    print "    nether-schematic: uSkyBlockNether.schem"
+    print "    permission: usb.island.create"
+    print "    description: Integration fixture"
+    print "    displayItem: bedrock"
+    print "    enabled: true"
+    print "    index: 1"
+    print "    extraItems: []"
+    print "    maxPartySize: 4"
+    print "    animals: 0"
+    print "    monsters: 0"
+    print "    villagers: 0"
+    print "    golems: 0"
+    print "    scoreMultiply: 1.0"
+    print "    scoreOffset: 0"
+    print ""
+    inserted=1
+  }
+  { print }
+' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml" > "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml.tmp"
+mv "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml.tmp" "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
+
+echo 'eula=true' > "${SERVER_DIRECTORY}/eula.txt"
+printf '%s\n' \
+  'online-mode=false' \
+  'enforce-secure-profile=false' \
+  'server-ip=127.0.0.1' \
+  "server-port=${PORT}" \
+  'level-name=world' \
+  'level-seed=usb-ittest-fixture-v1' \
+  'spawn-protection=0' \
+  'view-distance=4' \
+  'simulation-distance=4' \
+  'enable-status=true' \
+  > "${SERVER_DIRECTORY}/server.properties"
+printf '%s\n' 'worlds:' '  skyworld:' '    generator: uSkyBlock' > "${SERVER_DIRECTORY}/bukkit.yml"
+printf '%s\n' 'enabled: false' > "${SERVER_DIRECTORY}/plugins/bStats/config.yml"
+touch "${RESULTS_DIRECTORY}/fixture-revision-${FIXTURE_REVISION}"
+
+wait_for_log() {
+  local pid="$1" log="$2" pattern="$3" deadline="$4" start="${SECONDS}"
+  while kill -0 "${pid}" 2>/dev/null; do
+    if grep -q "${pattern}" "${log}" 2>/dev/null; then return 0; fi
+    if (( SECONDS - start >= deadline )); then return 1; fi
+    sleep 1
+  done
+  return 1
+}
+
+wait_for_process() {
+  local pid="$1" deadline="$2" start="${SECONDS}"
+  while kill -0 "${pid}" 2>/dev/null; do
+    if (( SECONDS - start >= deadline )); then
+      kill "${pid}" 2>/dev/null || true
+      sleep 5
+      kill -9 "${pid}" 2>/dev/null || true
+      return 1
+    fi
+    sleep 1
+  done
+  wait "${pid}" || true
+  return 0
+}
+
+run_phase() {
+  local phase="$1"
+  local with_client="$2"
+  local log="${RUN_DIRECTORY}/logs/${phase}.log"
+  (
+    cd "${SERVER_DIRECTORY}"
+    # exec so the backgrounded PID is the JVM itself and the cleanup trap can terminate it directly.
+    exec java -Xms512M -Xmx1G \
+      -Duskyblock.ittest.phase="${phase}" \
+      -Duskyblock.ittest.resultsDir="${RESULTS_DIRECTORY}" \
+      -Duskyblock.ittest.fixtureRevision="${FIXTURE_REVISION}" \
+      -Duskyblock.ittest.playerFlows="${PLAYER_FLOWS}" \
+      -jar paper.jar --nogui
+  ) > "${log}" 2>&1 &
+  SERVER_PID=$!
+  CLIENT_PID=""
+  if [[ "${with_client}" == true ]]; then
+    if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 150; then
+      java -jar "${CLIENT_JAR}" --host 127.0.0.1 --port "${PORT}" --name "${PLAYER_NAME}" \
+        --ready-file "${RESULTS_DIRECTORY}/client-ready" --timeout-seconds 360 \
+        > "${RUN_DIRECTORY}/logs/client.log" 2>&1 &
+      CLIENT_PID=$!
+    fi
+  fi
+  # The driver plugin shuts the server down when it finishes. If it never runs a scenario (e.g. the
+  # driver plugin failed to load), don't sit idle until the full hard deadline - terminate early.
+  if wait_for_log "${SERVER_PID}" "${log}" 'USKYBLOCK-TEST START phase=' 210; then
+    if ! wait_for_process "${SERVER_PID}" 360; then
+      echo "Server deadline exceeded in phase ${phase}" >> "${log}"
+    fi
+  else
+    if kill -0 "${SERVER_PID}" 2>/dev/null; then
+      echo "Driver plugin ran no scenario within 210s; terminating phase ${phase}" >> "${log}"
+      kill "${SERVER_PID}" 2>/dev/null || true
+      sleep 5
+      kill -9 "${SERVER_PID}" 2>/dev/null || true
+    fi
+    wait "${SERVER_PID}" 2>/dev/null || true
+  fi
+  if [[ -n "${CLIENT_PID}" ]]; then wait_for_process "${CLIENT_PID}" 30 || true; fi
+  SERVER_PID=""
+  CLIENT_PID=""
+}
+
+run_phase fresh "${PLAYER_FLOWS}"
+if [[ "${LANE}" == core-stable ]]; then
+  rm -f "${RESULTS_DIRECTORY}/client-ready"
+  run_phase restart false
+fi
+
+set +e
+RESULT_ARGUMENTS=("${RESULTS_DIRECTORY}/fresh.jsonl")
+LOG_ARGUMENTS=("${RUN_DIRECTORY}/logs/fresh.log")
+if [[ "${LANE}" == core-stable ]]; then
+  RESULT_ARGUMENTS+=("${RESULTS_DIRECTORY}/restart.jsonl")
+  LOG_ARGUMENTS+=("${RUN_DIRECTORY}/logs/restart.log")
+fi
+java -jar "${DRIVER_JAR}" classify --lane "${LANE}" \
+  --results "${RESULT_ARGUMENTS[@]}" --logs "${LOG_ARGUMENTS[@]}"
+CLASSIFIER_EXIT=$?
+set -e
+
+if [[ "${KEEP}" == false && "${CLASSIFIER_EXIT}" -eq "${PASS}" ]]; then
+  rm -rf "${SERVER_DIRECTORY}"
+fi
+echo "Manifest: ${MANIFEST}"
+echo "Artifacts: ${RUN_DIRECTORY}"
+exit "${CLASSIFIER_EXIT}"

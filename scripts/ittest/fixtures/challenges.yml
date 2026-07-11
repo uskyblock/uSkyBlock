@@ -1,0 +1,38 @@
+allowChallenges: true
+challengeSharing: island
+broadcastCompletion: false
+requirePreviousRank: false
+rankLeeway: 0
+defaultResetInHours: 0
+radius: 10
+repeatLimit: 0
+challengeColor: '&e'
+finishedColor: '&2'
+repeatableColor: '&a'
+enableEconomyPlugin: false
+resetChallengesOnCreate: false
+lockedDisplayItem: barrier
+showLockedChallengeName: true
+merge-ignore:
+  - ranks
+ranks:
+  Integration:
+    name: Integration fixture
+    displayItem: emerald
+    resetInHours: 0
+    challenges:
+      ittest_trade:
+        name: Integration inventory trade
+        description: Trade five stone while preserving unrelated inventory.
+        type: onPlayer
+        requiredItems:
+          - stone:5
+        takeItems: true
+        displayItem: emerald
+        resetInHours: 0
+        reward:
+          text: two emeralds
+          items:
+            - emerald:2
+          xp: 0
+version: 107

@@ -11,3 +11,14 @@ include(":uSkyBlock-Plugin")
 include(":po-utils")
 include(":uSkyBlock-APIv2")
 include(":uSkyBlock-PAPI")
+
+// The live-server harness is deliberately absent from ordinary `build`/PR task graphs.
+// Address either module explicitly (as scripts/ittest/run does), or pass -PincludeIttest=true.
+val includeIttest = providers.gradleProperty("includeIttest").orNull == "true" ||
+    gradle.startParameter.taskNames.any { task ->
+        task.contains("uSkyBlock-ittest") || task.contains("uSkyBlock-itclient")
+    }
+if (includeIttest) {
+    include(":uSkyBlock-ittest")
+    include(":uSkyBlock-itclient")
+}
