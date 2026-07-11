@@ -289,6 +289,7 @@ printf '%s\n' \
   "server-port=${PORT}" \
   'level-name=world' \
   'level-seed=usb-ittest-fixture-v1' \
+  'generate-structures=false' \
   'spawn-protection=0' \
   'view-distance=4' \
   'simulation-distance=4' \
@@ -340,11 +341,16 @@ run_phase() {
   SERVER_PID=$!
   CLIENT_PID=""
   if [[ "${with_client}" == true ]]; then
-    if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 150; then
+    # Boot can take minutes on a cold run (uSkyBlock downloads its runtime libraries), so allow
+    # ample time to reach 'Done' before launching the presence client.
+    if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 300; then
+      echo "USKYBLOCK-TEST launching presence client -> 127.0.0.1:${PORT}" >> "${RUN_DIRECTORY}/logs/client.log"
       java -jar "${CLIENT_JAR}" --host 127.0.0.1 --port "${PORT}" --name "${PLAYER_NAME}" \
         --ready-file "${RESULTS_DIRECTORY}/client-ready" --timeout-seconds 360 \
-        > "${RUN_DIRECTORY}/logs/client.log" 2>&1 &
+        >> "${RUN_DIRECTORY}/logs/client.log" 2>&1 &
       CLIENT_PID=$!
+    else
+      echo "USKYBLOCK-TEST server did not reach 'Done' within 300s; presence client not launched" >> "${RUN_DIRECTORY}/logs/client.log"
     fi
   fi
   # The driver plugin shuts the server down when it finishes. If it never runs a scenario (e.g. the

@@ -20,15 +20,15 @@ public final class HarnessClassifier {
     public static final int EXIT_FAIL = 10;
     public static final int EXIT_HARNESS_ERROR = 20;
 
-    // A Paper/Spigot ERROR or SEVERE level line ("... ERROR]:"), a stack-trace throwable class
-    // (including *Error throwables such as LinkageError/NoSuchMethodError - the NMS-break signature
-    // this harness exists to catch), a "Caused by:" line, or a stack frame. Case-sensitive so that
-    // prose such as "error" is not matched.
+    // A Paper/Spigot ERROR or SEVERE level line ("... ERROR]:"), a "Caused by:" line, or a
+    // stack-trace throwable class (including *Error throwables such as LinkageError/
+    // NoSuchMethodError - the NMS-break signature this harness exists to catch). The throwable
+    // header is enough to flag a trace, so individual "at ..." frames are intentionally not matched
+    // (one error should be one finding). Case-sensitive so prose such as "error" is not matched.
     private static final Pattern ERROR_LINE = Pattern.compile(
         "(?:ERROR|SEVERE)\\]:"
             + "|(?:^|\\s)Caused by:"
             + "|(?:^|\\s)[A-Za-z0-9_.$]+(?:Exception|Error)(?::|$)"
-            + "|^\\s+at\\s+[A-Za-z0-9_.$]+\\("
     );
     private static final List<Pattern> LOG_ALLOWLIST = List.of(
         Pattern.compile(".*Server thread/WARN.*Can't keep up!.*"),
