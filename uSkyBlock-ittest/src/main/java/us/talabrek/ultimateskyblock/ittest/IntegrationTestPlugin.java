@@ -135,7 +135,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     scenarios.add(new ScenarioDefinition("complete-challenge", Verdict.Category.PLUGIN_FAIL, this::completeChallenge));
                 } else {
                     scenarios.add(new ScenarioDefinition("player-flows-support", Verdict.Category.HARNESS_ERROR,
-                        scenario -> scenario.skip("player flows unsupported for this canary version: no pinned protocol mapping")));
+                        scenario -> scenario.skip("player flows disabled: no MCProtocolLib codec for this Minecraft version (server-only run)")));
                 }
             } else {
                 scenarios.add(new ScenarioDefinition("restart-persistence", Verdict.Category.PLUGIN_FAIL, this::restartPersistence));

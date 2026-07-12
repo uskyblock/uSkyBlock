@@ -25,20 +25,21 @@ public final class HarnessCli {
             return classify(Arrays.copyOfRange(args, 1, args.length));
         }
         System.err.println("Usage: java -jar uSkyBlock-ittest.jar offline-uuid <name>");
-        System.err.println("   or: java -jar uSkyBlock-ittest.jar classify --lane <lane> --results <file>... --logs <file>...");
+        System.err.println("   or: java -jar uSkyBlock-ittest.jar classify --player-flows <true|false> --results <file>... --logs <file>...");
         return HarnessClassifier.EXIT_HARNESS_ERROR;
     }
 
     private static int classify(String[] args) {
-        String lane = null;
+        Boolean playerFlows = null;
         List<Path> results = new ArrayList<>();
         List<Path> logs = new ArrayList<>();
         List<Path> current = null;
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "--lane" -> {
-                    if (++i >= args.length) return usage("--lane requires a value");
-                    lane = args[i];
+                case "--player-flows" -> {
+                    if (++i >= args.length) return usage("--player-flows requires a value");
+                    if (!args[i].equals("true") && !args[i].equals("false")) return usage("--player-flows must be true or false");
+                    playerFlows = Boolean.valueOf(args[i]);
                     current = null;
                 }
                 case "--results" -> current = results;
@@ -49,9 +50,9 @@ public final class HarnessCli {
                 }
             }
         }
-        if (lane == null || results.isEmpty() || logs.isEmpty()) return usage("lane, results, and logs are required");
+        if (playerFlows == null || results.isEmpty() || logs.isEmpty()) return usage("player-flows, results, and logs are required");
         try {
-            HarnessClassifier.Classification classification = HarnessClassifier.classify(lane, results, logs);
+            HarnessClassifier.Classification classification = HarnessClassifier.classify(playerFlows, results, logs);
             System.out.println(classification.outcome());
             classification.details().forEach(detail -> System.out.println(" - " + detail));
             return classification.exitCode();

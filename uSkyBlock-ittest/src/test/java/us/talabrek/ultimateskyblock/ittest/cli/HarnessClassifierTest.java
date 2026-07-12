@@ -18,18 +18,31 @@ class HarnessClassifierTest {
 
     @Test
     void passesOnlyWithExactlyOneCleanRequiredVerdict() throws Exception {
-        Path results = writeRequired("latest-canary", null);
+        Path results = writeRequired(false, null);
         Path log = Files.writeString(temporary.resolve("server.log"), "server booted\nserver stopped\n");
         assertEquals(HarnessClassifier.Outcome.PASS,
-            HarnessClassifier.classify("latest-canary", List.of(results), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(results), List.of(log)).outcome());
+    }
+
+    @Test
+    void fullProfileRequiresRestartScenarios() throws Exception {
+        // The smoke set (fresh only) must NOT satisfy a player-flows run - the restart phase is required.
+        Path smokeOnly = writeRequired(false, null);
+        Path log = Files.writeString(temporary.resolve("full.log"), "server booted\nserver stopped\n");
+        assertEquals(HarnessClassifier.Outcome.HARNESS_ERROR,
+            HarnessClassifier.classify(true, List.of(smokeOnly), List.of(log)).outcome());
+
+        Path full = writeRequired(true, null);
+        assertEquals(HarnessClassifier.Outcome.PASS,
+            HarnessClassifier.classify(true, List.of(full), List.of(log)).outcome());
     }
 
     @Test
     void pluginAssertionIsFail() throws Exception {
-        Path results = writeRequired("latest-canary", "fresh/secondary-smokes");
+        Path results = writeRequired(false, "fresh/secondary-smokes");
         Path log = Files.writeString(temporary.resolve("server.log"), "clean\n");
         assertEquals(HarnessClassifier.Outcome.FAIL,
-            HarnessClassifier.classify("latest-canary", List.of(results), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(results), List.of(log)).outcome());
     }
 
     @Test
@@ -37,26 +50,26 @@ class HarnessClassifierTest {
         Path log = Files.writeString(temporary.resolve("server.log"), "clean\n");
         Path empty = Files.writeString(temporary.resolve("empty.jsonl"), "");
         assertEquals(HarnessClassifier.Outcome.HARNESS_ERROR,
-            HarnessClassifier.classify("latest-canary", List.of(empty), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(empty), List.of(log)).outcome());
 
-        Path missing = writeRequired("latest-canary", null);
+        Path missing = writeRequired(false, null);
         List<String> lines = new ArrayList<>(Files.readAllLines(missing));
         lines.removeLast();
         Files.write(missing, lines);
         assertEquals(HarnessClassifier.Outcome.HARNESS_ERROR,
-            HarnessClassifier.classify("latest-canary", List.of(missing), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(missing), List.of(log)).outcome());
 
-        Path duplicate = writeRequired("latest-canary", null);
+        Path duplicate = writeRequired(false, null);
         lines = new ArrayList<>(Files.readAllLines(duplicate));
         lines.add(lines.getFirst());
         Files.write(duplicate, lines);
         assertEquals(HarnessClassifier.Outcome.HARNESS_ERROR,
-            HarnessClassifier.classify("latest-canary", List.of(duplicate), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(duplicate), List.of(log)).outcome());
 
-        Path malformed = writeRequired("latest-canary", null);
+        Path malformed = writeRequired(false, null);
         Files.writeString(malformed, "not-json\n");
         assertEquals(HarnessClassifier.Outcome.HARNESS_ERROR,
-            HarnessClassifier.classify("latest-canary", List.of(malformed), List.of(log)).outcome());
+            HarnessClassifier.classify(false, List.of(malformed), List.of(log)).outcome());
     }
 
     @Test
@@ -79,9 +92,9 @@ class HarnessClassifierTest {
         assertEquals(1, HarnessClassifier.scanLogs(List.of(shutdown)).size());
     }
 
-    private Path writeRequired(String lane, String failed) throws Exception {
+    private Path writeRequired(boolean playerFlows, String failed) throws Exception {
         List<String> lines = new ArrayList<>();
-        for (String required : HarnessClassifier.requiredScenarios(lane)) {
+        for (String required : HarnessClassifier.requiredScenarios(playerFlows)) {
             String[] pieces = required.split("/", 2);
             boolean isFailure = required.equals(failed);
             lines.add(VerdictCodec.encode(new Verdict(1, pieces[0], pieces[1],

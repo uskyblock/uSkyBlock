@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,7 +38,7 @@ public final class HarnessClassifier {
     private HarnessClassifier() {
     }
 
-    public static Classification classify(String lane, List<Path> resultFiles, List<Path> logFiles) {
+    public static Classification classify(boolean playerFlows, List<Path> resultFiles, List<Path> logFiles) {
         Map<String, Verdict> unique = new HashMap<>();
         List<String> errors = new ArrayList<>();
         for (Path file : resultFiles) {
@@ -70,11 +69,11 @@ public final class HarnessClassifier {
             }
         }
 
-        for (String required : requiredScenarios(lane)) {
+        for (String required : requiredScenarios(playerFlows)) {
             if (!unique.containsKey(required)) errors.add("missing required verdict: " + required);
         }
         for (Verdict verdict : unique.values()) {
-            if (verdict.result() == Verdict.Result.SKIP && requiredScenarios(lane).contains(verdict.phase() + '/' + verdict.scenario())) {
+            if (verdict.result() == Verdict.Result.SKIP && requiredScenarios(playerFlows).contains(verdict.phase() + '/' + verdict.scenario())) {
                 errors.add("required verdict was skipped: " + verdict.phase() + '/' + verdict.scenario());
             }
         }
@@ -97,9 +96,12 @@ public final class HarnessClassifier {
         return new Classification(Outcome.PASS, EXIT_PASS, List.of("all required scenarios passed and logs are clean"));
     }
 
-    static Set<String> requiredScenarios(String lane) {
-        return switch (lane.toLowerCase(Locale.ROOT)) {
-            case "core-stable" -> Set.of(
+    // The required set is a function of capability, not lane name: a lane whose Minecraft version has
+    // a presence-client codec runs the full player-driven set plus the restart-persistence phase;
+    // a server-only lane (no codec) runs the fresh smoke set only.
+    static Set<String> requiredScenarios(boolean playerFlows) {
+        if (playerFlows) {
+            return Set.of(
                 "fresh/harness-canary",
                 "fresh/initial-setup",
                 "fresh/create-island",
@@ -109,13 +111,12 @@ public final class HarnessClassifier {
                 "restart/restart-persistence",
                 "restart/secondary-smokes"
             );
-            case "latest-canary" -> Set.of(
-                "fresh/harness-canary",
-                "fresh/initial-setup",
-                "fresh/secondary-smokes"
-            );
-            default -> throw new IllegalArgumentException("Unknown lane: " + lane);
-        };
+        }
+        return Set.of(
+            "fresh/harness-canary",
+            "fresh/initial-setup",
+            "fresh/secondary-smokes"
+        );
     }
 
     static List<String> scanLogs(List<Path> logs) {

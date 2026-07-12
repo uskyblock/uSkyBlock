@@ -9,7 +9,9 @@ readonly PLAYER_NAME=UsbItPlayer
 readonly USER_AGENT="uSkyBlock-ittest/1 (+https://github.com/uskyblock/uSkyBlock)"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-LANE=core-stable
+LANE=paper-max
+PLATFORM=""
+TIER=""
 MINECRAFT_VERSION=""
 PAPER_BUILD=""
 REPLAY_MANIFEST=""
@@ -43,7 +45,7 @@ trap 'cleanup_processes; exit 130' INT
 trap 'cleanup_processes; exit 143' TERM
 
 usage() {
-  echo "Usage: scripts/ittest/run [--lane core-stable|latest-canary] [--manifest file]" >&2
+  echo "Usage: scripts/ittest/run [--lane paper-min|paper-max|paper-canary|spigot-min|spigot-max] [--manifest file]" >&2
   echo "       [--minecraft version] [--paper-build id] [--run-dir path] [--cache-dir path] [--keep]" >&2
 }
 
@@ -61,10 +63,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "${LANE}" != core-stable && "${LANE}" != latest-canary ]]; then
-  echo "Unknown lane: ${LANE}" >&2
-  exit "${HARNESS_ERROR}"
-fi
+validate_lane() {
+  case "$1" in
+    paper-min|paper-max|paper-canary|spigot-min|spigot-max) return 0 ;;
+    *) echo "Unknown lane: $1" >&2; exit "${HARNESS_ERROR}" ;;
+  esac
+}
+validate_lane "${LANE}"
 if ! command -v xgettext >/dev/null 2>&1; then
   for gettext_bin in /opt/homebrew/opt/gettext/bin /usr/local/opt/gettext/bin /usr/local/bin; do
     if [[ -x "${gettext_bin}/xgettext" ]]; then export PATH="${gettext_bin}:${PATH}"; break; fi
@@ -84,14 +89,16 @@ if [[ "${JAVA_FEATURE}" != 25 ]]; then
 fi
 
 if [[ -n "${REPLAY_MANIFEST}" ]]; then
-  if ! jq -e '.schema == 1 and .lane and .minecraft.version and .paper.url and .paper.sha256 and .dependencies.worldedit.sha256 and .dependencies.worldguard.sha256 and .mcProtocolLib.version' "${REPLAY_MANIFEST}" >/dev/null; then
+  if ! jq -e '.schema == 1 and .lane and .minecraft.version and .server.platform and .dependencies.worldedit.sha256 and .dependencies.worldguard.sha256 and .mcProtocolLib.version' "${REPLAY_MANIFEST}" >/dev/null; then
     echo "Malformed or unsupported replay manifest: ${REPLAY_MANIFEST}" >&2
     exit "${HARNESS_ERROR}"
   fi
   LANE="$(jq -r '.lane' "${REPLAY_MANIFEST}")"
   MINECRAFT_VERSION="$(jq -r '.minecraft.version' "${REPLAY_MANIFEST}")"
-  PAPER_BUILD="$(jq -r '.paper.buildId' "${REPLAY_MANIFEST}")"
 fi
+validate_lane "${LANE}"
+PLATFORM="${LANE%%-*}"   # paper | spigot
+TIER="${LANE#*-}"        # min | max | canary
 
 mkdir -p "${CACHE_DIRECTORY}"
 if [[ -z "${RUN_DIRECTORY}" ]]; then
@@ -101,29 +108,70 @@ mkdir -p "${RUN_DIRECTORY}/results" "${RUN_DIRECTORY}/logs"
 RUN_DIRECTORY="$(cd "${RUN_DIRECTORY}" && pwd)"
 RESULTS_DIRECTORY="${RUN_DIRECTORY}/results"
 
-if [[ -z "${MINECRAFT_VERSION}" ]]; then
-  if [[ "${LANE}" == core-stable ]]; then
-    MINECRAFT_VERSION=1.21.11
-  else
-    PROJECT_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" https://fill.papermc.io/v3/projects/paper)"
-    MINECRAFT_VERSION="$(jq -er '[.versions[]? | .[]? | select(test("-(?:pre|rc)") | not)] | first' <<<"${PROJECT_JSON}")"
-  fi
+# Supported Minecraft versions are declared once, in gradle.properties (also consumed by the
+# Hangar/Modrinth/DevBukkit publish paths). The list is maintained oldest->newest, so the harness
+# takes min = first element and max = last element - no separate pin to keep in sync.
+supported_versions() {
+  sed -n 's/^[[:space:]]*minecraftVersions=//p' "${ROOT}/gradle.properties" | tr -d '[:space:]'
+}
+SUPPORTED_MIN="$(supported_versions | awk -F, '{for (i = 1; i <= NF; i++) if ($i != "") { print $i; exit }}')"
+SUPPORTED_MAX="$(supported_versions | awk -F, '{for (i = NF; i >= 1; i--) if ($i != "") { print $i; exit }}')"
+API_VERSION="$(sed -n 's/^[[:space:]]*api-version:[[:space:]]*//p' "${ROOT}/uSkyBlock-Core/src/main/resources/plugin.yml" | tr -d '[:space:]"')"
+if [[ -n "${API_VERSION}" && -n "${SUPPORTED_MIN}" && "${SUPPORTED_MIN}" != "${API_VERSION}" ]]; then
+  echo "USKYBLOCK-TEST WARNING: minecraftVersions floor (${SUPPORTED_MIN}) != plugin.yml api-version (${API_VERSION})." >&2
 fi
 
-MC_PROTOCOL_VERSION="$(jq -r --arg minecraft "${MINECRAFT_VERSION}" '.mappings[$minecraft] // empty' "${ROOT}/scripts/ittest/protocol-mapping.json")"
+if [[ -z "${MINECRAFT_VERSION}" ]]; then
+  case "${TIER}" in
+    min) MINECRAFT_VERSION="${SUPPORTED_MIN}" ;;
+    max) MINECRAFT_VERSION="${SUPPORTED_MAX}" ;;
+    canary)
+      PROJECT_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" https://fill.papermc.io/v3/projects/paper)"
+      MINECRAFT_VERSION="$(jq -er '[.versions[]? | .[]? | select(test("-(?:pre|rc)") | not)] | first' <<<"${PROJECT_JSON}")"
+      ;;
+  esac
+fi
+if [[ -z "${MINECRAFT_VERSION}" ]]; then
+  echo "Could not resolve a Minecraft version for lane ${LANE}." >&2
+  exit "${HARNESS_ERROR}"
+fi
+
+# The presence client is built against one MCProtocolLib "protocol" artifact, named
+# "<mcversion>-<build>" (release) or "<mcversion>-SNAPSHOT". Release builds are listed only in the
+# maven-releases metadata, snapshots only in the main group metadata, though the main group repo
+# serves both files - so derive the version by querying both, preferring the highest release build.
+# Empty result means no codec exists for this Minecraft version (bot flows run server-only).
+mcpl_protocol_version() {
+  local mc="$1" esc meta rel
+  esc="${mc//./\\.}"
+  # Retry transient failures so a network flake does not silently downgrade a bot-capable lane to
+  # server-only (which would be a false green with fewer required scenarios).
+  meta="$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --retry-connrefused \
+    -H "User-Agent: ${USER_AGENT}" \
+    "https://repo.opencollab.dev/maven-releases/org/geysermc/mcprotocollib/protocol/maven-metadata.xml" 2>/dev/null || true)"
+  rel="$(printf '%s' "${meta}" | grep -oE '<version>[^<]+</version>' | sed -E 's|</?version>||g' \
+    | grep -E "^${esc}-[0-9]+$" | sort -t- -k2 -n | tail -n1 || true)"
+  if [[ -n "${rel}" ]]; then printf '%s\n' "${rel}"; return 0; fi
+  meta="$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --retry-connrefused \
+    -H "User-Agent: ${USER_AGENT}" \
+    "https://repo.opencollab.dev/main/org/geysermc/mcprotocollib/protocol/maven-metadata.xml" 2>/dev/null || true)"
+  printf '%s' "${meta}" | grep -oE '<version>[^<]+</version>' | sed -E 's|</?version>||g' \
+    | grep -E "^${esc}-SNAPSHOT$" | tail -n1 || true
+}
+
 PLAYER_FLOWS=true
 if [[ -n "${REPLAY_MANIFEST}" ]]; then
   MC_PROTOCOL_VERSION="$(jq -r '.mcProtocolLib.version' "${REPLAY_MANIFEST}")"
   PLAYER_FLOWS="$(jq -r '.mcProtocolLib.playerFlows' "${REPLAY_MANIFEST}")"
-fi
-if [[ -z "${MC_PROTOCOL_VERSION}" ]]; then
-  if [[ "${LANE}" == core-stable ]]; then
-    echo "No pinned MCProtocolLib mapping for core-stable Minecraft ${MINECRAFT_VERSION}." >&2
-    exit "${HARNESS_ERROR}"
+else
+  MC_PROTOCOL_VERSION="$(mcpl_protocol_version "${MINECRAFT_VERSION}")"
+  if [[ -z "${MC_PROTOCOL_VERSION}" ]]; then
+    # No codec for this version: still build the client against a known-good release so it compiles,
+    # but do not launch it - scenarios run server-only.
+    PLAYER_FLOWS=false
+    MC_PROTOCOL_VERSION="${MCPL_COMPILE_FALLBACK:-1.21.11-1}"
+    echo "USKYBLOCK-TEST no MCProtocolLib codec for Minecraft ${MINECRAFT_VERSION}; player flows disabled (server-only)."
   fi
-  PLAYER_FLOWS=false
-  MC_PROTOCOL_VERSION=1.21.11-1
-  echo "USKYBLOCK-TEST player flows unsupported for canary Minecraft ${MINECRAFT_VERSION}"
 fi
 
 download_verified() {
@@ -144,22 +192,71 @@ download_verified() {
   mv "${temporary}" "${target}"
 }
 
-if [[ -n "${REPLAY_MANIFEST}" ]]; then
-  PAPER_URL="$(jq -r '.paper.url' "${REPLAY_MANIFEST}")"
-  PAPER_SHA="$(jq -r '.paper.sha256' "${REPLAY_MANIFEST}")"
-  PAPER_BUILD="$(jq -r '.paper.buildId' "${REPLAY_MANIFEST}")"
-else
-  if [[ -n "${PAPER_BUILD}" ]]; then
-    PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/${PAPER_BUILD}"
-  else
-    PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/latest"
+download_plain() {
+  local url="$1" target="$2"
+  [[ -f "${target}" ]] && return 0
+  mkdir -p "$(dirname "${target}")"
+  curl --fail --location --silent --show-error -H "User-Agent: ${USER_AGENT}" --output "${target}" "${url}"
+}
+
+# Spigot has no server-jar CDN; compile it with BuildTools (JDK 25 builds every supported version).
+# Cached by the SpigotMC build number so a cache hit skips the multi-minute compile. Prints the jar
+# path to stdout; BuildTools' own output is redirected to stderr.
+build_spigot() {
+  local mc="$1" buildno="$2" jar workdir buildtools
+  jar="${CACHE_DIRECTORY}/spigot-${mc}-b${buildno}.jar"
+  if [[ -f "${jar}" ]]; then printf '%s\n' "${jar}"; return 0; fi
+  buildtools="${CACHE_DIRECTORY}/BuildTools.jar"
+  download_plain "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" "${buildtools}"
+  # BuildTools shells out to git; make it work under a non-interactive/CI identity.
+  git config --global --get user.email >/dev/null 2>&1 || git config --global user.email "ittest@uskyblock.invalid"
+  git config --global --get user.name >/dev/null 2>&1 || git config --global user.name "uSkyBlock ittest"
+  if [[ -n "${CI:-}${GITHUB_ACTIONS:-}" ]]; then
+    git config --global --get-all safe.directory 2>/dev/null | grep -qx '\*' || git config --global --add safe.directory '*'
   fi
-  PAPER_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" "${PAPER_ENDPOINT}")"
-  PAPER_BUILD="$(jq -er '.id' <<<"${PAPER_JSON}")"
-  PAPER_URL="$(jq -er '.downloads["server:default"].url' <<<"${PAPER_JSON}")"
-  PAPER_SHA="$(jq -er '.downloads["server:default"].checksums.sha256' <<<"${PAPER_JSON}")"
+  workdir="${CACHE_DIRECTORY}/buildtools-${mc}"
+  rm -rf "${workdir}"; mkdir -p "${workdir}/dist"
+  ( cd "${workdir}" && java -jar "${buildtools}" --rev "${mc}" --compile spigot --output-dir "${workdir}/dist" ) >&2
+  if [[ ! -f "${workdir}/dist/spigot-${mc}.jar" ]]; then
+    echo "BuildTools did not produce spigot-${mc}.jar for ${mc}" >&2
+    exit "${HARNESS_ERROR}"
+  fi
+  cp "${workdir}/dist/spigot-${mc}.jar" "${jar}"
+  rm -rf "${workdir}"
+  printf '%s\n' "${jar}"
+}
+
+# Resolve (and for Spigot, build) the server jar. SERVER_* is platform-agnostic downstream.
+SERVER_BUILD=""
+SERVER_URL=""
+SERVER_SHA=""
+SERVER_JAR=""
+if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  SERVER_BUILD="$(jq -r '.server.build // ""' "${REPLAY_MANIFEST}")"
+  SERVER_URL="$(jq -r '.server.url // ""' "${REPLAY_MANIFEST}")"
+  SERVER_SHA="$(jq -r '.server.sha256 // ""' "${REPLAY_MANIFEST}")"
 fi
-PAPER_JAR="${CACHE_DIRECTORY}/paper-${MINECRAFT_VERSION}-${PAPER_BUILD}.jar"
+if [[ "${PLATFORM}" == paper ]]; then
+  if [[ -z "${SERVER_URL}" ]]; then
+    if [[ -n "${PAPER_BUILD}" ]]; then
+      PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/${PAPER_BUILD}"
+    else
+      PAPER_ENDPOINT="https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT_VERSION}/builds/latest"
+    fi
+    PAPER_JSON="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" "${PAPER_ENDPOINT}")"
+    SERVER_BUILD="$(jq -er '.id' <<<"${PAPER_JSON}")"
+    SERVER_URL="$(jq -er '.downloads["server:default"].url' <<<"${PAPER_JSON}")"
+    SERVER_SHA="$(jq -er '.downloads["server:default"].checksums.sha256' <<<"${PAPER_JSON}")"
+  fi
+  SERVER_JAR="${CACHE_DIRECTORY}/paper-${MINECRAFT_VERSION}-${SERVER_BUILD}.jar"
+else
+  if [[ -z "${SERVER_BUILD}" ]]; then
+    SERVER_BUILD="$(curl --fail --silent --show-error -H "User-Agent: ${USER_AGENT}" \
+      "https://hub.spigotmc.org/versions/${MINECRAFT_VERSION}.json" | jq -er '.name')"
+  fi
+  SERVER_JAR="$(build_spigot "${MINECRAFT_VERSION}" "${SERVER_BUILD}")"
+  SERVER_SHA="$(shasum -a 256 "${SERVER_JAR}" | awk '{print $1}')"
+fi
 
 artifact_value() {
   jq -er "$1" "${ROOT}/scripts/ittest/artifacts.json"
@@ -202,19 +299,23 @@ MANIFEST="${RUN_DIRECTORY}/run-manifest.json"
 jq -n \
   --arg lane "${LANE}" \
   --arg minecraft "${MINECRAFT_VERSION}" \
-  --arg paperBuild "${PAPER_BUILD}" \
-  --arg paperUrl "${PAPER_URL}" \
-  --arg paperSha "${PAPER_SHA}" \
+  --arg serverPlatform "${PLATFORM}" \
+  --arg serverBuild "${SERVER_BUILD}" \
+  --arg serverUrl "${SERVER_URL}" \
+  --arg serverSha "${SERVER_SHA}" \
   --arg weVersion "${WE_VERSION}" --arg weSha "${WE_SHA}" --arg weUrl "${WE_URL}" \
   --arg wgVersion "${WG_VERSION}" --arg wgSha "${WG_SHA}" --arg wgUrl "${WG_URL}" \
   --arg protocol "${MC_PROTOCOL_VERSION}" --arg gitSha "${GIT_SHA}" \
   --arg javaVersion "$(java -version 2>&1 | head -n 1)" \
   --argjson port "${PORT}" --argjson fixtureRevision "${FIXTURE_REVISION}" \
   --argjson playerFlows "${PLAYER_FLOWS}" \
-  '{schema:1,lane:$lane,minecraft:{version:$minecraft},paper:{buildId:$paperBuild,url:$paperUrl,sha256:$paperSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
+  '{schema:1,lane:$lane,minecraft:{version:$minecraft},server:{platform:$serverPlatform,version:$minecraft,build:$serverBuild,url:$serverUrl,sha256:$serverSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
   > "${MANIFEST}"
 
-download_verified "${PAPER_URL}" "${PAPER_SHA}" "${PAPER_JAR}"
+# Paper is a verified CDN download; Spigot was already compiled+cached above.
+if [[ "${PLATFORM}" == paper ]]; then
+  download_verified "${SERVER_URL}" "${SERVER_SHA}" "${SERVER_JAR}"
+fi
 download_verified "${WE_URL}" "${WE_SHA}" "${WE_JAR}"
 download_verified "${WG_URL}" "${WG_SHA}" "${WG_JAR}"
 
@@ -244,7 +345,7 @@ mv "${MANIFEST}.tmp" "${MANIFEST}"
 
 SERVER_DIRECTORY="${RUN_DIRECTORY}/server"
 mkdir -p "${SERVER_DIRECTORY}/plugins/uSkyBlock/schematics" "${SERVER_DIRECTORY}/plugins/bStats"
-cp "${PAPER_JAR}" "${SERVER_DIRECTORY}/paper.jar"
+cp "${SERVER_JAR}" "${SERVER_DIRECTORY}/server.jar"
 cp "${WE_JAR}" "${SERVER_DIRECTORY}/plugins/"
 cp "${WG_JAR}" "${SERVER_DIRECTORY}/plugins/"
 cp "${PLUGIN_JAR}" "${SERVER_DIRECTORY}/plugins/"
@@ -336,32 +437,35 @@ run_phase() {
       -Duskyblock.ittest.resultsDir="${RESULTS_DIRECTORY}" \
       -Duskyblock.ittest.fixtureRevision="${FIXTURE_REVISION}" \
       -Duskyblock.ittest.playerFlows="${PLAYER_FLOWS}" \
-      -jar paper.jar --nogui
+      -jar server.jar --nogui
   ) > "${log}" 2>&1 &
   SERVER_PID=$!
   CLIENT_PID=""
-  if [[ "${with_client}" == true ]]; then
-    # Boot can take minutes on a cold run (uSkyBlock downloads its runtime libraries), so allow
-    # ample time to reach 'Done' before launching the presence client.
-    if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 300; then
+  # A cold boot downloads uSkyBlock's runtime libraries and generates the world, which can take
+  # several minutes. Wait generously for the server to finish booting ('Done') BEFORE judging
+  # anything else - this applies to server-only phases too, so a slow boot is never mistaken for a
+  # dead driver (the scenario-start deadline below is measured only after boot). Long deadlines here
+  # trade a little wall-clock for far fewer flaky failures.
+  if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 600; then
+    if [[ "${with_client}" == true ]]; then
       echo "USKYBLOCK-TEST launching presence client -> 127.0.0.1:${PORT}" >> "${RUN_DIRECTORY}/logs/client.log"
       java -jar "${CLIENT_JAR}" --host 127.0.0.1 --port "${PORT}" --name "${PLAYER_NAME}" \
         --ready-file "${RESULTS_DIRECTORY}/client-ready" --timeout-seconds 360 \
         >> "${RUN_DIRECTORY}/logs/client.log" 2>&1 &
       CLIENT_PID=$!
-    else
-      echo "USKYBLOCK-TEST server did not reach 'Done' within 300s; presence client not launched" >> "${RUN_DIRECTORY}/logs/client.log"
     fi
+  elif [[ "${with_client}" == true ]]; then
+    echo "USKYBLOCK-TEST server did not reach 'Done' within 600s; presence client not launched" >> "${RUN_DIRECTORY}/logs/client.log"
   fi
-  # The driver plugin shuts the server down when it finishes. If it never runs a scenario (e.g. the
-  # driver plugin failed to load), don't sit idle until the full hard deadline - terminate early.
-  if wait_for_log "${SERVER_PID}" "${log}" 'USKYBLOCK-TEST START phase=' 210; then
-    if ! wait_for_process "${SERVER_PID}" 360; then
+  # After boot, the driver starts a scenario on ServerLoadEvent. If it never does (e.g. the driver
+  # plugin failed to load), terminate early rather than idling to the hard deadline.
+  if wait_for_log "${SERVER_PID}" "${log}" 'USKYBLOCK-TEST START phase=' 180; then
+    if ! wait_for_process "${SERVER_PID}" 480; then
       echo "Server deadline exceeded in phase ${phase}" >> "${log}"
     fi
   else
     if kill -0 "${SERVER_PID}" 2>/dev/null; then
-      echo "Driver plugin ran no scenario within 210s; terminating phase ${phase}" >> "${log}"
+      echo "Driver plugin ran no scenario within 180s of boot; terminating phase ${phase}" >> "${log}"
       kill "${SERVER_PID}" 2>/dev/null || true
       sleep 5
       kill -9 "${SERVER_PID}" 2>/dev/null || true
@@ -373,8 +477,10 @@ run_phase() {
   CLIENT_PID=""
 }
 
+# The restart-persistence phase only makes sense when a player actually created state to persist,
+# i.e. when player flows ran. Server-only lanes (no codec) run the fresh smoke set only.
 run_phase fresh "${PLAYER_FLOWS}"
-if [[ "${LANE}" == core-stable ]]; then
+if [[ "${PLAYER_FLOWS}" == true ]]; then
   rm -f "${RESULTS_DIRECTORY}/client-ready"
   run_phase restart false
 fi
@@ -382,11 +488,11 @@ fi
 set +e
 RESULT_ARGUMENTS=("${RESULTS_DIRECTORY}/fresh.jsonl")
 LOG_ARGUMENTS=("${RUN_DIRECTORY}/logs/fresh.log")
-if [[ "${LANE}" == core-stable ]]; then
+if [[ "${PLAYER_FLOWS}" == true ]]; then
   RESULT_ARGUMENTS+=("${RESULTS_DIRECTORY}/restart.jsonl")
   LOG_ARGUMENTS+=("${RUN_DIRECTORY}/logs/restart.log")
 fi
-java -jar "${DRIVER_JAR}" classify --lane "${LANE}" \
+java -jar "${DRIVER_JAR}" classify --player-flows "${PLAYER_FLOWS}" \
   --results "${RESULT_ARGUMENTS[@]}" --logs "${LOG_ARGUMENTS[@]}"
 CLASSIFIER_EXIT=$?
 set -e

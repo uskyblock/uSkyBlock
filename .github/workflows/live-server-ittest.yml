@@ -9,14 +9,14 @@ on:
         description: Harness lane to run
         required: true
         type: choice
-        default: both
-        options: [both, core-stable, latest-canary]
+        default: all
+        options: [all, paper-min, paper-max, spigot-min, spigot-max, paper-canary]
       minecraft_version:
-        description: Optional Minecraft/Paper version override
+        description: Optional Minecraft version override
         required: false
         type: string
       paper_build:
-        description: Optional Paper build ID override
+        description: Optional Paper build ID override (paper lanes only)
         required: false
         type: string
       replay_manifest:
@@ -26,44 +26,22 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
-  changes:
-    # A scheduled run is pointless when nothing changed; only spend the (expensive) live-server
-    # harness on new commits. Manual dispatch always runs.
-    if: github.repository_owner == 'uskyblock'
-    runs-on: ubuntu-24.04
-    outputs:
-      run: ${{ steps.decide.outputs.run }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - id: decide
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-        run: |
-          if [[ "${EVENT_NAME}" != 'schedule' ]]; then
-            echo "Manual dispatch: running harness."
-            echo "run=true" >> "${GITHUB_OUTPUT}"
-          elif [[ -n "$(git log --since='24 hours ago' --format='%H' -1)" ]]; then
-            echo "New commits in the last 24h: running harness."
-            echo "run=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "No commits in the last 24h: skipping scheduled harness."
-            echo "run=false" >> "${GITHUB_OUTPUT}"
-          fi
-
   live_server:
-    needs: changes
-    # matrix.* is not available in a job-level if, so gate lane selection at the step level below.
-    if: needs.changes.outputs.run == 'true'
+    # The nightly runs unconditionally: the paper-canary lane tracks the newest available Paper
+    # build, so an upstream break can surface with zero commits of ours - gating on recent commits
+    # would blind exactly the lane that exists to catch it.
+    if: github.repository_owner == 'uskyblock'
     strategy:
       fail-fast: false
       matrix:
-        lane: [core-stable, latest-canary]
+        lane: [paper-min, paper-max, spigot-min, spigot-max, paper-canary]
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Generous: a cold Spigot BuildTools compile plus two boot/scenario phases with long anti-flake
+    # deadlines. Public-repo standard runners are unbilled, so favour reliability over wall-clock.
+    timeout-minutes: 70
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -84,7 +62,7 @@ jobs:
 
       - name: Run ${{ matrix.lane }}
         id: harness
-        if: github.event_name == 'schedule' || inputs.lane == 'both' || inputs.lane == matrix.lane
+        if: github.event_name == 'schedule' || inputs.lane == 'all' || inputs.lane == matrix.lane
         continue-on-error: true
         env:
           OVERRIDE_MINECRAFT: ${{ inputs.minecraft_version }}
@@ -122,9 +100,36 @@ jobs:
           if-no-files-found: warn
 
       - name: Enforce harness outcome
-        # Any non-zero harness exit (continue-on-error -> outcome 'failure') is a red build; a lane
-        # that was not selected is 'skipped' and must not fail the job.
-        if: steps.harness.outcome == 'failure'
+        # Supported (pinned) lanes hard-fail: a red run there is always our regression. A lane that
+        # was not selected on dispatch is 'skipped' (not 'failure') and must not fail the job. The
+        # paper-canary lane is handled below - it warns instead of failing the build.
+        if: matrix.lane != 'paper-canary' && steps.harness.outcome == 'failure'
         run: |
-          echo "Harness failed. Exit code: ${{ steps.harness.outputs.exit-code }}"
+          echo "Harness failed on ${{ matrix.lane }}. Exit code: ${{ steps.harness.outputs.exit-code }}"
           exit 1
+
+      - name: File or update canary regression issue
+        # The canary tracks the newest AVAILABLE Paper, so a failure is early warning of an upstream
+        # break, not necessarily our regression. Warn via a deduplicated issue and keep the run green.
+        # continue-on-error so a transient gh/API hiccup here can never turn the canary run red.
+        if: matrix.lane == 'paper-canary' && steps.harness.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="Canary regression: latest-available Paper"
+          gh label create canary --color FBCA04 --description "Live-server canary (latest-available) regression" 2>/dev/null || true
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          existing="$(gh issue list --state open --label canary --json number,title \
+            --jq ".[] | select(.title==\"${title}\") | .number" | head -n1)"
+          if [[ -n "${existing}" ]]; then
+            gh issue comment "${existing}" --body "Recurred: harness exit ${{ steps.harness.outputs.exit-code }} on ${run_url}"
+          else
+            gh issue create --title "${title}" --label canary --body \
+              "The \`paper-canary\` lane (newest available Paper) failed with harness exit ${{ steps.harness.outputs.exit-code }}.
+
+          This lane is non-blocking: a failure here is an early warning of an upstream Paper break, not necessarily a regression in uSkyBlock. Investigate, and if it is a real break, fix it and bump the supported version list (\`gradle.properties\` \`minecraftVersions\`) so the pinned \`paper-max\` lane guards it thereafter.
+
+          Run: ${run_url}"
+          fi
