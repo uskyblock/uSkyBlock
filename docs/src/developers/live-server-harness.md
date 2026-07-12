@@ -12,7 +12,7 @@ The harness runs a `platform × tier` matrix. The Minecraft versions are not pin
 
 The presence-client (MCProtocolLib) version is **derived** from the target Minecraft version by querying MCProtocolLib's Maven metadata (release builds preferred over snapshots). If no codec exists for a version, that lane runs server-only: boot/setup and secondary smokes remain required and player-driven scenarios plus the restart phase are skipped. Spigot server jars are compiled on demand with BuildTools (`--rev <version>`) and cached by build number; Paper jars are downloaded and SHA-256 verified.
 
-All lanes pin WorldEdit 7.4.4 and WorldGuard 7.0.17 (recorded in `scripts/ittest/artifacts.json`); the same bukkit jars run on both Paper and Spigot. Downloads are cached outside each disposable server directory and verified before use.
+Lanes pin WorldEdit 7.4.4 and WorldGuard 7.0.17 (recorded in `scripts/ittest/artifacts.json`); the same bukkit jars run on both Paper and Spigot. A newer dependency build can drop support for an older Minecraft version — WorldGuard 7.0.17 declares `api-version 1.21.11` and will not load on 1.21.10, which uSkyBlock hard-depends on — so `artifacts.json` also carries per-Minecraft-version `overrides` that pin an older, compatible build for such lanes (1.21.10 uses WorldGuard 7.0.15). Overrides are keyed by Minecraft version, not lane, so they follow the version and lapse once the supported floor moves up. Downloads are cached outside each disposable server directory and verified before use.
 
 ## Running locally
 
