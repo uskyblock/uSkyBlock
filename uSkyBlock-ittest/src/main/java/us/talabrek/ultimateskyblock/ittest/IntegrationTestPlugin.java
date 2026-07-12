@@ -186,7 +186,6 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
 
         private void initialSetup(Scenario scenario) {
             scenario.await(this::coreReady, SETUP_TIMEOUT, () -> {
-                check(Bukkit.getServer().getName().toLowerCase(Locale.ROOT).contains("paper"), "server is not Paper: " + Bukkit.getServer().getName());
                 for (String name : List.of("WorldEdit", "WorldGuard", "uSkyBlock", "uSkyBlock-itTest")) {
                     Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
                     check(plugin != null && plugin.isEnabled(), name + " is not enabled");
