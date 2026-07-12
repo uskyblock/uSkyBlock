@@ -1,3 +1,5 @@
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.util.regex.Matcher
 
 plugins {
@@ -103,10 +105,22 @@ msgstr ""
 
 fun executeCommand(arguments: List<String>, workingDir: File = rootProject.projectDir) {
     val process = try {
-        ProcessBuilder(arguments).directory(workingDir).inheritIO().start()
+        logger.info("Executing command: ${arguments.joinToString(" ")}")
+        ProcessBuilder(arguments)
+            .directory(workingDir)
+            .redirectErrorStream(true) // to have only one input stream to handle below instead of two
+            .start()
     } catch (e: Exception) {
         throw GradleException("Unable to execute command: ${arguments.joinToString(" ")}", e)
     }
+
+    // manually handle process stdout/stderr due to gradle issues https://github.com/gradle/gradle/issues/16716 and https://github.com/gradle/gradle/issues/16719
+    val reader = BufferedReader(InputStreamReader(process.inputStream))
+    var line: String?
+    while ((reader.readLine().also { line = it }) != null) {
+        logger.debug(line)
+    }
+
     val exitCode = process.waitFor()
     if (exitCode != 0) {
         throw GradleException("Command failed (exit $exitCode): ${arguments.joinToString(" ")}")
