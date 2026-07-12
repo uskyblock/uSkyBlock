@@ -275,6 +275,26 @@ else
   WG_VERSION="$(artifact_value '.worldguard.version')"
   WG_URL="$(artifact_value '.worldguard.url')"
   WG_SHA="$(artifact_value '.worldguard.sha256')"
+  # Per-Minecraft-version dependency overrides. The newest WorldEdit/WorldGuard builds drop
+  # support for older Minecraft (WorldGuard 7.0.17 declares api-version 1.21.11 and refuses to
+  # load on 1.21.10), so a lane on an older Minecraft pins the newest dependency build that
+  # still supports it. Keyed by Minecraft version, so the override follows the version rather
+  # than the lane name and stops applying on its own once the supported floor moves up.
+  override_field() {
+    jq -r --arg mc "${MINECRAFT_VERSION}" "$1 // empty" "${ROOT}/scripts/ittest/artifacts.json"
+  }
+  if [[ -n "$(override_field '.overrides[$mc].worldedit')" ]]; then
+    WE_VERSION="$(override_field '.overrides[$mc].worldedit.version')"
+    WE_URL="$(override_field '.overrides[$mc].worldedit.url')"
+    WE_SHA="$(override_field '.overrides[$mc].worldedit.sha256')"
+    echo "USKYBLOCK-TEST WorldEdit override for Minecraft ${MINECRAFT_VERSION}: ${WE_VERSION}"
+  fi
+  if [[ -n "$(override_field '.overrides[$mc].worldguard')" ]]; then
+    WG_VERSION="$(override_field '.overrides[$mc].worldguard.version')"
+    WG_URL="$(override_field '.overrides[$mc].worldguard.url')"
+    WG_SHA="$(override_field '.overrides[$mc].worldguard.sha256')"
+    echo "USKYBLOCK-TEST WorldGuard override for Minecraft ${MINECRAFT_VERSION}: ${WG_VERSION}"
+  fi
 fi
 if [[ "${WE_SHA}" == TO_BE_RECORDED || "${WG_SHA}" == TO_BE_RECORDED ]]; then
   echo "Pinned dependency hashes have not been recorded." >&2
