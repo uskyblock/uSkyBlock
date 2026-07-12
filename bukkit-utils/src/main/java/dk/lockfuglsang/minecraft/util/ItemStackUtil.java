@@ -249,7 +249,11 @@ public enum ItemStackUtil {
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
             return fromLegacy(itemMeta.getDisplayName());
         } else {
-            return Component.translatable(stack.getTranslationKey());
+            // Resolve the key from the item's Material rather than the ItemStack: on Paper 26.2+
+            // ItemStack.getTranslationKey() delegates through a lazily-created craftDelegate that is
+            // null for Bukkit-constructed stacks during plugin enable, throwing NPE (issue #163).
+            // Material.getTranslationKey() resolves from the registry, so it is total and NPE-safe.
+            return Component.translatable(stack.getType().getTranslationKey());
         }
     }
 
