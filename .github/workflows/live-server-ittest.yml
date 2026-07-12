@@ -57,6 +57,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
+      - name: Cache harness downloads and Spigot builds
+        # Persists Paper/WorldEdit/WorldGuard jars, BuildTools, and compiled Spigot server jars
+        # across nightly runs. Keyed per lane and on the pinned version inputs, so the expensive,
+        # network-heavy Spigot BuildTools compile only re-runs when those change. ~/.m2 caches
+        # BuildTools' own Maven downloads to make a cold compile faster and less flaky.
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/ittest-cache
+            ~/.m2/repository
+          key: ittest-cache-${{ matrix.lane }}-${{ hashFiles('gradle.properties', 'scripts/ittest/artifacts.json') }}
+          restore-keys: |
+            ittest-cache-${{ matrix.lane }}-
+
       - name: Install gettext
         run: sudo apt-get update && sudo apt-get install -y gettext
 
