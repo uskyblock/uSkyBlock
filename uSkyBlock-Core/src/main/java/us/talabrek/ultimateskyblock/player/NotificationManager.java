@@ -3,7 +3,6 @@ package us.talabrek.ultimateskyblock.player;
 import com.google.inject.Inject;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -28,11 +27,12 @@ public class NotificationManager {
     }
 
     public void sendMessage(@NotNull CommandSender sender, @NotNull Component component) {
-        if (sender instanceof Player player) {
-            player.spigot().sendMessage(BungeeComponentSerializer.get().serialize(component));
-        } else {
-            audiences.sender(sender).sendMessage(component);
-        }
+        // Route every sender (players included) through BukkitAudiences. The previous player-only
+        // branch used BungeeComponentSerializer, whose static init calls
+        // GsonComponentSerializer.Builder.downsampleColors(); Paper 26.2 ships an Adventure release
+        // that removed that method, so the legacy Bungee path threw NoSuchMethodError on enable.
+        // BukkitAudiences renders natively on both Paper and Spigot, so this is portable.
+        audiences.sender(sender).sendMessage(component);
     }
 
     public void shutdown() {
