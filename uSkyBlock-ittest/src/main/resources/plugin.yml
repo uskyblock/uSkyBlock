@@ -1,0 +1,19 @@
+name: uSkyBlock-itTest
+main: us.talabrek.ultimateskyblock.ittest.IntegrationTestPlugin
+version: ${projectVersion}
+description: Live-server integration-test driver for uSkyBlock
+author: uSkyBlock
+load: POSTWORLD
+depend:
+  - uSkyBlock
+  - WorldEdit
+  - WorldGuard
+api-version: 1.21.10
+commands:
+  uskyblock-ittest:
+    description: Run a live-server integration phase locally
+    usage: /uskyblock-ittest run <fresh|restart>
+    permission: uskyblock.ittest.run
+permissions:
+  uskyblock.ittest.run:
+    default: op

@@ -1,0 +1,23 @@
+{
+  "schema": 2,
+  "worldedit": {
+    "version": "7.4.4",
+    "url": "https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.4.4/PAPER/worldedit-bukkit-7.4.4.jar",
+    "sha256": "44c97ee6c1df9afa127df3c5a2c6a7108f826fb44ab7b255a7ec4250feb89b9d"
+  },
+  "worldguard": {
+    "version": "7.0.17",
+    "url": "https://mediafilez.forgecdn.net/files/8167/578/worldguard-bukkit-7.0.17.jar",
+    "sha256": "3f14562509bf01e7680571b6f56932239157ff938f257c3226df3b4088ae54f2"
+  },
+  "overrides": {
+    "1.21.10": {
+      "note": "WorldGuard 7.0.17 declares api-version 1.21.11 and will not load on 1.21.10; 7.0.15 is the newest WorldGuard that still supports it.",
+      "worldguard": {
+        "version": "7.0.15",
+        "url": "https://cdn.modrinth.com/data/DKY9btbd/versions/WaElxvDz/worldguard-bukkit-7.0.15.jar",
+        "sha256": "82109263128cb2232fd0e987f8f8bfa145f6a071c5fa92cf3d221922af863c74"
+      }
+    }
+  }
+}
