@@ -14,7 +14,7 @@ uSkyBlock is a standard Bukkit plugin. The main components:
 
 ## Building
 
-Requires Java 21, the [gettext tools](https://www.gnu.org/software/gettext/) and [Perl](https://www.perl.org/get.html). The Gradle wrapper is included.
+Requires Java 21; the Gradle wrapper is included. A normal build needs no other tools — the runtime translation bundle is generated natively. Only the `translation` task (rebuilding message templates) additionally needs the [gettext tools](https://www.gnu.org/software/gettext/); see [Translation system](#translation-system).
 
 ```bash
 ./gradlew build
@@ -130,7 +130,7 @@ Add `// I18N:` comments above tricky strings to give translators context — the
 
 ### How extraction works
 
-The build uses `xgettext` to scan all Java source files for calls to `tr`, `marktr`, `sendTr`, `sendErrorTr`, and `trLegacy`. The extracted strings are split into three domains:
+The `translation` task uses `xgettext` to scan all Java source files for calls to `tr`, `marktr`, `sendTr`, `sendErrorTr`, and `trLegacy`. The extracted strings are split into three domains:
 
 | Domain | POT file | Crowdin | Purpose |
 |---|---|---|---|
@@ -151,6 +151,8 @@ POT templates and translated PO files live under `uSkyBlock-Core/src/main/i18n/`
 ```
 
 This runs the full pipeline: extract strings → split into domains → merge with existing PO files → generate extra locales (Pirate, Kitteh). Commit the updated POT and PO files.
+
+Only the extraction step needs gettext (`xgettext`, `msgcat`); merging, the Pirate/Kitteh locales, and bundling into `i18n.zip` run natively, so a normal `./gradlew build` needs no external tools.
 
 If you only change code without touching translatable strings, this step is not needed.
 
