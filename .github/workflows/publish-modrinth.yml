@@ -24,7 +24,7 @@ jobs:
       # branch the run was dispatched on; the jar is downloaded from the release asset
       # regardless, so the checked-out source only provides the Minotaur task config.
       - name: Checkout build logic
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event.release.tag_name }}
 
@@ -35,7 +35,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Capture release metadata
         env:

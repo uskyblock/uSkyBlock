@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 70
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: JDK 21 (build toolchain) + 25 (server runtime)
         uses: actions/setup-java@v5
@@ -55,14 +55,14 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Cache harness downloads and Spigot builds
         # Persists Paper/WorldEdit/WorldGuard jars, BuildTools, and compiled Spigot server jars
         # across nightly runs. Keyed per lane and on the pinned version inputs, so the expensive,
         # network-heavy Spigot BuildTools compile only re-runs when those change. ~/.m2 caches
         # BuildTools' own Maven downloads to make a cold compile faster and less flaky.
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             build/ittest-cache
@@ -93,7 +93,7 @@ jobs:
 
       - name: Publish manifest and verdicts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: uskyblock-ittest-${{ matrix.lane }}-summary
           path: |
@@ -104,7 +104,7 @@ jobs:
 
       - name: Publish failure diagnostics
         if: always() && steps.harness.outcome == 'failure'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: uskyblock-ittest-${{ matrix.lane }}-diagnostics
           path: build/ittest/runs/
