@@ -14,12 +14,10 @@ repositories {
 val mcProtocolLibVersion = providers.gradleProperty("mcProtocolLibVersion").orElse("1.21.11-1")
 
 dependencies {
+    // Version is overridable per Minecraft build via the mcProtocolLibVersion property (the harness
+    // sets it), so it stays a dynamic coordinate rather than a fixed catalog entry.
     implementation("org.geysermc.mcprotocollib:protocol:${mcProtocolLibVersion.get()}")
-    runtimeOnly("org.slf4j:slf4j-simple:2.0.17")
-
-    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
-    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
-    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
+    runtimeOnly(libs.org.slf4j.slf4j.simple)
 }
 
 description = "Pinned offline-mode presence client for the uSkyBlock live-server harness"

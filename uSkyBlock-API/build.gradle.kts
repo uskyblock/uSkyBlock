@@ -14,7 +14,3 @@ dependencies {
 
 group = "com.github.rlf"
 description = "uSkyBlock-API"
-
-java {
-    withJavadocJar()
-}

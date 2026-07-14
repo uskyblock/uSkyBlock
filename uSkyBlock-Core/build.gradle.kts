@@ -10,20 +10,16 @@ plugins {
 }
 
 dependencies {
-    api(project(":bukkit-utils"))
-    api(project(":po-utils"))
-    api(project(":uSkyBlock-API"))
-    api(project(":uSkyBlock-APIv2"))
+    api(projects.bukkitUtils)
+    api(projects.poUtils)
+    api(projects.uSkyBlockAPI)
+    api(projects.uSkyBlockAPIv2)
     api(libs.io.papermc.paperlib)
     api(libs.org.bstats.bstats.bukkit)
     api(libs.com.google.inject.guice)
     api(libs.org.jetbrains.annotations)
-    testImplementation(testFixtures(project(":bukkit-utils")))
+    testImplementation(testFixtures(projects.bukkitUtils))
     testImplementation(libs.org.hamcrest.hamcrest)
-    testImplementation(libs.org.hamcrest.hamcrest.library.x1)
-    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
-    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
-    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
     testImplementation(libs.org.mockito.mockito.core)
     testImplementation(libs.net.kyori.adventure.api)
     testImplementation(libs.net.kyori.adventure.text.minimessage)
@@ -44,7 +40,7 @@ dependencies {
     testImplementation(libs.com.sk89q.worldedit.worldedit.bukkit)
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
     compileOnly(libs.com.google.guava.guava)
-    compileOnly(libs.com.google.code.gson.gson.x1)
+    compileOnly(libs.com.google.code.gson.gson)
     compileOnly(libs.net.kyori.adventure.api)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
     compileOnly(libs.net.kyori.adventure.text.minimessage)
@@ -55,10 +51,6 @@ dependencies {
 }
 
 description = "uSkyBlock-Core"
-
-java {
-    withJavadocJar()
-}
 
 // ---------------------------------------------------------------------------
 // i18n message-catalog build.
@@ -140,7 +132,7 @@ tasks.processResources {
     val props = mapOf(
         "projectVersion" to project.version,
         "buildNumber" to (System.getenv("GITHUB_RUN_NUMBER") ?: "DEV"),
-        "gsonVersion" to libs.versions.com.google.code.gson.gson.x1.get(),
+        "gsonVersion" to libs.versions.com.google.code.gson.gson.get(),
         "guiceVersion" to libs.versions.com.google.inject.guice.get(),
         "guavaVersion" to libs.versions.com.google.guava.guava.get(),
         "adventureApiVersion" to libs.versions.net.kyori.adventure.api.get(),

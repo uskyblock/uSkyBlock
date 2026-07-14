@@ -4,29 +4,21 @@ plugins {
 }
 
 dependencies {
-    api(project(":po-utils"))
+    api(projects.poUtils)
     api(libs.org.spigotmc.spigot.api)
     api(libs.net.milkbowl.vault.vaultapi)
     api(libs.net.kyori.adventure.api)
     implementation(libs.net.kyori.adventure.text.serializer.gson)
-    testImplementation(libs.org.hamcrest.hamcrest.core)
-    testImplementation(libs.org.hamcrest.hamcrest.library)
-    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
-    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
-    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
+    testImplementation(libs.org.hamcrest.hamcrest)
     testImplementation(libs.org.mockito.mockito.core)
     testImplementation(libs.com.google.code.gson.gson)
 
     testFixturesApi(libs.org.spigotmc.spigot.api)
     testFixturesApi(libs.org.mockito.mockito.core)
-    testFixturesApi(libs.org.hamcrest.hamcrest.library)
+    testFixturesApi(libs.org.hamcrest.hamcrest)
 }
 
 description = "bukkit-utils"
-
-java {
-    withJavadocJar()
-}
 
 val testsJar by tasks.registering(Jar::class) {
     archiveClassifier = "tests"
