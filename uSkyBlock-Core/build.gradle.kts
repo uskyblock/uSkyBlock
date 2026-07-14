@@ -36,9 +36,20 @@ dependencies {
         isTransitive = false
     }
     compileOnly(libs.org.mvplugins.multiverse.inventories.multiverse.inventories)
-    compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
+    // WorldEdit/WorldGuard are provided by the server at runtime; we only compile against their API.
+    // Their published metadata strict-pins bundled libraries the server already ships (guava, gson),
+    // and WorldGuard drags in its own older WorldEdit lineage. Exclude both so a single WorldEdit
+    // (our version) and the catalog's guava/gson win the compile classpath instead of conflicting.
+    compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit) {
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
     testImplementation(libs.com.sk89q.worldedit.worldedit.bukkit)
-    compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
+    compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit) {
+        exclude(group = "com.sk89q.worldedit")
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
     compileOnly(libs.com.google.guava.guava)
     compileOnly(libs.com.google.code.gson.gson)
     compileOnly(libs.net.kyori.adventure.api)
