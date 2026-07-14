@@ -103,12 +103,12 @@ public class BiomeCommand extends RequireIslandCommand {
 
             if (args.length == 2 && args[1].matches("[0-9]+")) {
                 int radius = Integer.parseInt(args[1], 10);
-                minP = BlockVector3.at(Math.max(location.getBlockX() - radius, minP.getBlockX()),
-                    Math.max(location.getBlockY() - radius, minP.getBlockY()),
-                    Math.max(location.getBlockZ() - radius, minP.getBlockZ()));
-                maxP = BlockVector3.at(Math.min(location.getBlockX() + radius, maxP.getBlockX()),
-                    Math.min(location.getBlockY() + radius, maxP.getBlockY()),
-                    Math.min(location.getBlockZ() + radius, maxP.getBlockZ()));
+                minP = BlockVector3.at(Math.max(location.getBlockX() - radius, minP.x()),
+                    Math.max(location.getBlockY() - radius, minP.y()),
+                    Math.max(location.getBlockZ() - radius, minP.z()));
+                maxP = BlockVector3.at(Math.min(location.getBlockX() + radius, maxP.x()),
+                    Math.min(location.getBlockY() + radius, maxP.y()),
+                    Math.min(location.getBlockZ() + radius, maxP.z()));
                 changeEntireIslandBiome = false;
                 sendTr(player, "The pixies are busy changing the biome near you to <biome>, be patient.",
                     unparsed("biome", biomeKey, PRIMARY));

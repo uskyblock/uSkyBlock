@@ -91,12 +91,12 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
 
     private IslandScore calculateScore(ProtectedRegion region, List<ChunkSnapshot> snapshotsOverworld, ProtectedRegion netherRegion, List<ChunkSnapshot> snapshotsNether) {
         final BlockCountCollection counts = new BlockCountCollection(scoreMap);
-        int minX = region.getMinimumPoint().getBlockX();
-        int maxX = region.getMaximumPoint().getBlockX();
-        int minY = region.getMinimumPoint().getBlockY();
-        int maxY = region.getMaximumPoint().getBlockY();
-        int minZ = region.getMinimumPoint().getBlockZ();
-        int maxZ = region.getMaximumPoint().getBlockZ();
+        int minX = region.getMinimumPoint().x();
+        int maxX = region.getMaximumPoint().x();
+        int minY = region.getMinimumPoint().y();
+        int maxY = region.getMaximumPoint().y();
+        int minZ = region.getMinimumPoint().z();
+        int maxZ = region.getMaximumPoint().z();
 
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
@@ -120,10 +120,10 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         IslandScore islandScore = createIslandScore(counts);
         if (islandScore.getScore() >= activateNetherAtLevel && netherRegion != null && snapshotsNether != null) {
             // Add nether levels
-            minX = netherRegion.getMinimumPoint().getBlockX();
-            maxX = netherRegion.getMaximumPoint().getBlockX();
-            minZ = netherRegion.getMinimumPoint().getBlockZ();
-            maxZ = netherRegion.getMaximumPoint().getBlockZ();
+            minX = netherRegion.getMinimumPoint().x();
+            maxX = netherRegion.getMaximumPoint().x();
+            minZ = netherRegion.getMinimumPoint().z();
+            maxZ = netherRegion.getMaximumPoint().z();
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
                     ChunkSnapshot chunk = getChunkSnapshot(x >> 4, z >> 4, snapshotsNether);
