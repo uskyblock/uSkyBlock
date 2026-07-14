@@ -3,13 +3,9 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":uSkyBlock-Core"))
+    compileOnly(projects.uSkyBlockCore)
     compileOnly(libs.org.spigotmc.spigot.api)
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
-
-    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
-    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
-    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
 }
 
 description = "uSkyBlock live-server integration-test driver and result classifier"

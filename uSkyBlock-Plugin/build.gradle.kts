@@ -4,8 +4,8 @@ import org.gradle.api.GradleException
 
 plugins {
     id("buildlogic.java-conventions")
-    id("io.papermc.hangar-publish-plugin") version "0.1.4"
-    id("com.modrinth.minotaur") version "2.9.0"
+    alias(libs.plugins.hangar.publish)
+    alias(libs.plugins.minotaur)
     alias(libs.plugins.shadow)
 }
 
@@ -17,17 +17,17 @@ val shade by configurations.creating {
 
 dependencies {
     // Modules that should be included inside the final jar
-    shade(project(":uSkyBlock-API")) { isTransitive = false }
-    shade(project(":uSkyBlock-APIv2")) { isTransitive = false }
-    shade(project(":uSkyBlock-Core")) { isTransitive = false }
-    shade(project(":uSkyBlock-FAWE")) { isTransitive = false }
-    shade(project(":uSkyBlock-PAPI")) { isTransitive = false }
-    shade(project(":bukkit-utils")) { isTransitive = false }
-    shade(project(":po-utils")) { isTransitive = false }
+    shade(projects.uSkyBlockAPI) { isTransitive = false }
+    shade(projects.uSkyBlockAPIv2) { isTransitive = false }
+    shade(projects.uSkyBlockCore) { isTransitive = false }
+    shade(projects.uSkyBlockFAWE) { isTransitive = false }
+    shade(projects.uSkyBlockPAPI) { isTransitive = false }
+    shade(projects.bukkitUtils) { isTransitive = false }
+    shade(projects.poUtils) { isTransitive = false }
 
     // External dependencies to be shaded
-    shade("io.papermc:paperlib:${libs.versions.io.papermc.paperlib.get()}") { isTransitive = false }
-    shade("org.bstats:bstats-bukkit:${libs.versions.org.bstats.bstats.bukkit.get()}") { isTransitive = true }
+    shade(libs.io.papermc.paperlib) { isTransitive = false }
+    shade(libs.org.bstats.bstats.bukkit) { isTransitive = true }
 }
 
 description = "uSkyBlock-Plugin"

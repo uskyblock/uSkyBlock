@@ -11,15 +11,7 @@ dependencies {
     api(libs.net.kyori.adventure.api)
     api(libs.net.kyori.adventure.text.minimessage)
     implementation(libs.net.kyori.adventure.text.serializer.legacy)
-    testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
-    testRuntimeOnly(libs.org.junit.jupiter.junit.jupiter.engine)
-    testRuntimeOnly(libs.org.junit.platform.junit.platform.launcher)
     testImplementation(libs.org.hamcrest.hamcrest)
-    testImplementation(libs.org.hamcrest.hamcrest.library.x1)
 }
 
 description = "po-utils"
-
-java {
-    withJavadocJar()
-}

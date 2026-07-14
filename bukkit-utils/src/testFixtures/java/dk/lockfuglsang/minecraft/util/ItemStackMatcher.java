@@ -2,7 +2,6 @@ package dk.lockfuglsang.minecraft.util;
 
 import org.bukkit.inventory.ItemStack;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
@@ -32,17 +31,14 @@ public class ItemStackMatcher extends TypeSafeDiagnosingMatcher<ItemStack> {
         description.appendText(expected);
     }
 
-    @Factory
     public static ItemStackMatcher itemStack(ItemStack expected) {
         return new ItemStackMatcher(expected);
     }
 
-    @Factory
     public static Matcher<Iterable<? extends ItemStack>> itemStacks(Collection<ItemStack> items) {
         return itemStacks(items.toArray(new ItemStack[0]));
     }
 
-    @Factory
     public static Matcher<Iterable<? extends ItemStack>> itemStacks(ItemStack... items) {
         List<Matcher<? super ItemStack>> matchers = new ArrayList<>();
         for (ItemStack item : items) {
