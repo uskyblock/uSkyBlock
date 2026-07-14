@@ -70,12 +70,9 @@ validate_lane() {
   esac
 }
 validate_lane "${LANE}"
-if ! command -v xgettext >/dev/null 2>&1; then
-  for gettext_bin in /opt/homebrew/opt/gettext/bin /usr/local/opt/gettext/bin /usr/local/bin; do
-    if [[ -x "${gettext_bin}/xgettext" ]]; then export PATH="${gettext_bin}:${PATH}"; break; fi
-  done
-fi
-for command in java curl jq shasum xgettext; do
+# The plugin jar (:uSkyBlock-Plugin:shadowJar) builds the i18n bundle natively, so the harness no
+# longer needs the gettext toolchain; only the `translation` task does (see docs/developers.md).
+for command in java curl jq shasum; do
   if ! command -v "${command}" >/dev/null 2>&1; then
     echo "Required command is unavailable: ${command}" >&2
     exit "${HARNESS_ERROR}"
