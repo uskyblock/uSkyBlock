@@ -10,7 +10,7 @@ plugins {
 }
 
 // A dedicated configuration that will be the *only* input to shadowJar
-val shade by configurations.creating {
+val shade = configurations.create("shade") {
     isCanBeResolved = true
     isCanBeConsumed = false
 }
