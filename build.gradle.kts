@@ -20,7 +20,7 @@ tasks.runServer {
     pluginJars.from(shaded.flatMap { it.archiveFile })
 
     downloadPlugins {
-        url("https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.4.0/PAPER/worldedit-bukkit-7.4.0.jar")
+        url("https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.4.2/PAPER/worldedit-bukkit-7.4.2.jar")
         url("https://cdn.modrinth.com/data/DKY9btbd/versions/WaElxvDz/worldguard-bukkit-7.0.15.jar")
     }
 }

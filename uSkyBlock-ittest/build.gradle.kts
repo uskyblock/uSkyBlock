@@ -5,7 +5,13 @@ plugins {
 dependencies {
     compileOnly(projects.uSkyBlockCore)
     compileOnly(libs.org.spigotmc.spigot.api)
-    compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
+    // See uSkyBlock-Core: WorldGuard is server-provided; drop its bundled WorldEdit lineage and the
+    // guava/gson the server ships so its strict metadata pins don't conflict on the compile classpath.
+    compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit) {
+        exclude(group = "com.sk89q.worldedit")
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
 }
 
 description = "uSkyBlock live-server integration-test driver and result classifier"
