@@ -20,7 +20,7 @@ dependencies {
 
 description = "bukkit-utils"
 
-val testsJar by tasks.registering(Jar::class) {
+val testsJar = tasks.register<Jar>("testsJar") {
     archiveClassifier = "tests"
     from(sourceSets["test"].output)
 }
