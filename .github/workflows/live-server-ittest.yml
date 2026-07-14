@@ -1,8 +1,16 @@
 name: Live-server integration harness
 
 on:
+  # Nightly: the canary lane only. It tracks the newest AVAILABLE Paper build, so an
+  # upstream break can surface with zero commits of ours. The pinned stable lanes run
+  # on every push and PR, so re-running them on a timer would add nothing.
   schedule:
     - cron: '17 3 * * *'
+  # Every push to master and every PR runs the four pinned stable lanes (no path
+  # filter - a change anywhere can regress runtime behaviour the harness exercises).
+  push:
+    branches: [master]
+  pull_request:
   workflow_dispatch:
     inputs:
       lane:
@@ -28,16 +36,49 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  # Supersede an in-progress run only for pull requests, where a fresh push makes the
+  # older run obsolete. Push/schedule/dispatch runs are never cancelled; keying on the
+  # event name as well keeps those event types from serialising against each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  live_server:
-    # The nightly runs unconditionally: the paper-canary lane tracks the newest available Paper
-    # build, so an upstream break can surface with zero commits of ours - gating on recent commits
-    # would blind exactly the lane that exists to catch it.
+  # Resolve which lanes this event should run:
+  #   schedule                -> paper-canary only (upstream early-warning)
+  #   push (master) / PR      -> the four pinned stable lanes
+  #   workflow_dispatch       -> the dispatched lane, or all five for 'all'
+  select-lanes:
     if: github.repository_owner == 'uskyblock'
+    runs-on: ubuntu-24.04
+    outputs:
+      lanes: ${{ steps.select.outputs.lanes }}
+    steps:
+      - name: Select lanes
+        id: select
+        env:
+          DISPATCH_LANE: ${{ inputs.lane }}
+        run: |
+          case "${{ github.event_name }}" in
+            schedule)
+              lanes='["paper-canary"]' ;;
+            workflow_dispatch)
+              if [[ "${DISPATCH_LANE}" == "all" ]]; then
+                lanes='["paper-min","paper-max","spigot-min","spigot-max","paper-canary"]'
+              else
+                lanes="[\"${DISPATCH_LANE}\"]"
+              fi ;;
+            *)
+              lanes='["paper-min","paper-max","spigot-min","spigot-max"]' ;;
+          esac
+          echo "lanes=${lanes}" >> "${GITHUB_OUTPUT}"
+
+  live_server:
+    needs: select-lanes
     strategy:
       fail-fast: false
       matrix:
-        lane: [paper-min, paper-max, spigot-min, spigot-max, paper-canary]
+        lane: ${{ fromJSON(needs.select-lanes.outputs.lanes) }}
     runs-on: ubuntu-24.04
     # Generous: a cold Spigot BuildTools compile plus two boot/scenario phases with long anti-flake
     # deadlines. Public-repo standard runners are unbilled, so favour reliability over wall-clock.
@@ -59,7 +100,7 @@ jobs:
 
       - name: Cache harness downloads and Spigot builds
         # Persists Paper/WorldEdit/WorldGuard jars, BuildTools, and compiled Spigot server jars
-        # across nightly runs. Keyed per lane and on the pinned version inputs, so the expensive,
+        # across runs. Keyed per lane and on the pinned version inputs, so the expensive,
         # network-heavy Spigot BuildTools compile only re-runs when those change. ~/.m2 caches
         # BuildTools' own Maven downloads to make a cold compile faster and less flaky.
         uses: actions/cache@v4
@@ -73,7 +114,6 @@ jobs:
 
       - name: Run ${{ matrix.lane }}
         id: harness
-        if: github.event_name == 'schedule' || inputs.lane == 'all' || inputs.lane == matrix.lane
         continue-on-error: true
         env:
           OVERRIDE_MINECRAFT: ${{ inputs.minecraft_version }}
@@ -111,8 +151,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Enforce harness outcome
-        # Supported (pinned) lanes hard-fail: a red run there is always our regression. A lane that
-        # was not selected on dispatch is 'skipped' (not 'failure') and must not fail the job. The
+        # Supported (pinned) lanes hard-fail: a red run there is always our regression. The
         # paper-canary lane is handled below - it warns instead of failing the build.
         if: matrix.lane != 'paper-canary' && steps.harness.outcome == 'failure'
         run: |
