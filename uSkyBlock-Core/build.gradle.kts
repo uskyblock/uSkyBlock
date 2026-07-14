@@ -57,7 +57,7 @@ dependencies {
     compileOnly(libs.net.kyori.adventure.text.minimessage)
     compileOnly(libs.net.kyori.adventure.text.serializer.legacy)
     compileOnly(libs.org.apache.commons.commons.lang3)
-    compileOnly(libs.org.apache.httpcomponents.httpclient)
+    compileOnly(libs.org.apache.httpcomponents.client5.httpclient5)
     compileOnly(libs.org.apache.maven.maven.artifact)
 }
 
@@ -149,7 +149,7 @@ tasks.processResources {
         "adventureApiVersion" to libs.versions.net.kyori.adventure.api.get(),
         "adventureBukkitVersion" to libs.versions.net.kyori.adventure.platform.bukkit.get(),
         "apacheCommonsVersion" to libs.versions.org.apache.commons.commons.lang3.get(),
-        "apacheHttpVersion" to libs.versions.org.apache.httpcomponents.httpclient.get(),
+        "apacheHttpVersion" to libs.versions.org.apache.httpcomponents.client5.httpclient5.get(),
         "mavenArtifactVersion" to libs.versions.org.apache.maven.maven.artifact.get(),
         "sqliteVersion" to libs.versions.org.xerial.sqlite.jdbc.get()
     )
