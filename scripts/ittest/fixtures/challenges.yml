@@ -1,38 +1,27 @@
-allowChallenges: true
-challengeSharing: island
-broadcastCompletion: false
-requirePreviousRank: false
-rankLeeway: 0
-defaultResetInHours: 0
-radius: 10
-repeatLimit: 0
-challengeColor: '&e'
-finishedColor: '&2'
-repeatableColor: '&a'
-enableEconomyPlugin: false
-resetChallengesOnCreate: false
-lockedDisplayItem: barrier
-showLockedChallengeName: true
-merge-ignore:
-  - ranks
+# Harness fixture challenge catalog (schemaVersion 1). The live-server harness deploys this
+# as plugins/uSkyBlock/challenges.yml. It defines the single challenge the scenarios exercise:
+# `ittest_trade` hands in 5 stone (consumed on completion) for a deterministic 2-emerald reward.
+# No unlock requirements, so a fresh-island fixture player can complete it immediately.
+schemaVersion: 1
 ranks:
-  Integration:
-    name: Integration fixture
-    displayItem: emerald
-    resetInHours: 0
+  integration:
+    display:
+      name: "<green>Integration fixture"
+    lockedDisplayItem: "minecraft:barrier"
     challenges:
       ittest_trade:
-        name: Integration inventory trade
-        description: Trade five stone while preserving unrelated inventory.
-        type: onPlayer
-        requiredItems:
-          - stone:5
-        takeItems: true
-        displayItem: emerald
-        resetInHours: 0
-        reward:
-          text: two emeralds
-          items:
-            - emerald:2
-          xp: 0
-version: 107
+        display:
+          name: "<yellow>Integration inventory trade"
+          description: "Trade five stone while preserving unrelated inventory."
+          item: "minecraft:emerald"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 5
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 2

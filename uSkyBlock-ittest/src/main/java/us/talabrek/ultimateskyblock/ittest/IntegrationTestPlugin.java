@@ -18,10 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.challenge.Challenge;
-import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
-import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
+import us.talabrek.ultimateskyblock.challenge.ChallengeText;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
+import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -57,7 +57,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     static final String PLAYER_NAME = "UsbItPlayer";
     static final UUID PLAYER_UUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
     static final String SCHEME_ID = "ittest";
-    static final ChallengeKey CHALLENGE_ID = ChallengeKey.of("ittest_trade");
+    static final ChallengeId CHALLENGE_ID = ChallengeId.of("ittest_trade");
     private static final Duration SETUP_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
@@ -209,7 +209,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                         "sky nether world does not use the uSkyBlock generator");
                 }
                 check(usb.getRuntimeConfigs().current().islandScheme(SCHEME_ID) != null, "fixture scheme was not loaded");
-                check(usb.getChallengeLogic().getChallengeById(CHALLENGE_ID).isPresent(), "fixture challenge was not loaded");
+                check(usb.getChallengeLogic().getDefinitionById(CHALLENGE_ID).isPresent(), "fixture challenge was not loaded");
                 Path schematic = usb.getDataFolder().toPath().resolve("schematics/ittest.schematic");
                 check(Files.isRegularFile(schematic) && Files.isReadable(schematic), "fixture schematic is missing or unreadable");
                 String expectedRevision = System.getProperty("uskyblock.ittest.fixtureRevision", "1");
@@ -291,11 +291,11 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             Location home = playerInfo.getHomeLocation();
             check(validLocation(home) && player.teleport(home), "could not place player on its island");
             ChallengeLogic logic = usb.getChallengeLogic();
-            Challenge challenge = logic.getChallengeById(CHALLENGE_ID).orElseThrow();
+            check(logic.getDefinitionById(CHALLENGE_ID).isPresent(), "fixture challenge was not loaded");
             player.getInventory().clear();
             player.getInventory().addItem(new ItemStack(Material.STONE, 5));
             player.getInventory().addItem(new ItemStack(Material.DIAMOND, 3));
-            logic.completeChallenge(player, challenge.getId());
+            logic.completeChallenge(player, CHALLENGE_ID);
             scenario.await(() -> logic.checkChallenge(playerInfo, CHALLENGE_ID) == 1, Duration.ofSeconds(15), () -> {
                 check(count(player, Material.STONE) == 0, "required items were not consumed");
                 check(count(player, Material.EMERALD) == 2, "deterministic item reward was not delivered");
@@ -304,7 +304,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 check(logic.checkChallenge(playerInfo, CHALLENGE_ID) == 1,
                     "challenge completion was not readable through the service after a save/reload");
                 Properties state = readState();
-                state.setProperty("challengeId", CHALLENGE_ID.id());
+                state.setProperty("challengeId", CHALLENGE_ID.value());
                 state.setProperty("challengeCompletions", "1");
                 writeState(state);
                 scenario.pass("challenge completion, item consumption, reward, and unrelated inventory verified");
@@ -335,7 +335,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 Block marker = markerWorld.getBlockAt(integer(state, "marker.x"), integer(state, "marker.y"), integer(state, "marker.z"));
                 check(marker.getType().getKey().toString().equals(requireProperty(state, "marker.material")),
                     "schematic marker did not survive restart");
-                ChallengeKey challengeId = ChallengeKey.of(requireProperty(state, "challengeId"));
+                ChallengeId challengeId = ChallengeId.of(requireProperty(state, "challengeId"));
                 int expected = integer(state, "challengeCompletions");
                 check(usb.getChallengeLogic().checkChallenge(playerInfo, challengeId) == expected,
                     "challenge completion count did not survive restart");
@@ -346,12 +346,12 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         private void secondarySmokes(Scenario scenario) {
             uSkyBlock usb = requireUsb();
             ChallengeLogic logic = usb.getChallengeLogic();
-            List<ChallengeKey> ids = logic.getAllChallengeIds();
+            List<ChallengeId> ids = logic.getAllChallengeIds();
             check(!ids.isEmpty(), "no challenges were parsed");
-            for (ChallengeKey id : ids) check(logic.getChallengeById(id).isPresent(), "challenge index could not resolve " + id.id());
-            Challenge fixture = logic.getChallengeById(CHALLENGE_ID).orElseThrow();
-            ChallengeCompletion completion = new ChallengeCompletion(CHALLENGE_ID, null, 0, 0);
-            ItemStack display = fixture.getDisplayItem(completion, false);
+            for (ChallengeId id : ids) check(logic.getDefinitionById(id).isPresent(), "challenge index could not resolve " + id.value());
+            ChallengeDefinition fixture = logic.getDefinitionById(CHALLENGE_ID).orElseThrow();
+            ItemStack display = fixture.display().displayItem().create(
+                ChallengeText.plain(fixture.display().name()), ChallengeText.plain(fixture.display().description()));
             check(display.getType() != Material.AIR && display.hasItemMeta(), "challenge display item has unusable metadata");
             var schemes = usb.getRuntimeConfigs().current().islandSchemes();
             check(!schemes.isEmpty(), "no island schematics were configured");
