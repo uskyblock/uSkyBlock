@@ -63,7 +63,7 @@ public class SkyUpdateChecker implements UpdateChecker {
 
             if (isUpdateAvailable()) {
                 logger.info("There is a new version of uSkyBlock available: " + getLatestVersion());
-                logger.info("Visit https://www.uskyblock.ovh/get to download.");
+                logger.info("Visit https://uskyblock.github.io/ to download.");
             }
         });
     }
