@@ -16,7 +16,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +55,21 @@ public enum ItemStackUtil {
     private static final Pattern BLOCK_REQUIREMENT_PATTERN = Pattern.compile(
         "(?<type>(minecraft:)?[0-9A-Za-z_]+(\\[.*])?):(?<amount>\\d+)"
     );
+    private static final Logger log = Logger.getLogger(ItemStackUtil.class.getName());
+
+    // How this server accepts component-native item names/lore, resolved once on first use.
+    private enum ComponentStrategy { NATIVE, UNSAFE_WITH_KEY, UNSAFE_NO_KEY, LEGACY_ONLY }
+
+    // Paper exposes native Adventure setters on ItemMeta; Spigot does not (the methods are absent).
+    // Looked up against the runtime Component, so if native detection ever fails on a Paper server
+    // we simply fall back to the unsafe path below rather than misbehaving.
+    private static final Method NATIVE_DISPLAY_NAME = findItemMetaMethod("displayName", Component.class);
+    private static final Method NATIVE_LORE = findItemMetaMethod("lore", List.class);
+
+    // Lazy so the unsafe probe only runs on a live server, never at class-load (e.g. in tests).
+    private static final class StrategyHolder {
+        private static final ComponentStrategy STRATEGY = resolveComponentStrategy();
+    }
 
     @NotNull
     public static BlockRequirement createBlockRequirement(@NotNull String specification) {
@@ -231,7 +249,11 @@ public enum ItemStackUtil {
         if (itemMeta != null && itemMeta.hasDisplayName() && !itemMeta.getDisplayName().trim().isEmpty()) {
             return fromLegacy(itemMeta.getDisplayName());
         } else {
-            return Component.translatable(stack.getTranslationKey());
+            // Resolve the key from the item's Material rather than the ItemStack: on Paper 26.2+
+            // ItemStack.getTranslationKey() delegates through a lazily-created craftDelegate that is
+            // null for Bukkit-constructed stacks during plugin enable, throwing NPE (issue #163).
+            // Material.getTranslationKey() resolves from the registry, so it is total and NPE-safe.
+            return Component.translatable(stack.getType().getTranslationKey());
         }
     }
 
@@ -263,7 +285,7 @@ public enum ItemStackUtil {
         // Keep legacy API consumers working while also preserving translation keys for clients.
         itemMeta.setDisplayName(legacy(name));
         itemStack.setItemMeta(itemMeta);
-        applyUnsafeDisplayName(itemStack, name);
+        applyRichDisplayName(itemStack, name);
     }
 
     public static void setComponentLore(@NotNull ItemStack itemStack, @Nullable List<Component> lore) {
@@ -284,23 +306,89 @@ public enum ItemStackUtil {
         // Keep legacy API consumers working while also preserving translation keys for clients.
         itemMeta.setLore(legacyLore);
         itemStack.setItemMeta(itemMeta);
-        applyUnsafeLore(itemStack, normalizedLore);
+        applyRichLore(itemStack, normalizedLore);
+    }
+
+    private static void applyRichDisplayName(@NotNull ItemStack itemStack, @NotNull Component name) {
+        switch (StrategyHolder.STRATEGY) {
+            case NATIVE -> applyNative(itemStack, NATIVE_DISPLAY_NAME, name);
+            case UNSAFE_WITH_KEY, UNSAFE_NO_KEY ->
+                applyUnsafe(itemStack, "[custom_name=" + GSON_COMPONENT_SERIALIZER.serialize(name) + "]");
+            case LEGACY_ONLY -> { /* legacy display name already set by the caller */ }
+        }
+    }
+
+    private static void applyRichLore(@NotNull ItemStack itemStack, @NotNull List<Component> lore) {
+        switch (StrategyHolder.STRATEGY) {
+            case NATIVE -> applyNative(itemStack, NATIVE_LORE, lore);
+            case UNSAFE_WITH_KEY, UNSAFE_NO_KEY -> {
+                String loreEntries = lore.stream().map(GSON_COMPONENT_SERIALIZER::serialize).collect(joining(","));
+                applyUnsafe(itemStack, "[lore=[" + loreEntries + "]]");
+            }
+            case LEGACY_ONLY -> { /* legacy lore already set by the caller */ }
+        }
+    }
+
+    private static void applyNative(@NotNull ItemStack itemStack, @NotNull Method setter, @NotNull Object value) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+        try {
+            setter.invoke(itemMeta, value);
+            itemStack.setItemMeta(itemMeta);
+        } catch (ReflectiveOperationException e) {
+            // Setter was present but rejected the value - keep the legacy baseline from the caller.
+            log.log(Level.WARNING, "Failed to apply component-native item metadata", e);
+        }
     }
 
     @SuppressWarnings("deprecation")
-    private static void applyUnsafeDisplayName(@NotNull ItemStack itemStack, @NotNull Component name) {
-        String nameJson = GSON_COMPONENT_SERIALIZER.serialize(name);
-        String args = itemStack.getType().getKey() + "[custom_name=" + nameJson + "]";
+    private static void applyUnsafe(@NotNull ItemStack itemStack, @NotNull String components) {
+        String args = StrategyHolder.STRATEGY == ComponentStrategy.UNSAFE_WITH_KEY
+            ? itemStack.getType().getKey() + components
+            : components;
         Bukkit.getUnsafe().modifyItemStack(itemStack, args);
     }
 
+    private static Method findItemMetaMethod(@NotNull String name, @NotNull Class<?> parameterType) {
+        try {
+            return ItemMeta.class.getMethod(name, parameterType);
+        } catch (NoSuchMethodException e) {
+            return null; // no native Adventure item metadata on this platform (e.g. Spigot)
+        }
+    }
+
+    private static ComponentStrategy resolveComponentStrategy() {
+        if (NATIVE_DISPLAY_NAME != null && NATIVE_LORE != null) {
+            return ComponentStrategy.NATIVE; // Paper: stable Adventure ItemMeta setters
+        }
+        // No native API. Probe the unsafe component string, trying the key-prefixed form first so
+        // servers that accept it (Spigot, which swallows and logs parse failures) never hit an error
+        // path. A server that prepends the key itself rejects that form and falls through to no-key.
+        if (unsafeApplies(true)) {
+            return ComponentStrategy.UNSAFE_WITH_KEY; // Spigot any version, Paper < 26.1
+        }
+        if (unsafeApplies(false)) {
+            return ComponentStrategy.UNSAFE_NO_KEY; // server prepends the item key itself (Paper >= 26.1)
+        }
+        log.severe("Server accepts neither native nor unsafe item components; item names and lore "
+            + "will use legacy text only (translation keys are lost).");
+        return ComponentStrategy.LEGACY_ONLY;
+    }
+
     @SuppressWarnings("deprecation")
-    private static void applyUnsafeLore(@NotNull ItemStack itemStack, @NotNull List<Component> lore) {
-        String loreEntries = lore.stream()
-            .map(GSON_COMPONENT_SERIALIZER::serialize)
-            .collect(joining(","));
-        String args = itemStack.getType().getKey() + "[lore=[" + loreEntries + "]]";
-        Bukkit.getUnsafe().modifyItemStack(itemStack, args);
+    private static boolean unsafeApplies(boolean withKey) {
+        ItemStack probe = new ItemStack(Material.STONE);
+        String components = "[custom_name={\"text\":\"probe\"}]";
+        String args = withKey ? probe.getType().getKey() + components : components;
+        try {
+            Bukkit.getUnsafe().modifyItemStack(probe, args);
+        } catch (Throwable t) {
+            return false; // wrong format: the server threw
+        }
+        ItemMeta meta = probe.getItemMeta();
+        return meta != null && meta.hasDisplayName(); // a swallowed failure leaves the name unset
     }
 
     @Contract(pure = true)

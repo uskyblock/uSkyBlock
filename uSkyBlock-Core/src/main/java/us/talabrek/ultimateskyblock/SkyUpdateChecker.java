@@ -3,12 +3,14 @@ package us.talabrek.ultimateskyblock;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,33 +87,47 @@ public class SkyUpdateChecker implements UpdateChecker {
         CompletableFuture<String> future = new CompletableFuture<>();
         future.completeAsync(() -> {
             String userAgent = "uSkyBlock-Plugin/v" + getCurrentVersion() + " (www.uskyblock.ovh)";
-            try (var httpclient = HttpClients.custom().setUserAgent(userAgent).build()) {
+            Timeout timeout = Timeout.ofSeconds(10);
+            ConnectionConfig connectionConfig = ConnectionConfig.custom()
+                .setConnectTimeout(timeout)
+                .setSocketTimeout(timeout)
+                .build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(timeout)
+                .build();
+            var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connectionConfig)
+                .build();
 
-                int CONNECTION_TIMEOUT_MS = 10 * 1000; // Timeout in millis.
-                RequestConfig requestConfig = RequestConfig.custom()
-                    .setConnectionRequestTimeout(CONNECTION_TIMEOUT_MS)
-                    .setConnectTimeout(CONNECTION_TIMEOUT_MS)
-                    .setSocketTimeout(CONNECTION_TIMEOUT_MS)
-                    .build();
+            try (var httpclient = HttpClients.custom()
+                .setUserAgent(userAgent)
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
+                .build()) {
 
                 HttpGet request = new HttpGet(uri);
-                request.setConfig(requestConfig);
-                HttpResponse response = httpclient.execute(request);
-                HttpEntity entity = response.getEntity();
-
-                int status = response.getStatusLine().getStatusCode();
-                if (status < 200 || status >= 300) {
-                    return null;
-                }
-
-                if (entity != null) {
-                    JsonObject obj = gson.fromJson(EntityUtils.toString(entity), JsonObject.class);
-                    if (obj.has("version")) {
-                        return obj.get("version").getAsString();
+                return httpclient.execute(request, response -> {
+                    int status = response.getCode();
+                    if (status < 200 || status >= 300) {
+                        return null;
                     }
-                }
+
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        JsonObject obj = gson.fromJson(EntityUtils.toString(entity), JsonObject.class);
+                        if (obj.has("version")) {
+                            return obj.get("version").getAsString();
+                        }
+                    }
+                    return null;
+                });
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Exception while trying to fetch latest plugin version.", ex);
+                // This runs asynchronously and can still be in flight when the server shuts down or
+                // restarts, tearing down the plugin classloader mid-request. Such a failure is expected
+                // and not actionable, so only surface it while the plugin is actually enabled.
+                if (plugin.isEnabled()) {
+                    logger.log(Level.SEVERE, "Exception while trying to fetch latest plugin version.", ex);
+                }
             }
 
             return null;

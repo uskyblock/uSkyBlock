@@ -4,29 +4,30 @@ import org.gradle.api.GradleException
 
 plugins {
     id("buildlogic.java-conventions")
-    id("io.papermc.hangar-publish-plugin") version "0.1.4"
+    alias(libs.plugins.hangar.publish)
+    alias(libs.plugins.minotaur)
     alias(libs.plugins.shadow)
 }
 
 // A dedicated configuration that will be the *only* input to shadowJar
-val shade by configurations.creating {
+val shade = configurations.create("shade") {
     isCanBeResolved = true
     isCanBeConsumed = false
 }
 
 dependencies {
     // Modules that should be included inside the final jar
-    shade(project(":uSkyBlock-API")) { isTransitive = false }
-    shade(project(":uSkyBlock-APIv2")) { isTransitive = false }
-    shade(project(":uSkyBlock-Core")) { isTransitive = false }
-    shade(project(":uSkyBlock-FAWE")) { isTransitive = false }
-    shade(project(":uSkyBlock-PAPI")) { isTransitive = false }
-    shade(project(":bukkit-utils")) { isTransitive = false }
-    shade(project(":po-utils")) { isTransitive = false }
+    shade(projects.uSkyBlockAPI) { isTransitive = false }
+    shade(projects.uSkyBlockAPIv2) { isTransitive = false }
+    shade(projects.uSkyBlockCore) { isTransitive = false }
+    shade(projects.uSkyBlockFAWE) { isTransitive = false }
+    shade(projects.uSkyBlockPAPI) { isTransitive = false }
+    shade(projects.bukkitUtils) { isTransitive = false }
+    shade(projects.poUtils) { isTransitive = false }
 
     // External dependencies to be shaded
-    shade("io.papermc:paperlib:${libs.versions.io.papermc.paperlib.get()}") { isTransitive = false }
-    shade("org.bstats:bstats-bukkit:${libs.versions.org.bstats.bstats.bukkit.get()}") { isTransitive = true }
+    shade(libs.io.papermc.paperlib) { isTransitive = false }
+    shade(libs.org.bstats.bstats.bukkit) { isTransitive = true }
 }
 
 description = "uSkyBlock-Plugin"
@@ -109,5 +110,44 @@ hangarPublish {
                 platformVersions.set(minecraftVersions)
             }
         }
+    }
+}
+
+val modrinthJarOverride = providers.environmentVariable("MODRINTH_JAR").orNull
+val modrinthVersion = providers.environmentVariable("MODRINTH_VERSION")
+    .orElse(providers.provider { project.version.toString() })
+val modrinthChannel = providers.environmentVariable("MODRINTH_CHANNEL")
+    .orElse(
+        providers.provider {
+            if (project.version.toString().contains('-')) "beta" else "release"
+        }
+    )
+val modrinthChangelog = providers.environmentVariable("MODRINTH_CHANGELOG")
+    .orElse("See the canonical GitHub release notes.")
+
+modrinth {
+    token.set(providers.environmentVariable("MODRINTH_API_TOKEN"))
+    projectId.set("uskyblock")
+    versionNumber.set(modrinthVersion)
+    versionType.set(modrinthChannel)
+    if (modrinthJarOverride != null) {
+        uploadFile.set(rootProject.layout.projectDirectory.file(modrinthJarOverride))
+        autoAddDependsOn.set(false)
+    } else {
+        uploadFile.set(shadowJar.flatMap { it.archiveFile })
+    }
+    gameVersions.set(minecraftVersions)
+    loaders.set(listOf("paper", "spigot"))
+    changelog.set(modrinthChangelog)
+    detectLoaders.set(false)
+}
+
+// Minotaur hardcodes `modrinth.dependsOn(assemble)`, dragging the full build chain
+// (incl. the gettext-dependent extractTranslation) into the task. When publishing a
+// prebuilt release asset, drop those dependencies so the task only uploads the jar
+// (no rebuild, no gettext needed), mirroring the Hangar publish path.
+if (modrinthJarOverride != null) {
+    tasks.named("modrinth") {
+        setDependsOn(emptyList<Any>())
     }
 }

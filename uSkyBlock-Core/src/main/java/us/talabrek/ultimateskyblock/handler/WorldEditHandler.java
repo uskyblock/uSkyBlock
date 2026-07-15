@@ -77,10 +77,10 @@ public class WorldEditHandler {
      */
     public static Set<BlockVector2> getInnerChunks(Region region) {
         Set<BlockVector2> chunks = new HashSet<>();
-        int minX = region.getMinimumPoint().getBlockX();
-        int minZ = region.getMinimumPoint().getBlockZ();
-        int maxX = region.getMaximumPoint().getBlockX();
-        int maxZ = region.getMaximumPoint().getBlockZ();
+        int minX = region.getMinimumPoint().x();
+        int minZ = region.getMinimumPoint().z();
+        int maxX = region.getMaximumPoint().x();
+        int maxZ = region.getMaximumPoint().z();
         int cx = minX & 0xF;
         int cz = minZ & 0xF;
         minX = cx != 0 ? minX - cx + 16 : minX;
@@ -99,10 +99,10 @@ public class WorldEditHandler {
 
     public static Set<BlockVector2> getOuterChunks(Region region) {
         Set<BlockVector2> chunks = new HashSet<>();
-        int minX = region.getMinimumPoint().getBlockX();
-        int minZ = region.getMinimumPoint().getBlockZ();
-        int maxX = region.getMaximumPoint().getBlockX();
-        int maxZ = region.getMaximumPoint().getBlockZ();
+        int minX = region.getMinimumPoint().x();
+        int minZ = region.getMinimumPoint().z();
+        int maxX = region.getMaximumPoint().x();
+        int maxZ = region.getMaximumPoint().z();
         int cx = minX & 0xF;
         int cz = minZ & 0xF;
         minX = minX - cx;
@@ -121,10 +121,10 @@ public class WorldEditHandler {
 
     public static Set<BlockVector2> getChunks(Region region) {
         Set<BlockVector2> chunks = new HashSet<>();
-        int minX = region.getMinimumPoint().getBlockX();
-        int minZ = region.getMinimumPoint().getBlockZ();
-        int maxX = region.getMaximumPoint().getBlockX();
-        int maxZ = region.getMaximumPoint().getBlockZ();
+        int minX = region.getMinimumPoint().x();
+        int minZ = region.getMinimumPoint().z();
+        int maxX = region.getMaximumPoint().x();
+        int maxZ = region.getMaximumPoint().z();
         int cx = minX & 0xF;
         int cz = minZ & 0xF;
         minX = (minX - cx) >> 4;
@@ -181,12 +181,12 @@ public class WorldEditHandler {
         Set<Region> borders = new HashSet<>();
         BlockVector3 min = region.getMinimumPoint();
         BlockVector3 max = region.getMaximumPoint();
-        int minY = min.getBlockY();
-        int maxY = max.getBlockY();
-        int minX = min.getBlockX();
-        int maxX = max.getBlockX();
-        int minZ = min.getBlockZ();
-        int maxZ = max.getBlockZ();
+        int minY = min.y();
+        int maxY = max.y();
+        int minX = min.x();
+        int maxX = max.x();
+        int minZ = min.z();
+        int maxZ = max.z();
 
         int minModX = minX % 16;
         int maxModX = maxX % 16;
@@ -254,7 +254,7 @@ public class WorldEditHandler {
         }
         List<Chunk> chunkList = new ArrayList<>();
         for (BlockVector2 vector : innerChunks) {
-            chunkList.add(islandWorld.getChunkAt(vector.getBlockX(), vector.getBlockZ()));
+            chunkList.add(islandWorld.getChunkAt(vector.x(), vector.z()));
         }
         WorldEditClear weClear = new WorldEditClear(plugin, plugin.getRuntimeConfigs(), islandWorld, borderRegions, onCompletion);
         plugin.getWorldManager().getChunkRegenerator(islandWorld).regenerateChunks(chunkList, weClear);
@@ -276,8 +276,8 @@ public class WorldEditHandler {
         World world = location.getWorld();
         Region cube = getRegion(world, region);
         for (BlockVector2 chunk : cube.getChunks()) {
-            world.unloadChunk(chunk.getBlockX(), chunk.getBlockZ(), true);
-            world.loadChunk(chunk.getBlockX(), chunk.getBlockZ(), false);
+            world.unloadChunk(chunk.x(), chunk.z(), true);
+            world.loadChunk(chunk.x(), chunk.z(), false);
         }
     }
 
@@ -286,7 +286,7 @@ public class WorldEditHandler {
         World world = location.getWorld();
         Region cube = getRegion(world, region);
         for (BlockVector2 chunk : cube.getChunks()) {
-            world.unloadChunk(chunk.getBlockX(), chunk.getBlockZ(), true);
+            world.unloadChunk(chunk.x(), chunk.z(), true);
         }
     }
 
@@ -295,7 +295,7 @@ public class WorldEditHandler {
         World world = location.getWorld();
         Region cube = getRegion(world, region);
         for (BlockVector2 chunk : cube.getChunks()) {
-            world.refreshChunk(chunk.getBlockX(), chunk.getBlockZ());
+            world.refreshChunk(chunk.x(), chunk.z());
         }
     }
 

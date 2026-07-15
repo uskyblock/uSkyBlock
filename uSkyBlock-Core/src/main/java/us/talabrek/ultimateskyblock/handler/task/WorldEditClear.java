@@ -45,25 +45,25 @@ public class WorldEditClear extends IncrementalRunnable {
                 // Z-axis
                 BlockVector3 min = region.getMinimumPoint();
                 BlockVector3 max = region.getMaximumPoint();
-                BlockVector3 pt = BlockVector3.at(max.getX(), max.getY(), max.getZ());
-                pt = pt.withZ(min.getBlockZ());
-                while (pt.getBlockZ() < max.getBlockZ()) {
-                    int dz = Math.min(INCREMENT, Math.abs(max.getBlockZ() - pt.getBlockZ()));
+                BlockVector3 pt = BlockVector3.at(max.x(), max.y(), max.z());
+                pt = pt.withZ(min.z());
+                while (pt.z() < max.z()) {
+                    int dz = Math.min(INCREMENT, Math.abs(max.z() - pt.z()));
                     pt = pt.add(0, 0, dz);
                     list.add(new CuboidRegion(min, pt));
-                    min = min.withZ(pt.getZ());
+                    min = min.withZ(pt.z());
                 }
             } else {
                 // X-axis
                 BlockVector3 min = region.getMinimumPoint();
                 BlockVector3 max = region.getMaximumPoint();
-                BlockVector3 pt = BlockVector3.at(max.getX(), max.getY(), max.getZ());
-                pt = pt.withX(min.getBlockX());
-                while (pt.getBlockX() < max.getBlockX()) {
-                    int dx = Math.min(INCREMENT, Math.abs(max.getBlockX() - pt.getBlockX()));
+                BlockVector3 pt = BlockVector3.at(max.x(), max.y(), max.z());
+                pt = pt.withX(min.x());
+                while (pt.x() < max.x()) {
+                    int dx = Math.min(INCREMENT, Math.abs(max.x() - pt.x()));
                     pt = pt.add(dx, 0, 0);
                     list.add(new CuboidRegion(min, pt));
-                    min = min.withX(pt.getX());
+                    min = min.withX(pt.x());
                 }
             }
         }

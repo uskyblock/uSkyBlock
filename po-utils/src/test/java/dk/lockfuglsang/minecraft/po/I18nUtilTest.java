@@ -19,6 +19,7 @@ public class I18nUtilTest {
     public void setUp() {
         URL dataFolderUrl = getClass().getClassLoader().getResource("");
         I18nUtil.initialize(new File(dataFolderUrl.getFile()), Locale.ENGLISH);
+        Locale.setDefault(Locale.ENGLISH);
     }
 
     @Test

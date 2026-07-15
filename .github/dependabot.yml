@@ -1,0 +1,62 @@
+# Dependabot keeps the Gradle version catalog, the Gradle wrapper, and the
+# GitHub Actions used in our workflows up to date.
+# https://docs.github.com/code-security/dependabot
+version: 2
+updates:
+  # ---- Gradle dependencies (gradle/libs.versions.toml + build scripts) ----
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "deps"
+    groups:
+      # Batch all low-risk (minor/patch) library bumps into a single weekly PR.
+      # Major updates are left as individual PRs so each can be reviewed on its
+      # own -- majors have needed care here before (adventure 4->5, httpclient 4->5).
+      gradle-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # WorldEdit 7.4.3+ ships Java 25 bytecode; the project targets Java 21.
+      - dependency-name: "com.sk89q.worldedit:worldedit-bukkit"
+        versions: [">= 7.4.3"]
+      # WorldGuard 7.0.16+ declares api-version 1.21.11 and will not enable on the
+      # 1.21.10 minimum-support floor.
+      - dependency-name: "com.sk89q.worldguard:worldguard-bukkit"
+        versions: [">= 7.0.16"]
+      # adventure 5.x removed classes (e.g. net.kyori.adventure.util.Buildable) that
+      # adventure-platform-bukkit 4.4.1 still references, and there is no adventure-5.x
+      # platform release yet, so an API bump breaks on Spigot (Paper masks it). The
+      # adventure-text-* modules share the adventure-api version key in the catalog, so
+      # they must be pinned too - otherwise a 5.x bump to any of them drags the shared
+      # key (and thus adventure-api) to 5.x. adventure-platform-bukkit is intentionally
+      # left free: its 5.x release is the signal to lift all of these and bump together.
+      - dependency-name: "net.kyori:adventure-api"
+        versions: [">= 5.0.0"]
+      - dependency-name: "net.kyori:adventure-text-*"
+        versions: [">= 5.0.0"]
+      # The spigot-api version is the deliberate minimum-support target, not a bump.
+      - dependency-name: "org.spigotmc:spigot-api"
+
+  # ---- GitHub Actions referenced in .github/workflows ----
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

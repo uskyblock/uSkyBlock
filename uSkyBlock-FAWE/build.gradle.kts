@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":uSkyBlock-Core"))
+    api(projects.uSkyBlockCore)
     compileOnly(libs.com.fastasyncworldedit.fastasyncworldedit.core) {
         exclude(group = "*")
     }
@@ -19,7 +19,3 @@ dependencies {
 }
 
 description = "uSkyBlock-FAWE"
-
-java {
-    withJavadocJar()
-}

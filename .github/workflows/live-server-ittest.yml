@@ -1,0 +1,159 @@
+name: Live-server integration harness
+
+on:
+  # Nightly: the canary lane only. It tracks the newest AVAILABLE Paper build, so an
+  # upstream break can surface with zero commits of ours. The pinned stable lanes run
+  # on every push and PR, so re-running them on a timer would add nothing.
+  schedule:
+    - cron: '17 3 * * *'
+  # Every push to master and every PR runs the four pinned stable lanes (no path
+  # filter - a change anywhere can regress runtime behaviour the harness exercises).
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: Harness lane to run
+        required: true
+        type: choice
+        default: all
+        options: [all, paper-min, paper-max, spigot-min, spigot-max, paper-canary]
+      minecraft_version:
+        description: Optional Minecraft version override
+        required: false
+        type: string
+      paper_build:
+        description: Optional Paper build ID override (paper lanes only)
+        required: false
+        type: string
+      replay_manifest:
+        description: Optional repository-relative run-manifest.json to replay
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # Supersede an in-progress run only for pull requests, where a fresh push makes the
+  # older run obsolete. Push/schedule/dispatch runs are never cancelled; keying on the
+  # event name as well keeps those event types from serialising against each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Resolve which lanes this event should run:
+  #   schedule                -> paper-canary only (upstream early-warning)
+  #   push (master) / PR      -> the four pinned stable lanes
+  #   workflow_dispatch       -> the dispatched lane, or all five for 'all'
+  select-lanes:
+    if: github.repository_owner == 'uskyblock'
+    runs-on: ubuntu-24.04
+    outputs:
+      lanes: ${{ steps.select.outputs.lanes }}
+    steps:
+      - name: Select lanes
+        id: select
+        env:
+          DISPATCH_LANE: ${{ inputs.lane }}
+        run: |
+          case "${{ github.event_name }}" in
+            schedule)
+              lanes='["paper-canary"]' ;;
+            workflow_dispatch)
+              if [[ "${DISPATCH_LANE}" == "all" ]]; then
+                lanes='["paper-min","paper-max","spigot-min","spigot-max","paper-canary"]'
+              else
+                lanes="[\"${DISPATCH_LANE}\"]"
+              fi ;;
+            *)
+              lanes='["paper-min","paper-max","spigot-min","spigot-max"]' ;;
+          esac
+          echo "lanes=${lanes}" >> "${GITHUB_OUTPUT}"
+
+  live_server:
+    needs: select-lanes
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(needs.select-lanes.outputs.lanes) }}
+    runs-on: ubuntu-24.04
+    # Generous: a cold Spigot BuildTools compile plus two boot/scenario phases with long anti-flake
+    # deadlines. Public-repo standard runners are unbilled, so favour reliability over wall-clock.
+    timeout-minutes: 70
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: JDK 21 (build toolchain) + 25 (server runtime)
+        uses: actions/setup-java@v5
+        with:
+          java-version: |
+            21
+            25
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Cache harness downloads and Spigot builds
+        # Persists Paper/WorldEdit/WorldGuard jars, BuildTools, and compiled Spigot server jars
+        # across runs. Keyed per lane and on the pinned version inputs, so the expensive,
+        # network-heavy Spigot BuildTools compile only re-runs when those change. ~/.m2 caches
+        # BuildTools' own Maven downloads to make a cold compile faster and less flaky.
+        uses: actions/cache@v6
+        with:
+          path: |
+            build/ittest-cache
+            ~/.m2/repository
+          key: ittest-cache-${{ matrix.lane }}-${{ hashFiles('gradle.properties', 'scripts/ittest/artifacts.json') }}
+          restore-keys: |
+            ittest-cache-${{ matrix.lane }}-
+
+      - name: Run ${{ matrix.lane }}
+        id: harness
+        continue-on-error: true
+        env:
+          OVERRIDE_MINECRAFT: ${{ inputs.minecraft_version }}
+          OVERRIDE_PAPER_BUILD: ${{ inputs.paper_build }}
+          REPLAY_MANIFEST: ${{ inputs.replay_manifest }}
+        run: |
+          args=(--lane "${{ matrix.lane }}")
+          if [[ -n "${OVERRIDE_MINECRAFT}" ]]; then args+=(--minecraft "${OVERRIDE_MINECRAFT}"); fi
+          if [[ -n "${OVERRIDE_PAPER_BUILD}" ]]; then args+=(--paper-build "${OVERRIDE_PAPER_BUILD}"); fi
+          if [[ -n "${REPLAY_MANIFEST}" ]]; then args+=(--manifest "${REPLAY_MANIFEST}"); fi
+          set +e
+          scripts/ittest/run "${args[@]}"
+          code=$?
+          set -e
+          echo "exit-code=${code}" >> "${GITHUB_OUTPUT}"
+          exit "${code}"
+
+      - name: Publish manifest and verdicts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: uskyblock-ittest-${{ matrix.lane }}-summary
+          path: |
+            build/ittest/runs/**/run-manifest.json
+            build/ittest/runs/**/results/*.jsonl
+            build/ittest/runs/**/results/state.properties
+          if-no-files-found: warn
+
+      - name: Publish failure diagnostics
+        if: always() && steps.harness.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: uskyblock-ittest-${{ matrix.lane }}-diagnostics
+          path: build/ittest/runs/
+          if-no-files-found: warn
+
+      - name: Enforce harness outcome
+        # Every lane hard-fails on a red run, canary included: a canary failure is an early warning
+        # of an upstream Paper break, and we want the nightly run to go red so it is not missed.
+        # Canary only runs on the schedule, so failing it never blocks a push or PR merge.
+        if: steps.harness.outcome == 'failure'
+        run: |
+          echo "Harness failed on ${{ matrix.lane }}. Exit code: ${{ steps.harness.outputs.exit-code }}"
+          exit 1
