@@ -80,7 +80,11 @@ jobs:
         id: jar
         run: |
           set -euo pipefail
-          jar_path="$(find uSkyBlock-Plugin/build/libs -maxdepth 1 -type f -name 'uSkyBlock-*.jar' | head -n 1)"
+          # Match the shaded plugin jar exactly (uSkyBlock-<version>.jar). A bare
+          # 'uSkyBlock-*.jar' glob also matches the javadoc jar
+          # (uSkyBlock-Plugin-<version>-javadoc.jar), and find/head could then attach
+          # the wrong artifact. verifyReleaseTag guarantees the tag equals the version.
+          jar_path="$(find uSkyBlock-Plugin/build/libs -maxdepth 1 -type f -name "uSkyBlock-${GITHUB_REF_NAME#v}.jar" | head -n 1)"
           if [ -z "${jar_path}" ]; then
             echo "Release JAR not found." >&2
             exit 1
