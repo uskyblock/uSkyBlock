@@ -373,6 +373,10 @@ cp "${ROOT}/uSkyBlock-Core/src/main/resources/schematics/default.schematic" "${S
 
 sed -i.bak 's/default-scheme: default/default-scheme: ittest/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
 sed -i.bak 's/check: true/check: false/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
+# Fire the post-generation teleport/inventory-clear block promptly instead of 1s later, so under
+# load it cannot starve (timing out create-island) or bleed the island-start inventory clear into
+# a later scenario. 0ms parses to Duration.ZERO; a bare 0 would fail the duration regex.
+sed -i.bak 's/teleportDelay: 1000ms/teleportDelay: 0ms/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
 rm -f "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml.bak"
 awk '
   /^confirmation:/ && !inserted {

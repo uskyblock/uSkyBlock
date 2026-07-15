@@ -1,5 +1,6 @@
 package us.talabrek.ultimateskyblock.ittest;
 
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -80,6 +81,8 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
     private static final Duration SETTLE_TIMEOUT = Duration.ofSeconds(15);
+    // An integer-valued level, so it survives the YAML double round-trip exactly.
+    private static final double PERSIST_LEVEL = 137.0;
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
@@ -167,6 +170,9 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     scenarios.add(new ScenarioDefinition("challenge-biome-reward", Verdict.Category.PLUGIN_FAIL, this::challengeBiomeReward));
                     scenarios.add(new ScenarioDefinition("challenge-unlock-gated", Verdict.Category.PLUGIN_FAIL, this::challengeUnlockGated));
                     scenarios.add(new ScenarioDefinition("challenge-admin-complete", Verdict.Category.PLUGIN_FAIL, this::challengeAdminComplete));
+                    // Runs last, after any scenario that mutates island level, to arrange the level and
+                    // warp state that the restart phase proves survives a real server restart.
+                    scenarios.add(new ScenarioDefinition("persist-state", Verdict.Category.PLUGIN_FAIL, this::persistState));
                 } else {
                     scenarios.add(new ScenarioDefinition("player-flows-support", Verdict.Category.HARNESS_ERROR,
                         scenario -> scenario.skip("player flows disabled: no MCProtocolLib codec for this Minecraft version (server-only run)")));
@@ -272,6 +278,9 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 check(before != null, "player record was not created on join");
                 check(!before.getHasIsland(), "fresh fixture player already owns an island");
                 usb.createIsland(player, SCHEME_ID);
+                // The island-generating flag clears in GenerateTask's deferred (teleportDelay) block,
+                // which also performs the island-start inventory clear; the harness config sets
+                // teleportDelay to 0 so that block runs promptly and cannot bleed into a later scenario.
                 scenario.await(() -> {
                     PlayerInfo current = usb.getPlayerInfo(PLAYER_UUID);
                     return current != null && !current.isIslandGenerating() && current.getHasIsland();
@@ -297,6 +306,13 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             ProtectedRegion region = WorldGuardHandler.getIslandRegionAt(islandLocation);
             check(region != null && region.contains(islandLocation.getBlockX(), islandLocation.getBlockY(), islandLocation.getBlockZ()),
                 "WorldGuard region does not cover the island");
+            // The owner domain governs who can build; a silent break here would let anyone grief the
+            // island. These flags are set by WorldGuardHandler.updateRegion and can only be observed
+            // against a real RegionManager, so they belong in the live harness rather than a unit test.
+            check(region.getOwners().contains(PLAYER_UUID), "island region owner domain does not include the fixture player");
+            check(region.getPriority() == 100, "island region priority is not 100");
+            check(region.getFlag(Flags.PVP) == null, "island region has an unexpected PVP flag override");
+            check(region.getFlag(Flags.ENTRY) == null, "island region ENTRY flag should be unset for an unlocked island");
             Block marker = findMarker(islandLocation).orElseThrow(() -> new AssertionError("schematic did not place a marker block"));
             check(player.teleport(home), "could not teleport fixture player to its island");
 
@@ -613,6 +629,26 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             }, ticks);
         }
 
+        // Arranges island level and warp in the fresh phase. Both persist to <island>.yml and reload
+        // on boot, so the restart phase can prove they survive a real cross-process restart - a
+        // concern a unit test cannot exercise.
+        private void persistState(Scenario scenario) {
+            Ctx c = onIsland();
+            IslandInfo island = requireUsb().getIslandInfo(c.playerInfo());
+            check(island != null, "island record is missing");
+            Location warp = c.playerInfo().getHomeLocation();
+            check(validLocation(warp), "home location is invalid");
+            island.setLevel(PERSIST_LEVEL);
+            island.setWarpLocation(warp);
+            check(island.getLevel() == PERSIST_LEVEL, "island level was not applied before restart");
+            check(island.hasWarp(), "warp was not activated before restart");
+            Properties state = readState();
+            state.setProperty("islandLevel", Double.toString(PERSIST_LEVEL));
+            putLocation(state, "warp", warp);
+            writeState(state);
+            scenario.pass("island level and warp were arranged for the restart-persistence check");
+        }
+
         private void restartPersistence(Scenario scenario) {
             scenario.await(this::coreReady, SETUP_TIMEOUT, () -> {
                 Properties state = readState();
@@ -637,6 +673,10 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 Block marker = markerWorld.getBlockAt(integer(state, "marker.x"), integer(state, "marker.y"), integer(state, "marker.z"));
                 check(marker.getType().getKey().toString().equals(requireProperty(state, "marker.material")),
                     "schematic marker did not survive restart");
+                check(island.getLevel() == Double.parseDouble(requireProperty(state, "islandLevel")),
+                    "island level did not survive restart");
+                check(island.hasWarp(), "warp activation did not survive restart");
+                check(sameBlock(island.getWarpLocation(), state, "warp"), "warp location did not survive restart");
                 ChallengeId challengeId = ChallengeId.of(requireProperty(state, "challengeId"));
                 int expected = integer(state, "challengeCompletions");
                 check(usb.getChallengeLogic().checkChallenge(playerInfo, challengeId) == expected,
@@ -645,7 +685,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 int repeatableExpected = integer(state, "repeatableCompletions");
                 check(usb.getChallengeLogic().checkChallenge(playerInfo, repeatableId) == repeatableExpected,
                     "repeatable challenge completion count did not survive restart");
-                scenario.pass("island, owner, membership, home, region, marker, and challenge progress survived restart");
+                scenario.pass("island, owner, membership, home, region, marker, level, warp, and challenge progress survived restart");
             }, "uSkyBlock did not complete restart initialization before the deadline");
         }
 
