@@ -50,7 +50,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -358,6 +361,49 @@ public class ChallengeExecutorTest {
         drainScheduledTasks();
 
         assertEquals(0, progressCache.getIfLoaded(ISLAND).orElseThrow().snapshot().get(CHALLENGE_ID).getTimesCompleted());
+    }
+
+    @Test
+    public void restoresConsumedItemsWhenOverlappingRequirementsCannotAllBeSatisfied() {
+        // Two requirements both match the same five iron. hasAllItems counts each independently, so the
+        // pre-check passes; but the first requirement consumes all five, leaving nothing for the second.
+        // removeRequiredItems must restore everything it already took and abort without persisting -- the
+        // player must never lose items to a challenge that cannot actually be completed.
+        ItemStackSpec firstSpec = mockItemSpec();
+        ItemStackSpec secondSpec = mockItemSpec();
+        ChallengeExecutor executor = executor(challenge(
+            List.of(),
+            List.of(new InventoryItemsRequirement(List.of(
+                new ItemRequirementSpec(firstSpec, 5, ItemAmountProgression.none()),
+                new ItemRequirementSpec(secondSpec, 5, ItemAmountProgression.none())
+            ))),
+            true, true));
+        progressCache.replaceLoaded(ISLAND, new HashMap<>());
+
+        ItemStack iron = mock(ItemStack.class);
+        ItemStack ironClone = mock(ItemStack.class);
+        int[] amount = {5};
+        when(iron.isSimilar(any())).thenReturn(true);
+        when(iron.getAmount()).thenAnswer(invocation -> amount[0]);
+        doAnswer(invocation -> {
+            amount[0] = invocation.getArgument(0);
+            return null;
+        }).when(iron).setAmount(anyInt());
+        when(iron.clone()).thenReturn(ironClone);
+        when(ironClone.clone()).thenReturn(ironClone);
+        Inventory source = mock(Inventory.class);
+        when(source.getContents()).thenReturn(new ItemStack[]{iron});
+
+        executor.attempt(player, CHALLENGE_ID, List.of(source));
+        drainScheduledTasks();
+
+        // The iron taken by the first requirement was drained to zero and then restored to the source.
+        verify(iron, atLeastOnce()).setAmount(0);
+        verify(source, atLeastOnce()).addItem(any(ItemStack[].class));
+        // Nothing persisted, no reward handed out, and the in-flight completion lock was released.
+        verify(repository, never()).replace(any(), any());
+        verify(rewardApplier, never()).apply(any(), any(), any(), anyBoolean());
+        assertFalse(progressCache.getIfLoaded(ISLAND).orElseThrow().isCompletionInFlight());
     }
 
     private ItemStackSpec mockItemSpec() {
