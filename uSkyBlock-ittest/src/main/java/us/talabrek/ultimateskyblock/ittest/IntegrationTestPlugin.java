@@ -61,6 +61,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final Duration SETUP_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
+    private static final Duration SETTLE_TIMEOUT = Duration.ofSeconds(15);
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
@@ -266,20 +267,26 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             Block marker = findMarker(islandLocation).orElseThrow(() -> new AssertionError("schematic did not place a marker block"));
             check(player.teleport(home), "could not teleport fixture player to its island");
 
-            Properties state = new Properties();
-            state.setProperty("schema", "1");
-            state.setProperty("playerName", PLAYER_NAME);
-            state.setProperty("playerUuid", PLAYER_UUID.toString());
-            state.setProperty("islandName", island.getName());
-            putLocation(state, "home", home);
-            putLocation(state, "island", islandLocation);
-            state.setProperty("marker.world", marker.getWorld().getName());
-            state.setProperty("marker.x", Integer.toString(marker.getX()));
-            state.setProperty("marker.y", Integer.toString(marker.getY()));
-            state.setProperty("marker.z", Integer.toString(marker.getZ()));
-            state.setProperty("marker.material", marker.getType().getKey().toString());
-            writeState(state);
-            scenario.pass("island owner, membership, locations, marker, teleport, and WorldGuard region verified");
+            // Creating an island arms a one-time inventory clear (options.restart.clearInventory) that
+            // uSkyBlock defers to one tick after the player first enters the skyworld. Let it fire and
+            // settle here, on the freshly created island, so it cannot wipe the inventory precondition the
+            // challenge scenario establishes later.
+            scenario.await(() -> !playerInfo.isClearInventoryOnNextEntry(), SETTLE_TIMEOUT, () -> {
+                Properties state = new Properties();
+                state.setProperty("schema", "1");
+                state.setProperty("playerName", PLAYER_NAME);
+                state.setProperty("playerUuid", PLAYER_UUID.toString());
+                state.setProperty("islandName", island.getName());
+                putLocation(state, "home", home);
+                putLocation(state, "island", islandLocation);
+                state.setProperty("marker.world", marker.getWorld().getName());
+                state.setProperty("marker.x", Integer.toString(marker.getX()));
+                state.setProperty("marker.y", Integer.toString(marker.getY()));
+                state.setProperty("marker.z", Integer.toString(marker.getZ()));
+                state.setProperty("marker.material", marker.getType().getKey().toString());
+                writeState(state);
+                scenario.pass("island owner, membership, locations, marker, teleport, and WorldGuard region verified");
+            }, "island-start inventory clear did not settle after entering the island");
         }
 
         private void completeChallenge(Scenario scenario) {
