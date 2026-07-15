@@ -1,14 +1,20 @@
 # Harness fixture challenge catalog (schemaVersion 1). The live-server harness deploys this
-# as plugins/uSkyBlock/challenges.yml. It defines the single challenge the scenarios exercise:
-# `ittest_trade` hands in 5 stone (consumed on completion) for a deterministic 2-emerald reward.
-# No unlock requirements, so a fresh-island fixture player can complete it immediately.
+# as plugins/uSkyBlock/challenges.yml. Each challenge backs exactly one integration scenario in
+# IntegrationTestPlugin so completions never cross-contaminate (they share one island + server).
+#
+# Keep this file warning-free: the catalog loader emits a WARNING for missing display.name /
+# display.item / lockedDisplayItem and for >9 challenges per rank, and a SEVERE (which fails a
+# lane) for any parse/validation error. See the authoring rules before editing.
 schemaVersion: 1
 ranks:
+  # Rank 1 -- inventory hand-in edge cases and item/xp/command rewards. Nine challenges (the menu
+  # cap); all immediately available to a fresh-island player (no unlock requirements).
   integration:
     display:
       name: "<green>Integration fixture"
     lockedDisplayItem: "minecraft:barrier"
     challenges:
+      # Baseline: exact hand-in, deterministic reward, unrelated inventory preserved.
       ittest_trade:
         display:
           name: "<yellow>Integration inventory trade"
@@ -25,3 +31,266 @@ ranks:
               items:
                 - item: "minecraft:emerald"
                   amount: 2
+      # Edge: not enough items -> completion rejected, nothing consumed.
+      ittest_insufficient:
+        display:
+          name: "<red>Insufficient hand-in"
+          description: "Requires ten stone; the scenario only supplies three."
+          item: "minecraft:stone"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 10
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Edge: more than required -> only the required amount is consumed, surplus is kept.
+      ittest_surplus:
+        display:
+          name: "<aqua>Surplus hand-in"
+          description: "Hand in five cobblestone out of a larger stack."
+          item: "minecraft:cobblestone"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:cobblestone"
+                amount: 5
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Edge: consumeItemsOnCompletion=false -> the item must be present but is NOT consumed.
+      ittest_keep:
+        display:
+          name: "<light_purple>Show a diamond"
+          description: "Own a diamond; it is checked but never consumed."
+          item: "minecraft:diamond"
+        properties:
+          consumeItemsOnCompletion: false
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:diamond"
+                amount: 1
+        rewards:
+          first:
+            - type: experience
+              amount: 5
+      # Matcher: any-of group satisfied by any listed variant.
+      ittest_anyof:
+        display:
+          name: "<gold>Any log will do"
+          description: "Hand in four logs of any accepted species."
+          item: "minecraft:oak_log"
+        complete:
+          - type: inventory-items
+            items:
+              - item:
+                  - "minecraft:oak_log"
+                  - "minecraft:birch_log"
+                  - "minecraft:spruce_log"
+                amount: 4
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Repeatability: non-repeatable challenge cannot be completed twice.
+      ittest_nonrepeat:
+        display:
+          name: "<white>One-shot hand-in"
+          description: "Complete once; a second attempt is rejected."
+          item: "minecraft:iron_ingot"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:iron_ingot"
+                amount: 3
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Repeatability: repeatable with a limit of 2 per window; first vs repeat reward differ.
+      ittest_repeatable:
+        display:
+          name: "<gold>Repeatable ingot trade"
+          description: "Hand in one gold ingot, up to twice per window."
+          item: "minecraft:gold_ingot"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:gold_ingot"
+                amount: 1
+        repeat:
+          enabled: true
+          resetWindow: 1h
+          limit: 2
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+          repeat:
+            - type: item
+              items:
+                - item: "minecraft:diamond"
+                  amount: 1
+      # Reward: experience.
+      ittest_xp:
+        display:
+          name: "<green>Experience reward"
+          description: "Hand in one stone for experience."
+          item: "minecraft:experience_bottle"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 1
+        rewards:
+          first:
+            - type: experience
+              amount: 30
+      # Reward: command (console give of a marker item to the fixture player).
+      ittest_command:
+        display:
+          name: "<yellow>Command reward"
+          description: "Hand in one stone to trigger a console command reward."
+          item: "minecraft:command_block"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 1
+        rewards:
+          first:
+            - type: command
+              commands:
+                - execution: CONSOLE
+                  command: "give {player} minecraft:cake 1"
+  # Rank 2 -- requirement types that need real world/island state, plus derived rewards and admin.
+  integration_world:
+    display:
+      name: "<blue>Integration world"
+    lockedDisplayItem: "minecraft:barrier"
+    challenges:
+      # Requirement: island-blocks scanned within a radius of the player.
+      ittest_blocks:
+        display:
+          name: "<aqua>Build with diamond blocks"
+          description: "Place three diamond blocks near your island."
+          item: "minecraft:diamond_block"
+        complete:
+          - type: island-blocks
+            radius: 8
+            blocks:
+              - block: "minecraft:diamond_block"
+                amount: 3
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Requirement: minimum island level.
+      ittest_level:
+        display:
+          name: "<green>Reach island level"
+          description: "Your island must be level fifty."
+          item: "minecraft:beacon"
+        complete:
+          - type: island-level
+            minimum: 50
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Reward: biome unlock (derived from completion state, not materialized).
+      ittest_biome:
+        display:
+          name: "<dark_green>Unlock a biome"
+          description: "Hand in one stone to unlock the jungle biome."
+          item: "minecraft:jungle_sapling"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 1
+        rewards:
+          first:
+            - type: biome
+              biomes:
+                - "jungle"
+      # Admin path: requirements are impossible for a player, but admin-complete bypasses them
+      # (and grants no reward).
+      ittest_admin:
+        display:
+          name: "<red>Admin only"
+          description: "Requires an impossible hand-in; only admin-complete can finish it."
+          item: "minecraft:netherite_ingot"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:netherite_ingot"
+                amount: 64
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+  # Rank 3 -- unlock gating: a prerequisite challenge gates a second one.
+  integration_gate:
+    display:
+      name: "<gold>Integration gate"
+    lockedDisplayItem: "minecraft:barrier"
+    challenges:
+      # Prerequisite for ittest_gated.
+      ittest_prereq:
+        display:
+          name: "<white>Gate prerequisite"
+          description: "Hand in one stone to unlock the gated challenge."
+          item: "minecraft:tripwire_hook"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 1
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1
+      # Gated: unavailable until ittest_prereq is completed.
+      ittest_gated:
+        display:
+          name: "<dark_purple>Gated challenge"
+          description: "Locked until the prerequisite challenge is completed."
+          item: "minecraft:nether_star"
+        unlock:
+          - type: completed-challenges
+            challenges:
+              - "ittest_prereq"
+        complete:
+          - type: inventory-items
+            items:
+              - item: "minecraft:stone"
+                amount: 1
+        rewards:
+          first:
+            - type: item
+              items:
+                - item: "minecraft:emerald"
+                  amount: 1

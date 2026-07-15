@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.challenge.ChallengeText;
+import us.talabrek.ultimateskyblock.challenge.IslandBiomeUnlocks;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeDefinition;
 import us.talabrek.ultimateskyblock.challenge.catalog.ChallengeId;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
@@ -48,6 +49,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -58,6 +60,22 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     static final UUID PLAYER_UUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
     static final String SCHEME_ID = "ittest";
     static final ChallengeId CHALLENGE_ID = ChallengeId.of("ittest_trade");
+    // One challenge per completion scenario (see scripts/ittest/fixtures/challenges.yml); distinct
+    // ids keep the scenarios isolated even though they share one island and server.
+    private static final ChallengeId INSUFFICIENT = ChallengeId.of("ittest_insufficient");
+    private static final ChallengeId SURPLUS = ChallengeId.of("ittest_surplus");
+    private static final ChallengeId KEEP = ChallengeId.of("ittest_keep");
+    private static final ChallengeId ANYOF = ChallengeId.of("ittest_anyof");
+    private static final ChallengeId NONREPEAT = ChallengeId.of("ittest_nonrepeat");
+    private static final ChallengeId REPEATABLE = ChallengeId.of("ittest_repeatable");
+    private static final ChallengeId XP = ChallengeId.of("ittest_xp");
+    private static final ChallengeId COMMAND = ChallengeId.of("ittest_command");
+    private static final ChallengeId BLOCKS = ChallengeId.of("ittest_blocks");
+    private static final ChallengeId LEVEL = ChallengeId.of("ittest_level");
+    private static final ChallengeId BIOME = ChallengeId.of("ittest_biome");
+    private static final ChallengeId ADMIN = ChallengeId.of("ittest_admin");
+    private static final ChallengeId PREREQ = ChallengeId.of("ittest_prereq");
+    private static final ChallengeId GATED = ChallengeId.of("ittest_gated");
     private static final Duration SETUP_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
@@ -134,6 +152,21 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 if (Boolean.parseBoolean(System.getProperty("uskyblock.ittest.playerFlows", "true"))) {
                     scenarios.add(new ScenarioDefinition("create-island", Verdict.Category.PLUGIN_FAIL, this::createIsland));
                     scenarios.add(new ScenarioDefinition("complete-challenge", Verdict.Category.PLUGIN_FAIL, this::completeChallenge));
+                    // Challenge-completion edge cases, requirement types, and reward types. Each reuses
+                    // the island created above and a distinct fixture challenge, so they stay isolated.
+                    scenarios.add(new ScenarioDefinition("challenge-insufficient-items", Verdict.Category.PLUGIN_FAIL, this::challengeInsufficientItems));
+                    scenarios.add(new ScenarioDefinition("challenge-surplus-items", Verdict.Category.PLUGIN_FAIL, this::challengeSurplusItems));
+                    scenarios.add(new ScenarioDefinition("challenge-keep-items", Verdict.Category.PLUGIN_FAIL, this::challengeKeepItems));
+                    scenarios.add(new ScenarioDefinition("challenge-any-of-combination", Verdict.Category.PLUGIN_FAIL, this::challengeAnyOfCombination));
+                    scenarios.add(new ScenarioDefinition("challenge-non-repeatable", Verdict.Category.PLUGIN_FAIL, this::challengeNonRepeatable));
+                    scenarios.add(new ScenarioDefinition("challenge-repeatable-limit", Verdict.Category.PLUGIN_FAIL, this::challengeRepeatableLimit));
+                    scenarios.add(new ScenarioDefinition("challenge-island-blocks", Verdict.Category.PLUGIN_FAIL, this::challengeIslandBlocks));
+                    scenarios.add(new ScenarioDefinition("challenge-island-level", Verdict.Category.PLUGIN_FAIL, this::challengeIslandLevel));
+                    scenarios.add(new ScenarioDefinition("challenge-xp-reward", Verdict.Category.PLUGIN_FAIL, this::challengeXpReward));
+                    scenarios.add(new ScenarioDefinition("challenge-command-reward", Verdict.Category.PLUGIN_FAIL, this::challengeCommandReward));
+                    scenarios.add(new ScenarioDefinition("challenge-biome-reward", Verdict.Category.PLUGIN_FAIL, this::challengeBiomeReward));
+                    scenarios.add(new ScenarioDefinition("challenge-unlock-gated", Verdict.Category.PLUGIN_FAIL, this::challengeUnlockGated));
+                    scenarios.add(new ScenarioDefinition("challenge-admin-complete", Verdict.Category.PLUGIN_FAIL, this::challengeAdminComplete));
                 } else {
                     scenarios.add(new ScenarioDefinition("player-flows-support", Verdict.Category.HARNESS_ERROR,
                         scenario -> scenario.skip("player flows disabled: no MCProtocolLib codec for this Minecraft version (server-only run)")));
@@ -318,6 +351,268 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             }, "challenge completion was not visible before the deadline");
         }
 
+        // Edge case: too few items -> the completion is rejected, nothing is consumed, and unrelated
+        // inventory is left alone.
+        private void challengeInsufficientItems(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.STONE, 3));   // requirement asks for 10
+            c.player().getInventory().addItem(new ItemStack(Material.DIAMOND, 2)); // unrelated bystander
+            c.logic().completeChallenge(c.player(), INSUFFICIENT);
+            afterTicks(scenario, 3, () -> {
+                check(c.logic().checkChallenge(c.playerInfo(), INSUFFICIENT) == 0, "insufficient hand-in must not complete");
+                check(count(c.player(), Material.STONE) == 3, "rejected completion must not consume items");
+                check(count(c.player(), Material.DIAMOND) == 2, "rejected completion must not touch unrelated items");
+                scenario.pass("insufficient hand-in was rejected without consuming any items");
+            });
+        }
+
+        // Edge case: more items than required -> only the required amount is consumed, the surplus stays.
+        private void challengeSurplusItems(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.COBBLESTONE, 12)); // requirement asks for 5
+            c.logic().completeChallenge(c.player(), SURPLUS);
+            awaitCount(scenario, c, SURPLUS, 1, () -> {
+                check(count(c.player(), Material.COBBLESTONE) == 7, "only the required five cobblestone should be consumed");
+                check(count(c.player(), Material.EMERALD) == 1, "surplus challenge reward was not delivered");
+                scenario.pass("surplus hand-in consumed exactly the required amount and left the rest");
+            });
+        }
+
+        // consumeItemsOnCompletion=false -> the item must be present but is never removed.
+        private void challengeKeepItems(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.DIAMOND, 1));
+            c.logic().completeChallenge(c.player(), KEEP);
+            awaitCount(scenario, c, KEEP, 1, () -> {
+                check(count(c.player(), Material.DIAMOND) == 1, "consumeItemsOnCompletion=false must keep the handed-in item");
+                scenario.pass("non-consuming challenge completed without removing the item");
+            });
+        }
+
+        // Any-of matcher satisfied by a COMBINATION of different permitted variants (2 + 1 + 1 = 4),
+        // proving the requirement aggregates across, and consumes from, multiple matching stacks.
+        private void challengeAnyOfCombination(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.OAK_LOG, 2));
+            c.player().getInventory().addItem(new ItemStack(Material.BIRCH_LOG, 1));
+            c.player().getInventory().addItem(new ItemStack(Material.SPRUCE_LOG, 1));
+            c.logic().completeChallenge(c.player(), ANYOF);
+            awaitCount(scenario, c, ANYOF, 1, () -> {
+                check(count(c.player(), Material.OAK_LOG) == 0 && count(c.player(), Material.BIRCH_LOG) == 0
+                    && count(c.player(), Material.SPRUCE_LOG) == 0, "the mixed permitted items should all be consumed");
+                check(count(c.player(), Material.EMERALD) == 1, "any-of challenge reward was not delivered");
+                scenario.pass("any-of requirement satisfied by a combination of permitted items");
+            });
+        }
+
+        // A non-repeatable challenge cannot be completed a second time.
+        private void challengeNonRepeatable(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.IRON_INGOT, 3));
+            c.logic().completeChallenge(c.player(), NONREPEAT);
+            awaitCount(scenario, c, NONREPEAT, 1, () -> {
+                c.player().getInventory().clear();
+                c.player().getInventory().addItem(new ItemStack(Material.IRON_INGOT, 3));
+                c.logic().completeChallenge(c.player(), NONREPEAT);
+                afterTicks(scenario, 3, () -> {
+                    check(c.logic().checkChallenge(c.playerInfo(), NONREPEAT) == 1, "non-repeatable challenge must stay at one completion");
+                    check(count(c.player(), Material.IRON_INGOT) == 3, "rejected second attempt must not consume items");
+                    scenario.pass("non-repeatable challenge rejected the second completion");
+                });
+            });
+        }
+
+        // A repeatable challenge (limit 2): first vs repeat reward differ, and a third completion within
+        // the window is rejected. The completion count is persisted for the restart phase to verify.
+        private void challengeRepeatableLimit(Scenario scenario) {
+            Ctx c = onIsland();
+            handInGold(c);
+            c.logic().completeChallenge(c.player(), REPEATABLE);
+            awaitCount(scenario, c, REPEATABLE, 1, () -> {
+                check(count(c.player(), Material.EMERALD) == 1, "first completion should grant the first reward (emerald)");
+                handInGold(c);
+                c.logic().completeChallenge(c.player(), REPEATABLE);
+                awaitCount(scenario, c, REPEATABLE, 2, () -> {
+                    check(count(c.player(), Material.DIAMOND) == 1, "repeat completion should grant the repeat reward (diamond)");
+                    check(count(c.player(), Material.EMERALD) == 0, "repeat completion should not re-grant the first reward");
+                    handInGold(c);
+                    c.logic().completeChallenge(c.player(), REPEATABLE);
+                    afterTicks(scenario, 3, () -> {
+                        check(c.logic().checkChallenge(c.playerInfo(), REPEATABLE) == 2, "repeat limit must cap completions at two");
+                        check(count(c.player(), Material.GOLD_INGOT) == 1, "over-limit attempt must not consume items");
+                        Properties state = readState();
+                        state.setProperty("repeatableChallengeId", REPEATABLE.value());
+                        state.setProperty("repeatableCompletions", "2");
+                        writeState(state);
+                        scenario.pass("repeatable challenge honored first/repeat rewards and the two-per-window limit");
+                    });
+                });
+            });
+        }
+
+        private void handInGold(Ctx c) {
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.GOLD_INGOT, 1));
+        }
+
+        // island-blocks requirement: rejected while the blocks are absent, completes once they are placed.
+        private void challengeIslandBlocks(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.logic().completeChallenge(c.player(), BLOCKS);
+            afterTicks(scenario, 3, () -> {
+                check(c.logic().checkChallenge(c.playerInfo(), BLOCKS) == 0, "island-blocks challenge must reject when the blocks are absent");
+                Location base = c.player().getLocation();
+                List<Block> placed = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    Block block = base.clone().add(0, 3, i).getBlock(); // above the player's head, in open air
+                    block.setType(Material.DIAMOND_BLOCK);
+                    placed.add(block);
+                }
+                c.logic().completeChallenge(c.player(), BLOCKS);
+                awaitCount(scenario, c, BLOCKS, 1, () -> {
+                    check(count(c.player(), Material.EMERALD) == 1, "island-blocks reward was not delivered");
+                    placed.forEach(block -> block.setType(Material.AIR)); // leave the scan area clean for later scenarios
+                    scenario.pass("island-blocks challenge completed once the required blocks were present");
+                });
+            });
+        }
+
+        // island-level requirement: rejected below the threshold, completes once the level is raised.
+        private void challengeIslandLevel(Scenario scenario) {
+            Ctx c = onIsland();
+            IslandInfo island = requireUsb().getIslandInfo(c.playerInfo());
+            check(island != null, "island record missing for the island-level challenge");
+            double originalLevel = island.getLevel();
+            c.player().getInventory().clear();
+            island.setLevel(0);
+            c.logic().completeChallenge(c.player(), LEVEL);
+            afterTicks(scenario, 3, () -> {
+                check(c.logic().checkChallenge(c.playerInfo(), LEVEL) == 0, "island-level challenge must reject below the minimum level");
+                island.setLevel(60); // requirement asks for 50
+                c.logic().completeChallenge(c.player(), LEVEL);
+                awaitCount(scenario, c, LEVEL, 1, () -> {
+                    check(count(c.player(), Material.EMERALD) == 1, "island-level reward was not delivered");
+                    island.setLevel(originalLevel);
+                    scenario.pass("island-level challenge respected the minimum level requirement");
+                });
+            });
+        }
+
+        // Reward: experience is granted on completion.
+        private void challengeXpReward(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+            int experienceBefore = c.player().getTotalExperience();
+            c.logic().completeChallenge(c.player(), XP);
+            awaitCount(scenario, c, XP, 1, () -> {
+                check(c.player().getTotalExperience() > experienceBefore, "experience reward should increase the player's total experience");
+                scenario.pass("experience reward granted on completion");
+            });
+        }
+
+        // Reward: a console command runs on completion (dispatched via the scheduler, so await its effect).
+        private void challengeCommandReward(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+            c.logic().completeChallenge(c.player(), COMMAND);
+            awaitCount(scenario, c, COMMAND, 1, () ->
+                scenario.await(() -> count(c.player(), Material.CAKE) == 1, Duration.ofSeconds(5),
+                    () -> scenario.pass("command reward executed the console give on completion"),
+                    "command reward did not deliver the expected item"));
+        }
+
+        // Reward: a biome unlock derived from completion state.
+        private void challengeBiomeReward(Scenario scenario) {
+            Ctx c = onIsland();
+            uSkyBlock usb = requireUsb();
+            IslandInfo island = usb.getIslandInfo(c.playerInfo());
+            check(island != null, "island record missing for the biome reward challenge");
+            IslandBiomeUnlocks unlocks = new IslandBiomeUnlocks(usb.getChallengeLogic(), usb.getRuntimeConfigs());
+            check(!unlocks.isUnlocked(island, "jungle"), "jungle biome should be locked before the challenge is completed");
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+            c.logic().completeChallenge(c.player(), BIOME);
+            awaitCount(scenario, c, BIOME, 1, () -> {
+                check(unlocks.isUnlocked(island, "jungle"), "biome reward should unlock the jungle biome");
+                scenario.pass("biome reward unlocked the configured biome");
+            });
+        }
+
+        // Unlock gating: a challenge is unavailable until its prerequisite challenge is completed.
+        private void challengeUnlockGated(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear();
+            c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+            c.logic().completeChallenge(c.player(), GATED);
+            afterTicks(scenario, 3, () -> {
+                check(c.logic().checkChallenge(c.playerInfo(), GATED) == 0, "gated challenge must be unavailable before its prerequisite");
+                check(count(c.player(), Material.STONE) == 1, "locked challenge attempt must not consume items");
+                c.player().getInventory().clear();
+                c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+                c.logic().completeChallenge(c.player(), PREREQ);
+                awaitCount(scenario, c, PREREQ, 1, () -> {
+                    c.player().getInventory().clear();
+                    c.player().getInventory().addItem(new ItemStack(Material.STONE, 1));
+                    c.logic().completeChallenge(c.player(), GATED);
+                    awaitCount(scenario, c, GATED, 1, () ->
+                        scenario.pass("gated challenge unlocked only after its prerequisite was completed"));
+                });
+            });
+        }
+
+        // Admin completion bypasses every requirement (the fixture asks for an impossible hand-in) and
+        // grants no reward.
+        private void challengeAdminComplete(Scenario scenario) {
+            Ctx c = onIsland();
+            c.player().getInventory().clear(); // the fixture requires 64 netherite ingots a player never has
+            int emeraldBefore = count(c.player(), Material.EMERALD);
+            requireUsb().getChallengeLogic().completeChallengeForAdmin(c.playerInfo(), ADMIN,
+                () -> { }, error -> scenario.fail(Verdict.Category.PLUGIN_FAIL, error));
+            awaitCount(scenario, c, ADMIN, 1, () -> {
+                check(count(c.player(), Material.EMERALD) == emeraldBefore, "admin-complete must not grant challenge rewards");
+                scenario.pass("admin-complete bypassed requirements and granted no reward");
+            });
+        }
+
+        private record Ctx(Player player, PlayerInfo playerInfo, ChallengeLogic logic) { }
+
+        // Resolves the online fixture player, asserts it owns an island, and places it on that island.
+        private Ctx onIsland() {
+            Player player = Bukkit.getPlayerExact(PLAYER_NAME);
+            check(player != null && player.isOnline(), "fixture player disconnected before challenge execution");
+            uSkyBlock usb = requireUsb();
+            PlayerInfo playerInfo = usb.getPlayerInfo(player);
+            check(playerInfo != null && playerInfo.getHasIsland(), "fixture player has no island");
+            Location home = playerInfo.getHomeLocation();
+            check(validLocation(home) && player.teleport(home), "could not place player on its island");
+            return new Ctx(player, playerInfo, usb.getChallengeLogic());
+        }
+
+        // Waits until a challenge reaches an expected completion count (completion persists asynchronously).
+        private void awaitCount(Scenario scenario, Ctx c, ChallengeId id, int expected, Runnable onReached) {
+            scenario.await(() -> c.logic().checkChallenge(c.playerInfo(), id) == expected, Duration.ofSeconds(15),
+                onReached, "challenge " + id.value() + " did not reach completion count " + expected + " before the deadline");
+        }
+
+        // Runs assertions a few ticks later, once a rejected completion has had a chance to (not) settle.
+        private void afterTicks(Scenario scenario, long ticks, Runnable body) {
+            Bukkit.getScheduler().runTaskLater(IntegrationTestPlugin.this, () -> {
+                try {
+                    body.run();
+                } catch (Throwable throwable) {
+                    scenario.fail(Verdict.Category.PLUGIN_FAIL, throwable);
+                }
+            }, ticks);
+        }
+
         private void restartPersistence(Scenario scenario) {
             scenario.await(this::coreReady, SETUP_TIMEOUT, () -> {
                 Properties state = readState();
@@ -346,6 +641,10 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 int expected = integer(state, "challengeCompletions");
                 check(usb.getChallengeLogic().checkChallenge(playerInfo, challengeId) == expected,
                     "challenge completion count did not survive restart");
+                ChallengeId repeatableId = ChallengeId.of(requireProperty(state, "repeatableChallengeId"));
+                int repeatableExpected = integer(state, "repeatableCompletions");
+                check(usb.getChallengeLogic().checkChallenge(playerInfo, repeatableId) == repeatableExpected,
+                    "repeatable challenge completion count did not survive restart");
                 scenario.pass("island, owner, membership, home, region, marker, and challenge progress survived restart");
             }, "uSkyBlock did not complete restart initialization before the deadline");
         }
