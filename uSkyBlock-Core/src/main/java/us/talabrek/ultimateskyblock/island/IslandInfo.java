@@ -700,7 +700,7 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public boolean banPlayer(@NotNull OfflinePlayer target) {
         Validate.notNull(target, "Target cannot be null");
 
-        return trustPlayer(target, null);
+        return banPlayer(target, null);
     }
 
     @Override
