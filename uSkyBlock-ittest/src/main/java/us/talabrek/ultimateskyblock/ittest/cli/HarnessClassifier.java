@@ -119,6 +119,7 @@ public final class HarnessClassifier {
                 "fresh/challenge-biome-reward",
                 "fresh/challenge-unlock-gated",
                 "fresh/challenge-admin-complete",
+                "fresh/persist-state",
                 "fresh/secondary-smokes",
                 "restart/harness-canary",
                 "restart/restart-persistence",
