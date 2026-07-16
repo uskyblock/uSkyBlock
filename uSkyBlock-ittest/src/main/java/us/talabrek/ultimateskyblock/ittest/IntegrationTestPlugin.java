@@ -83,6 +83,11 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
     private static final Duration SETTLE_TIMEOUT = Duration.ofSeconds(15);
+    // Once the island-start conditions hold, require them to stay true for this many consecutive ticks
+    // before the next scenario resumes. On Paper the home teleport is async (paper-lib) and the one-time
+    // inventory clear fires a tick after it lands, so a single-tick check can catch a transient lull
+    // while an async effect is still pending; a sustained window lets every deferred effect drain first.
+    private static final long SETTLE_STABLE_TICKS = 20;
     // An integer-valued level, so it survives the YAML double round-trip exactly.
     private static final double PERSIST_LEVEL = 137.0;
 
@@ -322,10 +327,21 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             check(player.teleport(home), "could not teleport fixture player to its island");
 
             // Creating an island arms a one-time inventory clear (options.restart.clearInventory) that
-            // uSkyBlock defers to one tick after the player first enters the skyworld. Let it fire and
-            // settle here, on the freshly created island, so it cannot wipe the inventory precondition the
-            // challenge scenario establishes later.
-            scenario.await(() -> !playerInfo.isClearInventoryOnNextEntry(), SETTLE_TIMEOUT, () -> {
+            // uSkyBlock defers to one tick after the player first enters the skyworld - and on Paper the
+            // home teleport that triggers it is async (paper-lib), so the clear can land several ticks
+            // after island generation reports done. Let every deferred/async effect fully settle here, on
+            // the freshly created island, so none of it can bleed into the challenge scenario and wipe the
+            // inventory precondition it establishes later. Re-fetch the live PlayerInfo each poll (the
+            // captured instance can be replaced by a cache reload) and require the player to be quiescent
+            // on the island - present in the sky world with the clear flag down - for a sustained window.
+            scenario.awaitStable(() -> {
+                PlayerInfo live = usb.getPlayerInfo(PLAYER_UUID);
+                return live != null
+                    && !live.isClearInventoryOnNextEntry()
+                    && player.isOnline()
+                    && home.getWorld() != null
+                    && home.getWorld().equals(player.getWorld());
+            }, SETTLE_STABLE_TICKS, SETTLE_TIMEOUT, () -> {
                 Properties state = new Properties();
                 state.setProperty("schema", "1");
                 state.setProperty("playerName", PLAYER_NAME);
@@ -340,7 +356,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 state.setProperty("marker.material", marker.getType().getKey().toString());
                 writeState(state);
                 scenario.pass("island owner, membership, locations, marker, teleport, and WorldGuard region verified");
-            }, "island-start inventory clear did not settle after entering the island");
+            }, "island did not settle (player quiescent on island, inventory clear drained) before the deadline");
         }
 
         private void completeChallenge(Scenario scenario) {
@@ -790,6 +806,39 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                                 success.run();
                             } else if (System.nanoTime() >= expires) {
                                 fail(timeoutCategory, timeoutDetail);
+                            } else {
+                                Bukkit.getScheduler().runTaskLater(IntegrationTestPlugin.this, this, 1L);
+                            }
+                        } catch (Throwable throwable) {
+                            fail(defaultCategory, throwable);
+                        }
+                    }
+                }
+                new Poll().run();
+            }
+
+            // Like await, but only fires success once the condition has held true for stableTicks
+            // consecutive ticks. A one-shot await can trip on a transient lull between async effects;
+            // requiring sustained quiescence waits for every deferred/async effect to drain first.
+            void awaitStable(BooleanSupplier condition, long stableTicks, Duration timeout, Runnable success, String timeoutDetail) {
+                long expires = System.nanoTime() + timeout.toNanos();
+                class Poll implements Runnable {
+                    private long stable;
+
+                    @Override
+                    public void run() {
+                        if (finished.get()) return;
+                        try {
+                            if (condition.getAsBoolean()) {
+                                if (++stable >= stableTicks) {
+                                    success.run();
+                                    return;
+                                }
+                            } else {
+                                stable = 0;
+                            }
+                            if (System.nanoTime() >= expires) {
+                                fail(defaultCategory, timeoutDetail);
                             } else {
                                 Bukkit.getScheduler().runTaskLater(IntegrationTestPlugin.this, this, 1L);
                             }
