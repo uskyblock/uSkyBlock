@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.challenge.ChallengeText;
 import us.talabrek.ultimateskyblock.challenge.IslandBiomeUnlocks;
@@ -49,6 +50,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
@@ -170,6 +172,9 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     scenarios.add(new ScenarioDefinition("challenge-biome-reward", Verdict.Category.PLUGIN_FAIL, this::challengeBiomeReward));
                     scenarios.add(new ScenarioDefinition("challenge-unlock-gated", Verdict.Category.PLUGIN_FAIL, this::challengeUnlockGated));
                     scenarios.add(new ScenarioDefinition("challenge-admin-complete", Verdict.Category.PLUGIN_FAIL, this::challengeAdminComplete));
+                    // A real chunk-snapshot level scan (unlike challenge-island-level, which fakes the
+                    // level via setLevel). Exercises the version-sensitive scoring path a unit test cannot.
+                    scenarios.add(new ScenarioDefinition("island-level-scan", Verdict.Category.PLUGIN_FAIL, this::islandLevelScan));
                     // Runs last, after any scenario that mutates island level, to arrange the level and
                     // warp state that the restart phase proves survives a real server restart.
                     scenarios.add(new ScenarioDefinition("persist-state", Verdict.Category.PLUGIN_FAIL, this::persistState));
@@ -518,6 +523,51 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     scenario.pass("island-level challenge respected the minimum level requirement");
                 });
             });
+        }
+
+        // Drives a REAL asynchronous chunk-snapshot scan (unlike challenge-island-level, which fakes the
+        // level with setLevel): places high-value blocks and asserts the computed level rises.
+        // calculateScoreAsync writes island.getLevel() from the scan result, so this exercises the
+        // version-sensitive ChunkSnapshot + scoring path end to end - the path a unit test cannot fake.
+        private void islandLevelScan(Scenario scenario) {
+            Ctx c = onIsland();
+            uSkyBlock usb = requireUsb();
+            IslandInfo island = usb.getIslandInfo(c.playerInfo());
+            check(island != null, "island record missing for the level-scan scenario");
+            String islandName = island.getName();
+            AtomicReference<Double> baseline = new AtomicReference<>();
+            AtomicBoolean baselineDone = new AtomicBoolean();
+            usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
+                @Override
+                public void run() {
+                    baseline.set(island.getLevel());
+                    baselineDone.set(true);
+                }
+            });
+            scenario.await(baselineDone::get, Duration.ofSeconds(30), () -> {
+                Location origin = c.player().getLocation();
+                List<Block> placed = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    Block block = origin.clone().add(0, 3, i).getBlock(); // above the player, in open air
+                    block.setType(Material.DIAMOND_BLOCK);
+                    placed.add(block);
+                }
+                AtomicBoolean rescanDone = new AtomicBoolean();
+                usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
+                    @Override
+                    public void run() {
+                        rescanDone.set(true);
+                    }
+                });
+                scenario.await(rescanDone::get, Duration.ofSeconds(30), () -> {
+                    double after = island.getLevel();
+                    placed.forEach(block -> block.setType(Material.AIR)); // leave the scan area clean for later scenarios
+                    check(after > baseline.get(),
+                        "island level did not rise after a real scan of placed diamond blocks (baseline="
+                            + baseline.get() + ", after=" + after + ")");
+                    scenario.pass("a real chunk-snapshot scan raised the island level after placing high-value blocks");
+                }, "island level rescan did not complete before the deadline");
+            }, "baseline island level scan did not complete before the deadline");
         }
 
         // Reward: experience is granted on completion.
