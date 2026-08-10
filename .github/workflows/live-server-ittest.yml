@@ -95,7 +95,7 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.2.0
+        uses: gradle/actions/setup-gradle@v6.3.0
 
       - name: Cache harness downloads and Spigot builds
         # Persists Paper/WorldEdit/WorldGuard jars, BuildTools, and compiled Spigot server jars
