@@ -18,7 +18,7 @@ public class AweLevelLogic extends CommonLevelLogic {
     }
 
     @Override
-    public void calculateScoreAsync(Location l, Callback<IslandScore> callback) {
+    public boolean calculateScoreAsync(Location l, Callback<IslandScore> callback) {
         throw new UnsupportedOperationException("Not supported until WorldEdit releases a Bukkit 1.13 version");
             /*
         if (running.contains(l)) {

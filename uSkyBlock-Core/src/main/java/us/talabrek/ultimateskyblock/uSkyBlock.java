@@ -893,9 +893,20 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return new IslandScore(blockScore, score.getTop());
     }
 
-    public void calculateScoreAsync(final Player player, String islandName, final Callback<us.talabrek.ultimateskyblock.api.model.IslandScore> callback) {
+    /**
+     * @return {@code true} if the callback will be invoked, {@code false} if the calculation could
+     *         not be started (already logged). See {@link LevelLogic#calculateScoreAsync}.
+     */
+    public boolean calculateScoreAsync(final Player player, String islandName, final Callback<us.talabrek.ultimateskyblock.api.model.IslandScore> callback) {
         final IslandInfo islandInfo = getIslandInfo(islandName);
-        getLevelLogic().calculateScoreAsync(islandInfo.getIslandLocation(), new Callback<>() {
+        if (islandInfo == null) {
+            // IslandLogic.getIslandInfo(String) yields null for a null name or while in
+            // maintenance mode; an unknown-but-valid name is manufactured by its CacheLoader.
+            getLogger().warning(() -> "Could not resolve island info for name '" + islandName
+                + "'; cannot calculate island level and the callback will not run.");
+            return false;
+        }
+        return getLevelLogic().calculateScoreAsync(islandInfo.getIslandLocation(), new Callback<>() {
             @Override
             public void run() {
                 IslandScore score = adjustScore(getState(), islandInfo);
