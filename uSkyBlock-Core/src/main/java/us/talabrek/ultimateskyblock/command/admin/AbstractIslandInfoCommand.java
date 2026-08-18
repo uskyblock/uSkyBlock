@@ -7,6 +7,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
@@ -30,27 +31,38 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
     }
 
     @Override
+    protected void onMissingPlayerArgument(CommandSender sender) {
+        // Handled in execute(): without a player name we can still resolve the island the sender
+        // is standing on, and only report once that fallback has failed too.
+    }
+
+    @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
         if (super.execute(sender, alias, data, args)) {
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
-            if (playerInfo != null) {
-                IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(playerInfo);
-                if (islandInfo != null && args.length > 0) {
-                    String[] subArgs = new String[args.length - 1];
-                    System.arraycopy(args, 1, subArgs, 0, subArgs.length);
-                    doExecute(sender, playerInfo, islandInfo, subArgs);
-                    return true;
-                } else {
-                    sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
-                }
+            if (playerInfo == null) {
+                return false;
             }
-        } else if (sender instanceof Player && WorldGuardHandler.getIslandNameAt(((Player) sender).getLocation()) != null) {
-            IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(WorldGuardHandler.getIslandNameAt(((Player) sender).getLocation()));
+            IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(playerInfo);
+            if (islandInfo == null) {
+                sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+                return false;
+            }
+            // super.execute() only succeeds when a player name was supplied, so args[0] is it.
+            doExecute(sender, playerInfo, islandInfo, Arrays.copyOfRange(args, 1, args.length));
+            return true;
+        }
+        if (args.length == 0 && sender instanceof Player player) {
+            String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
+            IslandInfo islandInfo = islandName != null ? uSkyBlock.getInstance().getIslandInfo(islandName) : null;
             if (islandInfo != null) {
                 doExecute(sender, null, islandInfo, args);
                 return true;
             }
+            sendErrorTr(sender, "You are not standing on an island. <muted>Supply a player name instead.");
+            return false;
         }
+        // A player name was supplied but did not resolve; super.execute() already said so.
         return false;
     }
 }

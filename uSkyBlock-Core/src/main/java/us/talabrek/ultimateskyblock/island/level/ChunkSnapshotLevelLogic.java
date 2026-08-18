@@ -14,6 +14,7 @@ import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
+import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.island.task.ChunkSnapShotTask;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -51,13 +52,18 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
     }
 
     @Override
-    public void calculateScoreAsync(final Location l, final Callback<IslandScore> callback) {
+    public boolean calculateScoreAsync(final Location l, final Callback<IslandScore> callback) {
         // TODO: 10/05/2015 - R4zorax: Ensure no overlapping calls to this one happen...
         logger.entering(this.getClass().getName(), "calculateScoreAsync");
         // is further threading needed here?
         final ProtectedRegion region = WorldGuardHandler.getIslandRegionAt(l);
         if (region == null) {
-            return;
+            // Callers schedule all of their work inside the callback, so returning quietly here
+            // strands it: /is info and /is level print nothing, and RecalculateTopTen stops
+            // draining its queue for good.
+            logger.warning(() -> "No island region at " + LocationUtil.asString(l)
+                + "; cannot calculate island level. The island's WorldGuard region is missing.");
+            return false;
         }
         RuntimeConfig.Async asyncConfig = runtimeConfigs.current().async();
         scheduler.sync(new ChunkSnapShotTask(scheduler, asyncConfig, l, region, new Callback<>() {
@@ -80,6 +86,7 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
                 }));
             }
         }));
+        return true;
     }
 
     private void calculateScoreAndCallback(ProtectedRegion region, List<ChunkSnapshot> snapshotsOverworld, ProtectedRegion netherRegion, List<ChunkSnapshot> snapshotsNether, Callback<IslandScore> callback) {

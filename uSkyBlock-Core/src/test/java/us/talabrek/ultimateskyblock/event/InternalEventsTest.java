@@ -80,7 +80,7 @@ public class InternalEventsTest {
 
         doReturn(true).when(fakePlugin).restartPlayerIsland(any(), any(), any());
         doNothing().when(fakePlugin).createIsland(any(), any());
-        doNothing().when(fakePlugin).calculateScoreAsync(any(), any(), any());
+        doReturn(true).when(fakePlugin).calculateScoreAsync(any(), any(), any());
     }
 
     @Test

@@ -61,6 +61,11 @@ public class InternalEvents implements Listener {
 
     @EventHandler
     public void onInfoEvent(IslandInfoEvent e) {
-        plugin.calculateScoreAsync(e.getPlayer(), LocationUtil.getIslandName(e.getIslandLocation()), e.getCallback());
+        if (!plugin.calculateScoreAsync(e.getPlayer(), LocationUtil.getIslandName(e.getIslandLocation()), e.getCallback())) {
+            // IslandInfoEvent exposes no failure channel, so a consumer waiting on the callback
+            // would wait forever with nothing logged on its behalf.
+            plugin.getLogger().warning(() -> "IslandInfoEvent callback will not run for island at "
+                + LocationUtil.asString(e.getIslandLocation()) + "; its level could not be calculated.");
+        }
     }
 }
