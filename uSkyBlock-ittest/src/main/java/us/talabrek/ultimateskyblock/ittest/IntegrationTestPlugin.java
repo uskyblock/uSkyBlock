@@ -1,6 +1,11 @@
 package us.talabrek.ultimateskyblock.ittest;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +29,7 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeKey;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.ittest.result.AtomicVerdictWriter;
@@ -61,6 +67,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final Duration SETUP_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
+    private static final long MESSAGE_SETTLE_TICKS = 20L;
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
@@ -128,6 +135,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             this.shutdownWhenDone = shutdownWhenDone;
             this.writer = new AtomicVerdictWriter(resultDirectory.resolve(phase + ".jsonl"));
             scenarios.add(new ScenarioDefinition("harness-canary", Verdict.Category.HARNESS_ERROR, this::canary));
+            scenarios.add(new ScenarioDefinition("message-delivery", Verdict.Category.PLUGIN_FAIL, this::messageDelivery));
             if (phase.equals("fresh")) {
                 scenarios.add(new ScenarioDefinition("initial-setup", Verdict.Category.DEPENDENCY_FAIL, this::initialSetup));
                 if (Boolean.parseBoolean(System.getProperty("uskyblock.ittest.playerFlows", "true"))) {
@@ -364,6 +372,68 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     "scheme " + entry.getKey() + " schematic is unreadable");
             }
             scenario.pass("all challenge IDs and configured schematics parsed; display item rendered");
+        }
+
+        /**
+         * Pins the message-delivery path: a {@link Component} handed to {@link Msg} must actually
+         * reach the sender.
+         *
+         * <p>Every player-facing string in uSkyBlock travels
+         * {@code Msg -> NotificationManager -> adventure-platform}. When no platform facet applies,
+         * adventure returns {@code Audience.empty()}, which discards messages silently - no
+         * exception, no console output, no clue for the player. The plugin then looks alive while
+         * being entirely mute, which is indistinguishable from a command bug.</p>
+         *
+         * <p>This scenario sends a unique marker to the console sender through the configured
+         * delivery and asserts it is emitted. It deliberately does not touch NotificationManager's
+         * internals, so it stays valid across changes to how delivery is implemented.</p>
+         */
+        private void messageDelivery(Scenario scenario) {
+            requireUsb();
+            String marker = "usb-ittest-msg-" + UUID.randomUUID();
+            AtomicBoolean seen = new AtomicBoolean();
+
+            org.apache.logging.log4j.core.Logger root;
+            try {
+                root = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+            } catch (Throwable throwable) {
+                scenario.skip("cannot observe console output on this server: " + throwable);
+                return;
+            }
+
+            AbstractAppender appender = new AbstractAppender(marker, null, null, true, Property.EMPTY_ARRAY) {
+                @Override
+                public void append(LogEvent event) {
+                    if (event == null || event.getMessage() == null) return;
+                    if (event.getMessage().getFormattedMessage().contains(marker)) seen.set(true);
+                }
+            };
+            appender.start();
+            root.addAppender(appender);
+
+            try {
+                Msg.send(Bukkit.getConsoleSender(), Component.text(marker));
+                Player player = Bukkit.getPlayerExact(PLAYER_NAME);
+                if (player != null) Msg.send(player, Component.text(marker + "-player"));
+            } catch (Throwable throwable) {
+                root.removeAppender(appender);
+                appender.stop();
+                scenario.fail(Verdict.Category.PLUGIN_FAIL, throwable);
+                return;
+            }
+
+            // Console appenders may be asynchronous; settle before judging.
+            Bukkit.getScheduler().runTaskLater(IntegrationTestPlugin.this, () -> {
+                root.removeAppender(appender);
+                appender.stop();
+                if (seen.get()) {
+                    scenario.pass("console message delivered through the configured Msg delivery");
+                } else {
+                    scenario.fail(Verdict.Category.PLUGIN_FAIL,
+                        "a Component sent through Msg never reached the console: the configured delivery "
+                            + "discarded it silently (adventure-platform yields Audience.empty() when no facet applies)");
+                }
+            }, MESSAGE_SETTLE_TICKS);
         }
 
         private final class Scenario {

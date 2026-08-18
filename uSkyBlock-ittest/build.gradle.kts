@@ -5,6 +5,9 @@ plugins {
 dependencies {
     compileOnly(projects.uSkyBlockCore)
     compileOnly(libs.org.spigotmc.spigot.api)
+    compileOnly(libs.net.kyori.adventure.api)
+    // Server-provided; used only to observe real console output in the message-delivery scenario.
+    compileOnly(libs.org.apache.logging.log4j.core)
     // See uSkyBlock-Core: WorldGuard is server-provided; drop its bundled WorldEdit lineage and the
     // guava/gson the server ships so its strict metadata pins don't conflict on the compile classpath.
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit) {
