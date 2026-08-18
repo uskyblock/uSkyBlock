@@ -98,9 +98,9 @@ public class LevelCommand extends RequireIslandCommand {
                         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, showInfo, 10L);
                     }
                 });
-                if (!started) {
+                if (!started && player.isOnline()) {
                     // showInfo only runs from the callback, so without this the command is silent.
-                    sendErrorTr(player, "Could not calculate the island level. <muted>Ask an administrator to check the console.");
+                    sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
                 }
             }, 1L);
         } else {

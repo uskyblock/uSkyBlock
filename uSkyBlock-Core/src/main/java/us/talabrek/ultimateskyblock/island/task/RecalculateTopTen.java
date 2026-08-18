@@ -28,8 +28,11 @@ public class RecalculateTopTen extends BukkitRunnable {
             boolean started = plugin.calculateScoreAsync(null, islandName, new Callback<>() {
                 @Override
                 public void run() {
-                    // We use the deprecated on purpose (the other would fail).
-                    scheduler.async(RecalculateTopTen.this);
+                    // Cast to Runnable deliberately: this class extends BukkitRunnable, and
+                    // Scheduler.async(BukkitRunnable) delegates to runTaskAsynchronously, whose
+                    // checkNotYetScheduled() throws once the instance has been scheduled - which it
+                    // has, by RecalculateRunnable. Submitting it as a plain Runnable reschedules.
+                    scheduler.async((Runnable) RecalculateTopTen.this);
                 }
             });
             if (!started) {
@@ -37,7 +40,7 @@ public class RecalculateTopTen extends BukkitRunnable {
                 // island would otherwise stall the whole recalculation for good. Skip it instead.
                 plugin.getLogger().warning(() -> "Skipping island '" + islandName
                     + "' in top-ten recalculation; its level could not be calculated.");
-                scheduler.async(RecalculateTopTen.this);
+                scheduler.async((Runnable) RecalculateTopTen.this);
             }
         } else {
             plugin.fireAsyncEvent(new uSkyBlockEvent(null, uSkyBlock.getAPI(), uSkyBlockEvent.Cause.RANK_UPDATED));

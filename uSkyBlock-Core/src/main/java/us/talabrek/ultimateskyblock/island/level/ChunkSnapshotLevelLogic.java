@@ -61,8 +61,10 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
             // Callers schedule all of their work inside the callback, so returning quietly here
             // strands it: /is info and /is level print nothing, and RecalculateTopTen stops
             // draining its queue for good.
-            logger.warning(() -> "No island region at " + LocationUtil.asString(l)
-                + "; cannot calculate island level. The island's WorldGuard region is missing.");
+            // Deliberately does not name a cause: getIslandRegionAt also returns null when the
+            // world has no WorldGuard RegionManager at all, which is a different fix.
+            logger.warning(() -> "No island region resolved at " + LocationUtil.asString(l)
+                + "; cannot calculate island level and the callback will not run.");
             return false;
         }
         RuntimeConfig.Async asyncConfig = runtimeConfigs.current().async();

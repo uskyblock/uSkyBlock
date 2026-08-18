@@ -37,12 +37,11 @@ public abstract class AbstractPlayerInfoCommand extends AbstractCommand {
     }
 
     /**
-     * Called when no player argument was supplied.
+     * Reports that no player argument was supplied.
      *
-     * <p>The default tells the sender what is missing. Subclasses that can still resolve a target
-     * another way - see {@link AbstractIslandInfoCommand}, which falls back to the island the
-     * sender is standing on - override this to stay quiet here and report for themselves once
-     * their own fallback has also failed.</p>
+     * <p>Exposed so subclasses that intercept {@link #execute} can reuse the same message - and
+     * the same msgid - once their own fallback has failed. {@link AbstractIslandInfoCommand} does
+     * exactly that for senders with no location to fall back to.</p>
      */
     protected void onMissingPlayerArgument(CommandSender sender) {
         sendErrorTr(sender, "You must supply a player name.");

@@ -27,40 +27,46 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
 
     @Override
     protected final void doExecute(CommandSender sender, PlayerInfo playerInfo) {
-        // Not used
-    }
-
-    @Override
-    protected void onMissingPlayerArgument(CommandSender sender) {
-        // Handled in execute(): without a player name we can still resolve the island the sender
-        // is standing on, and only report once that fallback has failed too.
+        // execute() is overridden and routes to the island-aware doExecute below, so the parent's
+        // player-only variant is never reached. Fail loudly rather than silently doing nothing if
+        // that ever stops being true.
+        throw new UnsupportedOperationException(
+            getClass().getName() + " routes through doExecute(CommandSender, PlayerInfo, IslandInfo, String...)");
     }
 
     @Override
     public boolean execute(CommandSender sender, String alias, Map<String, Object> data, String... args) {
+        if (args.length == 0) {
+            // No player name given. A Player can still be resolved from where they stand; any
+            // other sender has no location to fall back to.
+            if (sender instanceof Player player) {
+                String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
+                IslandInfo islandInfo = islandName != null ? uSkyBlock.getInstance().getIslandInfo(islandName) : null;
+                if (islandInfo != null) {
+                    doExecute(sender, null, islandInfo, args);
+                    return true;
+                }
+                sendErrorTr(sender, "You are not standing on an island. <muted>Supply a player name instead.");
+            } else {
+                onMissingPlayerArgument(sender);
+            }
+            return false;
+        }
         if (super.execute(sender, alias, data, args)) {
+            // super.execute() only succeeds after putting a non-null playerInfo in data, and only
+            // when a player name was supplied - so args[0] is that name.
             PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
             if (playerInfo == null) {
-                return false;
+                throw new IllegalStateException(
+                    "AbstractPlayerInfoCommand.execute returned true without storing a playerInfo");
             }
             IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(playerInfo);
             if (islandInfo == null) {
                 sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
                 return false;
             }
-            // super.execute() only succeeds when a player name was supplied, so args[0] is it.
             doExecute(sender, playerInfo, islandInfo, Arrays.copyOfRange(args, 1, args.length));
             return true;
-        }
-        if (args.length == 0 && sender instanceof Player player) {
-            String islandName = WorldGuardHandler.getIslandNameAt(player.getLocation());
-            IslandInfo islandInfo = islandName != null ? uSkyBlock.getInstance().getIslandInfo(islandName) : null;
-            if (islandInfo != null) {
-                doExecute(sender, null, islandInfo, args);
-                return true;
-            }
-            sendErrorTr(sender, "You are not standing on an island. <muted>Supply a player name instead.");
-            return false;
         }
         // A player name was supplied but did not resolve; super.execute() already said so.
         return false;

@@ -61,11 +61,14 @@ public class InternalEvents implements Listener {
 
     @EventHandler
     public void onInfoEvent(IslandInfoEvent e) {
-        if (!plugin.calculateScoreAsync(e.getPlayer(), LocationUtil.getIslandName(e.getIslandLocation()), e.getCallback())) {
+        String islandName = LocationUtil.getIslandName(e.getIslandLocation());
+        if (!plugin.calculateScoreAsync(e.getPlayer(), islandName, e.getCallback())) {
             // IslandInfoEvent exposes no failure channel, so a consumer waiting on the callback
-            // would wait forever with nothing logged on its behalf.
-            plugin.getLogger().warning(() -> "IslandInfoEvent callback will not run for island at "
-                + LocationUtil.asString(e.getIslandLocation()) + "; its level could not be calculated.");
+            // cannot learn this; the log is the only signal. Reuse the already-computed name rather
+            // than re-deriving from the Location, whose World is a WeakReference that throws once
+            // the world is unloaded.
+            plugin.getLogger().warning(() -> "IslandInfoEvent callback will not run for island '"
+                + islandName + "'; its level could not be calculated.");
         }
     }
 }

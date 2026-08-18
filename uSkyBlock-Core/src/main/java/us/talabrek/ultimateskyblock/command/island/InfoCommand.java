@@ -123,13 +123,13 @@ public class InfoCommand extends RequireIslandCommand {
                 // showInfo carries every message this command produces; without it the command is
                 // silent. The cooldown must go too, or the retry answers "be patient" instead.
                 PatienceTester.stopRunning(player, "usb.island.info.active");
-                sendErrorTr(player, "Could not calculate the island level. <muted>Ask an administrator to check the console.");
+                sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
                 return false;
             }
         } catch (Exception e) {
             PatienceTester.stopRunning(player, "usb.island.info.active");
             logger.log(Level.SEVERE, "Error while calculating Island Level", e);
-            sendErrorTr(player, "Could not calculate the island level. <muted>Ask an administrator to check the console.");
+            sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
             return false;
         }
         return true;

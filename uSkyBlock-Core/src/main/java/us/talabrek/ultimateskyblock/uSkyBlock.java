@@ -900,7 +900,9 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public boolean calculateScoreAsync(final Player player, String islandName, final Callback<us.talabrek.ultimateskyblock.api.model.IslandScore> callback) {
         final IslandInfo islandInfo = getIslandInfo(islandName);
         if (islandInfo == null) {
-            getLogger().warning(() -> "No island known as '" + islandName
+            // IslandLogic.getIslandInfo(String) yields null for a null name or while in
+            // maintenance mode; an unknown-but-valid name is manufactured by its CacheLoader.
+            getLogger().warning(() -> "Could not resolve island info for name '" + islandName
                 + "'; cannot calculate island level and the callback will not run.");
             return false;
         }
