@@ -458,7 +458,225 @@ ranks:
             - emerald:5
           currency: 1000
           xp: 1000
+
+  # ===============================================
   Tier2:
+    name: '&aNovice n°2'
+    displayItem: LIME_TERRACOTTA
+    resetInHours: 20
+    requires:
+      # means disabled in effect
+      rankLeeway: 99
+      challenges:
+        - applecollector
+    challenges:
+      beekeeper:
+        name: '&9Beekeeper'
+        description: Get a natural hive.
+        type: onIsland
+        displayItem: honeycomb_block
+        lockedDisplayItem: BLUE_STAINED_GLASS_PANE
+        radius: 50
+        requiredChallenges:
+          - applecollector
+        requiredBlocks:
+          - bee_nest:6
+        reward:
+          text: some honey comb blocks and 3 campfires
+          items:
+            - honeycomb_block:20
+            - campfire:3
+          currency: 100
+          xp: 200
+      masterbeekeeper:
+        name: '&9Master beekeeper'
+        description: Get 3 hives and some honey.
+        type: onIsland
+        displayItem: honey_block
+        lockedDisplayItem: BLUE_STAINED_GLASS_PANE
+        radius: 50
+        requiredChallenges:
+          - beekeper
+        requiredBlocks:
+          - beehive:3
+          - honeycomb_block:10
+          - honey_block:10
+        reward:
+          text: Honey
+          items:
+            - honeycomb_block:20
+            - campfire:3
+          currency: 100
+          xp: 200
+      mangrove:
+        name: '&7Mangrove'
+        description: Farm all the saplings to get a propagule
+        type: onPlayer
+        requiredItems:
+          - oak_sapling:1
+          - birch_sapling:1
+          - spruce_sapling:1
+          - jungle_sapling:1
+          - acacia_sapling:1
+          - dark_oak_sapling:4
+        displayItem: mangrove_propagule
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: mangrove propagule x 2
+          items:
+            - mangrove_propagule:2
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Mangrove Propagule x1
+          items:
+            - mangrove_propagule:1
+          currency: 10
+          xp: 10
+      uninterruptedcroaking:
+        name: '&7Uninterrupted croaking'
+        description: Farm the mangrove tree to get a frog
+        type: onPlayer
+        requiredItems:
+          - mangrove_roots:16
+          - mangrove_leaves:16
+          - mangrove_propagule:4
+          - mangrove_log:16
+        displayItem: frog_spawn_egg
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Tadpole Bucket x 2
+          items:
+            - tadpole_bucket:2
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Tadpole Bucket x1
+          items:
+            - tadpole_bucket:1
+          currency: 25
+          xp: 25
+      honeyproducer:
+        name: '&5Honey producer'
+        description: Produce some honey.
+        type: onPlayer
+        requiredItems:
+          - honey_block:7
+          - honeycomb:14
+        requiredChallenges:
+          - masterbeekeper
+        displayItem: honey_bottle
+        lockedDisplayItem: PURPLE_STAINED_GLASS_PANE
+        reward:
+          text: 16 dirt, 10% chance to get a beehive and 1% chance to get a bee spawn egg
+          items:
+            - dirt:16
+            - '{p=0.1}bee_nest:1'
+            - '{p=0.01}bee_spawn_egg:1'
+          permission: usb.biome.deep_ocean
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 16 dirt, 10% chance to get a beehive and 1% chance to get a bee spawn egg
+          items:
+            - dirt:16
+            - '{p=0.1}bee_nest:1'
+            - '{p=0.01}bee_spawn_egg:1'
+          currency: 25
+          xp: 25
+      paradiseordesolation:
+        name: '&7Paradise or Desolation'
+        description: Farm all the saplings to get a cherry tree or a pale oak
+        type: onPlayer
+        requiredItems:
+          - oak_sapling:16
+          - birch_sapling:16
+          - spruce_sapling:16
+          - jungle_sapling:16
+          - acacia_sapling:16
+          - dark_oak_sapling:16
+          - mangrove_propagule:16
+        displayItem: cherry_sapling
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Cherry Sapling or Pale oak Sappling x 4 and some petals or some eye blossom
+          items:
+            - '{p=0.5}cherry_sapling:4'
+            - '{p=0.5}pale_oak_sapling:4'
+            - '{p=0.5}pink_petals:4'
+            - '{p=0.5}closed_eyeblossom:4'
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Cherry Sapling or Pale oak Sappling x 2 and some petals or some eye blossom
+          items:
+            - '{p=0.5}cherry_sapling:2'
+            - '{p=0.5}pale_oak_sapling:2'
+            - '{p=0.5}pink_petals:2'
+            - '{p=0.5}closed_eyeblossom:2'
+          currency: 50
+          xp: 10
+      noisycherubs:
+        name: '&7Noisy cherubs'
+        description: Obtain the Allay using diamonds
+        type: onPlayer
+        requiredItems:
+          - diamond:1
+        displayItem: allay_spawn_egg
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Allay Spawn Egg x1 and Wayfinder Armor Trim
+          items:
+            - allay_spawn_egg:1
+            - wayfinder_armor_trim_smithing_template:1
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Allay Spawn Egg x1 and Wayfinder Armor Trim
+          items:
+            - allay_spawn_egg:1
+            - wayfinder_armor_trim_smithing_template:1
+          currency: 30
+          xp: 10
+      nicesmell:
+        name: '&7Nice smell'
+        description: Find a sniffer in the sand
+        type: onPlayer
+        requiredItems:
+          - sand:16
+          - gravel:16
+        displayItem: sniffer_egg
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Sniffer Egg x1
+          items:
+            - sniffer_egg:1
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Sniffer Egg x1
+          items:
+            - sniffer_egg:1
+          currency: 50
+          xp: 25
+
+  # ===============================================
+  Tier3:
     name: '&aAdept'
     displayItem: lime_terracotta
     resetInHours: 20
@@ -475,6 +693,9 @@ ranks:
         description: Collect all types of wood logs.
         type: onPlayer
         requiredItems:
+          - mangrove_log:16;+2
+          - pale_oak_log:16;+2
+          - cherry_log:16;+2
           - oak_log:16;+2
           - spruce_log:16;+2
           - birch_log:16;+2
@@ -689,20 +910,348 @@ ranks:
           - glowstone:16;+2
           - coarse_dirt:4;+2
         reward:
-          text: 1 ghast tear, 1 magic bow
+          text: 1 ghast tear, 1 magic bow and some nylium
           items:
             - ghast_tear:1
-            - 'bow[enchantments={infinity:1,unbreaking:3}]:1'
+            - bow[enchantments={infinity:1,power:5,unbreaking:3}]:1
+            - warped_nylium:1
+            - crimson_nylium:1
+          permission: usb.biome.nether_wastes
           currency: 40
           xp: 40
         repeatReward:
-          text: a blaze-rod and a chance of ghast tear
+          text: a blaze-rod, a chance of ghast tear and a chance of some nylium
           items:
             - blaze_rod:1
             - '{p=0.10}ghast_tear:1'
+            - '{p=0.30}warped_nylium:1'
+            - '{p=0.30}crimson_nylium:1'
           currency: 20
           xp: 20
-  Tier3:
+
+  # ===============================================
+  Tier4:
+    name: '&aHot as hell'
+    displayItem: lime_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+        - cobblestonegenerator
+        - netherportal
+        - homeowner
+    challenges:
+      reforestationofhell:
+        name: '&9Reforestation of Hell'
+        description: Grow some nether trees.
+        type: onIsland
+        displayItem: warped_wart_block
+        lockedDisplayItem: blue_stained_glass_pane
+        radius: 50
+        requiredChallenges:
+          - nethermining
+        requiredBlocks:
+          - warped_wart_block:16
+          - nether_wart_block:16
+          - warped_stem:10
+          - crimson_stem:10
+          - warped_nylium:1
+          - crimson_nylium:1
+          - warped_fungus:1
+          - crimson_fungus:1
+          - weeping_vines_plant:1
+          - twisting_vines_plant:1
+        reward:
+          text: 10 soul soil, 10 blue ice, the access to the warped forest biome and Rib Armor Trim
+          items:
+            - soul_soil:10
+            - blue_ice:10
+            - rib_armor_trim_smithing_template:1
+          permission: usb.biome.warped_forest
+          currency: 100
+          xp: 200
+      helllumberjack:
+        name: '&7Lumberjack of Hell'
+        description: Get some wood from the nether trees
+        type: onPlayer
+        requiredItems:
+          - crimson_stem:16
+          - warped_stem:16
+          - nether_wart_block:16
+          - warped_wart_block:16
+        displayItem: crimson_hyphae
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Soul Soil x4, Crimson Forest Biome and Snout armor trim
+          items:
+            - snout_armor_trim_smithing_template:1
+            - soul_soil:4
+          permission: usb.biome.crimson_forest
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: 4 soul soil, 1 iron ore, 1 redstone and 20% chance to get Snout or Rib Armor trim
+          items:
+            - soul_soil:4
+            - iron_ore:1
+            - redstone_ore:1
+            - '{p=0.2}snout_armor_trim_smithing_template:1'
+            - '{p=0.2}rib_armor_trim_smithing_template:1'
+          currency: 20
+          xp: 20
+      goldfarm:
+        name: '&7Gold Farm'
+        description: Get a huge amount of gold from a gold farm
+        type: onPlayer
+        requiredItems:
+          - gold_block:10
+        displayItem: gold_ingot
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Snout banner Pattern, Biome soul sand valley, 1 blue Ice
+          items:
+            - piglin_banner_pattern:1
+            - blue_ice:1
+          permission: usb.biome.soul_sand_valley
+          currency: 50
+          xp: 50
+      piglineconomy:
+        name: '&7Piglin Economy'
+        description: Trade some gold with piglins, you'll need a soul speed 3 enchanted book
+        type: onPlayer
+        requiredItems:
+          - enchanted_book[minecraft:stored_enchantments={soul_speed:3}]:1
+          - crying_obsidian:4;+1
+          - fire_charge:16;+1
+        displayItem: enchanted_book
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Soul Soil x4, Basalt Delta Biome and Netherite Upgrade Templates
+          items:
+            - netherite_upgrade_smithing_template:1
+            - '{p=0.4}snout_armor_trim_smithing_template:1'
+            - soul_soil:4
+          permission: usb.biome.basalt_deltas
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: 4 soul soil, 1 iron ore, 1 redstone ore, 75% chance of getting the netherite upgrade template and 30% chance to get Snout or Rib Armor trim
+          items:
+            - soul_soil:4
+            - iron_ore:1
+            - redstone_ore:1
+            - '{p=0.75}netherite_upgrade_smithing_template:1'
+            - '{p=0.3}snout_armor_trim_smithing_template:1'
+          currency: 20
+          xp: 20
+      delta:
+        name: '&7Delta'
+        description: Farm some blocs of the Basalts Delta
+        type: onPlayer
+        requiredItems:
+          - basalt:64
+          - blackstone:64
+          - polished_blackstone:8
+          - polished_blackstone_bricks:8
+          - chiseled_polished_blackstone:8
+        displayItem: blackstone
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Gilded Blackstone x8, redstone ore x4, Blue ice x2
+          items:
+            - gilded_blackstone:8
+            - redstone_ore:4
+            - blue_ice:2
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Gilded Blackstone x2, redstone ore x3, Blue ice
+          items:
+            - gilded_blackstone:2
+            - redstone_ore:3
+            - blue_ice:1
+          currency: 20
+          xp: 20
+      hellsrespawn:
+        name: '&7Hell’s Respawn'
+        description: Get a respawn Anchor
+        type: onPlayer
+        requiredItems:
+          - respawn_anchor:1
+        displayItem: respawn_anchor
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Gilded Blackstone x8, Redstone ore x4 and a chance to get an ancient debris
+          items:
+            - gilded_blackstone:8
+            - redstone_ore:4
+            - '{p=0.7}ancient_debris:1'
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Gilded Blackstone x2, redstone ore x3, Blue ice
+          items:
+            - gilded_blackstone:2
+            - redstone_ore:2
+            - '{p=0.5}ancient_debris:1'
+          currency: 15
+          xp: 15
+      soulconversion:
+        name: '&7Soul Conversion'
+        description: Trade some soul sand for some soul soil
+        type: onPlayer
+        requiredItems:
+          - soul_sand:32
+        displayItem: soul_soil
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Soul Soil x32
+          items:
+            - soul_soil:32
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Soul soil x16
+          items:
+            - soul_soil:16
+          currency: 15
+          xp: 15
+      hellfarm:
+        name: '&9Hell Farm'
+        description: Create an hoglin farm.
+        type: onIsland
+        displayItem: crimson_fence
+        radius: 40
+        requiredEntities:
+          - hoglin:8
+        reward:
+          text: 1 strider, 1 each fungus and one 1 each nylium
+          items:
+            - warped_nylium:1
+            - crimson_nylium:1
+            - strider_spawn_egg:1
+            - warped_fungus:1
+            - crimson_fungus:1
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 1 strider, 1 each fungus and one 1 each nylium
+          items:
+            - warped_nylium:1
+            - crimson_nylium:1
+            - strider_spawn_egg:1
+            - warped_fungus:1
+            - crimson_fungus:1
+          currency: 25
+          xp: 25
+
+  # ===============================================
+  Tier5:
+    name: '&aGet Some Veggies'
+    displayItem: lime_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+        - cobblestonegenerator
+        - netherportal
+        - homeowner
+    challenges:
+      hellrepopulation:
+        name: '&9Hell Repopulation'
+        description: Get some Happy Ghasts.
+        type: onIsland
+        displayItem: dried_ghast
+        lockedDisplayItem: blue_stained_glass_pane
+        radius: 50
+        requiredChallenges:
+          - nethermining
+        requiredEntities:
+          - happy_ghast:5
+        reward:
+          text: Some dry grass burned by the ghast and a chance to get a froglight
+          items:
+            - short_dry_grass:10
+            - tall_dry_grass:10
+            - music_disc_tears:1
+            - '{p=0.4}pearlescent_froglight:20'
+            - '{p=0.4}verdant_froglight:20'
+            - '{p=0.4}ochre_froglight:20'
+          permission: usb.biome.warped_forest
+          currency: 100
+          xp: 200
+        repeatReward:
+          text: 1 redstone ore, 1 iron ore
+          items:
+            - short_dry_grass:2
+            - tall_dry_grass:2
+            - '{p=0.2}music_disc_tears:1'
+            - '{p=0.4}pearlescent_froglight:5'
+            - '{p=0.4}verdant_froglight:5'
+            - '{p=0.4}ochre_froglight:5'
+          currency: 15
+          xp: 15
+      mesmerinzingfirefly:
+        name: '&9Mesmerinzing Firefly'
+        description: Trade some cactus flower for Firefly bush or normal bushes.
+        type: onIsland
+        displayItem: firefly_bush
+        lockedDisplayItem: blue_stained_glass_pane
+        radius: 50
+        requiredChallenges:
+          - nethermining
+        requiredItems:
+          - cactus_flower:7;+1
+        reward:
+          text: Bushes x 10 and Firefly Bushes x 10
+          items:
+            - firefly_bush:10
+            - bush:10
+          permission: usb.biome.warped_forest
+          currency: 100
+          xp: 200
+        repeatReward:
+          text: Bushes x 4  and Firefly Bushes x 4
+          items:
+            - firefly_bush:4
+            - bush:4
+          currency: 15
+          xp: 15
+      floorflowers:
+        name: '&9Floor Flowers'
+        description: Trade leaf litters to get some wild flowers.
+        type: onIsland
+        displayItem: wildflowers
+        lockedDisplayItem: blue_stained_glass_pane
+        radius: 50
+        requiredChallenges:
+          - nethermining
+        requiredItems:
+          - leaf_litter:7;+1
+        reward:
+          text: WildFlowers x 10
+          items:
+            - wildflowers:10
+          currency: 100
+          xp: 200
+        repeatReward:
+          text: WildFlowers x 4
+          items:
+            - wildflowers:4
+          currency: 15
+          xp: 15
+
+
+  # ===============================================
+  Tier6:
     name: '&eExpert'
     displayItem: yellow_terracotta
     resetInHours: 20
@@ -739,6 +1288,9 @@ ranks:
         requiredChallenges:
           - toolmaker
         requiredItems:
+          - stripped_pale_oak_log:8;+2
+          - stripped_cherry_log:8;+2
+          - stripped_mangrove_log:8;+2
           - stripped_oak_log:8;+2
           - stripped_spruce_log:8;+2
           - stripped_birch_log:8;+2
@@ -840,22 +1392,25 @@ ranks:
         displayItem: cod
         lockedDisplayItem: purple_stained_glass_pane
         reward:
-          text: 10 lapis blocks, 20 prismarine, kelp, deep-ocean
+          text: 10 lapis blocks, 20 prismarine, kelp, deep-ocean biome and a chance of coast armor trim
           items:
             - lapis_block:10
             - prismarine:20
             - kelp:1
             - '{p=0.20}prismarine_crystals:5'
+            - 'coast_armor_trim_smithing_template:1'
           permission: usb.biome.deep_ocean
           currency: 50
           xp: 50
         repeatReward:
-          text: 2 lapis, 5 prismarine, kelp and a chance at prismarine crystals
+          text: 2 lapis, 5 prismarine, kelp, deep-ocean biome, a chance at prismarine crystals and a chance of coast armor trim
           items:
             - lapis_lazuli:2
             - prismarine:5
             - kelp:1
             - '{p=0.20}prismarine_crystals:5'
+            - '{p=0.2}coast_armor_trim_smithing_template:1'
+          permission: usb.biome.deep_ocean
           currency: 25
           xp: 25
       woolcollector:
@@ -884,7 +1439,7 @@ ranks:
           - red_wool:2;+4
           - black_wool:2;+4
         reward:
-          text: 2 diamonds, sheep, emerald, flowers
+          text: 2 diamonds, sheep, emerald, flowers, flower-forest biome
           items:
             - diamond:2
             - emerald:1
@@ -895,12 +1450,13 @@ ranks:
           currency: 70
           xp: 70
         repeatReward:
-          text: emerald, sheep, flowers
+          text: emerald, sheep, flowers, flower-forest biome
           items:
             - emerald:1
             - sheep_spawn_egg:1
             - rose_bush:1
             - peony:1
+          permission: usb.biome.flower_forest
           currency: 35
           xp: 35
       maestro:
@@ -950,10 +1506,11 @@ ranks:
           - monsterfarm
           - applecollector
         requiredBlocks:
-          - oak_door:30
+          - red_bed:6
         requiredEntities:
-          - Villager:10
-          - IRON_GOLEM:1
+          - villager:6
+          - iron_golem:1
+          - zombie:1
         reward:
           text: 2 gold blocks, 1 diamond block
           items:
@@ -984,8 +1541,437 @@ ranks:
             - '{p=0.15}diamond:1'
           currency: 40
           xp: 40
+
   # ===============================================
-  Tier4:
+  Tier7:
+    name: '&aAlways Deeper'
+    displayItem: lime_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+        - toolmaker
+        - torchmaker
+    challenges:
+      shoppingmall:
+        name: '&9Shopping Mall'
+        description: Create an shopping mall with each villager profession.
+        type: onIsland
+        displayItem: emerald_block
+        radius: 40
+        requiredChallenges:
+          - ironfarm
+        requiredEntities:
+          - Villager:{"Profession":"Armorer"}
+          - Villager:{"Profession":"Butcher"}
+          - Villager:{"Profession":"Cartographer"}
+          - Villager:{"Profession":"Cleric"}
+          - Villager:{"Profession":"Farmer"}
+          - Villager:{"Profession":"Fisherman"}
+          - Villager:{"Profession":"Fletcher"}
+          - Villager:{"Profession":"Leatherworker"}
+          - Villager:{"Profession":"Librarian"}
+          - Villager:{"Profession":"Mason"}
+          - Villager:{"Profession":"Shepherd"}
+          - Villager:{"Profession":"Toolsmith"}
+          - Villager:{"Profession":"Weaponsmith"}
+        reward:
+          text: 3 emerald blocks, a chance of getting ominous bottles and a bell
+          items:
+            - emerald_block:3
+            - '{p=0.5}ominous_bottle[ominous_bottle_amplifier=0]:1'
+            - '{p=0.5}ominous_bottle[ominous_bottle_amplifier=1]:1'
+            - '{p=0.5}ominous_bottle[ominous_bottle_amplifier=2]:1'
+            - '{p=0.5}ominous_bottle[ominous_bottle_amplifier=3]:1'
+            - '{p=0.5}ominous_bottle[ominous_bottle_amplifier=4]:1'
+            - bell:1
+          currency: 500
+          xp: 100
+      cursedprotector:
+        name: '&5Cursed Protector'
+        description: Defeat a raid.
+        type: onPlayer
+        requiredItems:
+          - totem_of_undying:1
+        displayItem: totem_of_undying
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 4 emeralds, a panda egg and Sentry Armor Trim and the access to the raid farm challenge
+          items:
+            - emerald:4
+            - sentry_armor_trim_smithing_template:1
+            - panda_spawn_egg:1
+          currency: 70
+          xp: 70
+        repeatReward:
+          text: 4 emeralds, a panda egg and Sentry Armor Trim
+          items:
+            - emerald:4
+            - sentry_armor_trim_smithing_template:1
+            - panda_spawn_egg:1
+          currency: 35
+          xp: 35
+      raidfarmer:
+        name: '&5Raid Farmer'
+        description: Get yourself some weapon to defeats more raiders.
+        type: onPlayer
+        requiredChallenges:
+          - cursedprotector
+        requiredItems:
+          - iron_axe:2
+          - bow:2
+          - shield:2
+          - iron_sword:2
+          - arrow:256
+          - iron_helmet:1
+          - iron_chestplate:1
+          - iron_leggings:1
+          - iron_boots:1
+        displayItem: iron_axe
+        lockedDisplayItem: purple_stained_glass_pane
+        reward:
+          text: 2 of each ominous bottle
+          items:
+            - ominous_bottle[ominous_bottle_amplifier=0]:2
+            - ominous_bottle[ominous_bottle_amplifier=1]:2
+            - ominous_bottle[ominous_bottle_amplifier=2]:2
+            - ominous_bottle[ominous_bottle_amplifier=3]:2
+            - ominous_bottle[ominous_bottle_amplifier=4]:2
+          currency: 150
+          xp: 70
+        repeatReward:
+          text: 30% chance of getting 2 ominous bottle of one of 5 levels
+          items:
+            - '{p=0.3}ominous_bottle[ominous_bottle_amplifier=0]:2'
+            - '{p=0.3}ominous_bottle[ominous_bottle_amplifier=1]:2'
+            - '{p=0.3}ominous_bottle[ominous_bottle_amplifier=2]:2'
+            - '{p=0.3}ominous_bottle[ominous_bottle_amplifier=3]:2'
+            - '{p=0.3}ominous_bottle[ominous_bottle_amplifier=4]:2'
+          currency: 35
+          xp: 35
+      abyssalconversion:
+        name: '&7Abyssal conversion'
+        description: Convert some stone in deepslate
+        type: onPlayer
+        requiredItems:
+          - stone:32
+        displayItem: deepslate
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: deepslate x32
+          items:
+            - deepslate:32
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Deepslate x16
+          items:
+            - deepslate:16
+          currency: 15
+          xp: 15
+      ironabyssalconversion:
+        name: '&7Iron Abyssal conversion'
+        description: Convert some iron in iron deepslate
+        type: onPlayer
+        requiredItems:
+          - iron_ore:4
+        displayItem: deepslate_iron_ore
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: deepslate_iron_ore x4
+          items:
+            - deepslate_iron_ore:4
+          currency: 50
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Deepslate Iron Ore x 4
+          items:
+            - deepslate_iron_ore:4
+          currency: 15
+          xp: 15
+      goldabyssalconversion:
+        name: '&7Gold Abyssal conversion'
+        description: Convert some gold in gold deepslate
+        type: onPlayer
+        requiredItems:
+          - gold_ore:4
+        displayItem: deepslate_gold_ore
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: deepslate_gold_ore x4
+          items:
+            - deepslate_gold_ore:4
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Deepslate Gold Ore x 4
+          items:
+            - deepslate_gold_ore:4
+          currency: 15
+          xp: 15
+      redstoneabyssalconversion:
+        name: '&7Redstone Abyssal conversion'
+        description: Convert some redstone in redstone deepslate
+        type: onPlayer
+        requiredItems:
+          - redstone_ore:4
+        displayItem: deepslate_redstone_ore
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Deepslate Redstone Ore x4
+          items:
+            - deepslate_redstone_ore:4
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Deepslate Redstone Ore x 4
+          items:
+            - deepslate_redstone_ore:4
+          currency: 15
+          xp: 15
+      spying:
+        name: '&7Spying'
+        description: Farm Amethyst and craft a spyglass
+        type: onPlayer
+        requiredItems:
+          - amethyst_shard:32
+          - tuff:32
+          - spyglass:1
+        displayItem: amethyst_shard
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Budding Amethyst x2 and a bucket of Axolotl
+          items:
+            - budding_amethyst:2
+            - axolotl_bucket:2
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Budding Amethyst x1, bucket of Axolotl x1
+          items:
+            - budding_amethyst:1
+            - axolotl_bucket:1
+          currency: 25
+          xp: 25
+
+  # ===============================================
+  Tier8:
+    name: '&cColorful Mine'
+    displayItem: orange_terracotta
+    resetInHours: 20
+    requires:
+
+      # disabled
+      rankLeeway: 99
+      challenges:
+        - abyssalconversion
+    challenges:
+      composting:
+        name: '&7Composting'
+        description: Use your bone blocks to get moss
+        type: onPlayer
+        requiredItems:
+          - bone_block:1152
+        displayItem: moss_block
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Moss Block x 1 or Pale moss block x 1
+          items:
+            - '{p=0.5}moss_block:1'
+            - '{p=0.5}pale_moss_block:1'
+          currency: 500
+          xp: 400
+        repeatReward:
+          text: Moss Block x 1 orPale moss block x1
+          items:
+            - '{p=0.5}moss_block:1'
+            - '{p=0.5}pale_moss_block:1'
+          currency: 25
+          xp: 25
+      lushland:
+        name: '&7Lush Land'
+        description: Get some vegies with other vegies
+        type: onPlayer
+        requiredItems:
+          - flowering_azalea:10
+          - azalea:10
+          - moss_block:20
+        displayItem: glow_berries
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Glow Berries x1, Small Dripleaf x1
+          items:
+            - glow_berries:1
+            - small_dripleaf:1
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Glow berries x1, Small Dripleaf x1, Spore Blossom x1, Wild Armor Trim
+          items:
+            - glow_berries:1
+            - small_dripleaf:1
+            - spore_blossom:1
+            - wild_armor_trim_smithing_template:1
+          currency: 25
+          xp: 25
+      spicyland:
+        name: '&7Spicy Land'
+        description: use the lush cave material to get some dripstone
+        type: onPlayer
+        requiredItems:
+          - glow_berries:64
+          - big_dripleaf:64
+          - spore_blossom:16
+          - moss_block:40
+        displayItem: dripstone_block
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Dripstone x 1
+          items:
+            - pointed_dripstone:1
+          currency: 100
+          xp: 50
+        repeatReward:
+          text: Dripstone x 1
+          items:
+            - pointed_dripstone:1
+          currency: 25
+          xp: 25
+      coppermine:
+        name: '&7Copper Mine'
+        description: Extract copper from dripstones mines
+        type: onPlayer
+        requiredItems:
+          - pointed_dripstone:16
+          - dripstone_block:4
+          - stone:16
+          - deepslate:16
+        displayItem: copper_ore
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Copper Ore x 8, Deepslate Copper Ore x 8
+          items:
+            - copper_ore:8
+            - deepslate_copper_ore:8
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Copper Ore x4, Deepslate Copper Ore x4
+          items:
+            - copper_ore:4
+            - deepslate_copper_ore:4
+          currency: 25
+          xp: 25
+      tuffmine:
+        name: '&7Tuff Mine'
+        description: Extract tuff from deep mines
+        type: onPlayer
+        requiredItems:
+          - deepslate:32
+        displayItem: tuff
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Tuff x8
+          items:
+            - tuff:8
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: tuffx8
+          items:
+            - tuff:8
+          currency: 25
+          xp: 25
+      amethystmine:
+        name: '&7Amethyst Mine'
+        description: Extract Amethyst from deep mines
+        type: onPlayer
+        requiredItems:
+          - deepslate:32
+          - tuff:32
+        displayItem: amethyst_shard
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Budding Amethyst x8
+          items:
+            - budding_amethyst:8
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Budding Amethyst x1, Ward Armor Trim x 1
+          items:
+            - budding_amethyst:1
+            - ward_armor_trim_smithing_template:8
+          currency: 25
+          xp: 25
+      hornedfriend:
+        name: '&7Horned Friend'
+        description: Farm some mountains material and get a goat from spawning it in the biome
+        type: onPlayer
+        requiredItems:
+          - snow_block:12
+          - amethyst_block:32
+          - tuff:32
+        displayItem: goat_horn
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 1x Goat Horn, 16x ice & goat egg
+          items:
+            - goat_horn:1
+            - ice:16
+          permission: usb.biome.frozen_peaks
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: 4x ice goat egg
+          items:
+            - ice:4
+            - goat_spawn_egg:1
+          currency: 25
+          xp: 25
+      backfromthemine:
+        name: '&7Back from the mine'
+        description: Farm the blocks from the deep caves
+        type: onPlayer
+        requiredItems:
+          - amethyst_block:20
+          - deepslate:60
+          - raw_gold_block:4
+          - raw_iron_block:4
+          - tuff:16
+        displayItem: raw_gold_block
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: budding_amethystx2 and Axolotl Bucket
+          items:
+            - budding_amethyst:2
+            - axolotl_bucket:2
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Budding Amethyst x1, bucket of Axolotl x1
+          items:
+            - budding_amethyst:1
+            - axolotl_bucket:1
+          currency: 25
+          xp: 25
+
+  # ===============================================
+  Tier9:
     name: '&cMaster'
     displayItem: orange_terracotta
     resetInHours: 20
@@ -1020,7 +2006,7 @@ ranks:
           - red_stained_glass:8;+2
           - black_stained_glass:8;+2
         reward:
-          text: 2 diamonds, 2 disks, 1 emeralds
+          text: 2 diamonds, 2 disks, 1 emeralds, flower-forest biome
           items:
             - diamond:2
             - music_disc_ward:1
@@ -1032,13 +2018,14 @@ ranks:
           currency: 70
           xp: 70
         repeatReward:
-          text: 30% chance on 1 or 2 disks, 1 emeralds
+          text: 30% chance on 1 or 2 disks, 1 emeralds, flower-forest biome
           items:
             - '{p=0.3}music_disc_ward:1'
             - '{p=0.3}music_disc_11:1'
             - emerald:1
             - sunflower:1
             - lilac:1
+          permission: usb.biome.flower_forest
           currency: 35
           xp: 35
       carpenter:
@@ -1122,9 +2109,10 @@ ranks:
         displayItem: heart_of_the_sea
         lockedDisplayItem: purple_stained_glass_pane
         reward:
-          text: heart-of-the-sea, nautilus shell and a turtle
+          text: heart-of-the-sea, nautilus shell, an armor trim, a turtle egg, and deep-ocean biome
           items:
             - nautilus_shell:1
+            - tide_armor_trim_smithing_template:1
             - heart_of_the_sea:1
             - turtle_spawn_egg:1
             - '{p=0.1}nautilus_shell:1'
@@ -1132,12 +2120,14 @@ ranks:
           currency: 50
           xp: 50
         repeatReward:
-          text: nautilus shell, turtle and a chance of a heart
+          text: nautilus shell, turtle and a chance of a heart of the sea, tide armor trim, and deep-ocean biome
           items:
             - nautilus_shell:1
             - turtle_spawn_egg:1
             - '{p=0.05}heart_of_the_sea:1'
             - '{p=0.1}nautilus_shell:1'
+            - '{p=0.2}tide_armor_trim_smithing_template:1'
+          permission: usb.biome.deep_ocean
           currency: 25
           xp: 25
       horsingaround:
@@ -1149,7 +2139,7 @@ ranks:
           - lead:8;+2
           - carrot_on_a_stick:1
           - shears:1
-        requirecChallenges:
+        requiredChallenges:
           - wheatfarmer
         displayItem: hay_block
         lockedDisplayItem: brown_stained_glass_pane
@@ -1177,7 +2167,7 @@ ranks:
         displayItem: slime_ball
         lockedDisplayItem: purple_stained_glass_pane
         reward:
-          text: 1 diamond, 1 emeralds, swampland
+          text: 1 diamond, 1 emeralds, and swamp biome
           items:
             - diamond:1
             - emerald:1
@@ -1185,10 +2175,11 @@ ranks:
           currency: 70
           xp: 70
         repeatReward:
-          text: 1 redstone ore, 1 emeralds
+          text: 1 redstone ore, 1 emeralds, and swamp biome
           items:
             - redstone_ore:1
             - emerald:1
+          permission: usb.biome.swamp
           currency: 35
           xp: 35
       animalfarm:
@@ -1291,7 +2282,238 @@ ranks:
           xp: 35
 
   # ===============================================
-  Tier5:
+  Tier10:
+    name: '&cMaster of puppets'
+    displayItem: orange_terracotta
+    resetInHours: 20
+    requires:
+
+      # disabled
+      rankLeeway: 99
+      challenges:
+        - expertbuilder
+    challenges:
+      froglight:
+        name: '&7Froglight'
+        description: Get some sculk from froglights
+        type: onPlayer
+        requiredItems:
+          - pearlescent_froglight:1
+          - ochre_froglight:1
+          - verdant_froglight:1
+        displayItem: ochre_froglight
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 4 x Sculk Catalyst, 4x redstone ore, 4x gold ore
+          items:
+            - sculk_catalyst:4
+            - redstone_ore:4
+            - gold_ore:4
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: 1 x Sculk Catalyst, 1x redstone ore, 1x gold ore
+          items:
+            - sculk_catalyst:1
+            - redstone_ore:1
+            - gold_ore:1
+          currency: 30
+          xp: 10
+      spreadingtheinfection:
+        name: '&7Spreading the Infection'
+        description: Spread the sculk
+        type: onPlayer
+        requiredItems:
+          - sculk_catalyst:16
+          - sculk_sensor:16
+          - sculk_shrieker:16
+          - calibrated_sculk_sensor:16
+          - sculk:64
+        displayItem: silence_armor_trim_smithing_template
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 1 Silence armor Trim, 2 diamonds and 8 redstone ore
+          items:
+            - silence_armor_trim_smithing_template:1
+            - diamond:2
+            - redstone_ore:8
+          currency: 200
+          xp: 100
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: 1 Silence armor Trim, 1 diamonds and 4 redstone ore
+          items:
+            - silence_armor_trim_smithing_template:1
+            - diamond:1
+            - redstone_ore:4
+          currency: 100
+          xp: 30
+      desertwanderer:
+        name: '&7Desert Wanderer'
+        description: Domesticate a camel
+        type: onPlayer
+        requiredItems:
+          - sand:16
+          - terracotta:4
+          - sandstone:16
+          - cactus:16
+        displayItem: camel_spawn_egg
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Camel Spawn Egg x1, Dune Armor trim x1, and Savana biome
+          items:
+            - dune_armor_trim_smithing_template:1
+            - camel_spawn_egg:1
+          permission: usb.biome.savanna_plateau
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Camel Spawn Egg x1, Dune Armor trim x1, and Savana biome
+          items:
+            - dune_armor_trim_smithing_template:1
+            - camel_spawn_egg:1
+          permission: usb.biome.savanna_plateau
+          currency: 50
+          xp: 25
+      armorersarcheology:
+        name: '&7Armorer''s Archeology'
+        description: Dig up some stuff
+        type: onPlayer
+        requiredItems:
+          - sand:16
+          - gravel:16
+          - iron_helmet:2
+          - iron_chestplate:2
+          - iron_leggings:2
+          - iron_boots:2
+        displayItem: raiser_armor_trim_smithing_template
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Raiser armor trim x1 and a chance to get the Host or Shaper armor trim
+          items:
+            - raiser_armor_trim_smithing_template:1
+            - '{p=0.5}host_armor_trim_smithing_template:1'
+            - '{p=0.5}shaper_armor_trim_smithing_template:1'
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: A chance to get Raiser, host or shaper armor trim
+          items:
+            - '{p=0.33}raiser_armor_trim_smithing_template:1'
+            - '{p=0.33}host_armor_trim_smithing_template:1'
+            - '{p=0.33}shaper_armor_trim_smithing_template:1'
+          currency: 50
+          xp: 25
+      productionline:
+        name: '&7Production Line'
+        description: Get what you need to make an efficient production line
+        type: onPlayer
+        requiredItems:
+          - dispenser:2
+          - crafter:3
+          - comparator:4
+          - repeater:4
+          - piston:4
+          - sticky_piston:4
+        displayItem: crafter
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 8 breeze rod and the Creator disc
+          items:
+            - music_disc_creator:1
+            - breeze_rod:8
+          currency: 100
+          xp: 50
+        repeatReward:
+          text: 4x Breeze rod and a chance to get the Creator disc
+          items:
+            - '{p=0.5}music_disc_creator:1'
+            - breeze_rod:4
+          currency: 50
+          xp: 25
+      copperlighting:
+        name: '&7Copper Lightning'
+        description: Get some coppers bulbs
+        type: onPlayer
+        requiredItems:
+          - copper_bulb:10
+        displayItem: copper_bulb
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 4x Breeze rod, 16x tuff and a chance to get the precipice disc
+          items:
+            - '{p=0.5}music_disc_precipice:1'
+            - breeze_rod:4
+            - tuff:16
+          currency: 50
+          xp: 25
+      pottery:
+        name: '&7Pottery'
+        description: Get some decorated pot
+        type: onPlayer
+        requiredItems:
+          - decorated_pot:10
+        displayItem: decorated_pot
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: 8 breeze rod and the precipice disc
+          items:
+            - music_disc_creator_music_box:1
+            - breeze_rod:8
+            - tuff:16
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Breeze rod and a chance to get the creator disc (music box version)
+          items:
+            - '{p=0.5}music_disc_precipice:1'
+            - breeze_rod:4
+            - tuff:16
+          currency: 50
+          xp: 25
+      petangel:
+        name: '&7Pet Angel'
+        description: Get yourself a creaking and the access to his biome while farming the pale oak
+        type: onPlayer
+        requiredItems:
+          - pale_oak_log:64
+          - pale_moss_block:64
+          - pale_moss_carpet:64
+        displayItem: creaking_heart
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: A creaking Heart and the access to the biome
+          items:
+            - creaking_heart:1
+          permission: usb.biome.pale_garden
+          currency: 50
+          xp: 50
+        repeatReward:
+          text: Some resin clumps
+          items:
+            - resin_clump:2
+          currency: 25
+          xp: 25
+
+  # ===============================================
+  Tier11:
     name: '&4Sky Lord'
     displayItem: red_terracotta
     resetInHours: 48
@@ -1345,21 +2567,31 @@ ranks:
         displayItem: emerald
         lockedDisplayItem: purple_stained_glass_pane
         reward:
-          text: a full set of diamond armor
+          text: a full set of diamond armor and each level of the ominous bottles
           items:
             - diamond_helmet:1
             - diamond_chestplate:1
             - diamond_leggings:1
             - diamond_boots:1
+            - ominous_bottle[ominous_bottle_amplifier=0]:1
+            - ominous_bottle[ominous_bottle_amplifier=1]:1
+            - ominous_bottle[ominous_bottle_amplifier=2]:1
+            - ominous_bottle[ominous_bottle_amplifier=3]:1
+            - ominous_bottle[ominous_bottle_amplifier=4]:1
           currency: 70
           xp: 70
         repeatReward:
-          text: full diamond armor
+          text: a full set of diamond armor and each level of the ominous bottles
           items:
             - diamond_helmet:1
             - diamond_chestplate:1
             - diamond_leggings:1
             - diamond_boots:1
+            - ominous_bottle[ominous_bottle_amplifier=0]:1
+            - ominous_bottle[ominous_bottle_amplifier=1]:1
+            - ominous_bottle[ominous_bottle_amplifier=2]:1
+            - ominous_bottle[ominous_bottle_amplifier=3]:1
+            - ominous_bottle[ominous_bottle_amplifier=4]:1
           currency: 35
           xp: 35
       topchef:
@@ -1444,7 +2676,7 @@ ranks:
           items:
             - end_portal_frame:3
             - diamond:3
-            - 'bow[enchantments={infinity:1,power:5,unbreaking:3}]:1'
+            - bow[enchantments={infinity:1,power:5,unbreaking:3}]:1
           currency: 1000
           xp: 500
       poseidonshalls:
@@ -1505,7 +2737,7 @@ ranks:
         reward:
           items:
             - end_portal_frame:3
-            - 'diamond_sword[enchantments={fire_aspect:1,sharpness:5,unbreaking:3}]:1'
+            - diamond_sword[enchantments={fire_aspect:1,sharpness:5,unbreaking:3}]:1
           text: some end-portal-pieces and a magic diamond sword
           currency: 4000
           xp: 1000
@@ -1525,15 +2757,256 @@ ranks:
           - end_portal_frame:12
           - end_portal:9
         reward:
-          text: 5 diamonds and some nice boots
+          text: 5 diamonds, some nice boots, 4 end stone and 4 chorus flower
           items:
             - diamond:5
-            - 'diamond_boots[enchantments={blast_protection:4,feather_falling:4,protection:4}]:1'
+            - diamond_boots[enchantments={blast_protection:4,feather_falling:4,protection:4}]:1
+            - end_stone:4
+            - chorus_flower:4
           currency: 4000
           xp: 1000
 
   # ===============================================
-  Tier6:
+  Tier12:
+    name: '&aPost Game'
+    displayItem: black_terracotta
+    resetInHours: 20
+    requires:
+      challenges:
+        - endportal
+    challenges:
+      outerworldagriculture:
+        name: '&9Outerworld Agriculture'
+        description: Use your chorus farm.
+        type: onPlayer
+        displayItem: chorus_plant
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredItems:
+          - chorus_fruit:16
+          - chorus_plant:4
+        reward:
+          text: 4 end stone and the eye armor trim
+          items:
+            - end_stone:4
+            - eye_armor_trim_smithing_template:1
+            - chorus_flower:1
+          currency: 100
+          xp: 50
+        repeatReward:
+          text: 4 end stone and a chance to get the eye armor trim
+          items:
+            - end_stone:4
+            - '{p=0.05}eye_armor_trim_smithing_template:1'
+          currency: 20
+          xp: 15
+      endcity:
+        name: '&9Endcity'
+        description: Get what you need to build an end city.
+        type: onPlayer
+        displayItem: purpur_block
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredItems:
+          - chorus_flower:64
+          - end_stone_bricks:32
+          - purple_stained_glass:16
+        reward:
+          text: 10 emerald, spire armor trim, 1 beetroot seeds and a chance to get a diamond armor piece
+          items:
+            - emerald:10
+            - spire_armor_trim_smithing_template:1
+            - beetroot_seeds:1
+            - '{p=0.75}diamond_helmet:1'
+            - '{p=0.55}diamond_chestplate:1'
+            - '{p=0.25}diamond_leggings:1'
+            - '{p=0.45}diamond_boots:1'
+          currency: 100
+          xp: 50
+        repeatReward:
+          text: 1 emerald, spire armor trim, 1 beetroot seeds and a chance to get a diamond armor piece
+          items:
+            - emerald:1
+            - spire_armor_trim_smithing_template:1
+            - beetroot_seeds:1
+            - '{p=0.05}diamond_helmet:1'
+            - '{p=0.05}diamond_chestplate:1'
+            - '{p=0.05}diamond_leggings:1'
+            - '{p=0.05}diamond_boots:1'
+          currency: 20
+          xp: 10
+      flyingship:
+        name: '&9Flyingship'
+        description: Get what you need to build the ship.
+        type: onPlayer
+        displayItem: elytra
+        lockedDisplayItem: blue_stained_glass_pane
+        requiredChallenges:
+          - endportal
+        requiredItems:
+          - obsidian:64
+          - chorus_flower:64
+          - end_stone_bricks:32
+          - purple_stained_glass:16
+        reward:
+          text: 10 emerald, elytra, spire armor trim, 1 beetroot seeds and a chance to get a diamond armor piece and shulker spawn egg
+          items:
+            - emerald:10
+            - elytra:1
+            - spire_armor_trim_smithing_template:1
+            - beetroot_seeds:1
+            - '{p=0.75}diamond_helmet:1'
+            - '{p=0.55}diamond_chestplate:1'
+            - '{p=0.25}diamond_leggings:1'
+            - '{p=0.45}diamond_boots:1'
+            - '{p=0.75}shulker_spawn_egg:1'
+          currency: 1500
+          xp: 1000
+        repeatReward:
+          text: 1 emerald, spire armor trim, 1 beetroot seeds and a chance to get a diamond armor piece, Elytra and a shulker spawn egg
+          items:
+            - emerald:1
+            - spire_armor_trim_smithing_template:1
+            - beetroot_seeds:1
+            - '{p=0.1}elytra:1'
+            - '{p=0.2}shulker_spawn_egg:1'
+            - '{p=0.05}diamond_helmet:1'
+            - '{p=0.05}diamond_chestplate:1'
+            - '{p=0.05}diamond_leggings:1'
+            - '{p=0.05}diamond_boots:1'
+          currency: 500
+          xp: 200
+      ancientpottery:
+        name: '&7Ancient Pottery'
+        description: Get some pottery shards with the flowers from the sniffer
+        type: onPlayer
+        requiredItems:
+          - sniffer_egg:1
+          - sand:32
+          - pitcher_plant:16
+          - torchflower:16
+          - gravel:32
+        displayItem: angler_pottery_sherd
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Some random pottery sherd, at most one of each
+          items:
+            - '{p=0.5}angler_pottery_sherd:1'
+            - '{p=0.5}archer_pottery_sherd:1'
+            - '{p=0.5}arms_up_pottery_sherd:1'
+            - '{p=0.5}blade_pottery_sherd:1'
+            - '{p=0.5}brewer_pottery_sherd:1'
+            - '{p=0.4}burn_pottery_sherd:1'
+            - '{p=0.4}danger_pottery_sherd:1'
+            - '{p=0.4}explorer_pottery_sherd:1'
+            - '{p=0.4}friend_pottery_sherd:1'
+            - '{p=0.4}heart_pottery_sherd:1'
+            - '{p=0.3}heartbreak_pottery_sherd:1'
+            - '{p=0.3}howl_pottery_sherd:1'
+            - '{p=0.3}miner_pottery_sherd:1'
+            - '{p=0.3}mourner_pottery_sherd:1'
+            - '{p=0.3}plenty_pottery_sherd:1'
+            - '{p=0.2}prize_pottery_sherd:1'
+            - '{p=0.2}sheaf_pottery_sherd:1'
+            - '{p=0.2}shelter_pottery_sherd:1'
+            - '{p=0.2}skull_pottery_sherd:1'
+            - '{p=0.2}snort_pottery_sherd:1'
+            - '{p=0.1}flow_pottery_sherd:1'
+            - '{p=0.1}guster_pottery_sherd:1'
+            - '{p=0.1}scrape_pottery_sherd:1'
+          currency: 100
+          xp: 50
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Some random pottery sherd, at most one of each
+          items:
+            - '{p=0.5}angler_pottery_sherd:1'
+            - '{p=0.5}archer_pottery_sherd:1'
+            - '{p=0.5}arms_up_pottery_sherd:1'
+            - '{p=0.5}blade_pottery_sherd:1'
+            - '{p=0.5}brewer_pottery_sherd:1'
+            - '{p=0.4}burn_pottery_sherd:1'
+            - '{p=0.4}danger_pottery_sherd:1'
+            - '{p=0.4}explorer_pottery_sherd:1'
+            - '{p=0.4}friend_pottery_sherd:1'
+            - '{p=0.4}heart_pottery_sherd:1'
+            - '{p=0.3}heartbreak_pottery_sherd:1'
+            - '{p=0.3}howl_pottery_sherd:1'
+            - '{p=0.3}miner_pottery_sherd:1'
+            - '{p=0.3}mourner_pottery_sherd:1'
+            - '{p=0.3}plenty_pottery_sherd:1'
+            - '{p=0.2}prize_pottery_sherd:1'
+            - '{p=0.2}sheaf_pottery_sherd:1'
+            - '{p=0.2}shelter_pottery_sherd:1'
+            - '{p=0.2}skull_pottery_sherd:1'
+            - '{p=0.2}snort_pottery_sherd:1'
+            - '{p=0.1}flow_pottery_sherd:1'
+            - '{p=0.1}guster_pottery_sherd:1'
+            - '{p=0.1}scrape_pottery_sherd:1'
+          currency: 50
+          xp: 25
+      trialchambers:
+        name: '&7Trial Chambers'
+        description: Get some decorated pot and other blocks found in the trials chamber
+        type: onPlayer
+        requiredItems:
+          - chiseled_copper:192
+          - copper_block:192
+          - tuff_bricks:192
+          - decorated_pot:15
+        displayItem: tuff_bricks
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Heavy core 2, Bolt and Flow armor trim x1
+          items:
+            - heavy_core:2
+            - bolt_armor_trim_smithing_template:1
+            - flow_armor_trim_smithing_template:1
+          currency: 1000
+          xp: 500
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: Heavy core x1 and 33% chance to get Bolt or Flow armor trim
+          items:
+            - heavy_core:1
+            - '{p=0.33}bolt_armor_trim_smithing_template:1'
+            - '{p=0.33}flow_armor_trim_smithing_template:1'
+          currency: 250
+          xp: 150
+      decoration:
+        name: '&7Decoration'
+        description: Decorate your base and your armor
+        type: onPlayer
+        requiredItems:
+          - bolt_armor_trim_smithing_template:1
+          - flow_armor_trim_smithing_template:1
+          - flow_pottery_sherd:1
+          - guster_pottery_sherd:1
+          - scrape_pottery_sherd:1
+        displayItem: chiseled_copper
+        lockedDisplayItem: gray_stained_glass_pane
+        resetInHours: 12
+        reward:
+          text: Flow and gutser banner pattern
+          items:
+            - flow_banner_pattern:1
+            - guster_banner_pattern:1
+          currency: 1000
+          xp: 500
+          commands:
+            - op:effect give {player} regeneration
+        repeatReward:
+          text: A probabylity of 50% to get a flow or gutser banner pattern
+          items:
+            - '{p=0.5}flow_banner_pattern:1'
+            - '{p=0.5}guster_banner_pattern:1'
+          currency: 250
+          xp: 150
+
+  # ===============================================
+  Tier13:
     name: '&aWorld Foods'
     displayItem: light_gray_terracotta
     resetInHours: 20
@@ -1561,7 +3034,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Fish_and_chips
-            &2Click the link for more info'
+              &2Click the link for more info'
         repeatReward:
           text: 30% chance on 1 disk, 1 emerald
           items:
@@ -1571,7 +3044,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Fish_and_chips
-            &2Click the link for more info'
+              &2Click the link for more info'
       smorrebrod:
         name: '&eSmørrebrød'
         description: Create the famous Danish smørrebrød.
@@ -1594,7 +3067,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Danish_cuisine
-            &2Click the link for more info'
+              &2Click the link for more info'
         repeatReward:
           text: 1 emerald
           items:
@@ -1603,7 +3076,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Danish_cuisine
-            &2Click the link for more info'
+              &2Click the link for more info'
       hutspot:
         name: '&eHutspot'
         description: Create the famous Dutch hutspot.
@@ -1623,7 +3096,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Hutspot &2Click
-            the link for more info'
+              the link for more info'
         repeatReward:
           text: 30% chance on 1 disk, 1 emerald
           items:
@@ -1633,7 +3106,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Hutspot &2Click
-            the link for more info'
+              the link for more info'
       apfelstrudel:
         name: '&eApfelstrudele'
         description: Create the famous German apfelstrudel.
@@ -1655,7 +3128,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Apple_strudel &2Click
-            the link for more info'
+              the link for more info'
         repeatReward:
           text: 1 bucket, 30% chance on 1 disk, 1 emerald
           items:
@@ -1666,7 +3139,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Apple_strudel &2Click
-            the link for more info'
+              the link for more info'
       brownies:
         name: '&eBrownies'
         description: Create the famous American brownies.
@@ -1689,7 +3162,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Chocolate_brownie
-            &2Click the link for more info'
+              &2Click the link for more info'
         repeatReward:
           text: 1 bucket, 30% chance on 1 disk, 1 emerald
           items:
@@ -1700,7 +3173,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Chocolate_brownie
-            &2Click the link for more info'
+              &2Click the link for more info'
       pastafunghi:
         name: '&ePasta Funghi'
         description: Create the famous Italian Pasta Funghi.
@@ -1753,7 +3226,7 @@ ranks:
           xp: 60
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Belgian_chocolate
-            &2Click the link for more info'
+              &2Click the link for more info'
         repeatReward:
           text: 1 bucket, 30% chance on 1 disk, 1 emerald
           items:
@@ -1764,7 +3237,7 @@ ranks:
           xp: 30
           commands:
             - 'console: msg {player} &9https://en.wikipedia.org/wiki/Belgian_chocolate
-            &2Click the link for more info'
+              &2Click the link for more info'
       baker:
         name: '&ePâtisserie'
         description: Bake cakes, pumpkin pies, and cookies.
@@ -1791,4 +3264,4 @@ ranks:
           xp: 40
 
 # DO NOT CHANGE THE VERSION! You will break the conversion and unexpected things will happen!
-version: 107
+version: 108
