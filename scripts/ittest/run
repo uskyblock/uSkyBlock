@@ -403,6 +403,7 @@ echo 'eula=true' > "${SERVER_DIRECTORY}/eula.txt"
 printf '%s\n' \
   'online-mode=false' \
   'enforce-secure-profile=false' \
+  'white-list=false' \
   'server-ip=127.0.0.1' \
   "server-port=${PORT}" \
   'level-name=world' \
