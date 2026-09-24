@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
 "Report-Msgid-Bugs-To: https://github.com/uskyblock/uSkyBlock/issues\n"
-"PO-Revision-Date: 2026-03-16 18:45\n"
+"PO-Revision-Date: 2026-08-18 17:56\n"
 "Last-Translator: minoneer <minoneer@gmail.com>\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -379,6 +379,10 @@ msgstr "使用 <cmd>/usb lang</cmd> 列出所有支持的语言。"
 msgid "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources."
 msgstr "使用 <cmd>/usb reload</cmd> 完全重新加载与语言相关的配置资源。"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
+msgid "You are not standing on an island. <muted>Supply a player name instead."
+msgstr ""
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "You may need to go to spawn, or relog, to see the changes."
 msgstr "你可能需要前往出生点，或重新登录，才能看到更改。"
@@ -386,6 +390,10 @@ msgstr "你可能需要前往出生点，或重新登录，才能看到更改。
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PurgeCommand.java
 msgid "You must provide the age in days to purge!"
 msgstr "你必须提供要清理的天数！"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
+msgid "You must supply a player name."
+msgstr ""
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "additional perks <perks>"

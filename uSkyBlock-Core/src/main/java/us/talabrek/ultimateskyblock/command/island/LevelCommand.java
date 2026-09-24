@@ -91,12 +91,18 @@ public class LevelCommand extends RequireIslandCommand {
             }
         };
         if (shouldRecalculate) {
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.calculateScoreAsync(player, info.locationForParty(), new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
-                @Override
-                public void run() {
-                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, showInfo, 10L);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                boolean started = plugin.calculateScoreAsync(player, info.locationForParty(), new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
+                    @Override
+                    public void run() {
+                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, showInfo, 10L);
+                    }
+                });
+                if (!started && player.isOnline()) {
+                    // showInfo only runs from the callback, so without this the command is silent.
+                    sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
                 }
-            }), 1L);
+            }, 1L);
         } else {
             showInfo.run();
         }

@@ -119,9 +119,18 @@ public class InfoCommand extends RequireIslandCommand {
         };
         try {
             PatienceTester.startRunning(player, "usb.island.info.active");
-            plugin.calculateScoreAsync(player, playerInfo.locationForParty(), showInfo);
+            if (!plugin.calculateScoreAsync(player, playerInfo.locationForParty(), showInfo)) {
+                // showInfo carries every message this command produces; without it the command is
+                // silent. The cooldown must go too, or the retry answers "be patient" instead.
+                PatienceTester.stopRunning(player, "usb.island.info.active");
+                sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
+                return false;
+            }
         } catch (Exception e) {
+            PatienceTester.stopRunning(player, "usb.island.info.active");
             logger.log(Level.SEVERE, "Error while calculating Island Level", e);
+            sendErrorTr(player, "Could not calculate the island level. <muted>Please contact a server admin.");
+            return false;
         }
         return true;
     }

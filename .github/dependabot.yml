@@ -1,5 +1,5 @@
-# Dependabot keeps the Gradle version catalog, the Gradle wrapper, and the
-# GitHub Actions used in our workflows up to date.
+# Dependabot keeps the Gradle version catalog, the Gradle wrapper, the docs
+# toolchain, and the GitHub Actions used in our workflows up to date.
 # https://docs.github.com/code-security/dependabot
 version: 2
 updates:
@@ -45,6 +45,26 @@ updates:
         versions: [">= 5.0.0"]
       # The spigot-api version is the deliberate minimum-support target, not a bump.
       - dependency-name: "org.spigotmc:spigot-api"
+
+  # ---- Docs toolchain (docs/requirements-docs.txt) ----
+  # The site is built in uskyblock/uskyblock.github.io, which installs this
+  # pinned requirements file from a checkout of this repo.
+  - package-ecosystem: "pip"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "docs"
+    groups:
+      docs-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # ---- GitHub Actions referenced in .github/workflows ----
   - package-ecosystem: "github-actions"

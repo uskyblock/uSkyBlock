@@ -108,7 +108,7 @@ public class PluginInfo {
             msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
                 unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
             msg.append(miniToLegacy("<muted>Visit <url> to download.<newline>",
-                unparsed("url", "https://www.uskyblock.ovh/get", PRIMARY)));
+                unparsed("url", "https://uskyblock.github.io/", PRIMARY)));
         }
 
         return msg.toString();

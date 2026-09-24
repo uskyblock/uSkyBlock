@@ -30,7 +30,20 @@ public abstract class AbstractPlayerInfoCommand extends AbstractCommand {
                 return true;
             }
             sendErrorTr(sender, "Invalid player <player> supplied.", unparsed("player", args[0], PRIMARY));
+        } else {
+            onMissingPlayerArgument(sender);
         }
         return false;
+    }
+
+    /**
+     * Reports that no player argument was supplied.
+     *
+     * <p>Exposed so subclasses that intercept {@link #execute} can reuse the same message - and
+     * the same msgid - once their own fallback has failed. {@link AbstractIslandInfoCommand} does
+     * exactly that for senders with no location to fall back to.</p>
+     */
+    protected void onMissingPlayerArgument(CommandSender sender) {
+        sendErrorTr(sender, "You must supply a player name.");
     }
 }
