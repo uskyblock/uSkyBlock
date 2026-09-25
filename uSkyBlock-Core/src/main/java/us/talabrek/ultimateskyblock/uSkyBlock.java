@@ -877,7 +877,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         IslandPerk islandPerk = perkLogic.getIslandPerk(islandInfo.getSchematicName());
         double blockScore = score.getScore();
         blockScore = blockScore * islandPerk.getScoreMultiply() * islandInfo.getScoreMultiplier() + islandPerk.getScoreOffset() + islandInfo.getScoreOffset();
-        return new IslandScore(blockScore, score.getTop());
+        return score.withScore(blockScore);
     }
 
     /**

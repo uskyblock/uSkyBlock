@@ -15,11 +15,22 @@ import static us.talabrek.ultimateskyblock.message.Msg.plainText;
 public class IslandScore implements us.talabrek.ultimateskyblock.api.model.IslandScore {
     private final double score;
     private final List<BlockScore> top;
+    private final boolean consolidateNames;
     private boolean isSorted = false;
 
     public IslandScore(double score, List<BlockScore> top) {
+        this(score, top, true);
+    }
+
+    IslandScore(double score, List<BlockScore> top, boolean consolidateNames) {
         this.score = score;
-        this.top = joinTop(top);
+        this.consolidateNames = consolidateNames;
+        // Variety counts every Material separately, even where two names translate identically.
+        this.top = consolidateNames ? joinTop(top) : new ArrayList<>(top);
+    }
+
+    public IslandScore withScore(double adjustedScore) {
+        return new IslandScore(adjustedScore, top, consolidateNames);
     }
 
     /**

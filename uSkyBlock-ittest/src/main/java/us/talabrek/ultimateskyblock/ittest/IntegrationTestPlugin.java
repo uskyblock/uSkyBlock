@@ -550,7 +550,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         }
 
         // Drives a REAL asynchronous chunk-snapshot scan (unlike challenge-island-level, which fakes the
-        // level with setLevel): places high-value blocks and asserts the computed level rises.
+        // level with setLevel): compares repeated blocks with the same number of distinct types.
         // calculateScoreAsync writes island.getLevel() from the scan result, so this exercises the
         // version-sensitive ChunkSnapshot + scoring path end to end - the path a unit test cannot fake.
         private void islandLevelScan(Scenario scenario) {
@@ -559,37 +559,71 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             IslandInfo island = usb.getIslandInfo(c.playerInfo());
             check(island != null, "island record missing for the level-scan scenario");
             String islandName = island.getName();
-            AtomicReference<Double> baseline = new AtomicReference<>();
+            AtomicReference<us.talabrek.ultimateskyblock.api.model.IslandScore> baseline = new AtomicReference<>();
             AtomicBoolean baselineDone = new AtomicBoolean();
             usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
                 @Override
                 public void run() {
-                    baseline.set(island.getLevel());
+                    baseline.set(getState());
                     baselineDone.set(true);
                 }
             });
             scenario.await(baselineDone::get, Duration.ofSeconds(30), () -> {
                 Location origin = c.player().getLocation();
+                List<Material> variety = List.of(Material.DIAMOND_BLOCK, Material.EMERALD_BLOCK,
+                    Material.NETHERITE_BLOCK, Material.LAPIS_BLOCK, Material.REDSTONE_BLOCK);
+                check(baseline.get().getTop(Integer.MAX_VALUE).stream()
+                    .noneMatch(block -> variety.contains(block.getBlockData().getMaterial())),
+                    "variety fixture blocks must not already be on the starter island");
                 List<Block> placed = new ArrayList<>();
                 for (int i = 0; i < 5; i++) {
                     Block block = origin.clone().add(0, 3, i).getBlock(); // above the player, in open air
+                    check(block.getType().isAir(), "variety fixture must replace only air");
                     block.setType(Material.DIAMOND_BLOCK);
                     placed.add(block);
                 }
+                AtomicReference<us.talabrek.ultimateskyblock.api.model.IslandScore> repeated = new AtomicReference<>();
                 AtomicBoolean rescanDone = new AtomicBoolean();
                 usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
                     @Override
                     public void run() {
+                        repeated.set(getState());
                         rescanDone.set(true);
                     }
                 });
                 scenario.await(rescanDone::get, Duration.ofSeconds(30), () -> {
-                    double after = island.getLevel();
-                    placed.forEach(block -> block.setType(Material.AIR)); // leave the scan area clean for later scenarios
-                    check(after > baseline.get(),
-                        "island level did not rise after a real scan of placed diamond blocks (baseline="
-                            + baseline.get() + ", after=" + after + ")");
-                    scenario.pass("a real chunk-snapshot scan raised the island level after placing high-value blocks");
+                    double repeatedGain = repeated.get().getScore() - baseline.get().getScore();
+                    double expectedRepeated = 1 + 0.25 * Math.log(5) / Math.log(2);
+                    check(Math.abs(repeatedGain - expectedRepeated) < 1e-6,
+                        "five diamond blocks must use one type with diminishing repeats (actual=" + repeatedGain + ")");
+                    for (int i = 0; i < placed.size(); i++) {
+                        placed.get(i).setType(variety.get(i));
+                    }
+                    AtomicReference<us.talabrek.ultimateskyblock.api.model.IslandScore> diverse = new AtomicReference<>();
+                    usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
+                        @Override
+                        public void run() {
+                            diverse.set(getState());
+                        }
+                    });
+                    scenario.await(() -> diverse.get() != null, Duration.ofSeconds(30), () -> {
+                        placed.forEach(block -> block.setType(Material.AIR));
+                        double diverseGain = diverse.get().getScore() - baseline.get().getScore();
+                        check(Math.abs(diverseGain - 5) < 1e-6,
+                            "five distinct types must add five levels regardless of legacy block values (actual=" + diverseGain + ")");
+                        check(diverseGain > repeatedGain,
+                            "five distinct block types must beat five diamond blocks");
+                        double contributions = diverse.get().getTop(Integer.MAX_VALUE).stream()
+                            .mapToDouble(us.talabrek.ultimateskyblock.api.model.BlockScore::getScore).sum();
+                        check(Math.abs(contributions - diverse.get().getScore()) < 1e-6,
+                            "variety breakdown must add up to the calculated level");
+                        check(Math.abs(island.getLevel() - diverse.get().getScore()) < 1e-6,
+                            "stored island level must match the calculation");
+                        check(Math.abs(usb.getIslandLogic().getRank(islandName).getScore() - diverse.get().getScore()) < 1e-6,
+                            "leaderboard must use the variety level");
+                        scenario.pass("real scan rewarded five distinct types over five repeated valuable blocks"
+                            + " (starter types=" + baseline.get().getSize() + ", level=" + baseline.get().getScore() + ")");
+                    }, "variety scan did not complete before the deadline");
                 }, "island level rescan did not complete before the deadline");
             }, "baseline island level scan did not complete before the deadline");
         }

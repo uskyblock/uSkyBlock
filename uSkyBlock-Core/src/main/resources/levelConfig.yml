@@ -1,4 +1,11 @@
 general:
+  # The planned variety-based level ignores every per-block score, limit, and return below.
+  # Keep legacy for existing worlds until variety thresholds and migration are playtested.
+  # To try the new model on a staging copy, set scoringMode to variety.
+  scoringMode: legacy
+  # variety:
+  #   unitsPerLevel: 1.0
+
   # pointsPerLevel - number of points needed to advance 1 island level.
   pointsPerLevel: 1000
 
