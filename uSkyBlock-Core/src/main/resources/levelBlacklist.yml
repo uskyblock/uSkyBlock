@@ -2,9 +2,10 @@
 #
 # Variety scoring counts every distinct block type on an island. The types listed here never
 # count: air, fluids, fire, portal blocks, transient or technical blocks, and blocks a survival
-# player cannot place. Names are Minecraft block ids (see /usb iteminfo or the Minecraft wiki).
-# A name the running server version does not know is skipped with a warning, so one list works
-# across Minecraft versions.
+# player cannot obtain. Entries are Minecraft block keys as used by /give and /setblock
+# (see /usb iteminfo or the Minecraft wiki); the minecraft: namespace may be omitted. A key the
+# running server version does not know is skipped with a warning, so one list works across
+# Minecraft versions.
 #
 # The plugin uses the copy bundled in its jar. To customize it, place your own levelBlacklist.yml
 # in the plugin's config folder (plugins/uSkyBlock/config/levelBlacklist.yml). Your file replaces
@@ -12,47 +13,47 @@
 version: 1
 ignore:
   # air
-  - air
-  - cave_air
-  - void_air
+  - minecraft:air
+  - minecraft:cave_air
+  - minecraft:void_air
   # fluids
-  - water
-  - lava
-  - bubble_column
+  - minecraft:water
+  - minecraft:lava
+  - minecraft:bubble_column
   # fire
-  - fire
-  - soul_fire
+  - minecraft:fire
+  - minecraft:soul_fire
   # portals
-  - nether_portal
-  - end_portal
-  - end_gateway
+  - minecraft:nether_portal
+  - minecraft:end_portal
+  - minecraft:end_gateway
   # transient or technical blocks
-  - piston_head
-  - moving_piston
-  - frosted_ice
-  - light
-  - barrier
-  - structure_void
-  - structure_block
-  - jigsaw
-  - command_block
-  - chain_command_block
-  - repeating_command_block
-  - test_block
-  - test_instance_block
+  - minecraft:piston_head
+  - minecraft:moving_piston
+  - minecraft:frosted_ice
+  - minecraft:light
+  - minecraft:barrier
+  - minecraft:structure_void
+  - minecraft:structure_block
+  - minecraft:jigsaw
+  - minecraft:command_block
+  - minecraft:chain_command_block
+  - minecraft:repeating_command_block
+  - minecraft:test_block
+  - minecraft:test_instance_block
   # not obtainable in survival (budding amethyst and end portal frames are not listed: 4.0 grants them as rewards)
-  - bedrock
-  - reinforced_deepslate
-  - spawner
-  - trial_spawner
-  - vault
-  - suspicious_sand
-  - suspicious_gravel
-  - petrified_oak_slab
-  - infested_stone
-  - infested_cobblestone
-  - infested_stone_bricks
-  - infested_mossy_stone_bricks
-  - infested_cracked_stone_bricks
-  - infested_chiseled_stone_bricks
-  - infested_deepslate
+  - minecraft:bedrock
+  - minecraft:reinforced_deepslate
+  - minecraft:spawner
+  - minecraft:trial_spawner
+  - minecraft:vault
+  - minecraft:suspicious_sand
+  - minecraft:suspicious_gravel
+  - minecraft:petrified_oak_slab
+  - minecraft:infested_stone
+  - minecraft:infested_cobblestone
+  - minecraft:infested_stone_bricks
+  - minecraft:infested_mossy_stone_bricks
+  - minecraft:infested_cracked_stone_bricks
+  - minecraft:infested_chiseled_stone_bricks
+  - minecraft:infested_deepslate

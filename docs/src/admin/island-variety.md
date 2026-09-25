@@ -15,7 +15,7 @@ general:
 
 ## Ignored blocks
 
-Air, fluids, fire, portal blocks, transient or technical blocks, and blocks a survival player cannot place never count. The list ships in the plugin jar as `levelBlacklist.yml`. To change it, place your own `levelBlacklist.yml` in `plugins/uSkyBlock/config/`; it replaces the bundled list entirely, so start from a copy of the bundled file. (`config/` is where uSkyBlock's configuration files live from 4.0 on; the files still read from the plugin folder root will move there over time.) Names are Minecraft block ids; a name the running server version does not know is skipped with a warning at startup, so one list works across Minecraft versions.
+Air, fluids, fire, portal blocks, transient or technical blocks, and blocks a survival player cannot place never count. The list ships in the plugin jar as `levelBlacklist.yml`. To change it, place your own `levelBlacklist.yml` in `plugins/uSkyBlock/config/`; it replaces the bundled list entirely, so start from a copy of the bundled file. (`config/` is where uSkyBlock's configuration files live from 4.0 on; the files still read from the plugin folder root will move there over time.) Entries are Minecraft block keys (`minecraft:water`; the namespace may be omitted); a key the running server version does not know is skipped with a warning at startup, so one list works across Minecraft versions.
 
 ## What players see
 
