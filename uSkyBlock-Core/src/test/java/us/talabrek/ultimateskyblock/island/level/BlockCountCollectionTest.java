@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Focused tests for {@link BlockCountCollection#add(Material, int)} and its single-argument overload.
@@ -72,5 +74,32 @@ public class BlockCountCollectionTest {
 
         assertEquals(1, counts.add(Material.STONE));
         assertEquals(2, counts.add(Material.STONE));
+    }
+
+    @Test
+    public void varietyCountsKeepMaterialsSeparateEvenWhenLegacyConfigGroupsThem() {
+        BlockCountCollection legacy = new BlockCountCollection(configMap);
+        BlockCountCollection variety = BlockCountCollection.forVariety();
+        assertEquals(1000, legacy.add(Material.OAK_WOOD, 1000));
+        assertEquals(1001, legacy.add(Material.OAK_LOG, 1));
+        assertEquals(1000, variety.add(Material.OAK_WOOD, 1000));
+        assertEquals(1, variety.add(Material.OAK_LOG, 1));
+
+        assertEquals(1000, variety.materialCounts().get(Material.OAK_WOOD));
+        assertEquals(1, variety.materialCounts().get(Material.OAK_LOG));
+        VarietyLevelPolicy policy = new VarietyLevelPolicy(1);
+        double separate = policy.levelFor(Material.OAK_WOOD, 1000) + policy.levelFor(Material.OAK_LOG, 1);
+        assertTrue(separate > policy.levelFor(Material.OAK_WOOD, 1001));
+        assertEquals(2, variety.materialCounts().size());
+    }
+
+    @Test
+    public void varietyCollectionDoesNotRequireBlockValueConfiguration() {
+        BlockCountCollection counts = BlockCountCollection.forVariety();
+        assertEquals(5, counts.add(Material.GLASS, 5));
+        assertEquals(1, counts.add(Material.DIAMOND_BLOCK));
+        assertEquals(5, counts.materialCounts().get(Material.GLASS));
+        assertEquals(1, counts.materialCounts().get(Material.DIAMOND_BLOCK));
+        assertThrows(IllegalStateException.class, () -> counts.calculateScore(1000));
     }
 }

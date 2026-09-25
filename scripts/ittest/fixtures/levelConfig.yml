@@ -1,0 +1,22 @@
+# The test values deliberately disagree with variety order: diamond is 'valuable',
+# the other materials are zero-value. Variety mode must ignore these legacy numbers.
+general:
+  scoringMode: variety
+  variety:
+    unitsPerLevel: 1
+  pointsPerLevel: 1000
+  default: 0
+nether:
+  activate-at:
+    level: 10000
+blocks:
+  DIAMOND_BLOCK:
+    score: 1000000
+  EMERALD_BLOCK:
+    score: 0
+  NETHERITE_BLOCK:
+    score: 0
+  LAPIS_BLOCK:
+    score: 0
+  REDSTONE_BLOCK:
+    score: 0

@@ -99,7 +99,7 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
     }
 
     private IslandScore calculateScore(ProtectedRegion region, List<ChunkSnapshot> snapshotsOverworld, ProtectedRegion netherRegion, List<ChunkSnapshot> snapshotsNether) {
-        final BlockCountCollection counts = new BlockCountCollection(scoreMap);
+        final BlockCountCollection counts = newBlockCounts();
         int minX = region.getMinimumPoint().x();
         int maxX = region.getMaximumPoint().x();
         int minY = region.getMinimumPoint().y();
