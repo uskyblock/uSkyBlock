@@ -2,6 +2,8 @@ package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.entity.Player;
@@ -16,6 +18,7 @@ import us.talabrek.ultimateskyblock.player.PatienceTester;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +26,7 @@ import java.util.logging.Logger;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.parseMini;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.MUTED;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Msg.SECONDARY;
 import static us.talabrek.ultimateskyblock.message.Msg.send;
@@ -89,7 +93,18 @@ public class InfoCommand extends RequireIslandCommand {
         final Callback<IslandScore> showInfo = new Callback<>() {
             @Override
             public void run() {
-                if (player.isOnline()) {
+                try {
+                    show();
+                } finally {
+                    // Always release the cooldown, or a failure here answers "be patient" for 30 s.
+                    PatienceTester.stopRunning(player, "usb.island.info.active");
+                }
+            }
+
+            private void show() {
+                if (player.isOnline() && plugin.getLevelLogic().isVarietyScoring()) {
+                    showVarietySummary(player, islandPlayer, getState());
+                } else if (player.isOnline()) {
                     int maxPage = ((getState().getSize() - 1) / 10) + 1;
                     int currentPage = page;
                     if (currentPage < 1) {
@@ -111,10 +126,9 @@ public class InfoCommand extends RequireIslandCommand {
                                 component("block", ItemStackUtil.getBlockName(score.getBlockData())))
                                 .applyFallbackStyle(styleFromBlockScoreState(score.getState())));
                         }
-                        sendTr(player, "Island level is <level:'#,##0'>", SECONDARY, number("level", getState().getScore()));
+                        sendTr(player, "Island level is <level:'#,##0'>", SECONDARY, number("level", Math.floor(getState().getScore())));
                     }
                 }
-                PatienceTester.stopRunning(player, "usb.island.info.active");
             }
         };
         try {
@@ -133,6 +147,38 @@ public class InfoCommand extends RequireIslandCommand {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Variety scoring treats every block type the same, so a per-block table teaches nothing. Show the
+     * two numbers that matter (types, blocks), the rule, and the top contributions as proof that stacking
+     * one type tops out.
+     */
+    private void showVarietySummary(@NotNull Player player, @NotNull String islandPlayer, @NotNull IslandScore state) {
+        // getTop(int) rejects 0: an island whose every block is blacklisted (or mined away) has no types.
+        List<BlockScore> all = state.getSize() == 0 ? List.of() : state.getTop(state.getSize());
+        long blocks = all.stream().mapToLong(BlockScore::getCount).sum();
+        sendTr(player, "Blocks on <player>'s island:", unparsed("player", islandPlayer, PRIMARY));
+        // I18N: <types> and <blocks> are localized number tags; keep the tag names.
+        sendTr(player, "<types> block types, <blocks> blocks", number("types", state.getSize(), PRIMARY), number("blocks", blocks, PRIMARY));
+        // I18N: <per-type> is a localized number tag (the level gained by a new block type); keep the tag name.
+        sendTr(player, "Every new block type adds <per-type:'#,##0.##'> to your level; more of the same type adds less and less.", MUTED,
+            number("per-type", plugin.getLevelLogic().levelPerNewBlockType()));
+        List<BlockScore> top = state.getTop(3);
+        if (!top.isEmpty()) {
+            Component contributions = Component.join(JoinConfiguration.separator(Component.text(", ")),
+                top.stream().map(score -> parseMini("<block> <score:'#,##0.0'>",
+                    component("block", ItemStackUtil.getBlockName(score.getBlockData())),
+                    number("score", score.getScore()))).toList());
+            sendTr(player, "Biggest single contributions: <contributions>", component("contributions", contributions));
+        }
+        int netherActivation = plugin.getLevelLogic().netherActivationLevel();
+        if (runtimeConfigs.current().nether().enabled() && state.getScore() < netherActivation) {
+            // I18N: <level> is a localized number tag; keep the tag name.
+            sendTr(player, "Nether blocks count once your island reaches level <level>.", MUTED,
+                number("level", netherActivation));
+        }
+        sendTr(player, "Island level is <level:'#,##0'>", SECONDARY, number("level", Math.floor(state.getScore())));
     }
 
     private static @NotNull Style styleFromBlockScoreState(@NotNull BlockScore.State state) {

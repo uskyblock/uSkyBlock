@@ -40,11 +40,12 @@ public class ChunkSnapshotLevelLogic extends CommonLevelLogic {
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
         @NotNull LevelConfigLoader levelConfigLoader,
+        @NotNull LevelBlacklistLoader levelBlacklistLoader,
         @NotNull RuntimeConfigs runtimeConfigs,
         @NotNull Scheduler scheduler,
         @NotNull @PluginLog Logger logger
     ) {
-        super(levelConfigLoader.load(), worldManager, runtimeConfigs.current().nether().height());
+        super(levelConfigLoader.load(), levelBlacklistLoader.load(), worldManager, runtimeConfigs.current().nether().height());
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
         this.scheduler = scheduler;

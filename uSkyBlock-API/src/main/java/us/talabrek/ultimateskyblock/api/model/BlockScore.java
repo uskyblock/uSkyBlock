@@ -90,7 +90,9 @@ public interface BlockScore {
      * <dt>NORMAL</dt>
      * <dd>No special restrictions, each block added to the island will increase the score.</dd>
      * <dt>DIMINISHING</dt>
-     * <dd>The upper limit has been reached, so additional blocks will only contribute a fraction to the score.</dd>
+     * <dd>Additional blocks contribute only a fraction of what the earlier ones did: under legacy scoring the
+     * diminishing-returns threshold has been reached, under variety scoring the count is in the flat tail
+     * (more than a thousand blocks of one type).</dd>
      * <dt>LIMIT</dt>
      * <dd>The hard-limit has been reached, so additional blocks will have no effect on the score.</dd>
      * </dl>

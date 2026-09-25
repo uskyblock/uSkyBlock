@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class VarietyLevelPolicyTest {
@@ -48,7 +50,20 @@ class VarietyLevelPolicyTest {
         }
         YamlConfiguration config = new YamlConfiguration();
         config.set("general.variety.unitsPerLevel", "many");
-        assertThrows(IllegalArgumentException.class, () -> VarietyLevelPolicy.fromConfig(config));
+        assertThrows(IllegalArgumentException.class, () -> VarietyLevelPolicy.fromConfig(config, Set.of()));
+    }
+
+    @Test
+    void blacklistedMaterialsAndAirNeverCount() {
+        VarietyLevelPolicy withBlacklist = new VarietyLevelPolicy(1, Set.of(Material.WATER, Material.LAVA));
+        assertEquals(0, withBlacklist.levelFor(Material.WATER, 500));
+        assertEquals(0, withBlacklist.levelFor(Material.LAVA, 1));
+        assertEquals(0, withBlacklist.levelFor(Material.CAVE_AIR, 500));
+        assertEquals(1, withBlacklist.levelFor(Material.STONE, 1));
+        assertFalse(withBlacklist.counts(Material.WATER));
+        assertTrue(withBlacklist.counts(Material.STONE));
+        assertFalse(policy.isInTail(1000));
+        assertTrue(policy.isInTail(1001));
     }
 
     @Test

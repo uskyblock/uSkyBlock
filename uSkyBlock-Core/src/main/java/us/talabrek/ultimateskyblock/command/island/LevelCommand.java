@@ -82,7 +82,7 @@ public class LevelCommand extends RequireIslandCommand {
                     if (rank != null) {
                         // I18N: <level:'#,##0'> and <rank> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names "score" and "rank".
                         send(player,
-                            tr("Island level is <level:'#,##0'>", SECONDARY, number("level", rank.getScore())),
+                            tr("Island level is <level:'#,##0'>", SECONDARY, number("level", Math.floor(rank.getScore()))),
                             tr("Rank is <rank>", PRIMARY, number("rank", rank.getRank())));
                     } else {
                         sendErrorTr(player, "Could not locate rank of <player>", unparsed("player", islandPlayer));

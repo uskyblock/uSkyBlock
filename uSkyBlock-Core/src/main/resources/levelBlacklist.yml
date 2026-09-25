@@ -1,0 +1,58 @@
+# Blocks the variety island level ignores.
+#
+# Variety scoring counts every distinct block type on an island. The types listed here never
+# count: air, fluids, fire, portal blocks, transient or technical blocks, and blocks a survival
+# player cannot place. Names are Minecraft block ids (see /usb iteminfo or the Minecraft wiki).
+# A name the running server version does not know is skipped with a warning, so one list works
+# across Minecraft versions.
+#
+# The plugin uses the copy bundled in its jar. To customize it, place your own levelBlacklist.yml
+# in the plugin's config folder (plugins/uSkyBlock/config/levelBlacklist.yml). Your file replaces
+# the bundled list entirely, so start from a copy of this one.
+version: 1
+ignore:
+  # air
+  - air
+  - cave_air
+  - void_air
+  # fluids
+  - water
+  - lava
+  - bubble_column
+  # fire
+  - fire
+  - soul_fire
+  # portals
+  - nether_portal
+  - end_portal
+  - end_gateway
+  # transient or technical blocks
+  - piston_head
+  - moving_piston
+  - frosted_ice
+  - light
+  - barrier
+  - structure_void
+  - structure_block
+  - jigsaw
+  - command_block
+  - chain_command_block
+  - repeating_command_block
+  - test_block
+  - test_instance_block
+  # not obtainable in survival (budding amethyst and end portal frames are not listed: 4.0 grants them as rewards)
+  - bedrock
+  - reinforced_deepslate
+  - spawner
+  - trial_spawner
+  - vault
+  - suspicious_sand
+  - suspicious_gravel
+  - petrified_oak_slab
+  - infested_stone
+  - infested_cobblestone
+  - infested_stone_bricks
+  - infested_mossy_stone_bricks
+  - infested_cracked_stone_bricks
+  - infested_chiseled_stone_bricks
+  - infested_deepslate

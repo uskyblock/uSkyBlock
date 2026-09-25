@@ -86,7 +86,9 @@ public class IslandPlaceholderSource implements PlaceholderSource {
     private @NotNull Component resolve(@NotNull IslandInfo islandInfo, @NotNull String key) {
         return switch (key) {
             case "island_level" -> parseMini("<level:'##.#'>", number("level", islandInfo.getLevel()));
-            case "island_level_int" -> parseMini("<level:'#'>", number("level", islandInfo.getLevel()));
+            // Floored, never rounded: rank gates compare the exact level, so a display must not promise a
+            // level the island has not reached.
+            case "island_level_int" -> parseMini("<level:'#'>", number("level", Math.floor(islandInfo.getLevel())));
             case "island_rank" -> rank(islandInfo);
             case "island_leader" -> fromLegacy(islandInfo.getLeader());
             case "island_golems_max" -> Component.text(islandInfo.getMaxGolems());

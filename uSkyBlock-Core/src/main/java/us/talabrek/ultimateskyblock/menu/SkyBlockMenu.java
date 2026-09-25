@@ -451,11 +451,13 @@ public class SkyBlockMenu {
         List<Component> islandLevelLore = new ArrayList<>();
         // I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
         islandLevelLore.add(tr("Current level: <level:'#,##0'>", MUTED,
-            number("level", islandInfo.getLevel(), SECONDARY)));
+            number("level", Math.floor(islandInfo.getLevel()), SECONDARY)));
         islandLevelLore.addAll(limitLogic.getSummaryComponents(islandInfo));
         addTranslatedComponentLore(
             islandLevelLore,
-            trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)")
+            plugin.getLevelLogic().isVarietyScoring()
+                ? trLegacy("Gain island levels by placing<newline>block types you do not have yet.<newline>More of the same type adds<newline>less and less.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)")
+                : trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)")
         );
         ItemStackUtil.setComponentLore(menuItem, islandLevelLore);
         menu.addItem(menuItem);

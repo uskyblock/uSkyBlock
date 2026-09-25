@@ -14,7 +14,7 @@ public class AweLevelLogic extends CommonLevelLogic {
     private Set<Location> running = new HashSet<>();
 
     public AweLevelLogic(WorldManager worldManager, FileConfiguration config) {
-        super(config, worldManager, uSkyBlock.getInstance().getRuntimeConfigs().current().nether().height());
+        super(config, java.util.Set.of(), worldManager, uSkyBlock.getInstance().getRuntimeConfigs().current().nether().height());
     }
 
     @Override

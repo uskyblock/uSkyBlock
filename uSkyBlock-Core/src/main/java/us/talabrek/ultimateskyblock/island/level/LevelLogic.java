@@ -18,4 +18,25 @@ public interface LevelLogic {
      *         not be started (already logged)
      */
     boolean calculateScoreAsync(Location l, Callback<IslandScore> callback);
+
+    /**
+     * @return whether island levels are computed from block variety rather than configured block values
+     */
+    default boolean isVarietyScoring() {
+        return false;
+    }
+
+    /**
+     * @return levels gained by the first block of a block type the island does not have yet (variety scoring)
+     */
+    default double levelPerNewBlockType() {
+        return 1;
+    }
+
+    /**
+     * @return the overworld level from which the nether island's blocks count toward the level
+     */
+    default int netherActivationLevel() {
+        return 100;
+    }
 }

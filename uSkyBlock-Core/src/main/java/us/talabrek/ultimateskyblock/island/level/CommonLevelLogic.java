@@ -1,12 +1,14 @@
 package us.talabrek.ultimateskyblock.island.level;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import us.talabrek.ultimateskyblock.api.model.BlockScore;
 import us.talabrek.ultimateskyblock.island.level.yml.LevelConfigYmlReader;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class CommonLevelLogic implements LevelLogic {
     FileConfiguration levelConfig;
@@ -18,14 +20,14 @@ public abstract class CommonLevelLogic implements LevelLogic {
     private final VarietyLevelPolicy varietyPolicy;
     final int activateNetherAtLevel;
 
-    CommonLevelLogic(FileConfiguration levelConfig, WorldManager worldManager, int netherHeight) {
+    CommonLevelLogic(FileConfiguration levelConfig, Set<Material> ignoredMaterials, WorldManager worldManager, int netherHeight) {
         this.levelConfig = levelConfig;
         // TODO 4.0: Either make this an explicit levelConfig.yml key again or hardcode/remove the threshold entirely.
         // It does not belong in config.yml; it controls when nether score starts counting toward island level.
         activateNetherAtLevel = levelConfig.getInt("nether.activate-at.level", 100);
         String scoringMode = levelConfig.getString("general.scoringMode", "legacy");
         if ("variety".equalsIgnoreCase(scoringMode)) {
-            varietyPolicy = VarietyLevelPolicy.fromConfig(levelConfig);
+            varietyPolicy = VarietyLevelPolicy.fromConfig(levelConfig, ignoredMaterials);
             pointsPerLevel = 0;
         } else if ("legacy".equalsIgnoreCase(scoringMode)) {
             varietyPolicy = null;
@@ -49,6 +51,21 @@ public abstract class CommonLevelLogic implements LevelLogic {
         netherLocation.setWorld(worldManager.getNetherWorld());
         netherLocation.setY(netherHeight);
         return netherLocation;
+    }
+
+    @Override
+    public boolean isVarietyScoring() {
+        return varietyPolicy != null;
+    }
+
+    @Override
+    public double levelPerNewBlockType() {
+        return varietyPolicy == null ? 1 : varietyPolicy.levelPerNewType();
+    }
+
+    @Override
+    public int netherActivationLevel() {
+        return activateNetherAtLevel;
     }
 
     BlockCountCollection newBlockCounts() {

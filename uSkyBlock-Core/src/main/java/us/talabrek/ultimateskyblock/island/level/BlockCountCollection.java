@@ -73,7 +73,7 @@ public class BlockCountCollection {
                 .filter(entry -> policy.levelFor(entry.getKey(), entry.getValue().intValue()) > 0)
                 .map(entry -> new BlockScoreImpl(entry.getKey().createBlockData(), entry.getValue().intValue(),
                         policy.levelFor(entry.getKey(), entry.getValue().intValue()),
-                        entry.getValue().intValue() == 1 ? BlockScore.State.NORMAL : BlockScore.State.DIMINISHING))
+                        policy.isInTail(entry.getValue().intValue()) ? BlockScore.State.DIMINISHING : BlockScore.State.NORMAL))
                 .sorted(new BlockScoreComparator()).collect(Collectors.toList());
     }
 

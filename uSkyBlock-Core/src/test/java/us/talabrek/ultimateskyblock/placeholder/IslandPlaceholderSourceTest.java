@@ -80,7 +80,8 @@ public class IslandPlaceholderSourceTest {
         // the double literal 120.55 is actually 120.5499..., which would round to 120.5
         when(islandInfo.getLevel()).thenReturn(120.56d);
         assertThat(plainText(source.resolve(player, "island_level")), is("120.6"));
-        assertThat(plainText(source.resolve(player, "island_level_int")), is("121"));
+        // the integer form is floored, not rounded: a rank gate at 121 is not reached yet
+        assertThat(plainText(source.resolve(player, "island_level_int")), is("120"));
     }
 
     @Test
