@@ -44,7 +44,10 @@ dependencies {
         exclude(group = "com.google.guava")
         exclude(group = "com.google.code.gson")
     }
-    testImplementation(libs.com.sk89q.worldedit.worldedit.bukkit)
+    testImplementation(libs.com.sk89q.worldedit.worldedit.bukkit) {
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit) {
         exclude(group = "com.sk89q.worldedit")
         exclude(group = "com.google.guava")

@@ -15,7 +15,12 @@ dependencies {
         exclude(group = "*")
     }
     compileOnly(libs.org.spigotmc.spigot.api)
-    compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
+    // See uSkyBlock-Core: WorldEdit's metadata strict-pins the guava/gson the server ships; drop them
+    // so the catalog's versions (required by spigot-api 26.3) win the compile classpath.
+    compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit) {
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
 }
 
 description = "uSkyBlock-FAWE"
