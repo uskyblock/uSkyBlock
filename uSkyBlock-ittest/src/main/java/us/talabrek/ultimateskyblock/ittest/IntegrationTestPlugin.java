@@ -550,7 +550,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         }
 
         // Drives a REAL asynchronous chunk-snapshot scan (unlike challenge-island-level, which fakes the
-        // level with setLevel): places high-value blocks and asserts the computed level rises.
+        // level with setLevel): places high-value blocks and checks the nonlinear fixture curve.
         // calculateScoreAsync writes island.getLevel() from the scan result, so this exercises the
         // version-sensitive ChunkSnapshot + scoring path end to end - the path a unit test cannot fake.
         private void islandLevelScan(Scenario scenario) {
@@ -571,8 +571,11 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             scenario.await(baselineDone::get, Duration.ofSeconds(30), () -> {
                 Location origin = c.player().getLocation();
                 List<Block> placed = new ArrayList<>();
+                check(baseline.get() >= 1 && baseline.get() < 90,
+                    "level fixture must be above its curve anchor and below nether activation");
                 for (int i = 0; i < 5; i++) {
                     Block block = origin.clone().add(0, 3, i).getBlock(); // above the player, in open air
+                    check(block.getType().isAir(), "level-scan fixture must replace only air");
                     block.setType(Material.DIAMOND_BLOCK);
                     placed.add(block);
                 }
@@ -580,6 +583,14 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 usb.calculateScoreAsync(c.player(), islandName, new Callback<us.talabrek.ultimateskyblock.api.model.IslandScore>() {
                     @Override
                     public void run() {
+                        double contributions = getState().getTop(Integer.MAX_VALUE).stream()
+                            .mapToDouble(us.talabrek.ultimateskyblock.api.model.BlockScore::getScore).sum();
+                        check(Math.abs(contributions - getState().getScore()) < 1e-6,
+                            "block contributions must add up to the nonlinear island level");
+                        check(Math.abs(island.getLevel() - getState().getScore()) < 1e-6,
+                            "stored island level must match the calculated level");
+                        check(Math.abs(usb.getIslandLogic().getRank(islandName).getScore() - getState().getScore()) < 1e-6,
+                            "leaderboard must use the same calculated level");
                         rescanDone.set(true);
                     }
                 });
@@ -589,7 +600,13 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     check(after > baseline.get(),
                         "island level did not rise after a real scan of placed diamond blocks (baseline="
                             + baseline.get() + ", after=" + after + ")");
-                    scenario.pass("a real chunk-snapshot scan raised the island level after placing high-value blocks");
+                    // Fixture: above level 1, level = sqrt(points / 1000). Five diamond blocks
+                    // add 25,000 points. An independent expected value catches an ignored curve,
+                    // applying the curve per material, or accidentally applying it twice.
+                    double expected = Math.sqrt(baseline.get() * baseline.get() + 25);
+                    check(Math.abs(after - expected) < 1e-6,
+                        "nonlinear level mismatch (expected=" + expected + ", actual=" + after + ")");
+                    scenario.pass("real scan applied the nonlinear curve once; breakdown, stored level and rank agree");
                 }, "island level rescan did not complete before the deadline");
             }, "baseline island level scan did not complete before the deadline");
         }

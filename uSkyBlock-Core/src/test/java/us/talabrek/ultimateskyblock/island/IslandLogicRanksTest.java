@@ -181,23 +181,35 @@ public class IslandLogicRanksTest {
     }
 
     @Test
-    public void getRanksOffByOneOnNonZeroOffset() {
+    public void getRanksReturnsFullAndPartialPagesAtNonZeroOffsets() {
         addIsland("a", "alice", 300);
         addIsland("b", "bob", 200);
         addIsland("c", "carol", 100);
         addIsland("d", "dave", 50);
         addIsland("e", "eve", 25);
 
-        // Characterizes the current (buggy) behaviour: toIndex = min(size - offset, length).
-        // With size=5, offset=1, length=10 -> subList(1, min(4, 10)=4) yields 3 entries,
-        // where a correct paging impl (subList(1, min(size, offset+length))) would return 4.
         List<IslandLevel> page = islandLogic.getRanks(1, 10);
-        assertEquals(3, page.size());
+        assertEquals(4, page.size());
         assertEquals("b", page.get(0).getIslandName());
-        assertEquals("d", page.get(2).getIslandName());
+        assertEquals("e", page.get(3).getIslandName());
 
-        // ...and when offset is large enough that (size - offset) < length, fromIndex > toIndex,
-        // so subList throws instead of returning a short page: subList(3, min(2, 1)=1).
-        assertThrows(IllegalArgumentException.class, () -> islandLogic.getRanks(3, 1));
+        assertEquals("d", islandLogic.getRanks(3, 1).getFirst().getIslandName());
+        assertEquals(2, islandLogic.getRanks(3, Integer.MAX_VALUE).size());
+        assertTrue(islandLogic.getRanks(3, 0).isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> islandLogic.getRanks(-1, 1));
+        assertThrows(IllegalArgumentException.class, () -> islandLogic.getRanks(0, -1));
+    }
+
+    @Test
+    public void returnedRankPageDoesNotChangeOrInvalidateWhenScoresChange() {
+        addIsland("a", "alice", 100);
+        addIsland("b", "bob", 200);
+        List<IslandLevel> page = islandLogic.getRanks(0, 2);
+        addIsland("a", "alice", 300);
+
+        assertEquals("b", page.getFirst().getIslandName());
+        assertEquals("a", islandLogic.getRanks(0, 2).getFirst().getIslandName());
+        page.clear();
+        assertEquals(2, islandLogic.getRanks(0, 2).size());
     }
 }

@@ -23,6 +23,23 @@ public class IslandScore implements us.talabrek.ultimateskyblock.api.model.Islan
     }
 
     /**
+     * Converts block points to proportional level contributions. The breakdown continues to sum
+     * to the island level even when the curve is nonlinear; entries are shares, not marginal gains.
+     * Scheme/island multipliers and level offsets are applied later, as with legacy scoring.
+     */
+    public static IslandScore fromPoints(List<BlockScore> blockPoints, IslandLevelCurve curve) {
+        double points = blockPoints.stream().mapToDouble(BlockScore::getScore).sum();
+        double level = curve.levelForPoints(points);
+        double scale = points == 0 ? 1 / curve.pointsPerLevel() : level / points;
+        List<BlockScore> contributions = new ArrayList<>();
+        for (BlockScore block : blockPoints) {
+            contributions.add(new BlockScoreImpl(block.getBlockData(), block.getCount(),
+                block.getScore() * scale, block.getState(), block.getComponentName()));
+        }
+        return new IslandScore(level, contributions);
+    }
+
+    /**
      * Consolidates the top, so scores with the same name is combined.
      */
     private List<BlockScore> joinTop(List<BlockScore> top) {

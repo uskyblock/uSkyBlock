@@ -45,6 +45,15 @@ public class BlockLevelConfig {
     }
 
     public BlockScore calculateScore(int count, double pointsPerLevel) {
+        Points result = calculatePoints(count);
+        return new BlockScoreImpl(baseBlock.getType().createBlockData(), count, result.points() / pointsPerLevel, result.state());
+    }
+
+    /** Calculates the scoring policy without requiring a live Bukkit block registry. */
+    public Points calculatePoints(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Block count must not be negative");
+        }
         BlockScore.State state = BlockScore.State.NORMAL;
         double adjustedCount = count;
         if (negativeReturns >= 0 && adjustedCount > negativeReturns) {
@@ -59,9 +68,10 @@ public class BlockLevelConfig {
             state = BlockScore.State.DIMINISHING;
             adjustedCount = dReturns(adjustedCount, diminishingReturns);
         }
-        double blockScore = adjustedCount * scorePerBlock;
-        return new BlockScoreImpl(baseBlock.getType().createBlockData(), count, blockScore/pointsPerLevel, state);
+        return new Points(adjustedCount * scorePerBlock, state);
     }
+
+    public record Points(double points, BlockScore.State state) {}
 
     private double dReturns(final double val, final double scale) {
         if (val < 0.0) {
