@@ -10,11 +10,13 @@ class VarietyLevelPolicyTest {
     private final VarietyLevelPolicy policy = new VarietyLevelPolicy(1);
 
     @Test
-    void everyNewTypeIsWorthMoreThanAnotherStackOfOneType() {
+    void thousandOfOneTypeMatchesTenDistinctSingleBlocks() {
         double tenTypes = 10 * policy.levelFor(Material.STONE, 1);
         double thousandOfOneType = policy.levelFor(Material.STONE, 1000);
         assertEquals(10, tenTypes);
-        assertTrue(tenTypes > thousandOfOneType);
+        assertEquals(tenTypes, thousandOfOneType, 1e-10);
+        assertTrue(10 * policy.levelFor(Material.STONE, 100) > thousandOfOneType,
+            "a varied build of the same total size must beat a single-material stack");
         assertEquals(policy.levelFor(Material.STONE, 1000), policy.levelFor(Material.DIAMOND_BLOCK, 1000),
             "material values must have no influence on the variety level");
     }
@@ -25,10 +27,15 @@ class VarietyLevelPolicyTest {
         double second = policy.levelFor(Material.STONE, 2) - first;
         double hundredth = policy.levelFor(Material.STONE, 100) - policy.levelFor(Material.STONE, 99);
         double thousandth = policy.levelFor(Material.STONE, 1000) - policy.levelFor(Material.STONE, 999);
+        double beyondThousand = policy.levelFor(Material.STONE, 1001) - policy.levelFor(Material.STONE, 1000);
         assertEquals(1, first);
         assertTrue(second < first);
-        assertTrue(hundredth < second / 20);
-        assertTrue(thousandth < hundredth / 8);
+        assertTrue(hundredth < second / 10);
+        assertTrue(thousandth < hundredth / 4);
+        assertTrue(beyondThousand < thousandth / 3, "the tail must flatten after 1,000 blocks");
+        assertEquals(10.5, policy.levelFor(Material.STONE, 2000), 1e-10);
+        assertTrue(policy.levelFor(Material.STONE, 1_000_000) < 15,
+            "even a million blocks of one material must not dominate late ranks");
     }
 
     @Test

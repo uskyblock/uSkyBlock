@@ -1,8 +1,8 @@
 # Experimental island-variety levels
 
-The 4.0 variety scorer is available for staging, but it is not yet the default. It rewards a wider building palette instead of the market value of particular materials. Every distinct placed block type contributes one unit. Additional blocks of the same type add `0.25 × log₂(count)` units in total, so their marginal contribution rapidly falls. Air does not count. The sum is divided by `unitsPerLevel` to produce the island level.
+The 4.0 variety scorer is available for staging, but it is not yet the default. It rewards a wider building palette instead of the market value of particular materials. Each placed block type contributes the cube root of its count, up to 1,000 blocks. Beyond 1,000, every doubling adds only 0.5 units. The marginal contribution falls as the count grows; air does not count. The sum is divided by `unitsPerLevel` to produce the island level.
 
-For example, ten distinct block types placed once give 10 units; 1,000 blocks of one type give about 3.49 units. A diamond block and a glass block have exactly the same contribution at the same count. Newly introduced Minecraft block types count without an update to `levelConfig.yml`.
+For example, ten distinct block types placed once give 10 units; 1,000 blocks of one type also give 10. Ten types used for 100 blocks each give about 46.4 units, so variety still wins when the total number of blocks is the same. A diamond block and a glass block have exactly the same contribution at the same count. Newly introduced Minecraft block types count without an update to `levelConfig.yml`.
 
 To test this on a **copy** of a server, set the following in its complete `plugins/uSkyBlock/levelConfig.yml`:
 

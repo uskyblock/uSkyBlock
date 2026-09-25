@@ -593,7 +593,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 });
                 scenario.await(rescanDone::get, Duration.ofSeconds(30), () -> {
                     double repeatedGain = repeated.get().getScore() - baseline.get().getScore();
-                    double expectedRepeated = 1 + 0.25 * Math.log(5) / Math.log(2);
+                    double expectedRepeated = Math.cbrt(5);
                     check(Math.abs(repeatedGain - expectedRepeated) < 1e-6,
                         "five diamond blocks must use one type with diminishing repeats (actual=" + repeatedGain + ")");
                     for (int i = 0; i < placed.size(); i++) {
