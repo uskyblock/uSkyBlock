@@ -4,7 +4,7 @@ set -euo pipefail
 readonly PASS=0
 readonly FAIL=10
 readonly HARNESS_ERROR=20
-readonly FIXTURE_REVISION=2
+readonly FIXTURE_REVISION=1
 readonly PLAYER_NAME=UsbItPlayer
 readonly USER_AGENT="uSkyBlock-ittest/1 (+https://github.com/uskyblock/uSkyBlock)"
 
@@ -369,7 +369,6 @@ cp "${PLUGIN_JAR}" "${SERVER_DIRECTORY}/plugins/"
 cp "${DRIVER_JAR}" "${SERVER_DIRECTORY}/plugins/"
 cp "${ROOT}/uSkyBlock-Core/src/main/resources/config.yml" "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"
 cp "${ROOT}/scripts/ittest/fixtures/challenges.yml" "${SERVER_DIRECTORY}/plugins/uSkyBlock/challenges.yml"
-cp "${ROOT}/scripts/ittest/fixtures/levelConfig.yml" "${SERVER_DIRECTORY}/plugins/uSkyBlock/levelConfig.yml"
 cp "${ROOT}/uSkyBlock-Core/src/main/resources/schematics/default.schematic" "${SERVER_DIRECTORY}/plugins/uSkyBlock/schematics/ittest.schematic"
 
 sed -i.bak 's/default-scheme: default/default-scheme: ittest/' "${SERVER_DIRECTORY}/plugins/uSkyBlock/config.yml"

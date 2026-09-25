@@ -304,16 +304,12 @@ public class IslandLogic {
     }
 
     public List<IslandLevel> getRanks(int offset, int length) {
-        if (offset < 0 || length < 0) {
-            throw new IllegalArgumentException("Rank offset and length must not be negative");
-        }
         synchronized (ranks) {
             int size = ranks.size();
-            if (size <= offset || length == 0) {
+            if (size <= offset) {
                 return Collections.emptyList();
             }
-            // Return a snapshot: the ranking can change as soon as the lock is released.
-            return new ArrayList<>(ranks.subList(offset, offset + Math.min(size - offset, length)));
+            return ranks.subList(offset, Math.min(size - offset, length));
         }
     }
 
@@ -404,7 +400,7 @@ public class IslandLogic {
     }
 
     public IslandRank getRank(String islandName) {
-        List<IslandLevel> rankList = getRanks(0, Integer.MAX_VALUE);
+        ArrayList<IslandLevel> rankList = new ArrayList<>(ranks);
         for (int i = 0; i < rankList.size(); i++) {
             IslandLevel level = rankList.get(i);
             if (level.getIslandName().equalsIgnoreCase(islandName)) {

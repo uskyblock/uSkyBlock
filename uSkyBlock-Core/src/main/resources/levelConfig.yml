@@ -1,14 +1,6 @@
 general:
-  # pointsPerLevel - points per level before the progression curve is applied.
+  # pointsPerLevel - number of points needed to advance 1 island level.
   pointsPerLevel: 1000
-
-  # exponent 1.0 preserves legacy scores. Values above 1 make later levels cost more.
-  # Example for playtesting: exponent 1.5, linearUntilLevel 100 keeps levels 0-100 unchanged.
-  # Above that anchor: points = pointsPerLevel * linearUntilLevel * (level / linearUntilLevel)^exponent.
-  # Recalibrate challenge gates before enabling this on an existing server.
-  levelProgression:
-    exponent: 1.0
-    linearUntilLevel: 100
 
   # default - the default value for blocks not listed in blockValues here.
   default: 10
@@ -22,12 +14,7 @@ general:
   # no-value or -1 means disabled.
   # limit: 10000
 
-nether:
-  activate-at:
-    # Nether blocks count once the overworld alone reaches this calculated level, before perks.
-    level: 100
-
-# blocks - the blocks listed below will have custom values instead of the default.
+  # blocks - the blocks listed below will have custom values instead of the default.
 blocks:
   ACACIA_DOOR:
     score: 20.0

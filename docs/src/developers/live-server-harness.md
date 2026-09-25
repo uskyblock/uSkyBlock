@@ -48,6 +48,4 @@ Every provisioned run creates `run-manifest.json`, per-phase JSON Lines verdicts
 
 The fixture player is `UsbItPlayer`, whose offline UUID is derived from `OfflinePlayer:UsbItPlayer`. The fixture challenge is `ittest_trade`; the fixture island scheme is `ittest`. Persistence checks resolve these stable identifiers through uSkyBlock services after a real restart and never inspect SQLite directly.
 
-The level-scan scenario uses `scripts/ittest/fixtures/levelConfig.yml`: a quadratic curve above level 1 and diamond blocks worth 5,000 points each. After a real scan, placing five blocks must change the level from `L` to `sqrt(L² + 25)`. It also checks that the block contributions, saved island level, and leaderboard agree. This fixture exercises nonlinear scoring independently of production balance settings; the bundled configuration retains legacy linear scoring until the 4.0 balance and migration work is complete.
-
 On success, the disposable server directory is removed unless `--keep` is set. Manifests, verdicts, and logs remain. CI always uploads the manifest and verdicts, and uploads the complete runtime directory on non-PASS outcomes.
