@@ -6,8 +6,10 @@ on:
   # on every push and PR, so re-running them on a timer would add nothing.
   schedule:
     - cron: '17 3 * * *'
-  # Every push to master or 4.0 and every PR runs the four pinned stable lanes (no path
+  # Every push to master or 4.0 and every PR runs the pinned stable lanes (no path
   # filter - a change anywhere can regress runtime behaviour the harness exercises).
+  # The stable set is the min and max supported Minecraft version per platform; when
+  # gradle.properties declares a single version the min lanes are dropped.
   push:
     branches: [master, '4.0']
   pull_request:
@@ -45,31 +47,48 @@ concurrency:
 jobs:
   # Resolve which lanes this event should run:
   #   schedule                -> paper-canary only (upstream early-warning)
-  #   push (master) / PR      -> the four pinned stable lanes
-  #   workflow_dispatch       -> the dispatched lane, or all five for 'all'
+  #   push (master, 4.0) / PR -> the pinned stable lanes (four, or two when min == max)
+  #   workflow_dispatch       -> the dispatched lane, or the stable lanes plus canary for 'all'
   select-lanes:
     if: github.repository_owner == 'uskyblock'
     runs-on: ubuntu-24.04
     outputs:
       lanes: ${{ steps.select.outputs.lanes }}
     steps:
+      - name: Checkout gradle.properties
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: gradle.properties
+          sparse-checkout-cone-mode: false
+
       - name: Select lanes
         id: select
         env:
           DISPATCH_LANE: ${{ inputs.lane }}
         run: |
+          # The harness derives its min/max lanes from minecraftVersions (oldest -> newest). With a
+          # single supported version the min lanes would only repeat the max lanes, so skip them.
+          versions="$(sed -n 's/^[[:space:]]*minecraftVersions=//p' gradle.properties | tr -d '[:space:]')"
+          min="${versions%%,*}"
+          max="${versions##*,}"
+          if [[ "${min}" == "${max}" ]]; then
+            stable='"paper-max","spigot-max"'
+          else
+            stable='"paper-min","paper-max","spigot-min","spigot-max"'
+          fi
           case "${{ github.event_name }}" in
             schedule)
               lanes='["paper-canary"]' ;;
             workflow_dispatch)
               if [[ "${DISPATCH_LANE}" == "all" ]]; then
-                lanes='["paper-min","paper-max","spigot-min","spigot-max","paper-canary"]'
+                lanes="[${stable},\"paper-canary\"]"
               else
                 lanes="[\"${DISPATCH_LANE}\"]"
               fi ;;
             *)
-              lanes='["paper-min","paper-max","spigot-min","spigot-max"]' ;;
+              lanes="[${stable}]" ;;
           esac
+          echo "Supported ${min}..${max} -> lanes ${lanes}"
           echo "lanes=${lanes}" >> "${GITHUB_OUTPUT}"
 
   live_server:
