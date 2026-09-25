@@ -2,10 +2,10 @@ name: Gradle build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, '4.0' ]
     tags: [ 'v*' ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, '4.0' ]
 
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6.3.0
 
       - name: Verify translation templates are up to date (PR + main)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/4.0')) }}
         run: |
           set -euo pipefail
           ./gradlew :uSkyBlock-Core:extractTranslation --no-daemon --no-configuration-cache

@@ -6,10 +6,10 @@ on:
   # on every push and PR, so re-running them on a timer would add nothing.
   schedule:
     - cron: '17 3 * * *'
-  # Every push to master and every PR runs the four pinned stable lanes (no path
+  # Every push to master or 4.0 and every PR runs the four pinned stable lanes (no path
   # filter - a change anywhere can regress runtime behaviour the harness exercises).
   push:
-    branches: [master]
+    branches: [master, '4.0']
   pull_request:
   workflow_dispatch:
     inputs:
