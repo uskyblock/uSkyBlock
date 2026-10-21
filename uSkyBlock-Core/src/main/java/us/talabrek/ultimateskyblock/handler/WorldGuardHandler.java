@@ -141,16 +141,8 @@ public class WorldGuardHandler {
             maxPoint = maxPoint.withY(120);
         }
         ProtectedCuboidRegion region = new ProtectedCuboidRegion(regionName, minPoint, maxPoint);
-        final DefaultDomain owners = new DefaultDomain();
-        DefaultDomain members = new DefaultDomain();
-        for (UUID member : islandConfig.getMemberUUIDs()) {
-            owners.addPlayer(member);
-        }
-        for (UUID trust : islandConfig.getTrusteeUUIDs()) {
-            members.addPlayer(trust);
-        }
-        region.setOwners(owners);
-        region.setMembers(members);
+        setIslandSettings(region, islandConfig);
+        final DefaultDomain owners = region.getOwners();
         region.setPriority(100);
         if (runtimeConfig().worldGuard().entryMessage()) {
             if (owners.size() == 0) {
@@ -173,9 +165,24 @@ public class WorldGuardHandler {
             region.setFlag(Flags.FAREWELL_MESSAGE, null);
         }
         region.setFlag(Flags.PVP, null);
-        boolean isLocked = islandConfig.isLocked();
-        updateLockStatus(region, isLocked);
         return region;
+    }
+
+    /**
+     * Gives the region the island's owners (its members), members (its trustees) and lock.
+     */
+    private static void setIslandSettings(ProtectedRegion region, IslandInfo islandConfig) {
+        DefaultDomain owners = new DefaultDomain();
+        DefaultDomain members = new DefaultDomain();
+        for (UUID member : islandConfig.getMemberUUIDs()) {
+            owners.addPlayer(member);
+        }
+        for (UUID trust : islandConfig.getTrusteeUUIDs()) {
+            members.addPlayer(trust);
+        }
+        region.setOwners(owners);
+        region.setMembers(members);
+        updateLockStatus(region, islandConfig.isLocked());
     }
 
     private static void updateLockStatus(ProtectedRegion region, boolean isLocked) {
@@ -233,12 +240,72 @@ public class WorldGuardHandler {
             return false;
         }
         updateLockStatus(region, locked);
-        World netherWorld = worldManager.getNetherWorld();
-        ProtectedRegion netherRegion = netherWorld != null ? getRegionManager(netherWorld).getRegion(islandName + "nether") : null;
+        ProtectedRegion netherRegion = getNetherRegion(islandName);
         if (netherRegion != null) {
             updateLockStatus(netherRegion, locked);
         }
         return true;
+    }
+
+    /**
+     * Gives the island's regions, in the island world and where it has one in the nether, the island's owners,
+     * members and lock, as {@link #updateRegion} sets them. Everything else about the regions stays, such as a flag
+     * set on one by hand, which a rebuild would drop.
+     *
+     * @return the number of regions synced
+     */
+    public static int syncRegions(IslandInfo islandInfo) {
+        int synced = 0;
+        ProtectedRegion region = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld())
+            .getRegion(islandInfo.getName() + "island");
+        if (region != null) {
+            setIslandSettings(region, islandInfo);
+            synced++;
+        }
+        ProtectedRegion netherRegion = getNetherRegion(islandInfo.getName());
+        if (netherRegion != null) {
+            setIslandSettings(netherRegion, islandInfo);
+            synced++;
+        }
+        return synced;
+    }
+
+    /**
+     * @return whether the island has a region in the island world
+     */
+    public static boolean hasIslandRegion(String islandName) {
+        return getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld()).hasRegion(islandName + "island");
+    }
+
+    /**
+     * @return the ids of all regions in the nether island world, none without one
+     */
+    public static Set<String> getNetherRegionIds() {
+        RegionManager regionManager = getNetherRegionManager();
+        return regionManager != null ? Set.copyOf(regionManager.getRegions().keySet()) : Set.of();
+    }
+
+    /**
+     * Removes the island's region in the nether island world, leaving its region in the island world.
+     */
+    public static void removeNetherRegion(String islandName) {
+        RegionManager regionManager = getNetherRegionManager();
+        if (regionManager != null) {
+            regionManager.removeRegion(islandName + "nether");
+        }
+    }
+
+    private static ProtectedRegion getNetherRegion(String islandName) {
+        RegionManager regionManager = getNetherRegionManager();
+        return regionManager != null ? regionManager.getRegion(islandName + "nether") : null;
+    }
+
+    /**
+     * @return the regions of the nether island world, or null without one or without WorldGuard regions in it
+     */
+    private static RegionManager getNetherRegionManager() {
+        World netherWorld = uSkyBlock.getInstance().getWorldManager().getNetherWorld();
+        return netherWorld != null ? getRegionManager(netherWorld) : null;
     }
 
     public static BlockVector3 getProtectionVectorLeft(final Location island) {

@@ -16,6 +16,7 @@ import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.upgrade.IslandRegionRepair;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 @Singleton
@@ -32,6 +33,7 @@ public class Services {
     private final AutoIslandLevelRefresh autoIslandLevelRefresh;
     private final PlaceholderIntegrations placeholderIntegrations;
     private final SchematicHandler schematicHandler;
+    private final IslandRegionRepair islandRegionRepair;
 
     @Inject
     public Services(
@@ -45,7 +47,8 @@ public class Services {
         @NotNull HookManager hookManager,
         @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh,
         @NotNull PlaceholderIntegrations placeholderIntegrations,
-        @NotNull SchematicHandler schematicHandler
+        @NotNull SchematicHandler schematicHandler,
+        @NotNull IslandRegionRepair islandRegionRepair
         ) {
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
@@ -58,6 +61,7 @@ public class Services {
         this.autoIslandLevelRefresh = autoIslandLevelRefresh;
         this.placeholderIntegrations = placeholderIntegrations;
         this.schematicHandler = schematicHandler;
+        this.islandRegionRepair = islandRegionRepair;
     }
 
     public void startup(uSkyBlock plugin) {
@@ -75,6 +79,7 @@ public class Services {
         if (plugin.getWorldManager().getNetherWorld() != null) {
             WorldGuardHandler.setupGlobal(plugin.getWorldManager().getNetherWorld());
         }
+        islandRegionRepair.start();
     }
 
     public void shutdown(uSkyBlock plugin) {
