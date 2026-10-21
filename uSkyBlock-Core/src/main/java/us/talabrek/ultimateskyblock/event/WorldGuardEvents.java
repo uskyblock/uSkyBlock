@@ -56,10 +56,16 @@ public class WorldGuardEvents implements Listener {
 
     /**
      * The push that bounces a player away from the island's centre, level with the ground. The island location is in
-     * the island world, the player may be in any island world: only their x and z are compared.
+     * the island world, the player may be in any island world: only their x and z are compared. A player at the
+     * centre's x and z, with no direction away from it, is pushed back from where they face.
      */
     static Vector bounce(@NotNull Location to, @NotNull Location island) {
-        return new Vector(to.getX() - island.getX(), 0, to.getZ() - island.getZ()).normalize().multiply(1.5);
+        Vector away = new Vector(to.getX() - island.getX(), 0, to.getZ() - island.getZ());
+        if (away.lengthSquared() == 0) {
+            double yaw = Math.toRadians(to.getYaw());
+            away = new Vector(Math.sin(yaw), 0, -Math.cos(yaw));
+        }
+        return away.normalize().multiply(1.5);
     }
 
     private boolean isBlockedFromEntry(Player player, IslandInfo islandInfo) {

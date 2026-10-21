@@ -24,4 +24,28 @@ public class WorldGuardEventsTest {
         assertEquals(0, bounce.getY(), 1e-9);
         assertEquals(1.2, bounce.getZ(), 1e-9);
     }
+
+    @Test
+    public void aPlayerAtTheCentresXAndZIsPushedBackFromWhereTheyFace() {
+        Location island = new Location(mock(World.class), 128, 150, 0);
+        // Facing south, +z.
+        Location aboveTheCentre = new Location(mock(World.class), 128, 75, 0, 0, 90);
+
+        Vector bounce = WorldGuardEvents.bounce(aboveTheCentre, island);
+
+        assertEquals(0, bounce.getX(), 1e-9);
+        assertEquals(0, bounce.getY(), 1e-9);
+        assertEquals(-1.5, bounce.getZ(), 1e-9);
+    }
+
+    @Test
+    public void aPlayerAtTheCentreFacingWestIsPushedEast() {
+        Location island = new Location(mock(World.class), 128, 150, 0);
+        Location atTheCentre = new Location(mock(World.class), 128, 150, 0, 90, 0);
+
+        Vector bounce = WorldGuardEvents.bounce(atTheCentre, island);
+
+        assertEquals(1.5, bounce.getX(), 1e-9);
+        assertEquals(0, bounce.getZ(), 1e-9);
+    }
 }
