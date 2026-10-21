@@ -205,6 +205,19 @@ public class IslandRegionRepair {
             logger.info("Synced " + regionsSynced + " regions of " + islandsSynced + " islands to their lock, owners"
                 + " and members" + (unreadable > 0 ? " (" + unreadable + " islands could not be read)" : "")
                 + ", and removed " + removed + " nether regions of deleted islands.");
+            // WorldGuard writes changed regions only every 30 seconds, so the marker waits for them to be written: a
+            // crash before then must not leave the marker of a lost repair. Off the main thread, as WorldGuard saves.
+            scheduler.async(this::saveAndLeaveMarker);
+        }
+
+        private void saveAndLeaveMarker() {
+            try {
+                regions.save();
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "Unable to save the island regions, so they are synced again at the next"
+                    + " start", e);
+                return;
+            }
             try {
                 Files.createDirectories(markerFile().getParent());
                 Files.writeString(markerFile(), "uSkyBlock synced the island regions to their islands and removed the"
@@ -241,6 +254,11 @@ public class IslandRegionRepair {
         int sync(IslandInfo island);
 
         void removeNetherRegion(String islandName);
+
+        /**
+         * Writes the changed regions to WorldGuard's storage now.
+         */
+        void save() throws IOException;
     }
 
     private record WorldGuardRegions(uSkyBlock plugin) implements IslandRegions {
@@ -267,6 +285,11 @@ public class IslandRegionRepair {
         @Override
         public void removeNetherRegion(String islandName) {
             WorldGuardHandler.removeNetherRegion(islandName);
+        }
+
+        @Override
+        public void save() throws IOException {
+            WorldGuardHandler.saveRegions();
         }
     }
 }

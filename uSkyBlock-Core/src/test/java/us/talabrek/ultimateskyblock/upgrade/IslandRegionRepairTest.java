@@ -105,7 +105,23 @@ public class IslandRegionRepairTest {
         assertTrue(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."), logged.toString());
         assertTrue(logged.contains("Synced 4 regions of 2 islands to their lock, owners and members, and removed 1 nether"
             + " regions of deleted islands."), logged.toString());
+        assertTrue(regions.saved);
         assertTrue(Files.exists(marker()));
+    }
+
+    @Test
+    public void runsAgainIfTheRegionsCannotBeSaved() throws IOException {
+        islandFiles("128,0");
+        regions.saveFails = true;
+
+        Repair repair = new Repair();
+        repair.start();
+        repair.runToTheEnd();
+
+        assertEquals(List.of("128,0"), regions.synced);
+        assertTrue(logged.contains("Unable to save the island regions, so they are synced again at the next start"),
+            logged.toString());
+        assertFalse(Files.exists(marker()));
     }
 
     @Test
@@ -254,6 +270,10 @@ public class IslandRegionRepairTest {
             BukkitTask task = mock(BukkitTask.class);
             doAnswer(invocation -> cancelled = true).when(task).cancel();
             when(scheduler.sync(scheduled.capture(), any(Duration.class), any(Duration.class))).thenReturn(task);
+            when(scheduler.async(any(Runnable.class))).thenAnswer(invocation -> {
+                invocation.<Runnable>getArgument(0).run();
+                return mock(BukkitTask.class);
+            });
         }
 
         void start() {
@@ -278,6 +298,8 @@ public class IslandRegionRepairTest {
         private final Set<String> islandRegions = new HashSet<>();
         private final Set<String> netherRegionIds = new HashSet<>();
         private final List<String> synced = new ArrayList<>();
+        private boolean saveFails;
+        private boolean saved;
 
         @Override
         public boolean available() {
@@ -304,6 +326,14 @@ public class IslandRegionRepairTest {
         @Override
         public void removeNetherRegion(String islandName) {
             netherRegionIds.remove(islandName + "nether");
+        }
+
+        @Override
+        public void save() throws IOException {
+            if (saveFails) {
+                throw new IOException("Unable to save the island regions");
+            }
+            saved = true;
         }
     }
 }
