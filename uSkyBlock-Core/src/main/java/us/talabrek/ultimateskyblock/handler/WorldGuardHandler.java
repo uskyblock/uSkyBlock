@@ -198,10 +198,7 @@ public class WorldGuardHandler {
 
     public static void islandLock(final CommandSender sender, final String islandName) {
         try {
-            RegionManager regionManager = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld());
-            if (regionManager.hasRegion(islandName + "island")) {
-                ProtectedRegion region = regionManager.getRegion(islandName + "island");
-                updateLockStatus(region, true);
+            if (setLocked(islandName, true)) {
                 // I18N: Message sent when a player locks their island
                 sendTr(sender, "Your island is now <error>locked</error>. Only your party members may enter.");
             } else {
@@ -214,10 +211,7 @@ public class WorldGuardHandler {
 
     public static void islandUnlock(final CommandSender sender, final String islandName) {
         try {
-            RegionManager regionManager = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld());
-            if (regionManager.hasRegion(islandName + "island")) {
-                ProtectedRegion region = regionManager.getRegion(islandName + "island");
-                updateLockStatus(region, false);
+            if (setLocked(islandName, false)) {
                 sendTr(sender, "Your island is now <secondary>unlocked</secondary>. Anyone may enter, but only you and your party members may build or remove blocks.");
             } else {
                 sendErrorTr(sender, "You must be the party leader to unlock your island!");
@@ -225,6 +219,26 @@ public class WorldGuardHandler {
         } catch (Exception ex) {
             LogUtil.log(Level.SEVERE, "Error: failed to unlock " + islandName + "'s Island (" + sender.getName() + ")", ex);
         }
+    }
+
+    /**
+     * Locks or unlocks the island's region in the island world and, where it has one, in the nether.
+     *
+     * @return false if the island has no region in the island world
+     */
+    private static boolean setLocked(String islandName, boolean locked) {
+        WorldManager worldManager = uSkyBlock.getInstance().getWorldManager();
+        ProtectedRegion region = getRegionManager(worldManager.getWorld()).getRegion(islandName + "island");
+        if (region == null) {
+            return false;
+        }
+        updateLockStatus(region, locked);
+        World netherWorld = worldManager.getNetherWorld();
+        ProtectedRegion netherRegion = netherWorld != null ? getRegionManager(netherWorld).getRegion(islandName + "nether") : null;
+        if (netherRegion != null) {
+            updateLockStatus(netherRegion, locked);
+        }
+        return true;
     }
 
     public static BlockVector3 getProtectionVectorLeft(final Location island) {
