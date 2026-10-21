@@ -204,6 +204,22 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void passesOverAnIslandDeletedWhileItRuns() throws IOException {
+        islandFiles("128,0", "256,0");
+        Repair repair = new Repair();
+        repair.start();
+
+        // The island's delete removes its file and its regions after the repair has listed the islands.
+        Files.delete(dataDir.resolve("islands").resolve("128,0.yml"));
+        repair.runToTheEnd();
+
+        assertEquals(List.of("256,0"), regions.synced);
+        verify(islandLogic, never()).getIslandInfo("128,0");
+        assertTrue(logged.contains("Synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands."), logged.toString());
+    }
+
+    @Test
     public void takesTheIslandsItLoadedOutOfMemoryAgain() throws IOException {
         islandFiles("128,0", "256,0", "384,0");
         // A player on the server has this island in memory.

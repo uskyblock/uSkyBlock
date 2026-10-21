@@ -137,6 +137,10 @@ public class IslandRegionRepair {
         return pluginDataDir.resolve("islands");
     }
 
+    private Path islandFile(String islandName) {
+        return islandDirectory().resolve(islandName + ".yml");
+    }
+
     private Path markerFile() {
         return pluginDataDir.resolve("data").resolve(MARKER_FILE);
     }
@@ -178,6 +182,10 @@ public class IslandRegionRepair {
             // As generateTopTen does: an island loaded only for the repair leaves memory again, so it does not push
             // out the islands of the players on the server, and changes made to those are not lost.
             boolean wasInMemory = islandLogic.isIslandInMemory(islandName);
+            if (!wasInMemory && Files.notExists(islandFile(islandName))) {
+                // Deleted since the repair listed the islands, and its regions with it.
+                return;
+            }
             try {
                 IslandInfo island = islandLogic.getIslandInfo(islandName);
                 if (island.getLeader().isEmpty()) {
@@ -206,7 +214,7 @@ public class IslandRegionRepair {
          */
         private void removeIfOrphaned(String islandName) {
             // An island deleted while the repair runs has taken its nether region with it already.
-            if (Files.notExists(islandDirectory().resolve(islandName + ".yml")) && !regions.hasIslandRegion(islandName)
+            if (Files.notExists(islandFile(islandName)) && !regions.hasIslandRegion(islandName)
                 && regions.removeNetherRegion(islandName)) {
                 removed++;
                 logger.info("Removed the nether region " + islandName + "nether: its island no longer exists.");
