@@ -46,6 +46,6 @@ Every provisioned run creates `run-manifest.json`, per-phase JSON Lines verdicts
 | `10` | `FAIL` | A uSkyBlock assertion or dependency behavior failed. |
 | `20` | `HARNESS-ERROR` | Provisioning, client, timeout, malformed result, missing/duplicate verdict, or unattributed log failure. |
 
-The fixture player is `UsbItPlayer`, whose offline UUID is derived from `OfflinePlayer:UsbItPlayer`. The fixture challenge is `ittest_trade`; the fixture island scheme is `ittest`. Persistence checks resolve these stable identifiers through uSkyBlock services after a real restart and never inspect SQLite directly.
+The fixture player is `UsbItPlayer`, whose offline UUID is derived from `OfflinePlayer:UsbItPlayer`. A second presence client, `UsbItVisitor`, is the player it bans from and locks out of its island. The fixture challenge is `ittest_trade`; the fixture island scheme is `ittest`. Persistence checks resolve these stable identifiers through uSkyBlock services after a real restart and never inspect SQLite directly.
 
 On success, the disposable server directory is removed unless `--keep` is set. Manifests, verdicts, and logs remain. CI always uploads the manifest and verdicts, and uploads the complete runtime directory on non-PASS outcomes.
