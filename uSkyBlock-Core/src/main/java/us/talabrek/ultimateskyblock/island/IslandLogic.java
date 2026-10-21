@@ -386,6 +386,13 @@ public class IslandLogic {
         cache.invalidate(islandName);
     }
 
+    /**
+     * @return whether the island is in memory, so that {@link #getIslandInfo(String)} would not load it
+     */
+    public boolean isIslandInMemory(String islandName) {
+        return cache.getIfPresent(islandName) != null;
+    }
+
     public void updateRank(IslandInfo islandInfo, IslandScore score) {
         synchronized (ranks) {
             IslandLevel islandLevel = createIslandLevel(islandInfo, score.getScore());

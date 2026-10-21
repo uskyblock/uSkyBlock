@@ -9,6 +9,7 @@ import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.IslandUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -49,23 +50,25 @@ public class IslandRegionRepair {
     private final Path pluginDataDir;
     private final Logger logger;
     private final uSkyBlock plugin;
+    private final IslandLogic islandLogic;
     private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final IslandRegions regions;
 
     @Inject
     public IslandRegionRepair(@NotNull @PluginDataDir Path pluginDataDir, @NotNull @PluginLog Logger logger,
-                              @NotNull uSkyBlock plugin, @NotNull RuntimeConfigs runtimeConfigs,
-                              @NotNull Scheduler scheduler) {
-        this(pluginDataDir, logger, plugin, runtimeConfigs, scheduler, new WorldGuardRegions(plugin));
+                              @NotNull uSkyBlock plugin, @NotNull IslandLogic islandLogic,
+                              @NotNull RuntimeConfigs runtimeConfigs, @NotNull Scheduler scheduler) {
+        this(pluginDataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, new WorldGuardRegions(plugin));
     }
 
     IslandRegionRepair(@NotNull Path pluginDataDir, @NotNull Logger logger, @NotNull uSkyBlock plugin,
-                       @NotNull RuntimeConfigs runtimeConfigs, @NotNull Scheduler scheduler,
-                       @NotNull IslandRegions regions) {
+                       @NotNull IslandLogic islandLogic, @NotNull RuntimeConfigs runtimeConfigs,
+                       @NotNull Scheduler scheduler, @NotNull IslandRegions regions) {
         this.pluginDataDir = pluginDataDir;
         this.logger = logger;
         this.plugin = plugin;
+        this.islandLogic = islandLogic;
         this.runtimeConfigs = runtimeConfigs;
         this.scheduler = scheduler;
         this.regions = regions;
@@ -157,8 +160,11 @@ public class IslandRegionRepair {
         }
 
         private void sync(String islandName) {
+            // As generateTopTen does: an island loaded only for the repair leaves memory again, so it does not push
+            // out the islands of the players on the server, and changes made to those are not lost.
+            boolean wasInMemory = islandLogic.isIslandInMemory(islandName);
             try {
-                IslandInfo island = plugin.getIslandInfo(islandName);
+                IslandInfo island = islandLogic.getIslandInfo(islandName);
                 if (island != null) {
                     regionsSynced += regions.sync(island);
                     islandsSynced++;
@@ -166,6 +172,10 @@ public class IslandRegionRepair {
             } catch (RuntimeException e) {
                 unreadable++;
                 logger.log(Level.WARNING, "Unable to sync the regions of island " + islandName + " to the island", e);
+            } finally {
+                if (!wasInMemory) {
+                    islandLogic.removeIslandFromMemory(islandName);
+                }
             }
         }
 

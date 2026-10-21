@@ -13,6 +13,7 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
+import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -35,6 +36,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +48,7 @@ public class IslandRegionRepairTest {
     private final List<String> logged = new ArrayList<>();
     private final FakeRegions regions = new FakeRegions();
     private uSkyBlock plugin;
+    private IslandLogic islandLogic;
     private RuntimeConfigs runtimeConfigs;
     private Logger logger;
 
@@ -52,7 +56,8 @@ public class IslandRegionRepairTest {
     public void setUp() throws Exception {
         Files.createDirectories(dataDir.resolve("islands"));
         plugin = mock(uSkyBlock.class);
-        when(plugin.getIslandInfo(anyString())).thenAnswer(invocation -> island(invocation.getArgument(0)));
+        islandLogic = mock(IslandLogic.class);
+        when(islandLogic.getIslandInfo(anyString())).thenAnswer(invocation -> island(invocation.getArgument(0)));
         BukkitServerMock.setupServerMock();
         YamlConfiguration config = new YamlConfiguration();
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
@@ -111,7 +116,7 @@ public class IslandRegionRepairTest {
         first.runToTheEnd();
 
         Scheduler scheduler = mock(Scheduler.class);
-        new IslandRegionRepair(dataDir, logger, plugin, runtimeConfigs, scheduler, regions).start();
+        new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
 
         verifyNoInteractions(scheduler);
         assertEquals(List.of("128,0"), regions.synced);
@@ -123,7 +128,7 @@ public class IslandRegionRepairTest {
         regions.available = false;
         Scheduler scheduler = mock(Scheduler.class);
 
-        new IslandRegionRepair(dataDir, logger, plugin, runtimeConfigs, scheduler, regions).start();
+        new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
 
         verifyNoInteractions(scheduler);
         assertFalse(Files.exists(marker()));
@@ -133,7 +138,7 @@ public class IslandRegionRepairTest {
     public void keepsTheNetherRegionOfAnIslandThatCannotBeRead() throws IOException {
         islandFiles("128,0", "256,0");
         regions.netherRegionIds.addAll(Set.of("128,0nether", "256,0nether"));
-        when(plugin.getIslandInfo("128,0")).thenThrow(new IllegalStateException("Unable to load island"));
+        when(islandLogic.getIslandInfo("128,0")).thenThrow(new IllegalStateException("Unable to load island"));
 
         Repair repair = new Repair();
         repair.start();
@@ -142,6 +147,22 @@ public class IslandRegionRepairTest {
         assertEquals(List.of("256,0"), regions.synced);
         assertEquals(Set.of("128,0nether", "256,0nether"), regions.netherRegionIds);
         assertTrue(logged.contains("Unable to sync the regions of island 128,0 to the island"), logged.toString());
+    }
+
+    @Test
+    public void takesTheIslandsItLoadedOutOfMemoryAgain() throws IOException {
+        islandFiles("128,0", "256,0", "384,0");
+        // A player on the server has this island in memory.
+        when(islandLogic.isIslandInMemory("256,0")).thenReturn(true);
+        when(islandLogic.getIslandInfo("384,0")).thenThrow(new IllegalStateException("Unable to load island"));
+
+        Repair repair = new Repair();
+        repair.start();
+        repair.runToTheEnd();
+
+        verify(islandLogic).removeIslandFromMemory("128,0");
+        verify(islandLogic, never()).removeIslandFromMemory("256,0");
+        verify(islandLogic).removeIslandFromMemory("384,0");
     }
 
     @Test
@@ -195,7 +216,7 @@ public class IslandRegionRepairTest {
         }
 
         void start() {
-            new IslandRegionRepair(dataDir, logger, plugin, runtimeConfigs, scheduler, regions).start();
+            new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
         }
 
         void tick() {
