@@ -85,6 +85,8 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final String DELETED_ISLAND = "-8192,8192";
     /** A nether region of another id, which the repair is to leave. */
     private static final String OTHER_NETHER_REGION = "usbitplayernether";
+    /** A player of no island: the repair is to take them off the run island's nether region. */
+    private static final UUID STRAY_UUID = UUID.nameUUIDFromBytes("OfflinePlayer:UsbItStray".getBytes(StandardCharsets.UTF_8));
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
@@ -476,7 +478,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         /**
          * Leaves the restart phase's start what the island region repair is for: the nether region of a deleted
          * island, still locked and owned, and the run island's nether region locked although the island is not, as
-         * {@code /is unlock} left it. The repair ran at this phase's start already, on a server without islands, so its
+         * {@code /is unlock} left it, and owned by a stray player instead of the island's owner. The repair ran at this phase's start already, on a server without islands, so its
          * marker goes.
          */
         private void islandRegionRepairSetup(Scenario scenario) {
@@ -489,6 +491,9 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             ProtectedRegion netherRegion = nether.getRegion(island.getName() + "nether");
             check(netherRegion != null, "the run island has no nether region");
             netherRegion.setFlag(Flags.ENTRY, StateFlag.State.DENY);
+            netherRegion.getOwners().removeAll();
+            netherRegion.getOwners().addPlayer(STRAY_UUID);
+            netherRegion.getMembers().addPlayer(STRAY_UUID);
             check(!Files.exists(islandFile(usb, DELETED_ISLAND))
                     && !regions(usb.getWorldManager().getWorld()).hasRegion(DELETED_ISLAND + "island"),
                 "the island " + DELETED_ISLAND + " exists");
@@ -506,12 +511,14 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             } catch (StorageException | IOException e) {
                 throw new IllegalStateException("could not leave the island region repair its work", e);
             }
-            scenario.pass("left a deleted island's nether region and a stale lock on the run island's nether region");
+            scenario.pass("left a deleted island's nether region, and a stale lock, owner and member on the run island's"
+                + " nether region");
         }
 
         /**
          * The island region repair, at the first start after its marker went: it removed the deleted island's nether
-         * region and left the region of another id, and unlocked the run island's nether region, as the island is.
+         * region and left the region of another id, and gave the run island's nether region the island's lock, owner
+         * and members: unlocked, owned by the island's owner and not the stray player.
          */
         private void islandRegionRepair(Scenario scenario) {
             scenario.await(() -> coreReady() && Files.exists(repairMarker(uSkyBlock.getInstance())), SETUP_TIMEOUT, () -> {
@@ -524,10 +531,13 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 ProtectedRegion netherRegion = nether.getRegion(island.getName() + "nether");
                 check(netherRegion != null, "the repair removed the run island's nether region");
                 check(netherRegion.getFlag(Flags.ENTRY) == null, "the repair left the unlocked island's nether region locked");
-                check(netherRegion.getOwners().contains(PLAYER_UUID), "the run island's nether region lost its owner");
+                check(netherRegion.getOwners().contains(PLAYER_UUID), "the repair did not give the run island's nether region its owner");
+                check(!netherRegion.getOwners().contains(STRAY_UUID) && !netherRegion.getMembers().contains(STRAY_UUID),
+                    "the repair left a stray player on the run island's nether region");
                 check(regions(usb.getWorldManager().getWorld()).hasRegion(island.getName() + "island"),
                     "the run island lost its region in the island world");
-                scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock to its nether region");
+                scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock, owner"
+                    + " and members to its nether region");
             }, "the island region repair did not finish before the deadline");
         }
 
