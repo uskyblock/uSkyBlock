@@ -166,6 +166,24 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void waitsWhileTheServerIsInMaintenanceMode() throws IOException {
+        islandFiles("128,0", "256,0");
+        Repair repair = new Repair();
+        repair.start();
+
+        when(plugin.isMaintenanceMode()).thenReturn(true);
+        repair.tick();
+        repair.tick();
+        assertEquals(List.of(), regions.synced);
+        assertFalse(Files.exists(marker()));
+
+        when(plugin.isMaintenanceMode()).thenReturn(false);
+        repair.runToTheEnd();
+        assertEquals(List.of("128,0", "256,0"), regions.synced);
+        assertTrue(Files.exists(marker()));
+    }
+
+    @Test
     public void worksThroughAFewIslandsEachTick() throws IOException {
         List<String> islands = new ArrayList<>();
         for (int i = 0; i < 2 * IslandRegionRepair.PER_TICK + 5; i++) {

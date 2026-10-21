@@ -146,6 +146,10 @@ public class IslandRegionRepair {
 
         @Override
         public void run() {
+            if (plugin.isMaintenanceMode()) {
+                // The islands cannot be read in maintenance mode, so the repair waits for it to end.
+                return;
+            }
             for (int i = 0; i < PER_TICK; i++) {
                 if (islands.hasNext()) {
                     sync(islands.next());
@@ -165,10 +169,8 @@ public class IslandRegionRepair {
             boolean wasInMemory = islandLogic.isIslandInMemory(islandName);
             try {
                 IslandInfo island = islandLogic.getIslandInfo(islandName);
-                if (island != null) {
-                    regionsSynced += regions.sync(island);
-                    islandsSynced++;
-                }
+                regionsSynced += regions.sync(island);
+                islandsSynced++;
             } catch (RuntimeException e) {
                 unreadable++;
                 logger.log(Level.WARNING, "Unable to sync the regions of island " + islandName + " to the island", e);
