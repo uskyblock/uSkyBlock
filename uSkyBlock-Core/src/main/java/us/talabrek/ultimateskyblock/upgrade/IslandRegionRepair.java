@@ -169,8 +169,16 @@ public class IslandRegionRepair {
             boolean wasInMemory = islandLogic.isIslandInMemory(islandName);
             try {
                 IslandInfo island = islandLogic.getIslandInfo(islandName);
-                regionsSynced += regions.sync(island);
-                islandsSynced++;
+                if (island.getLeader().isEmpty()) {
+                    // An island file that cannot be parsed loads as an island without a party, so its regions
+                    // stay as they are rather than lose their owners and lock. protectIsland sets them up again.
+                    unreadable++;
+                    logger.warning("Island " + islandName + " has no party leader, so its file may not have been"
+                        + " read; its regions are left as they are.");
+                } else {
+                    regionsSynced += regions.sync(island);
+                    islandsSynced++;
+                }
             } catch (RuntimeException e) {
                 unreadable++;
                 logger.log(Level.WARNING, "Unable to sync the regions of island " + islandName + " to the island", e);

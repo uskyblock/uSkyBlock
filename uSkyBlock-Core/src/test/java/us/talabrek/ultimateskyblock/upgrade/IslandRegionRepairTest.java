@@ -150,6 +150,28 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void keepsTheRegionsOfAnIslandWhoseFileCouldNotBeParsed() throws IOException {
+        islandFiles("256,0");
+        // Truncated by a crash: the island loads without a party, as if its file were empty.
+        Files.writeString(dataDir.resolve("islands").resolve("128,0.yml"), "party:\n  leader: UsbIt\n  members: [ab");
+        regions.netherRegionIds.addAll(Set.of("128,0nether", "256,0nether"));
+        IslandInfo unparsed = island("128,0");
+        when(unparsed.getLeader()).thenReturn("");
+        when(islandLogic.getIslandInfo("128,0")).thenReturn(unparsed);
+
+        Repair repair = new Repair();
+        repair.start();
+        repair.runToTheEnd();
+
+        assertEquals(List.of("256,0"), regions.synced);
+        assertEquals(Set.of("128,0nether", "256,0nether"), regions.netherRegionIds);
+        assertTrue(logged.contains("Island 128,0 has no party leader, so its file may not have been read; its regions"
+            + " are left as they are."), logged.toString());
+        assertTrue(logged.contains("Synced 1 regions of 1 islands to their lock, owners and members (1 islands could"
+            + " not be read), and removed 0 nether regions of deleted islands."), logged.toString());
+    }
+
+    @Test
     public void takesTheIslandsItLoadedOutOfMemoryAgain() throws IOException {
         islandFiles("128,0", "256,0", "384,0");
         // A player on the server has this island in memory.
@@ -216,6 +238,7 @@ public class IslandRegionRepairTest {
     private static IslandInfo island(String name) {
         IslandInfo island = mock(IslandInfo.class);
         when(island.getName()).thenReturn(name);
+        when(island.getLeader()).thenReturn("UsbIt");
         return island;
     }
 
