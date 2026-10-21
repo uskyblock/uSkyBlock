@@ -289,12 +289,16 @@ public class WorldGuardHandler {
 
     /**
      * Removes the island's region in the nether island world, leaving its region in the island world.
+     *
+     * @return whether there was a region to remove
      */
-    public static void removeNetherRegion(String islandName) {
+    public static boolean removeNetherRegion(String islandName) {
         RegionManager regionManager = getNetherRegionManager();
-        if (regionManager != null) {
-            regionManager.removeRegion(islandName + "nether");
+        if (regionManager == null) {
+            return false;
         }
+        Set<ProtectedRegion> removed = regionManager.removeRegion(islandName + "nether");
+        return removed != null && !removed.isEmpty();
     }
 
     /**

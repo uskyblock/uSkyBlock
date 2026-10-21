@@ -110,6 +110,22 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void doesNotCountANetherRegionThatADeleteRemovedWhileItRuns() throws IOException {
+        regions.netherRegionIds.add("512,-512nether");
+        Repair repair = new Repair();
+        repair.start();
+
+        // The island's delete removes its nether region after the repair has listed the regions.
+        regions.netherRegionIds.remove("512,-512nether");
+        repair.runToTheEnd();
+
+        assertFalse(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."),
+            logged.toString());
+        assertTrue(logged.contains("Synced 0 regions of 0 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands."), logged.toString());
+    }
+
+    @Test
     public void runsAgainIfTheRegionsCannotBeSaved() throws IOException {
         islandFiles("128,0");
         regions.saveFails = true;
@@ -352,8 +368,8 @@ public class IslandRegionRepairTest {
         }
 
         @Override
-        public void removeNetherRegion(String islandName) {
-            netherRegionIds.remove(islandName + "nether");
+        public boolean removeNetherRegion(String islandName) {
+            return netherRegionIds.remove(islandName + "nether");
         }
 
         @Override

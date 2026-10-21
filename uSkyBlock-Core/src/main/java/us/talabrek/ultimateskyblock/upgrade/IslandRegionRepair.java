@@ -205,8 +205,9 @@ public class IslandRegionRepair {
          * unreadable, and its region in the island world went with it, as deleting an island left them.
          */
         private void removeIfOrphaned(String islandName) {
-            if (Files.notExists(islandDirectory().resolve(islandName + ".yml")) && !regions.hasIslandRegion(islandName)) {
-                regions.removeNetherRegion(islandName);
+            // An island deleted while the repair runs has taken its nether region with it already.
+            if (Files.notExists(islandDirectory().resolve(islandName + ".yml")) && !regions.hasIslandRegion(islandName)
+                && regions.removeNetherRegion(islandName)) {
                 removed++;
                 logger.info("Removed the nether region " + islandName + "nether: its island no longer exists.");
             }
@@ -264,7 +265,10 @@ public class IslandRegionRepair {
          */
         int sync(IslandInfo island);
 
-        void removeNetherRegion(String islandName);
+        /**
+         * @return whether there was a region to remove
+         */
+        boolean removeNetherRegion(String islandName);
 
         /**
          * Writes the changed regions to WorldGuard's storage now.
@@ -294,8 +298,8 @@ public class IslandRegionRepair {
         }
 
         @Override
-        public void removeNetherRegion(String islandName) {
-            WorldGuardHandler.removeNetherRegion(islandName);
+        public boolean removeNetherRegion(String islandName) {
+            return WorldGuardHandler.removeNetherRegion(islandName);
         }
 
         @Override
