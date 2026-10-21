@@ -25,6 +25,7 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LogUtil;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -287,10 +288,16 @@ public class WorldGuardHandler {
         return null;
     }
 
+    /**
+     * Removes the island's regions, each from its own world.
+     */
     public static void removeIslandRegion(String islandName) {
-        RegionManager regionManager = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld());
-        regionManager.removeRegion(islandName + "island");
-        regionManager.removeRegion(islandName + "nether");
+        WorldManager worldManager = uSkyBlock.getInstance().getWorldManager();
+        getRegionManager(worldManager.getWorld()).removeRegion(islandName + "island");
+        World netherWorld = worldManager.getNetherWorld();
+        if (netherWorld != null) {
+            getRegionManager(netherWorld).removeRegion(islandName + "nether");
+        }
     }
 
     public static void setupGlobal(World world) {
