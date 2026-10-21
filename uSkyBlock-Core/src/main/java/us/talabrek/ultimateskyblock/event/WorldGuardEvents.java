@@ -45,18 +45,21 @@ public class WorldGuardEvents implements Listener {
         Player player = e.getPlayer();
         if (!player.isOp() && !player.hasPermission("usb.mod.bypassprotection") && isBlockedFromEntry(player, islandInfo)) {
             e.setCancelled(true);
-            Location l = e.getTo().clone();
-            l.subtract(islandInfo.getIslandLocation());
-            Vector v = new Vector(l.getX(), l.getY(), l.getZ());
-            v.normalize();
-            v.multiply(1.5); // Bounce
-            player.setVelocity(v);
+            player.setVelocity(bounce(e.getTo(), islandInfo.getIslandLocation()));
             if (islandInfo.isBanned(player)) {
                 plugin.notifyPlayer(player, tr("Banned: You are banned from this island.", ERROR));
             } else {
                 plugin.notifyPlayer(player, tr("Locked: That island is locked. No entry allowed.", ERROR));
             }
         }
+    }
+
+    /**
+     * The push that bounces a player away from the island's centre, level with the ground. The island location is in
+     * the island world, the player may be in any island world: only their x and z are compared.
+     */
+    static Vector bounce(@NotNull Location to, @NotNull Location island) {
+        return new Vector(to.getX() - island.getX(), 0, to.getZ() - island.getZ()).normalize().multiply(1.5);
     }
 
     private boolean isBlockedFromEntry(Player player, IslandInfo islandInfo) {
