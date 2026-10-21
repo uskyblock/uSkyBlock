@@ -90,6 +90,7 @@ public class Services {
         playerLogic.shutdown();
         islandLogic.shutdown();
         playerDB.shutdown();
+        islandRegionRepair.shutdown();
         DebugCommand.disableLogging(null);
     }
 }

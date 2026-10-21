@@ -222,6 +222,28 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void stopsAtAReloadAndRunsAgainAtTheNextStart() throws IOException {
+        List<String> islands = new ArrayList<>();
+        for (int i = 0; i < IslandRegionRepair.PER_TICK + 5; i++) {
+            islands.add((i + 1) * 128 + ",0");
+        }
+        islandFiles(islands.toArray(String[]::new));
+        Repair stopped = new Repair();
+        stopped.start();
+        stopped.tick();
+
+        stopped.shutdown();
+        assertTrue(stopped.cancelled);
+        assertFalse(Files.exists(marker()));
+
+        Repair next = new Repair();
+        next.start();
+        next.runToTheEnd();
+        assertEquals(IslandRegionRepair.PER_TICK + islands.size(), regions.synced.size());
+        assertTrue(Files.exists(marker()));
+    }
+
+    @Test
     public void worksThroughAFewIslandsEachTick() throws IOException {
         List<String> islands = new ArrayList<>();
         for (int i = 0; i < 2 * IslandRegionRepair.PER_TICK + 5; i++) {
@@ -265,6 +287,7 @@ public class IslandRegionRepairTest {
         private final Scheduler scheduler = mock(Scheduler.class);
         private final ArgumentCaptor<Runnable> scheduled = ArgumentCaptor.forClass(Runnable.class);
         private boolean cancelled;
+        private IslandRegionRepair repair;
 
         private Repair() {
             BukkitTask task = mock(BukkitTask.class);
@@ -277,7 +300,12 @@ public class IslandRegionRepairTest {
         }
 
         void start() {
-            new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
+            repair = new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions);
+            repair.start();
+        }
+
+        void shutdown() {
+            repair.shutdown();
         }
 
         void tick() {

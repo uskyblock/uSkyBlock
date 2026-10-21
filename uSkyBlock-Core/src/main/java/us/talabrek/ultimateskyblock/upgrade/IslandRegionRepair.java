@@ -54,6 +54,7 @@ public class IslandRegionRepair {
     private final RuntimeConfigs runtimeConfigs;
     private final Scheduler scheduler;
     private final IslandRegions regions;
+    private Run run;
 
     @Inject
     public IslandRegionRepair(@NotNull @PluginDataDir Path pluginDataDir, @NotNull @PluginLog Logger logger,
@@ -102,8 +103,18 @@ public class IslandRegionRepair {
             .toList();
         logger.info("Syncing the regions of " + islands.size() + " islands to their lock, owners and members, and"
             + " removing the nether regions of deleted islands. This runs once, " + PER_TICK + " islands a tick.");
-        Run run = new Run(islands.iterator(), netherIslands.iterator());
+        run = new Run(islands.iterator(), netherIslands.iterator());
         run.task = scheduler.sync(run, Duration.ZERO, Duration.ofMillis(50));
+    }
+
+    /**
+     * Stops a repair still running, at a reload or a stop: it uses the services of this start, and the next start
+     * runs it again from the beginning, as it has left no marker.
+     */
+    public void shutdown() {
+        if (run != null) {
+            run.task.cancel();
+        }
     }
 
     private List<String> listIslands() throws IOException {
