@@ -139,8 +139,9 @@ fi
 
 # The presence client's MCProtocolLib build: the reviewed row for this Minecraft version in the
 # mcProtocolLib table of artifacts.json, or, for the canary (which tracks the newest Paper), the
-# newest build. MCPL cuts builds per protocol, so a row may name a build of an older Minecraft
-# version that shares the protocol. No build is a harness error, never a run without the client.
+# newest build named after that version, falling back to its row. MCPL cuts builds per protocol, so
+# a row may name a build of an older Minecraft version that shares the protocol. No build is a
+# harness error, never a run without the client.
 source "${ROOT}/scripts/ittest/mcpl.sh"
 if [[ -n "${REPLAY_MANIFEST}" ]]; then
   # Older manifests may come from a server-only run, which no longer exists.
@@ -150,7 +151,7 @@ if [[ -n "${REPLAY_MANIFEST}" ]]; then
   fi
   MC_PROTOCOL_BUILD="$(jq -r '"\(.mcProtocolLib.version) \(.mcProtocolLib.repository // "maven-releases")"' "${REPLAY_MANIFEST}")"
 elif [[ "${TIER}" == canary ]]; then
-  MC_PROTOCOL_BUILD="$(mcpl_latest_build "${MINECRAFT_VERSION}")" || exit "${HARNESS_ERROR}"
+  MC_PROTOCOL_BUILD="$(mcpl_canary_build "${MINECRAFT_VERSION}" "${ROOT}/scripts/ittest/artifacts.json")" || exit "${HARNESS_ERROR}"
 else
   MC_PROTOCOL_BUILD="$(mcpl_pinned_build "${MINECRAFT_VERSION}" "${ROOT}/scripts/ittest/artifacts.json")" || exit "${HARNESS_ERROR}"
 fi

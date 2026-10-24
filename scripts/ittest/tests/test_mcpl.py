@@ -78,7 +78,7 @@ class PinnedBuildTest(unittest.TestCase):
         self.assertIn("add a reviewed row", result.stderr)
 
 
-class LatestBuildTest(unittest.TestCase):
+class RepositoryFixture(unittest.TestCase):
     def setUp(self) -> None:
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
@@ -97,6 +97,8 @@ class LatestBuildTest(unittest.TestCase):
                 f"<metadata>\n  <versioning>\n    <snapshot>\n      <timestamp>{timestamp}</timestamp>\n"
                 f"      <buildNumber>{number}</buildNumber>\n    </snapshot>\n  </versioning>\n</metadata>\n")
 
+
+class LatestBuildTest(RepositoryFixture):
     def latest(self, mc: str) -> subprocess.CompletedProcess:
         return call("mcpl_latest_build", mc, repository_root=self.repository.as_uri())
 
@@ -118,7 +120,7 @@ class LatestBuildTest(unittest.TestCase):
         self.publish("maven-releases", "26.3")
         self.publish("maven-snapshots", "26.3-SNAPSHOT")
         result = self.latest("26.4")
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2)
         self.assertEqual(result.stdout, "")
         self.assertIn("No MCProtocolLib build for Minecraft 26.4", result.stderr)
 
@@ -142,6 +144,51 @@ class LatestBuildTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertEqual(result.stdout, "")
         self.assertIn("no timestamped build", result.stderr)
+
+
+class CanaryBuildTest(RepositoryFixture):
+    def setUp(self) -> None:
+        super().setUp()
+        self.artifacts = self.repository / "artifacts.json"
+        self.artifacts.write_text(json.dumps({"mcProtocolLib": {
+            "26.1.2": {"version": "26.1-1", "protocol": 775},
+            "26.3": {"version": "26.3", "protocol": 777},
+        }}))
+
+    def canary(self, mc: str) -> subprocess.CompletedProcess:
+        return call("mcpl_canary_build", mc, str(self.artifacts), repository_root=self.repository.as_uri())
+
+    def test_prefers_the_newest_build_by_name_over_the_row(self) -> None:
+        self.publish("maven-releases", "26.3", "26.3-1")
+        self.assertEqual(self.canary("26.3").stdout, "26.3-1 maven-releases\n")
+
+    def test_falls_back_to_the_row_when_no_build_has_the_versions_name(self) -> None:
+        self.publish("maven-releases", "26.1-1", "26.3")
+        self.publish("maven-snapshots", "26.4-SNAPSHOT")
+        result = self.canary("26.1.2")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "26.1-1 maven-releases\n")
+        self.assertIn("reviewed mcProtocolLib row", result.stderr)
+
+    def test_no_build_by_name_and_no_row_fails(self) -> None:
+        self.publish("maven-releases", "26.3")
+        self.publish("maven-snapshots", "26.3-SNAPSHOT")
+        result = self.canary("26.4")
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("add a reviewed row", result.stderr)
+
+    def test_an_unreachable_repository_fails_without_the_row(self) -> None:
+        result = self.canary("26.3")
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("Cannot read MCProtocolLib metadata", result.stderr)
+
+        self.publish("maven-releases", "26.1-1")
+        result = self.canary("26.1.2")
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("maven-snapshots", result.stderr)
 
 
 if __name__ == "__main__":

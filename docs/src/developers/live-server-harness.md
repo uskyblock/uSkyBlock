@@ -8,7 +8,7 @@ The harness runs a `platform × tier` matrix. The Minecraft versions are not pin
 
 - `paper-min` / `spigot-min` — the **first** supported version (the floor, which equals `plugin.yml` `api-version`). Catches old-API regressions.
 - `paper-max` / `spigot-max` — the **last** supported version. The deterministic "known-good newest"; bumping it is the same edit as adding a version to `minecraftVersions` for publishing.
-- `paper-canary` — the newest **available** Paper (dynamic, via Fill API v3), independent of the supported list, with the newest MCProtocolLib build for it. Early warning for upstream breaks. It runs only on the nightly schedule (or when dispatched), so it never blocks a push or pull request; like every lane, a failure fails its run.
+- `paper-canary` — the newest **available** Paper (dynamic, via Fill API v3), independent of the supported list, with the newest MCProtocolLib build for it (see below). Early warning for upstream breaks. It runs only on the nightly schedule (or when dispatched), so it never blocks a push or pull request; like every lane, a failure fails its run.
 
 Every lane runs the player-driven scenarios and the restart phase with a presence client (see below); there is no server-only mode. Spigot server jars are compiled on demand with BuildTools (`--rev <version>`) and cached by build number; Paper jars are downloaded and SHA-256 verified.
 
@@ -28,9 +28,9 @@ The presence clients (`UsbItPlayer`, `UsbItVisitor`) are built on MCProtocolLib 
 
 1.21.10 shares protocol 773 with 1.21.9, which has no regular MCPL release, so its row pins the newest 1.21.9 snapshot by its timestamped build. A row names its `repository` only when it is not `maven-releases`; the client resolves the build from that repository, next to `maven-releases` for MCPL's own dependencies.
 
-Only `paper-canary` resolves the build at run time, because the newest Paper may be newer than the table: the highest release build named after its Minecraft version in `maven-releases` (a plain `<mc>` counts as build 0, `<mc>-<n>` as build n, other suffixes are ignored), otherwise the newest `<mc>-SNAPSHOT` in `maven-snapshots`, pinned to its timestamped build so the manifest replays exactly. The lookup goes by name, so it finds no build for a version that MCPL serves under an earlier name (as `26.1-1` serves 26.1.2).
+Only `paper-canary` resolves the build at run time, because the newest Paper may be newer than the table: the highest release build named after its Minecraft version in `maven-releases` (a plain `<mc>` counts as build 0, `<mc>-<n>` as build n, other suffixes are ignored), otherwise the newest `<mc>-SNAPSHOT` in `maven-snapshots`, pinned to its timestamped build so the manifest replays exactly. The lookup goes by name, so it finds no build for a version that MCPL serves under an earlier name (as `26.1-1` serves 26.1.2); the canary then takes that version's row from the table. A newest Paper that is a patch release keeping its protocol therefore needs only its row, as on the stable lanes.
 
-No client found always ends the run as `HARNESS-ERROR`: a Minecraft version without a row, a canary lookup that finds nothing, an MCPL repository that cannot be read, or a replay manifest recorded without player flows (by the former server-only mode).
+No client found always ends the run as `HARNESS-ERROR`: a Minecraft version without a row, a canary version with neither a build by its name nor a row, an MCPL repository that cannot be read, or a replay manifest recorded without player flows (by the former server-only mode).
 
 ### Adding a Minecraft version
 
