@@ -10,6 +10,20 @@
     "url": "https://mediafilez.forgecdn.net/files/8167/578/worldguard-bukkit-7.0.17.jar",
     "sha256": "3f14562509bf01e7680571b6f56932239157ff938f257c3226df3b4088ae54f2"
   },
+  "mcProtocolLib": {
+    "1.21.10": {
+      "version": "1.21.9-20251210.010914-21",
+      "repository": "maven-snapshots",
+      "protocol": 773,
+      "note": "1.21.10 shares protocol 773 with 1.21.9, and MCProtocolLib has no release for it; this is the newest 1.21.9 snapshot build, pinned."
+    },
+    "1.21.11": { "version": "1.21.11-1", "protocol": 774 },
+    "26.1": { "version": "26.1-1", "protocol": 775 },
+    "26.1.1": { "version": "26.1-1", "protocol": 775 },
+    "26.1.2": { "version": "26.1-1", "protocol": 775 },
+    "26.2": { "version": "26.2", "protocol": 776 },
+    "26.3": { "version": "26.3", "protocol": 777 }
+  },
   "overrides": {
     "1.21.10": {
       "note": "WorldGuard 7.0.17 declares api-version 1.21.11 and will not load on 1.21.10; 7.0.15 is the newest WorldGuard that still supports it.",
