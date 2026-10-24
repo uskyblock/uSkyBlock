@@ -261,10 +261,18 @@ public class PlayerEvents implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         WorldManager wm = plugin.getWorldManager();
         World pWorld = event.getPlayer().getWorld();
-        if (!wm.isSkyAssociatedWorld(pWorld)) {
-            return;
+        if (wm.isSkyAssociatedWorld(pWorld)) {
+            respawnFromAnIslandWorld(event, pWorld);
         }
+        // A bed or respawn anchor the player set while welcome on an island that has banned them, or been locked to
+        // them, since.
+        if (isKeptOff(event.getPlayer(), event.getRespawnLocation())) {
+            event.setRespawnLocation(wm.getWorld().getSpawnLocation());
+        }
+    }
 
+    private void respawnFromAnIslandWorld(PlayerRespawnEvent event, World pWorld) {
+        WorldManager wm = plugin.getWorldManager();
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
         if (runtimeConfig.extras().respawnAtIsland()) {
             PlayerInfo playerInfo = plugin.getPlayerInfo(event.getPlayer());
@@ -283,6 +291,20 @@ public class PlayerEvents implements Listener {
         if (!runtimeConfig.extras().sendToSpawn() && wm.isSkyWorld(pWorld)) {
             event.setRespawnLocation(plugin.getWorldManager().getWorld().getSpawnLocation());
         }
+    }
+
+    /**
+     * Whether a ban or a lock keeps the player off the island at the location, as at a teleport: island members,
+     * trustees and players who bypass protection are let on.
+     */
+    private boolean isKeptOff(Player player, Location location) {
+        if (player.isOp() || player.hasPermission("usb.mod.bypassprotection")
+            || !plugin.getWorldManager().isSkyAssociatedWorld(location.getWorld())) {
+            return false;
+        }
+        IslandInfo islandInfo = plugin.getIslandInfo(location);
+        return islandInfo != null && (islandInfo.isBanned(player.getUniqueId()) || islandInfo.isLocked()
+            && !islandInfo.getMembers().contains(player.getName()) && !islandInfo.isTrusted(player));
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

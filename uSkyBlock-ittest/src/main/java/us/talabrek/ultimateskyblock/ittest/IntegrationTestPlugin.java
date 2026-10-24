@@ -378,8 +378,9 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
 
         /**
          * Keeps a banned player off the nether island: {@code /is ban} sends the visitor from the fixture player's
-         * nether island to spawn, a teleport back onto it is refused, and a move into its nether region is cancelled,
-         * which puts a player back where they came from, and tells them they are banned.
+         * nether island to spawn, a teleport back onto it is refused, a move into its nether region is cancelled,
+         * which puts a player back where they came from, and tells them they are banned, and a respawn point on it
+         * sends them to spawn.
          */
         private void netherBan(Scenario scenario) {
             scenario.await(() -> Bukkit.getPlayerExact(VISITOR_NAME) != null, PLAYER_TIMEOUT, () -> {
@@ -409,8 +410,18 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                         check(move.isCancelled(), "the banned visitor could move into the nether region");
                         check(told.contains("Banned: You are banned from this island."),
                             "the banned visitor was not told they are banned: " + told);
+                        // A respawn point the visitor set on the nether island while welcome there, as with a
+                        // respawn anchor: dying in the nether, they respawn at spawn instead.
+                        check(visitor.teleport(outside), "the banned visitor could not teleport next to the nether island");
+                        visitor.setRespawnLocation(onTheNetherIsland, true);
+                        visitor.setHealth(0);
+                        visitor.spigot().respawn();
+                        check(!visitor.isDead() && atSpawn.getAsBoolean(),
+                            "the banned visitor did not respawn at spawn: " + visitor.getLocation());
+                        visitor.setInvulnerable(true);
                         scenario.pass("/is ban sent the visitor from the nether island to spawn, the teleport back was"
-                            + " refused, and the move into the nether region was cancelled with the ban message");
+                            + " refused, the move into the nether region was cancelled with the ban message, and the"
+                            + " respawn point on the nether island sent them to spawn");
                     }, "/is ban did not send the visitor from the nether island to spawn");
                 }, "the nether island world did not tick");
             }, "the visitor did not connect before the deadline", Verdict.Category.HARNESS_ERROR);
