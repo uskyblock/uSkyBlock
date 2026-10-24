@@ -280,7 +280,6 @@ public class WorldManager {
                     .environment(World.Environment.NORMAL)
                     .generator(skyGenerator)
                     .createWorld();
-                skyBlockWorld.save();
             }
             if (!hasExpectedGenerator(skyBlockWorld, skyGenerator)) {
                 // createWorld() returns an already-loaded world unchanged, so the generator
@@ -321,7 +320,6 @@ public class WorldManager {
                     .environment(World.Environment.NETHER)
                     .generator(skyGenerator)
                     .createWorld();
-                skyBlockNetherWorld.save();
             }
             if (!hasExpectedGenerator(skyBlockNetherWorld, skyGenerator)) {
                 // createWorld() returns an already-loaded world unchanged, so the generator
