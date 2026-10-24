@@ -5,13 +5,20 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
+// The harness passes the build and the opencollab repository holding it (maven-releases, or
+// maven-snapshots for a pinned snapshot) from its reviewed table, scripts/ittest/artifacts.json.
+val mcProtocolLibVersion = providers.gradleProperty("mcProtocolLibVersion").orElse("1.21.11-1")
+val mcProtocolLibRepository = providers.gradleProperty("mcProtocolLibRepository").orElse("maven-releases")
+
 repositories {
-    maven("https://repo.opencollab.dev/main/") {
-        name = "opencollab"
+    // MCProtocolLib's own dependencies (e.g. org.cloudburstmc.math) are opencollab releases, so
+    // maven-releases is always there, next to the repository the build comes from.
+    for (repository in setOf("maven-releases", mcProtocolLibRepository.get())) {
+        maven("https://repo.opencollab.dev/$repository/") {
+            name = "opencollab-$repository"
+        }
     }
 }
-
-val mcProtocolLibVersion = providers.gradleProperty("mcProtocolLibVersion").orElse("1.21.11-1")
 
 dependencies {
     // Version is overridable per Minecraft build via the mcProtocolLibVersion property (the harness

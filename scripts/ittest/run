@@ -137,46 +137,22 @@ if [[ -z "${MINECRAFT_VERSION}" ]]; then
   exit "${HARNESS_ERROR}"
 fi
 
-# The presence client is built against one MCProtocolLib "protocol" artifact, named "<mcversion>"
-# or "<mcversion>-<build>" (release) or "<mcversion>-SNAPSHOT". Release builds are listed in the
-# maven-releases metadata, snapshots only in the main group metadata, though the main group repo
-# serves both files - so derive the version by querying both, preferring the highest release build
-# (a plain "<mcversion>" counts as build 0; other suffixes such as "-feature-..." are ignored).
-# Empty result means no codec exists for this Minecraft version (bot flows run server-only).
-mcpl_protocol_version() {
-  local mc="$1" esc meta rel
-  esc="${mc//./\\.}"
-  # Retry transient failures so a network flake does not silently downgrade a bot-capable lane to
-  # server-only (which would be a false green with fewer required scenarios).
-  meta="$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --retry-connrefused \
-    -H "User-Agent: ${USER_AGENT}" \
-    "https://repo.opencollab.dev/maven-releases/org/geysermc/mcprotocollib/protocol/maven-metadata.xml" 2>/dev/null || true)"
-  rel="$(printf '%s' "${meta}" | grep -oE '<version>[^<]+</version>' | sed -E 's|</?version>||g' \
-    | grep -E "^${esc}(-[0-9]+)?$" \
-    | awk -v mc="${mc}" '{ b = substr($0, length(mc) + 2); print (b == "" ? 0 : b) "\t" $0 }' \
-    | sort -n | tail -n1 | cut -f2 || true)"
-  if [[ -n "${rel}" ]]; then printf '%s\n' "${rel}"; return 0; fi
-  meta="$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --retry-connrefused \
-    -H "User-Agent: ${USER_AGENT}" \
-    "https://repo.opencollab.dev/main/org/geysermc/mcprotocollib/protocol/maven-metadata.xml" 2>/dev/null || true)"
-  printf '%s' "${meta}" | grep -oE '<version>[^<]+</version>' | sed -E 's|</?version>||g' \
-    | grep -E "^${esc}-SNAPSHOT$" | tail -n1 || true
-}
-
+# The presence client's MCProtocolLib build: the reviewed row for this Minecraft version in the
+# mcProtocolLib table of artifacts.json, or, for the canary (which tracks the newest Paper), the
+# newest build. MCPL cuts builds per protocol, so a row may name a build of an older Minecraft
+# version that shares the protocol. No build is a harness error, never a run without the client.
+source "${ROOT}/scripts/ittest/mcpl.sh"
 PLAYER_FLOWS=true
 if [[ -n "${REPLAY_MANIFEST}" ]]; then
-  MC_PROTOCOL_VERSION="$(jq -r '.mcProtocolLib.version' "${REPLAY_MANIFEST}")"
+  MC_PROTOCOL_BUILD="$(jq -r '"\(.mcProtocolLib.version) \(.mcProtocolLib.repository // "maven-releases")"' "${REPLAY_MANIFEST}")"
   PLAYER_FLOWS="$(jq -r '.mcProtocolLib.playerFlows' "${REPLAY_MANIFEST}")"
+elif [[ "${TIER}" == canary ]]; then
+  MC_PROTOCOL_BUILD="$(mcpl_latest_build "${MINECRAFT_VERSION}")" || exit "${HARNESS_ERROR}"
 else
-  MC_PROTOCOL_VERSION="$(mcpl_protocol_version "${MINECRAFT_VERSION}")"
-  if [[ -z "${MC_PROTOCOL_VERSION}" ]]; then
-    # No codec for this version: still build the client against a known-good release so it compiles,
-    # but do not launch it - scenarios run server-only.
-    PLAYER_FLOWS=false
-    MC_PROTOCOL_VERSION="${MCPL_COMPILE_FALLBACK:-1.21.11-1}"
-    echo "USKYBLOCK-TEST no MCProtocolLib codec for Minecraft ${MINECRAFT_VERSION}; player flows disabled (server-only)."
-  fi
+  MC_PROTOCOL_BUILD="$(mcpl_pinned_build "${MINECRAFT_VERSION}" "${ROOT}/scripts/ittest/artifacts.json")" || exit "${HARNESS_ERROR}"
 fi
+read -r MC_PROTOCOL_VERSION MC_PROTOCOL_REPOSITORY <<<"${MC_PROTOCOL_BUILD}"
+echo "USKYBLOCK-TEST MCProtocolLib ${MC_PROTOCOL_VERSION} (${MC_PROTOCOL_REPOSITORY}) for Minecraft ${MINECRAFT_VERSION}"
 
 download_verified() {
   local url="$1" expected="$2" target="$3"
@@ -329,11 +305,12 @@ jq -n \
   --arg serverSha "${SERVER_SHA}" \
   --arg weVersion "${WE_VERSION}" --arg weSha "${WE_SHA}" --arg weUrl "${WE_URL}" \
   --arg wgVersion "${WG_VERSION}" --arg wgSha "${WG_SHA}" --arg wgUrl "${WG_URL}" \
-  --arg protocol "${MC_PROTOCOL_VERSION}" --arg gitSha "${GIT_SHA}" \
+  --arg protocol "${MC_PROTOCOL_VERSION}" --arg protocolRepository "${MC_PROTOCOL_REPOSITORY}" \
+  --arg gitSha "${GIT_SHA}" \
   --arg javaVersion "$(java -version 2>&1 | head -n 1)" \
   --argjson port "${PORT}" --argjson fixtureRevision "${FIXTURE_REVISION}" \
   --argjson playerFlows "${PLAYER_FLOWS}" \
-  '{schema:1,lane:$lane,minecraft:{version:$minecraft},server:{platform:$serverPlatform,version:$minecraft,build:$serverBuild,url:$serverUrl,sha256:$serverSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
+  '{schema:1,lane:$lane,minecraft:{version:$minecraft},server:{platform:$serverPlatform,version:$minecraft,build:$serverBuild,url:$serverUrl,sha256:$serverSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,repository:$protocolRepository,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
   > "${MANIFEST}"
 
 # Paper is a verified CDN download; Spigot was already compiled+cached above.
@@ -344,7 +321,8 @@ download_verified "${WE_URL}" "${WE_SHA}" "${WE_JAR}"
 download_verified "${WG_URL}" "${WG_SHA}" "${WG_JAR}"
 
 "${ROOT}/gradlew" :uSkyBlock-Plugin:shadowJar :uSkyBlock-ittest:jar :uSkyBlock-itclient:shadowJar \
-  -PmcProtocolLibVersion="${MC_PROTOCOL_VERSION}" --no-daemon --no-configuration-cache
+  -PmcProtocolLibVersion="${MC_PROTOCOL_VERSION}" -PmcProtocolLibRepository="${MC_PROTOCOL_REPOSITORY}" \
+  --no-daemon --no-configuration-cache
 PROJECT_VERSION="$(awk -F= '$1 == "version" { print $2; exit }' "${ROOT}/gradle.properties")"
 if [[ -z "${PROJECT_VERSION}" ]]; then
   echo "Could not determine the project version from gradle.properties." >&2
