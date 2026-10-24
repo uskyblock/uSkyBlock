@@ -18,6 +18,8 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -438,14 +440,25 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                         check(move.isCancelled(), "the banned visitor could move into the nether region");
                         check(told.contains("Banned: You are banned from this island."),
                             "the banned visitor was not told they are banned: " + told);
-                        // A respawn point the visitor set on the nether island while welcome there, as with a
-                        // respawn anchor: dying in the nether, they respawn at spawn instead.
+                        // A respawn anchor the visitor set as their respawn point on the nether island while welcome
+                        // there: dying in the nether, they respawn at spawn instead. A real anchor, not a forced
+                        // respawn location, which Spigot does not force: setRespawnLocation(location, true) stores
+                        // it unforced, and an unforced one in the air sends the player to the main world's spawn.
                         check(visitor.teleport(outside), "the banned visitor could not teleport next to the nether island");
-                        visitor.setRespawnLocation(onTheNetherIsland, true);
-                        visitor.setHealth(0);
-                        visitor.spigot().respawn();
-                        check(!visitor.isDead() && atSpawn.getAsBoolean(),
-                            "the banned visitor did not respawn at spawn: " + visitor.getLocation());
+                        Block anchorBlock = onTheNetherIsland.getBlock();
+                        BlockData before = anchorBlock.getBlockData();
+                        RespawnAnchor anchor = (RespawnAnchor) Material.RESPAWN_ANCHOR.createBlockData();
+                        anchor.setCharges(anchor.getMaximumCharges());
+                        anchorBlock.setBlockData(anchor);
+                        try {
+                            visitor.setRespawnLocation(onTheNetherIsland);
+                            visitor.setHealth(0);
+                            visitor.spigot().respawn();
+                            check(!visitor.isDead() && atSpawn.getAsBoolean(),
+                                "the banned visitor did not respawn at spawn: " + visitor.getLocation());
+                        } finally {
+                            anchorBlock.setBlockData(before);
+                        }
                         visitor.setInvulnerable(true);
                         scenario.pass("/is ban sent the visitor from the nether island to spawn, the teleport back was"
                             + " refused, the move into the nether region was cancelled with the ban message, and the"
