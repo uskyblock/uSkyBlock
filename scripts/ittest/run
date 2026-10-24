@@ -133,10 +133,11 @@ if [[ -z "${MINECRAFT_VERSION}" ]]; then
   exit "${HARNESS_ERROR}"
 fi
 
-# The presence client is built against one MCProtocolLib "protocol" artifact, named
-# "<mcversion>-<build>" (release) or "<mcversion>-SNAPSHOT". Release builds are listed only in the
+# The presence client is built against one MCProtocolLib "protocol" artifact, named "<mcversion>"
+# or "<mcversion>-<build>" (release) or "<mcversion>-SNAPSHOT". Release builds are listed in the
 # maven-releases metadata, snapshots only in the main group metadata, though the main group repo
-# serves both files - so derive the version by querying both, preferring the highest release build.
+# serves both files - so derive the version by querying both, preferring the highest release build
+# (a plain "<mcversion>" counts as build 0; other suffixes such as "-feature-..." are ignored).
 # Empty result means no codec exists for this Minecraft version (bot flows run server-only).
 mcpl_protocol_version() {
   local mc="$1" esc meta rel
@@ -147,7 +148,9 @@ mcpl_protocol_version() {
     -H "User-Agent: ${USER_AGENT}" \
     "https://repo.opencollab.dev/maven-releases/org/geysermc/mcprotocollib/protocol/maven-metadata.xml" 2>/dev/null || true)"
   rel="$(printf '%s' "${meta}" | grep -oE '<version>[^<]+</version>' | sed -E 's|</?version>||g' \
-    | grep -E "^${esc}-[0-9]+$" | sort -t- -k2 -n | tail -n1 || true)"
+    | grep -E "^${esc}(-[0-9]+)?$" \
+    | awk -v mc="${mc}" '{ b = substr($0, length(mc) + 2); print (b == "" ? 0 : b) "\t" $0 }' \
+    | sort -n | tail -n1 | cut -f2 || true)"
   if [[ -n "${rel}" ]]; then printf '%s\n' "${rel}"; return 0; fi
   meta="$(curl --fail --silent --show-error --retry 3 --retry-delay 2 --retry-connrefused \
     -H "User-Agent: ${USER_AGENT}" \
