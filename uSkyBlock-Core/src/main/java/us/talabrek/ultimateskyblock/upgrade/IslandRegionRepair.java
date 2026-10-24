@@ -16,6 +16,7 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -128,6 +129,9 @@ public class IslandRegionRepair {
                     islands.add(fileName.substring(0, fileName.length() - ".yml".length()));
                 }
             }
+        } catch (DirectoryIteratorException e) {
+            // How the stream reports an I/O error while it is iterated.
+            throw e.getCause();
         }
         islands.sort(Comparator.naturalOrder());
         return islands;

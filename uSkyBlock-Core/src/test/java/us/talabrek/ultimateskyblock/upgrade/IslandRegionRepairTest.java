@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
@@ -18,12 +19,16 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.io.IOException;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -34,8 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -164,6 +171,24 @@ public class IslandRegionRepairTest {
 
         verifyNoInteractions(scheduler);
         assertFalse(Files.exists(marker()));
+    }
+
+    @Test
+    public void waitsForTheNextStartIfTheIslandsCannotBeListed() throws IOException {
+        islandFiles("128,0");
+        Path islands = dataDir.resolve("islands");
+        Scheduler scheduler = mock(Scheduler.class);
+
+        // A read error part-way through the listing, which the stream reports unchecked.
+        try (MockedStatic<Files> files = mockStatic(Files.class, CALLS_REAL_METHODS)) {
+            files.when(() -> Files.newDirectoryStream(islands)).thenReturn(failingListing());
+            new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
+        }
+
+        verifyNoInteractions(scheduler);
+        assertFalse(Files.exists(marker()));
+        assertTrue(logged.contains("Unable to list the islands, so their regions are synced at the next start"),
+            logged.toString());
     }
 
     @Test
@@ -299,6 +324,29 @@ public class IslandRegionRepairTest {
         for (String name : names) {
             Files.writeString(dataDir.resolve("islands").resolve(name + ".yml"), "general: {}\n");
         }
+    }
+
+    private static DirectoryStream<Path> failingListing() {
+        return new DirectoryStream<>() {
+            @Override
+            public Iterator<Path> iterator() {
+                return new Iterator<>() {
+                    @Override
+                    public boolean hasNext() {
+                        throw new DirectoryIteratorException(new IOException("Input/output error"));
+                    }
+
+                    @Override
+                    public Path next() {
+                        throw new NoSuchElementException();
+                    }
+                };
+            }
+
+            @Override
+            public void close() {
+            }
+        };
     }
 
     private Path marker() {
