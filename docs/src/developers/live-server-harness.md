@@ -36,6 +36,8 @@ scripts/ittest/run --lane paper-min --keep
 
 For driver-only debugging on an already provisioned server, run `uskyblock-ittest run fresh` or `uskyblock-ittest run restart` from the console. Automated runs start from `ServerLoadEvent` and shut the server down when the phase verdicts have been atomically finalized.
 
+The restart phase ends with `island-region-repair-marker`, which waits about two minutes: uSkyBlock leaves the island region repair's marker only that long after the repair, once WorldGuard has saved the repaired regions by itself.
+
 ## Output and exit codes
 
 Every provisioned run creates `run-manifest.json`, per-phase JSON Lines verdicts, server/client logs, and a stable-identifier `state.properties` file. The manifest records the server platform (paper/spigot), build and (for Paper) URL and hash, dependency URLs, versions and hashes, the derived MCProtocolLib version and whether player flows ran, Git SHA, Java version, fixture revision, lane, and randomized localhost port.

@@ -5,7 +5,6 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
@@ -21,6 +20,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,6 +54,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -87,19 +88,26 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private static final String OTHER_NETHER_REGION = "usbitplayernether";
     /** A player of no island: the repair is to take them off the run island's nether region. */
     private static final UUID STRAY_UUID = UUID.nameUUIDFromBytes("OfflinePlayer:UsbItStray".getBytes(StandardCharsets.UTF_8));
+    /** How the line starts that uSkyBlock logs when the island region repair is done. */
+    private static final String REPAIR_DONE = "Island region repair done:";
+    /** How long after it is done the island region repair leaves its marker, as uSkyBlock has it. */
+    private static final Duration REPAIR_MARKER_DELAY = Duration.ofMinutes(2);
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
+    private final RepairDoneLog repairDoneLog = new RepairDoneLog();
 
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
         Logger.getLogger("").addHandler(logCapture);
+        Logger.getLogger("").addHandler(repairDoneLog);
     }
 
     @Override
     public void onDisable() {
         Logger.getLogger("").removeHandler(logCapture);
+        Logger.getLogger("").removeHandler(repairDoneLog);
     }
 
     @EventHandler
@@ -174,6 +182,10 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 scenarios.add(new ScenarioDefinition("island-region-repair", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepair));
             }
             scenarios.add(new ScenarioDefinition("secondary-smokes", Verdict.Category.PLUGIN_FAIL, this::secondarySmokes));
+            if (phase.equals("restart")) {
+                // Last, as it waits out the island region repair's marker delay, about two minutes.
+                scenarios.add(new ScenarioDefinition("island-region-repair-marker", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepairMarker));
+            }
         }
 
         private void run() {
@@ -488,13 +500,15 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         /**
          * Leaves the restart phase's start what the island region repair is for: the nether region of a deleted
          * island, still locked and owned, and the run island's nether region locked although the island is not, as
-         * {@code /is unlock} left it, and owned by a stray player instead of the island's owner. The repair ran at this phase's start already, on a server without islands, so its
-         * marker goes.
+         * {@code /is unlock} left it, and owned by a stray player instead of the island's owner. The repair ran at this
+         * phase's start already, on a server without islands, and its marker is to follow two minutes later: this
+         * phase stops well before then, which cancels the marker, so the repair runs again at the restart. WorldGuard
+         * saves the regions at the stop.
          */
         private void islandRegionRepairSetup(Scenario scenario) {
             uSkyBlock usb = requireUsb();
-            Path marker = repairMarker(usb);
-            check(Files.exists(marker), "the island region repair did not run at the start");
+            check(repairDoneLog.done() != null, "the island region repair did not run at the start");
+            check(!Files.exists(repairMarker(usb)), "the island region repair left its marker before its delay");
             IslandInfo island = usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID));
             check(island != null && !island.isLocked(), "the run island is missing or locked");
             RegionManager nether = regions(netherWorld(usb));
@@ -515,23 +529,20 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             nether.addRegion(orphan);
             nether.addRegion(new ProtectedCuboidRegion(OTHER_NETHER_REGION,
                 WorldGuardHandler.getProtectionVectorRight(deleted), WorldGuardHandler.getProtectionVectorLeft(deleted)));
-            try {
-                nether.saveChanges();
-                Files.delete(marker);
-            } catch (StorageException | IOException e) {
-                throw new IllegalStateException("could not leave the island region repair its work", e);
-            }
             scenario.pass("left a deleted island's nether region, and a stale lock, owner and member on the run island's"
                 + " nether region");
         }
 
         /**
-         * The island region repair, at the first start after its marker went: it removed the deleted island's nether
-         * region and left the region of another id, and gave the run island's nether region the island's lock, owner
-         * and members: unlocked, owned by the island's owner and not the stray player.
+         * The island region repair, at the first start after a stop before its marker: it removed the deleted island's
+         * nether region and left the region of another id, and gave the run island's nether region the island's lock,
+         * owner and members: unlocked, owned by the island's owner and not the stray player. Its marker is not there
+         * yet.
          */
         private void islandRegionRepair(Scenario scenario) {
-            scenario.await(() -> coreReady() && Files.exists(repairMarker(uSkyBlock.getInstance())), SETUP_TIMEOUT, () -> {
+            check(!Files.exists(repairMarker(requireUsb())), "the fresh phase's island region repair left its marker,"
+                + " so the repair does not run again: its stop did not cancel the marker, or came after the marker's delay");
+            scenario.await(() -> coreReady() && repairDoneLog.done() != null, SETUP_TIMEOUT, () -> {
                 uSkyBlock usb = requireUsb();
                 RegionManager nether = regions(netherWorld(usb));
                 check(!nether.hasRegion(DELETED_ISLAND + "nether"), "the repair left the deleted island's nether region");
@@ -546,9 +557,40 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     "the repair left a stray player on the run island's nether region");
                 check(regions(usb.getWorldManager().getWorld()).hasRegion(island.getName() + "island"),
                     "the run island lost its region in the island world");
+                check(!Files.exists(repairMarker(usb)), "the repair left its marker before its delay");
                 scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock, owner"
                     + " and members to its nether region");
             }, "the island region repair did not finish before the deadline");
+        }
+
+        /**
+         * The island region repair's marker: it follows the repair once its delay has passed, not before, and by then
+         * WorldGuard has written the repaired regions to its storage by itself. The one scenario that waits out the
+         * delay, about two minutes.
+         */
+        private void islandRegionRepairMarker(Scenario scenario) {
+            Instant done = Objects.requireNonNull(repairDoneLog.done(), "the island region repair is not done");
+            uSkyBlock usb = requireUsb();
+            Path marker = repairMarker(usb);
+            Duration timeout = Duration.between(Instant.now(), done.plus(REPAIR_MARKER_DELAY).plusSeconds(60));
+            scenario.await(() -> Files.exists(marker), timeout, () -> {
+                // The delay counts ticks, which may run a little fast while the server catches up after a slow one.
+                check(Duration.between(done, Instant.now()).compareTo(REPAIR_MARKER_DELAY.minusSeconds(5)) >= 0,
+                    "the repair left its marker before its delay");
+                World netherWorld = netherWorld(usb);
+                Path regionsFile = Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("WorldGuard"), "WorldGuard is missing")
+                    .getDataFolder().toPath().resolve("worlds").resolve(netherWorld.getName()).resolve("regions.yml");
+                YamlConfiguration saved = YamlConfiguration.loadConfiguration(regionsFile.toFile());
+                IslandInfo island = Objects.requireNonNull(usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID)), "the run island is missing");
+                String netherRegion = "regions." + island.getName() + "nether";
+                check(saved.contains(netherRegion) && !saved.contains("regions." + DELETED_ISLAND + "nether"),
+                    "WorldGuard had not saved the repaired nether regions when the marker came");
+                check(!saved.contains(netherRegion + ".flags.entry")
+                        && saved.getStringList(netherRegion + ".owners.unique-ids").contains(PLAYER_UUID.toString()),
+                    "WorldGuard had not saved the run island's repaired nether region when the marker came");
+                scenario.pass("the repair left its marker " + Duration.between(done, Instant.now()).toSeconds()
+                    + " s after it was done, when WorldGuard had saved the repaired regions");
+            }, "the island region repair left no marker after its delay");
         }
 
         private void secondarySmokes(Scenario scenario) {
@@ -802,6 +844,30 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 String detail = record.getLoggerName() + ": " + record.getMessage();
                 if (record.getThrown() != null) detail += " (" + record.getThrown().getClass().getName() + ")";
                 records.add(VerdictCodec.sanitize(detail));
+            }
+        }
+
+        @Override public void flush() { }
+        @Override public void close() { }
+    }
+
+    /**
+     * Notes when uSkyBlock logs that the island region repair is done.
+     */
+    private static final class RepairDoneLog extends Handler {
+        private volatile Instant done;
+
+        /**
+         * @return when the repair logged that it is done, or null before
+         */
+        Instant done() {
+            return done;
+        }
+
+        @Override
+        public void publish(LogRecord record) {
+            if (done == null && record != null && record.getMessage() != null && record.getMessage().contains(REPAIR_DONE)) {
+                done = Instant.now();
             }
         }
 
