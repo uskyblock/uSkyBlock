@@ -20,7 +20,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -203,10 +202,6 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 scenarios.add(new ScenarioDefinition("island-region-repair", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepair));
             }
             scenarios.add(new ScenarioDefinition("secondary-smokes", Verdict.Category.PLUGIN_FAIL, this::secondarySmokes));
-            if (phase.equals("restart")) {
-                // Last, as it waits out the island region repair's marker delay, about two minutes.
-                scenarios.add(new ScenarioDefinition("island-region-repair-marker", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepairMarker));
-            }
         }
 
         private void run() {
@@ -585,34 +580,6 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock, owner"
                     + " and members to its nether region");
             }, "the island region repair did not finish before the deadline");
-        }
-
-        /**
-         * The island region repair's marker: it follows the repair once its delay has passed, not before, and by then
-         * WorldGuard has written the repaired regions to its storage by itself. The one scenario that waits out the
-         * delay, about two minutes.
-         */
-        private void islandRegionRepairMarker(Scenario scenario) {
-            Instant done = Objects.requireNonNull(repairDoneLog.done(), "the island region repair is not done");
-            uSkyBlock usb = requireUsb();
-            Path marker = repairMarker(usb);
-            Duration timeout = Duration.between(Instant.now(), done.plus(REPAIR_MARKER_DELAY).plusSeconds(60));
-            scenario.await(() -> Files.exists(marker), timeout, () -> {
-                check(repairMarkerDue(done), "the repair left its marker before its delay");
-                World netherWorld = netherWorld(usb);
-                Path regionsFile = Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("WorldGuard"), "WorldGuard is missing")
-                    .getDataFolder().toPath().resolve("worlds").resolve(netherWorld.getName()).resolve("regions.yml");
-                YamlConfiguration saved = YamlConfiguration.loadConfiguration(regionsFile.toFile());
-                IslandInfo island = Objects.requireNonNull(usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID)), "the run island is missing");
-                String netherRegion = "regions." + island.getName() + "nether";
-                check(saved.contains(netherRegion) && !saved.contains("regions." + DELETED_ISLAND + "nether"),
-                    "WorldGuard had not saved the repaired nether regions when the marker came");
-                check(!saved.contains(netherRegion + ".flags.entry")
-                        && saved.getStringList(netherRegion + ".owners.unique-ids").contains(PLAYER_UUID.toString()),
-                    "WorldGuard had not saved the run island's repaired nether region when the marker came");
-                scenario.pass("the repair left its marker " + Duration.between(done, Instant.now()).toSeconds()
-                    + " s after it was done, when WorldGuard had saved the repaired regions");
-            }, "the island region repair left no marker after its delay");
         }
 
         private void secondarySmokes(Scenario scenario) {

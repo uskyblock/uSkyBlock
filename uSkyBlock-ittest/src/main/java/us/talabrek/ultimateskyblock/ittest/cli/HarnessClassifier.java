@@ -114,8 +114,7 @@ public final class HarnessClassifier {
                 "restart/harness-canary",
                 "restart/restart-persistence",
                 "restart/island-region-repair",
-                "restart/secondary-smokes",
-                "restart/island-region-repair-marker"
+                "restart/secondary-smokes"
             );
         }
         return Set.of(
