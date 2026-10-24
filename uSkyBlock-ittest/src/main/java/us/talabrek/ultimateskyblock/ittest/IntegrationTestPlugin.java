@@ -187,17 +187,12 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             scenarios.add(new ScenarioDefinition("message-delivery", Verdict.Category.PLUGIN_FAIL, this::messageDelivery));
             if (phase.equals("fresh")) {
                 scenarios.add(new ScenarioDefinition("initial-setup", Verdict.Category.DEPENDENCY_FAIL, this::initialSetup));
-                if (Boolean.parseBoolean(System.getProperty("uskyblock.ittest.playerFlows", "true"))) {
-                    scenarios.add(new ScenarioDefinition("create-island", Verdict.Category.PLUGIN_FAIL, this::createIsland));
-                    scenarios.add(new ScenarioDefinition("complete-challenge", Verdict.Category.PLUGIN_FAIL, this::completeChallenge));
-                    scenarios.add(new ScenarioDefinition("nether-ban", Verdict.Category.PLUGIN_FAIL, this::netherBan));
-                    scenarios.add(new ScenarioDefinition("nether-lock", Verdict.Category.PLUGIN_FAIL, this::netherLock));
-                    // The repair itself runs at the start of the restart phase.
-                    scenarios.add(new ScenarioDefinition("island-region-repair-setup", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepairSetup));
-                } else {
-                    scenarios.add(new ScenarioDefinition("player-flows-support", Verdict.Category.HARNESS_ERROR,
-                        scenario -> scenario.skip("player flows disabled: no MCProtocolLib codec for this Minecraft version (server-only run)")));
-                }
+                scenarios.add(new ScenarioDefinition("create-island", Verdict.Category.PLUGIN_FAIL, this::createIsland));
+                scenarios.add(new ScenarioDefinition("complete-challenge", Verdict.Category.PLUGIN_FAIL, this::completeChallenge));
+                scenarios.add(new ScenarioDefinition("nether-ban", Verdict.Category.PLUGIN_FAIL, this::netherBan));
+                scenarios.add(new ScenarioDefinition("nether-lock", Verdict.Category.PLUGIN_FAIL, this::netherLock));
+                // The repair itself runs at the start of the restart phase.
+                scenarios.add(new ScenarioDefinition("island-region-repair-setup", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepairSetup));
                 scenarios.add(new ScenarioDefinition("island-regions-delete", Verdict.Category.PLUGIN_FAIL, this::islandRegionsDelete));
             } else {
                 scenarios.add(new ScenarioDefinition("restart-persistence", Verdict.Category.PLUGIN_FAIL, this::restartPersistence));

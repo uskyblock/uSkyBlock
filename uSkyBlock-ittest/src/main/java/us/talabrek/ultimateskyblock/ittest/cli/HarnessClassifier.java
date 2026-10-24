@@ -35,10 +35,27 @@ public final class HarnessClassifier {
         Pattern.compile(".*USKYBLOCK-TEST.*")
     );
 
+    // Every lane runs the player-driven set and the restart phase; there is no smaller set.
+    static final Set<String> REQUIRED_SCENARIOS = Set.of(
+        "fresh/harness-canary",
+        "fresh/initial-setup",
+        "fresh/create-island",
+        "fresh/complete-challenge",
+        "fresh/nether-ban",
+        "fresh/nether-lock",
+        "fresh/island-region-repair-setup",
+        "fresh/island-regions-delete",
+        "fresh/secondary-smokes",
+        "restart/harness-canary",
+        "restart/restart-persistence",
+        "restart/island-region-repair",
+        "restart/secondary-smokes"
+    );
+
     private HarnessClassifier() {
     }
 
-    public static Classification classify(boolean playerFlows, List<Path> resultFiles, List<Path> logFiles) {
+    public static Classification classify(List<Path> resultFiles, List<Path> logFiles) {
         Map<String, Verdict> unique = new HashMap<>();
         List<String> errors = new ArrayList<>();
         for (Path file : resultFiles) {
@@ -69,11 +86,11 @@ public final class HarnessClassifier {
             }
         }
 
-        for (String required : requiredScenarios(playerFlows)) {
+        for (String required : REQUIRED_SCENARIOS) {
             if (!unique.containsKey(required)) errors.add("missing required verdict: " + required);
         }
         for (Verdict verdict : unique.values()) {
-            if (verdict.result() == Verdict.Result.SKIP && requiredScenarios(playerFlows).contains(verdict.phase() + '/' + verdict.scenario())) {
+            if (verdict.result() == Verdict.Result.SKIP && REQUIRED_SCENARIOS.contains(verdict.phase() + '/' + verdict.scenario())) {
                 errors.add("required verdict was skipped: " + verdict.phase() + '/' + verdict.scenario());
             }
         }
@@ -94,35 +111,6 @@ public final class HarnessClassifier {
             return new Classification(Outcome.FAIL, EXIT_FAIL, failures);
         }
         return new Classification(Outcome.PASS, EXIT_PASS, List.of("all required scenarios passed and logs are clean"));
-    }
-
-    // The required set is a function of capability, not lane name: a lane whose Minecraft version has
-    // a presence-client codec runs the full player-driven set plus the restart-persistence phase;
-    // a server-only lane (no codec) runs the fresh smoke set only.
-    static Set<String> requiredScenarios(boolean playerFlows) {
-        if (playerFlows) {
-            return Set.of(
-                "fresh/harness-canary",
-                "fresh/initial-setup",
-                "fresh/create-island",
-                "fresh/complete-challenge",
-                "fresh/nether-ban",
-                "fresh/nether-lock",
-                "fresh/island-region-repair-setup",
-                "fresh/island-regions-delete",
-                "fresh/secondary-smokes",
-                "restart/harness-canary",
-                "restart/restart-persistence",
-                "restart/island-region-repair",
-                "restart/secondary-smokes"
-            );
-        }
-        return Set.of(
-            "fresh/harness-canary",
-            "fresh/initial-setup",
-            "fresh/island-regions-delete",
-            "fresh/secondary-smokes"
-        );
     }
 
     static List<String> scanLogs(List<Path> logs) {

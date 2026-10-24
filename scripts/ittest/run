@@ -142,10 +142,13 @@ fi
 # newest build. MCPL cuts builds per protocol, so a row may name a build of an older Minecraft
 # version that shares the protocol. No build is a harness error, never a run without the client.
 source "${ROOT}/scripts/ittest/mcpl.sh"
-PLAYER_FLOWS=true
 if [[ -n "${REPLAY_MANIFEST}" ]]; then
+  # Older manifests may come from a server-only run, which no longer exists.
+  if jq -e '.mcProtocolLib.playerFlows == false' "${REPLAY_MANIFEST}" >/dev/null; then
+    echo "Replay manifest was recorded without player flows; every run now has them: ${REPLAY_MANIFEST}" >&2
+    exit "${HARNESS_ERROR}"
+  fi
   MC_PROTOCOL_BUILD="$(jq -r '"\(.mcProtocolLib.version) \(.mcProtocolLib.repository // "maven-releases")"' "${REPLAY_MANIFEST}")"
-  PLAYER_FLOWS="$(jq -r '.mcProtocolLib.playerFlows' "${REPLAY_MANIFEST}")"
 elif [[ "${TIER}" == canary ]]; then
   MC_PROTOCOL_BUILD="$(mcpl_latest_build "${MINECRAFT_VERSION}")" || exit "${HARNESS_ERROR}"
 else
@@ -309,8 +312,7 @@ jq -n \
   --arg gitSha "${GIT_SHA}" \
   --arg javaVersion "$(java -version 2>&1 | head -n 1)" \
   --argjson port "${PORT}" --argjson fixtureRevision "${FIXTURE_REVISION}" \
-  --argjson playerFlows "${PLAYER_FLOWS}" \
-  '{schema:1,lane:$lane,minecraft:{version:$minecraft},server:{platform:$serverPlatform,version:$minecraft,build:$serverBuild,url:$serverUrl,sha256:$serverSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,repository:$protocolRepository,playerFlows:$playerFlows},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
+  '{schema:1,lane:$lane,minecraft:{version:$minecraft},server:{platform:$serverPlatform,version:$minecraft,build:$serverBuild,url:$serverUrl,sha256:$serverSha},dependencies:{worldedit:{version:$weVersion,url:$weUrl,sha256:$weSha},worldguard:{version:$wgVersion,url:$wgUrl,sha256:$wgSha}},mcProtocolLib:{version:$protocol,repository:$protocolRepository},gitSha:$gitSha,javaVersion:$javaVersion,fixtureRevision:$fixtureRevision,port:$port,status:"PROVISIONING"}' \
   > "${MANIFEST}"
 
 # Paper is a verified CDN download; Spigot was already compiled+cached above.
@@ -439,7 +441,6 @@ run_phase() {
       -Duskyblock.ittest.phase="${phase}" \
       -Duskyblock.ittest.resultsDir="${RESULTS_DIRECTORY}" \
       -Duskyblock.ittest.fixtureRevision="${FIXTURE_REVISION}" \
-      -Duskyblock.ittest.playerFlows="${PLAYER_FLOWS}" \
       -jar server.jar --nogui
   ) > "${log}" 2>&1 &
   SERVER_PID=$!
@@ -447,9 +448,9 @@ run_phase() {
   VISITOR_PID=""
   # A cold boot downloads uSkyBlock's runtime libraries and generates the world, which can take
   # several minutes. Wait generously for the server to finish booting ('Done') BEFORE judging
-  # anything else - this applies to server-only phases too, so a slow boot is never mistaken for a
-  # dead driver (the scenario-start deadline below is measured only after boot). Long deadlines here
-  # trade a little wall-clock for far fewer flaky failures.
+  # anything else - this applies to the client-less restart phase too, so a slow boot is never
+  # mistaken for a dead driver (the scenario-start deadline below is measured only after boot). Long
+  # deadlines here trade a little wall-clock for far fewer flaky failures.
   if wait_for_log "${SERVER_PID}" "${log}" 'Done (' 600; then
     if [[ "${with_client}" == true ]]; then
       echo "USKYBLOCK-TEST launching presence client -> 127.0.0.1:${PORT}" >> "${RUN_DIRECTORY}/logs/client.log"
@@ -487,23 +488,14 @@ run_phase() {
   VISITOR_PID=""
 }
 
-# The restart-persistence phase only makes sense when a player actually created state to persist,
-# i.e. when player flows ran. Server-only lanes (no codec) run the fresh smoke set only.
-run_phase fresh "${PLAYER_FLOWS}"
-if [[ "${PLAYER_FLOWS}" == true ]]; then
-  rm -f "${RESULTS_DIRECTORY}/client-ready" "${RESULTS_DIRECTORY}/visitor-ready"
-  run_phase restart false
-fi
+run_phase fresh true
+rm -f "${RESULTS_DIRECTORY}/client-ready" "${RESULTS_DIRECTORY}/visitor-ready"
+run_phase restart false
 
 set +e
-RESULT_ARGUMENTS=("${RESULTS_DIRECTORY}/fresh.jsonl")
-LOG_ARGUMENTS=("${RUN_DIRECTORY}/logs/fresh.log")
-if [[ "${PLAYER_FLOWS}" == true ]]; then
-  RESULT_ARGUMENTS+=("${RESULTS_DIRECTORY}/restart.jsonl")
-  LOG_ARGUMENTS+=("${RUN_DIRECTORY}/logs/restart.log")
-fi
-java -jar "${DRIVER_JAR}" classify --player-flows "${PLAYER_FLOWS}" \
-  --results "${RESULT_ARGUMENTS[@]}" --logs "${LOG_ARGUMENTS[@]}"
+java -jar "${DRIVER_JAR}" classify \
+  --results "${RESULTS_DIRECTORY}/fresh.jsonl" "${RESULTS_DIRECTORY}/restart.jsonl" \
+  --logs "${RUN_DIRECTORY}/logs/fresh.log" "${RUN_DIRECTORY}/logs/restart.log"
 CLASSIFIER_EXIT=$?
 set -e
 
