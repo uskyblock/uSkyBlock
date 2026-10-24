@@ -94,6 +94,14 @@ public class PlayerEventsRespawnTest {
     }
 
     @Test
+    public void aMemberRespawnsAtTheirBedOnTheirLockedIsland() {
+        when(island.isLocked()).thenReturn(true);
+        when(island.getMembers()).thenReturn(Set.of("Owner", "Visitor"));
+
+        assertEquals(bedOnTheIsland, respawn(otherWorld, bedOnTheIsland));
+    }
+
+    @Test
     public void aBannedPlayerWhoBypassesProtectionRespawnsAtTheirAnchor() {
         when(island.isBanned(player.getUniqueId())).thenReturn(true);
         when(player.hasPermission("usb.mod.bypassprotection")).thenReturn(true);
