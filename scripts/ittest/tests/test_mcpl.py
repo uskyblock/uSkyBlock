@@ -11,6 +11,7 @@ ROOT = ITTEST.parents[1]
 MCPL = ITTEST / "mcpl.sh"
 ARTIFACTS = ITTEST / "artifacts.json"
 TIMESTAMPED = re.compile(r"-\d{8}\.\d{6}-\d+$")
+BUILD = re.compile(r"^\d+(\.\d+)+(-\d+|-\d{8}\.\d{6}-\d+)?$")
 PROTOCOL_PATH = "org/geysermc/mcprotocollib/protocol"
 
 
@@ -34,6 +35,10 @@ def supported_versions() -> list[str]:
     raise AssertionError("gradle.properties has no minecraftVersions")
 
 
+def release(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("-", 1)[0].split("."))
+
+
 class PinnedTableTest(unittest.TestCase):
     def test_every_supported_version_has_a_reviewed_row(self) -> None:
         table = json.loads(ARTIFACTS.read_text())["mcProtocolLib"]
@@ -54,6 +59,19 @@ class PinnedTableTest(unittest.TestCase):
                 self.assertIn(repository, ("maven-releases", "maven-snapshots"))
                 if TIMESTAMPED.search(row["version"]):
                     self.assertEqual(repository, "maven-snapshots")
+
+    def test_rows_agree_on_builds_and_protocols(self) -> None:
+        table = json.loads(ARTIFACTS.read_text())["mcProtocolLib"]
+        protocols: dict[str, int] = {}
+        for mc, row in table.items():
+            with self.subTest(mc=mc):
+                self.assertRegex(row["version"], BUILD)
+                self.assertLessEqual(release(row["version"]), release(mc),
+                                     "a build is named after the first Minecraft version with its protocol")
+                self.assertEqual(protocols.setdefault(row["version"], row["protocol"]), row["protocol"],
+                                 "one build speaks one protocol")
+        by_release = [table[mc]["protocol"] for mc in sorted(table, key=release)]
+        self.assertEqual(by_release, sorted(by_release), "protocols rise with the Minecraft version")
 
 
 class PinnedBuildTest(unittest.TestCase):

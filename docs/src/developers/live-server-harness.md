@@ -41,7 +41,7 @@ Adding a version to `minecraftVersions` means adding its row:
 3. Add `"<mc>": { "version": "<build>", "protocol": <protocol> }` to `mcProtocolLib`. For a snapshot, pin the timestamped build (`<base>-<yyyyMMdd.HHmmss>-<n>`, from the snapshot's `maven-metadata.xml`), never `-SNAPSHOT`, and add `"repository": "maven-snapshots"`.
 4. If no MCPL build has the protocol, add no row: the version's lanes fail until there is one, or until the supported floor moves past it.
 
-`python3 -m unittest discover -s scripts/ittest/tests` checks that every supported version has a row and tests both lookups. The `-min` and `-max` lanes on the pull request are the live check of their rows; the rows in between get one from `--minecraft X` or a dispatched run.
+`python3 -m unittest discover -s scripts/ittest/tests`, which the Gradle build workflow runs on every push and pull request, checks that every supported version has a well-formed row, that rows sharing a build share its protocol and that protocols rise with the Minecraft version, and tests the lookups. It cannot check a row's protocol against the build itself: the `-min` and `-max` lanes on the pull request are the live check of their rows; the rows in between get one from `--minecraft X` or a dispatched run.
 
 ## Running locally
 

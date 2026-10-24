@@ -47,6 +47,9 @@ jobs:
         if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
         run: ./gradlew verifyReleaseTag -PreleaseTag="${GITHUB_REF_NAME}" --no-daemon --no-configuration-cache
 
+      - name: Live-server harness script tests
+        run: python3 -m unittest discover -s scripts/ittest/tests
+
       - name: Build with Gradle
         run: ./gradlew build translation publishAllPublicationsToStagingRepository --no-daemon --no-configuration-cache
 
