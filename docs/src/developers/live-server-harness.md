@@ -10,7 +10,7 @@ The harness runs a `platform × tier` matrix. The Minecraft versions are not pin
 - `paper-max` / `spigot-max` — the **last** supported version. The deterministic "known-good newest"; bumping it is the same edit as adding a version to `minecraftVersions` for publishing.
 - `paper-canary` — the newest **available** Paper (dynamic, via Fill API v3), independent of the supported list, with the newest MCProtocolLib build for it (see below). Early warning for upstream breaks. It runs only on the nightly schedule (or when dispatched), so it never blocks a push or pull request; like every lane, a failure fails its run.
 
-Every lane runs the player-driven scenarios and the restart phase with a presence client (see below); there is no server-only mode. Spigot server jars are compiled on demand with BuildTools (`--rev <version>`) and cached by build number; Paper jars are downloaded and SHA-256 verified.
+Every lane runs the player-driven scenarios with presence clients (see below), then restarts the server without them for the persistence checks; there is no server-only mode. Spigot server jars are compiled on demand with BuildTools (`--rev <version>`) and cached by build number; Paper jars are downloaded and SHA-256 verified.
 
 Lanes pin WorldEdit 7.4.4 and WorldGuard 7.0.17 (recorded in `scripts/ittest/artifacts.json`); the same bukkit jars run on both Paper and Spigot. A newer dependency build can drop support for an older Minecraft version — WorldGuard 7.0.17 declares `api-version 1.21.11` and will not load on 1.21.10, which uSkyBlock hard-depends on — so `artifacts.json` also carries per-Minecraft-version `overrides` that pin an older, compatible build for such lanes (1.21.10 uses WorldGuard 7.0.15). The same mechanism covers a version newer than the base pin: WorldEdit 7.4.4 has no 26.3 adapter, so 26.3 (the `-max` lanes) uses WorldEdit 7.4.6. Overrides are keyed by Minecraft version, not lane, so they follow the version and lapse once the supported floor moves up. Downloads are cached outside each disposable server directory and verified before use.
 
@@ -36,7 +36,13 @@ No client found always ends the run as `HARNESS-ERROR`: a Minecraft version with
 
 Adding a version to `minecraftVersions` means adding its row:
 
-1. Read the server's protocol from the `version.json` in Mojang's server jar (the `downloads.server.url` of the version's entry in Mojang's version manifest): `unzip -p server.jar version.json | jq .protocol_version`.
+1. Read the server's protocol from the `version.json` in Mojang's server jar: `unzip -p server.jar version.json | jq .protocol_version`. The jar's URL is `downloads.server.url` in the per-version JSON that the version's entry in Mojang's version manifest links to as `url`:
+
+    ```bash
+    curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json \
+      | jq -r '.versions[] | select(.id == "26.4") | .url' | xargs curl -s | jq -r .downloads.server.url
+    ```
+
 2. Find the MCPL build with that protocol. Its codec names it: `javap -c -classpath protocol-<build>.jar org.geysermc.mcprotocollib.protocol.codec.MinecraftCodec | grep -A3 'static {}'` shows `sipush <protocol>`. Look in `maven-releases` first; snapshots are only in `maven-snapshots`.
 3. Add `"<mc>": { "version": "<build>", "protocol": <protocol> }` to `mcProtocolLib`. For a snapshot, pin the timestamped build (`<base>-<yyyyMMdd.HHmmss>-<n>`, from the snapshot's `maven-metadata.xml`), never `-SNAPSHOT`, and add `"repository": "maven-snapshots"`.
 4. If no MCPL build has the protocol, add no row: the version's lanes fail until there is one, or until the supported floor moves past it.
