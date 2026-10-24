@@ -322,9 +322,13 @@ fi
 download_verified "${WE_URL}" "${WE_SHA}" "${WE_JAR}"
 download_verified "${WG_URL}" "${WG_SHA}" "${WG_JAR}"
 
-"${ROOT}/gradlew" :uSkyBlock-Plugin:shadowJar :uSkyBlock-ittest:jar :uSkyBlock-itclient:shadowJar \
+# The client build fetches its MCPL build; a build that cannot be resolved is a harness error too.
+if ! "${ROOT}/gradlew" :uSkyBlock-Plugin:shadowJar :uSkyBlock-ittest:jar :uSkyBlock-itclient:shadowJar \
   -PmcProtocolLibVersion="${MC_PROTOCOL_VERSION}" -PmcProtocolLibRepository="${MC_PROTOCOL_REPOSITORY}" \
-  --no-daemon --no-configuration-cache
+  --no-daemon --no-configuration-cache; then
+  echo "The harness build failed (presence client: MCProtocolLib ${MC_PROTOCOL_VERSION} from ${MC_PROTOCOL_REPOSITORY})." >&2
+  exit "${HARNESS_ERROR}"
+fi
 PROJECT_VERSION="$(awk -F= '$1 == "version" { print $2; exit }' "${ROOT}/gradle.properties")"
 if [[ -z "${PROJECT_VERSION}" ]]; then
   echo "Could not determine the project version from gradle.properties." >&2
