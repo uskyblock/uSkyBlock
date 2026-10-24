@@ -1,5 +1,11 @@
 package us.talabrek.ultimateskyblock.ittest;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +37,7 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Msg;
+import us.talabrek.ultimateskyblock.player.NotificationManager;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.ittest.result.AtomicVerdictWriter;
@@ -45,6 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -62,25 +71,63 @@ import java.util.logging.Logger;
 public final class IntegrationTestPlugin extends JavaPlugin implements Listener {
     static final String PLAYER_NAME = "UsbItPlayer";
     static final UUID PLAYER_UUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + PLAYER_NAME).getBytes(StandardCharsets.UTF_8));
+    /** The second presence client: the player the fixture player bans from, or locks out of, their island. */
+    static final String VISITOR_NAME = "UsbItVisitor";
     static final String SCHEME_ID = "ittest";
     static final ChallengeKey CHALLENGE_ID = ChallengeKey.of("ittest_trade");
     private static final Duration SETUP_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration PLAYER_TIMEOUT = Duration.ofSeconds(90);
     private static final Duration ISLAND_TIMEOUT = Duration.ofSeconds(120);
     private static final long MESSAGE_SETTLE_TICKS = 20L;
+    /** An island spot far from the run's island, for the region scenarios. */
+    private static final String SCRATCH_ISLAND = "8192,8192";
+    /** An island spot no island takes: the repair is to remove the nether region left there. */
+    private static final String DELETED_ISLAND = "-8192,8192";
+    /** A nether region of another id, which the repair is to leave. */
+    private static final String OTHER_NETHER_REGION = "usbitplayernether";
+    /** A player of no island: the repair is to take them off the run island's nether region. */
+    private static final UUID STRAY_UUID = UUID.nameUUIDFromBytes("OfflinePlayer:UsbItStray".getBytes(StandardCharsets.UTF_8));
+    /** How the line starts that uSkyBlock logs when the island region repair is done. */
+    private static final String REPAIR_DONE = "Island region repair done:";
+    /** How long after it is done the island region repair leaves its marker, as uSkyBlock has it. */
+    private static final Duration REPAIR_MARKER_DELAY = Duration.ofMinutes(2);
 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
+    private final RepairDoneLog repairDoneLog = new RepairDoneLog();
+    /** The island region repair's marker, once the fresh phase has left the repair its work for the restart. */
+    private Path repairMarkerToDelete;
 
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
         Logger.getLogger("").addHandler(logCapture);
+        Logger.getLogger("").addHandler(repairDoneLog);
     }
 
     @Override
     public void onDisable() {
         Logger.getLogger("").removeHandler(logCapture);
+        Logger.getLogger("").removeHandler(repairDoneLog);
+        deleteRepairMarker();
+    }
+
+    /**
+     * Deletes the island region repair's marker at the fresh phase's stop, should it have come before: the phase can
+     * take longer than the marker's delay on a slow server. The repair then runs again at the restart, on the work
+     * the phase left it, however long the phase took. The server ticks no more by now, so the marker cannot follow
+     * after this, and uSkyBlock, which stops after this plugin, cancels it.
+     */
+    private void deleteRepairMarker() {
+        if (repairMarkerToDelete == null) return;
+        try {
+            if (Files.deleteIfExists(repairMarkerToDelete)) {
+                getLogger().info("USKYBLOCK-TEST deleted the island region repair's marker, which came before the stop,"
+                    + " so the repair runs again at the restart");
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "USKYBLOCK-TEST could not delete the island region repair's marker", e);
+        }
     }
 
     @EventHandler
@@ -141,12 +188,18 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 if (Boolean.parseBoolean(System.getProperty("uskyblock.ittest.playerFlows", "true"))) {
                     scenarios.add(new ScenarioDefinition("create-island", Verdict.Category.PLUGIN_FAIL, this::createIsland));
                     scenarios.add(new ScenarioDefinition("complete-challenge", Verdict.Category.PLUGIN_FAIL, this::completeChallenge));
+                    scenarios.add(new ScenarioDefinition("nether-ban", Verdict.Category.PLUGIN_FAIL, this::netherBan));
+                    scenarios.add(new ScenarioDefinition("nether-lock", Verdict.Category.PLUGIN_FAIL, this::netherLock));
+                    // The repair itself runs at the start of the restart phase.
+                    scenarios.add(new ScenarioDefinition("island-region-repair-setup", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepairSetup));
                 } else {
                     scenarios.add(new ScenarioDefinition("player-flows-support", Verdict.Category.HARNESS_ERROR,
                         scenario -> scenario.skip("player flows disabled: no MCProtocolLib codec for this Minecraft version (server-only run)")));
                 }
+                scenarios.add(new ScenarioDefinition("island-regions-delete", Verdict.Category.PLUGIN_FAIL, this::islandRegionsDelete));
             } else {
                 scenarios.add(new ScenarioDefinition("restart-persistence", Verdict.Category.PLUGIN_FAIL, this::restartPersistence));
+                scenarios.add(new ScenarioDefinition("island-region-repair", Verdict.Category.PLUGIN_FAIL, this::islandRegionRepair));
             }
             scenarios.add(new ScenarioDefinition("secondary-smokes", Verdict.Category.PLUGIN_FAIL, this::secondarySmokes));
         }
@@ -351,6 +404,184 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             }, "uSkyBlock did not complete restart initialization before the deadline");
         }
 
+        /**
+         * Keeps a banned player off the nether island: {@code /is ban} sends the visitor from the fixture player's
+         * nether island to spawn, a teleport back onto it is refused, a move into its nether region is cancelled,
+         * which puts a player back where they came from, and tells them they are banned, and a respawn point on it
+         * sends them to spawn.
+         */
+        private void netherBan(Scenario scenario) {
+            scenario.await(() -> Bukkit.getPlayerExact(VISITOR_NAME) != null, PLAYER_TIMEOUT, () -> {
+                uSkyBlock usb = requireUsb();
+                Player owner = requirePlayer(PLAYER_NAME);
+                Player visitor = requirePlayer(VISITOR_NAME);
+                // The bot does not move by itself: it stays where it is put, also in the air.
+                visitor.setInvulnerable(true);
+                // Loaded a tick before the ban: loading a banned player's data sends them to spawn by itself.
+                usb.getPlayerInfo(visitor);
+                PlayerInfo ownerInfo = usb.getPlayerInfo(owner);
+                IslandInfo island = usb.getIslandInfo(ownerInfo);
+                Location onTheNetherIsland = onTheNetherIsland(ownerInfo);
+                check(visitor.teleport(onTheNetherIsland), "the visitor could not teleport onto the nether island");
+                long teleported = visitor.getWorld().getGameTime();
+                scenario.await(() -> visitor.getWorld().getGameTime() > teleported + 1, Duration.ofSeconds(10), () -> {
+                    check(owner.performCommand("is ban " + VISITOR_NAME) && island.isBanned(visitor.getUniqueId()),
+                        "/is ban did not ban the visitor");
+                    Location spawn = usb.getWorldManager().getWorld().getSpawnLocation();
+                    BooleanSupplier atSpawn = () -> visitor.getWorld().equals(spawn.getWorld())
+                        && visitor.getLocation().distanceSquared(spawn) < 9;
+                    scenario.await(atSpawn, Duration.ofSeconds(20), () -> {
+                        check(!visitor.teleport(onTheNetherIsland), "the banned visitor could teleport onto the nether island");
+                        Location outside = onTheNetherIsland.clone().add(usb.getRuntimeConfigs().current().island().radius() + 8, 0, 0);
+                        PlayerMoveEvent move = new PlayerMoveEvent(visitor, outside, onTheNetherIsland);
+                        List<String> told = messagesTo(visitor, () -> Bukkit.getPluginManager().callEvent(move));
+                        check(move.isCancelled(), "the banned visitor could move into the nether region");
+                        check(told.contains("Banned: You are banned from this island."),
+                            "the banned visitor was not told they are banned: " + told);
+                        // A respawn point the visitor set on the nether island while welcome there, as with a
+                        // respawn anchor: dying in the nether, they respawn at spawn instead.
+                        check(visitor.teleport(outside), "the banned visitor could not teleport next to the nether island");
+                        visitor.setRespawnLocation(onTheNetherIsland, true);
+                        visitor.setHealth(0);
+                        visitor.spigot().respawn();
+                        check(!visitor.isDead() && atSpawn.getAsBoolean(),
+                            "the banned visitor did not respawn at spawn: " + visitor.getLocation());
+                        visitor.setInvulnerable(true);
+                        scenario.pass("/is ban sent the visitor from the nether island to spawn, the teleport back was"
+                            + " refused, the move into the nether region was cancelled with the ban message, and the"
+                            + " respawn point on the nether island sent them to spawn");
+                    }, "/is ban did not send the visitor from the nether island to spawn");
+                }, "the nether island world did not tick");
+            }, "the visitor did not connect before the deadline", Verdict.Category.HARNESS_ERROR);
+        }
+
+        /**
+         * {@code /is lock} and {@code /is unlock} reach the island's regions in both island worlds at once, and the
+         * visitor's teleport onto the locked nether island is refused.
+         */
+        private void netherLock(Scenario scenario) {
+            uSkyBlock usb = requireUsb();
+            Player owner = requirePlayer(PLAYER_NAME);
+            Player visitor = requirePlayer(VISITOR_NAME);
+            PlayerInfo ownerInfo = usb.getPlayerInfo(owner);
+            IslandInfo island = usb.getIslandInfo(ownerInfo);
+            if (island.isBanned(visitor.getUniqueId())) {
+                check(owner.performCommand("is unban " + VISITOR_NAME) && !island.isBanned(visitor.getUniqueId()),
+                    "/is unban did not unban the visitor");
+            }
+            // Fetched after the unban, which rebuilds the regions.
+            ProtectedRegion region = regions(usb.getWorldManager().getWorld()).getRegion(island.getName() + "island");
+            ProtectedRegion netherRegion = regions(netherWorld(usb)).getRegion(island.getName() + "nether");
+            check(region != null && netherRegion != null, "the island is missing a region");
+            Location onTheNetherIsland = onTheNetherIsland(ownerInfo);
+            check(owner.performCommand("is lock") && island.isLocked(), "/is lock did not lock the island");
+            check(region.getFlag(Flags.ENTRY) == StateFlag.State.DENY, "/is lock did not lock the island world's region");
+            check(netherRegion.getFlag(Flags.ENTRY) == StateFlag.State.DENY, "/is lock did not lock the nether region");
+            check(!visitor.teleport(onTheNetherIsland), "the visitor could teleport onto the locked nether island");
+            check(owner.performCommand("is unlock") && !island.isLocked(), "/is unlock did not unlock the island");
+            check(region.getFlag(Flags.ENTRY) == null, "/is unlock did not unlock the island world's region");
+            check(netherRegion.getFlag(Flags.ENTRY) == null, "/is unlock did not unlock the nether region");
+            check(visitor.teleport(onTheNetherIsland), "the visitor could not teleport onto the unlocked nether island");
+            check(visitor.teleport(usb.getWorldManager().getWorld().getSpawnLocation()), "could not send the visitor back to spawn");
+            scenario.pass("/is lock and /is unlock reached both regions at once, and the teleport onto the locked nether island was refused");
+        }
+
+        /**
+         * A purge and a delete remove a scratch island's regions, each from its own world: the nether region from the
+         * nether island world.
+         */
+        private void islandRegionsDelete(Scenario scenario) {
+            uSkyBlock usb = requireUsb();
+            check(!Files.exists(islandFile(usb, SCRATCH_ISLAND)), "the scratch island " + SCRATCH_ISLAND + " is taken");
+            RegionManager overworld = regions(usb.getWorldManager().getWorld());
+            RegionManager nether = regions(netherWorld(usb));
+            String regionId = SCRATCH_ISLAND + "island";
+            String netherRegionId = SCRATCH_ISLAND + "nether";
+            WorldGuardHandler.updateRegion(usb.getIslandInfo(SCRATCH_ISLAND));
+            check(overworld.hasRegion(regionId) && nether.hasRegion(netherRegionId), "the scratch island did not get its regions");
+            check(usb.getIslandLogic().purge(SCRATCH_ISLAND), "the purge refused the scratch island");
+            check(!overworld.hasRegion(regionId), "the purge left the island world's region");
+            check(!nether.hasRegion(netherRegionId), "the purge left the nether region");
+            WorldGuardHandler.updateRegion(usb.getIslandInfo(SCRATCH_ISLAND));
+            check(overworld.hasRegion(regionId) && nether.hasRegion(netherRegionId), "the scratch island did not get its regions again");
+            AtomicBoolean deleted = new AtomicBoolean();
+            check(usb.deleteEmptyIsland(SCRATCH_ISLAND, () -> deleted.set(true)), "the delete refused the scratch island");
+            scenario.await(deleted::get, Duration.ofSeconds(60), () -> {
+                check(!overworld.hasRegion(regionId), "the delete left the island world's region");
+                check(!nether.hasRegion(netherRegionId), "the delete left the nether region");
+                scenario.pass("a purge and a delete removed the scratch island's regions, each from its own world");
+            }, "the delete of the scratch island did not finish before the deadline");
+        }
+
+        /**
+         * Leaves the restart phase's start what the island region repair is for: the nether region of a deleted
+         * island, still locked and owned, and the run island's nether region locked although the island is not, as
+         * {@code /is unlock} left it, and owned by a stray player instead of the island's owner. The repair ran at this
+         * phase's start already, on a server without islands, and its marker is to follow two minutes later. Whether
+         * this phase stops before then, which cancels the marker, or after, when this plugin deletes the marker at the
+         * stop, the repair runs again at the restart. WorldGuard saves the regions at the stop.
+         */
+        private void islandRegionRepairSetup(Scenario scenario) {
+            uSkyBlock usb = requireUsb();
+            Instant done = repairDoneLog.done();
+            check(done != null, "the island region repair did not run at the start");
+            Path marker = repairMarker(usb);
+            check(!Files.exists(marker) || repairMarkerDue(done), "the island region repair left its marker before its delay");
+            repairMarkerToDelete = marker;
+            IslandInfo island = usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID));
+            check(island != null && !island.isLocked(), "the run island is missing or locked");
+            RegionManager nether = regions(netherWorld(usb));
+            ProtectedRegion netherRegion = nether.getRegion(island.getName() + "nether");
+            check(netherRegion != null, "the run island has no nether region");
+            netherRegion.setFlag(Flags.ENTRY, StateFlag.State.DENY);
+            netherRegion.getOwners().removeAll();
+            netherRegion.getOwners().addPlayer(STRAY_UUID);
+            netherRegion.getMembers().addPlayer(STRAY_UUID);
+            check(!Files.exists(islandFile(usb, DELETED_ISLAND))
+                    && !regions(usb.getWorldManager().getWorld()).hasRegion(DELETED_ISLAND + "island"),
+                "the island " + DELETED_ISLAND + " exists");
+            Location deleted = new Location(netherWorld(usb), -8192, 75, 8192);
+            ProtectedCuboidRegion orphan = new ProtectedCuboidRegion(DELETED_ISLAND + "nether",
+                WorldGuardHandler.getProtectionVectorRight(deleted), WorldGuardHandler.getProtectionVectorLeft(deleted));
+            orphan.getOwners().addPlayer(UUID.nameUUIDFromBytes("OfflinePlayer:UsbItGone".getBytes(StandardCharsets.UTF_8)));
+            orphan.setFlag(Flags.ENTRY, StateFlag.State.DENY);
+            nether.addRegion(orphan);
+            nether.addRegion(new ProtectedCuboidRegion(OTHER_NETHER_REGION,
+                WorldGuardHandler.getProtectionVectorRight(deleted), WorldGuardHandler.getProtectionVectorLeft(deleted)));
+            scenario.pass("left a deleted island's nether region, and a stale lock, owner and member on the run island's"
+                + " nether region");
+        }
+
+        /**
+         * The island region repair, at the first start after the fresh phase, which left no marker: it removed the
+         * deleted island's nether region and left the region of another id, and gave the run island's nether region
+         * the island's lock, owner and members: unlocked, owned by the island's owner and not the stray player. Its
+         * marker is not there yet.
+         */
+        private void islandRegionRepair(Scenario scenario) {
+            check(!Files.exists(repairMarker(requireUsb())), "the island region repair's marker outlasted the fresh"
+                + " phase's stop, so the repair does not run again");
+            scenario.await(() -> coreReady() && repairDoneLog.done() != null, SETUP_TIMEOUT, () -> {
+                uSkyBlock usb = requireUsb();
+                RegionManager nether = regions(netherWorld(usb));
+                check(!nether.hasRegion(DELETED_ISLAND + "nether"), "the repair left the deleted island's nether region");
+                check(nether.hasRegion(OTHER_NETHER_REGION), "the repair removed a region of another id");
+                IslandInfo island = usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID));
+                check(island != null && !island.isLocked(), "the run island is missing or locked");
+                ProtectedRegion netherRegion = nether.getRegion(island.getName() + "nether");
+                check(netherRegion != null, "the repair removed the run island's nether region");
+                check(netherRegion.getFlag(Flags.ENTRY) == null, "the repair left the unlocked island's nether region locked");
+                check(netherRegion.getOwners().contains(PLAYER_UUID), "the repair did not give the run island's nether region its owner");
+                check(!netherRegion.getOwners().contains(STRAY_UUID) && !netherRegion.getMembers().contains(STRAY_UUID),
+                    "the repair left a stray player on the run island's nether region");
+                check(regions(usb.getWorldManager().getWorld()).hasRegion(island.getName() + "island"),
+                    "the run island lost its region in the island world");
+                check(!Files.exists(repairMarker(usb)), "the repair left its marker before its delay");
+                scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock, owner"
+                    + " and members to its nether region");
+            }, "the island region repair did not finish before the deadline");
+        }
+
         private void secondarySmokes(Scenario scenario) {
             uSkyBlock usb = requireUsb();
             ChallengeLogic logic = usb.getChallengeLogic();
@@ -523,6 +754,31 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             return Objects.requireNonNull(uSkyBlock.getInstance(), "uSkyBlock instance is unavailable");
         }
 
+        private Player requirePlayer(String name) {
+            Player player = Bukkit.getPlayerExact(name);
+            check(player != null && player.isOnline(), name + " is not online");
+            return player;
+        }
+
+        /**
+         * Runs the action and returns the messages uSkyBlock sent the player meanwhile. They still reach the player:
+         * the delivery uSkyBlock configures at its start is wrapped, and put back afterwards.
+         */
+        private List<String> messagesTo(Player player, Runnable action) {
+            NotificationManager notifications = requireUsb().getPlayerLogic().getNotificationManager();
+            List<String> messages = new ArrayList<>();
+            Msg.configure((sender, message) -> {
+                if (sender.equals(player)) messages.add(Msg.plainText(message));
+                notifications.sendMessage(sender, message);
+            });
+            try {
+                action.run();
+            } finally {
+                Msg.configure(notifications::sendMessage);
+            }
+            return messages;
+        }
+
         private void writeState(Properties state) {
             Path target = resultDirectory.resolve("state.properties");
             try {
@@ -584,10 +840,67 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         @Override public void close() { }
     }
 
+    /**
+     * Notes when uSkyBlock logs that the island region repair is done.
+     */
+    private static final class RepairDoneLog extends Handler {
+        private volatile Instant done;
+
+        /**
+         * @return when the repair logged that it is done, or null before
+         */
+        Instant done() {
+            return done;
+        }
+
+        @Override
+        public void publish(LogRecord record) {
+            if (done == null && record != null && record.getMessage() != null && record.getMessage().contains(REPAIR_DONE)) {
+                done = Instant.now();
+            }
+        }
+
+        @Override public void flush() { }
+        @Override public void close() { }
+    }
+
     private static boolean validLocation(Location location) {
         return location != null && location.getWorld() != null && Double.isFinite(location.getX())
             && Double.isFinite(location.getY()) && Double.isFinite(location.getZ())
             && location.getY() >= location.getWorld().getMinHeight() && location.getY() < location.getWorld().getMaxHeight();
+    }
+
+    /**
+     * A spot in the nether island's region, off its centre and in the air above its blocks: away from its portal,
+     * which would take a player standing in it back to the island world.
+     */
+    private static Location onTheNetherIsland(PlayerInfo playerInfo) {
+        return Objects.requireNonNull(playerInfo.getIslandNetherLocation(), "the island has no nether location").add(6.5, 25, 6.5);
+    }
+
+    private static World netherWorld(uSkyBlock usb) {
+        return Objects.requireNonNull(usb.getWorldManager().getNetherWorld(), "the nether island world is missing");
+    }
+
+    private static RegionManager regions(World world) {
+        return Objects.requireNonNull(WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world)),
+            "no regions in " + world.getName());
+    }
+
+    private static Path islandFile(uSkyBlock usb, String islandName) {
+        return usb.getIslandLogic().getIslandDirectory().resolve(islandName + ".yml");
+    }
+
+    private static Path repairMarker(uSkyBlock usb) {
+        return usb.getDataFolder().toPath().resolve("data").resolve("island-region-repair.done");
+    }
+
+    /**
+     * @return whether the island region repair's marker is due: its delay has passed since the repair was done. The
+     * delay counts ticks, which may run a little fast while the server catches up after a slow one.
+     */
+    private static boolean repairMarkerDue(Instant done) {
+        return Duration.between(done, Instant.now()).compareTo(REPAIR_MARKER_DELAY.minusSeconds(5)) >= 0;
     }
 
     private static Optional<Block> findMarker(Location center) {

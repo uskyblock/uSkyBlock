@@ -6,6 +6,8 @@ readonly FAIL=10
 readonly HARNESS_ERROR=20
 readonly FIXTURE_REVISION=1
 readonly PLAYER_NAME=UsbItPlayer
+# A second presence client: the player the fixture player bans from, or locks out of, their island.
+readonly VISITOR_NAME=UsbItVisitor
 readonly USER_AGENT="uSkyBlock-ittest/1 (+https://github.com/uskyblock/uSkyBlock)"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -21,9 +23,11 @@ KEEP=false
 MANIFEST=""
 SERVER_PID=""
 CLIENT_PID=""
+VISITOR_PID=""
 
 cleanup_processes() {
   [[ -n "${CLIENT_PID}" ]] && kill "${CLIENT_PID}" 2>/dev/null || true
+  [[ -n "${VISITOR_PID}" ]] && kill "${VISITOR_PID}" 2>/dev/null || true
   [[ -n "${SERVER_PID}" ]] && kill "${SERVER_PID}" 2>/dev/null || true
 }
 
@@ -459,6 +463,7 @@ run_phase() {
   ) > "${log}" 2>&1 &
   SERVER_PID=$!
   CLIENT_PID=""
+  VISITOR_PID=""
   # A cold boot downloads uSkyBlock's runtime libraries and generates the world, which can take
   # several minutes. Wait generously for the server to finish booting ('Done') BEFORE judging
   # anything else - this applies to server-only phases too, so a slow boot is never mistaken for a
@@ -471,6 +476,10 @@ run_phase() {
         --ready-file "${RESULTS_DIRECTORY}/client-ready" --timeout-seconds 360 \
         >> "${RUN_DIRECTORY}/logs/client.log" 2>&1 &
       CLIENT_PID=$!
+      java -jar "${CLIENT_JAR}" --host 127.0.0.1 --port "${PORT}" --name "${VISITOR_NAME}" \
+        --ready-file "${RESULTS_DIRECTORY}/visitor-ready" --timeout-seconds 360 \
+        >> "${RUN_DIRECTORY}/logs/visitor.log" 2>&1 &
+      VISITOR_PID=$!
     fi
   elif [[ "${with_client}" == true ]]; then
     echo "USKYBLOCK-TEST server did not reach 'Done' within 600s; presence client not launched" >> "${RUN_DIRECTORY}/logs/client.log"
@@ -491,15 +500,17 @@ run_phase() {
     wait "${SERVER_PID}" 2>/dev/null || true
   fi
   if [[ -n "${CLIENT_PID}" ]]; then wait_for_process "${CLIENT_PID}" 30 || true; fi
+  if [[ -n "${VISITOR_PID}" ]]; then wait_for_process "${VISITOR_PID}" 30 || true; fi
   SERVER_PID=""
   CLIENT_PID=""
+  VISITOR_PID=""
 }
 
 # The restart-persistence phase only makes sense when a player actually created state to persist,
 # i.e. when player flows ran. Server-only lanes (no codec) run the fresh smoke set only.
 run_phase fresh "${PLAYER_FLOWS}"
 if [[ "${PLAYER_FLOWS}" == true ]]; then
-  rm -f "${RESULTS_DIRECTORY}/client-ready"
+  rm -f "${RESULTS_DIRECTORY}/client-ready" "${RESULTS_DIRECTORY}/visitor-ready"
   run_phase restart false
 fi
 

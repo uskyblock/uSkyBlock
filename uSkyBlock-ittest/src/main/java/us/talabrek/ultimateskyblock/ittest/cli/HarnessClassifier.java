@@ -106,15 +106,21 @@ public final class HarnessClassifier {
                 "fresh/initial-setup",
                 "fresh/create-island",
                 "fresh/complete-challenge",
+                "fresh/nether-ban",
+                "fresh/nether-lock",
+                "fresh/island-region-repair-setup",
+                "fresh/island-regions-delete",
                 "fresh/secondary-smokes",
                 "restart/harness-canary",
                 "restart/restart-persistence",
+                "restart/island-region-repair",
                 "restart/secondary-smokes"
             );
         }
         return Set.of(
             "fresh/harness-canary",
             "fresh/initial-setup",
+            "fresh/island-regions-delete",
             "fresh/secondary-smokes"
         );
     }

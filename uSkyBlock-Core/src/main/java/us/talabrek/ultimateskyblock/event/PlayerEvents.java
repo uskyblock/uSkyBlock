@@ -32,7 +32,6 @@ import us.talabrek.ultimateskyblock.api.async.Callback;
 import us.talabrek.ultimateskyblock.api.event.IslandInfoEvent;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
-import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.BlockLimitLogic;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.player.PatienceTester;
@@ -262,10 +261,18 @@ public class PlayerEvents implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         WorldManager wm = plugin.getWorldManager();
         World pWorld = event.getPlayer().getWorld();
-        if (!wm.isSkyAssociatedWorld(pWorld)) {
-            return;
+        if (wm.isSkyAssociatedWorld(pWorld)) {
+            respawnFromAnIslandWorld(event, pWorld);
         }
+        // A bed or respawn anchor the player set while welcome on an island that has banned them, or been locked to
+        // them, since.
+        if (isKeptOff(event.getPlayer(), event.getRespawnLocation())) {
+            event.setRespawnLocation(wm.getWorld().getSpawnLocation());
+        }
+    }
 
+    private void respawnFromAnIslandWorld(PlayerRespawnEvent event, World pWorld) {
+        WorldManager wm = plugin.getWorldManager();
         RuntimeConfig runtimeConfig = runtimeConfigs.current();
         if (runtimeConfig.extras().respawnAtIsland()) {
             PlayerInfo playerInfo = plugin.getPlayerInfo(event.getPlayer());
@@ -286,14 +293,28 @@ public class PlayerEvents implements Listener {
         }
     }
 
+    /**
+     * Whether a ban or a lock keeps the player off the island at the location, as at a teleport: island members,
+     * trustees and players who bypass protection are let on.
+     */
+    private boolean isKeptOff(Player player, Location location) {
+        if (player.isOp() || player.hasPermission("usb.mod.bypassprotection")
+            || !plugin.getWorldManager().isSkyAssociatedWorld(location.getWorld())) {
+            return false;
+        }
+        IslandInfo islandInfo = plugin.getIslandInfo(location);
+        return islandInfo != null && (islandInfo.isBanned(player.getUniqueId()) || islandInfo.isLocked()
+            && !islandInfo.getMembers().contains(player.getName()) && !islandInfo.isTrusted(player));
+    }
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
-        if (event.getTo() == null || !plugin.getWorldManager().isSkyWorld(event.getTo().getWorld())) {
+        if (event.getTo() == null || !plugin.getWorldManager().isSkyAssociatedWorld(event.getTo().getWorld())) {
             return;
         }
         final Player player = event.getPlayer();
         boolean isAdmin = player.isOp() || player.hasPermission("usb.mod.bypassprotection");
-        IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(WorldGuardHandler.getIslandNameAt(event.getTo()));
+        IslandInfo islandInfo = plugin.getIslandInfo(event.getTo());
         if (!isAdmin && islandInfo != null && islandInfo.isBanned(player.getUniqueId())) {
             event.setCancelled(true);
             sendErrorTr(player, "That player has forbidden you from teleporting to their island.");
@@ -302,7 +323,7 @@ public class PlayerEvents implements Listener {
             event.setCancelled(true);
             sendErrorTr(player, "That island is locked. <muted>Teleporting there is not allowed.");
         }
-        if (!event.isCancelled()) {
+        if (!event.isCancelled() && plugin.getWorldManager().isSkyWorld(event.getTo().getWorld())) {
             final PlayerInfo playerInfo = plugin.getPlayerInfo(player);
             playerInfo.onTeleport(player);
         }

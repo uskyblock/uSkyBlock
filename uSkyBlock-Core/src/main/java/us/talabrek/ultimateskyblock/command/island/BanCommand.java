@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.command.island;
 
 import com.google.inject.Inject;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +70,8 @@ public class BanCommand extends RequireIslandCommand {
                 if (offlinePlayer.isOnline()) {
                     sendTr(offlinePlayer.getPlayer(), "You have been <error>banned</error> from <leader>'s island.",
                         Placeholder.legacy("leader", player.getDisplayName(), PRIMARY));
-                    if (plugin.locationIsOnIsland(player, offlinePlayer.getPlayer().getLocation())) {
+                    Location location = offlinePlayer.getPlayer().getLocation();
+                    if (plugin.locationIsOnIsland(player, location) || plugin.locationIsOnNetherIsland(player, location)) {
                         plugin.getTeleportLogic().spawnTeleport(offlinePlayer.getPlayer(), true);
                     }
                 }
