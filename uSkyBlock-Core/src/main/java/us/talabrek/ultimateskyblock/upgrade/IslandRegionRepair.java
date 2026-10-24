@@ -226,8 +226,9 @@ public class IslandRegionRepair {
                 + " and members" + (unreadable > 0 ? " (" + unreadable + " islands could not be read)" : "")
                 + ", and removed " + removed + " nether regions of deleted islands.");
             // WorldGuard writes changed regions only every 30 seconds, so the marker waits for them to be written: a
-            // crash before then must not leave the marker of a lost repair. Off the main thread, as WorldGuard saves.
-            scheduler.async(this::saveAndLeaveMarker);
+            // crash before then must not leave the marker of a lost repair. On the main thread: it runs once, and there
+            // no command changes the regions while they are written.
+            saveAndLeaveMarker();
         }
 
         private void saveAndLeaveMarker() {

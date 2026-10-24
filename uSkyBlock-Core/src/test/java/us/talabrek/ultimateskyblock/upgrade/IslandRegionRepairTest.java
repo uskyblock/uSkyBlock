@@ -325,10 +325,6 @@ public class IslandRegionRepairTest {
             BukkitTask task = mock(BukkitTask.class);
             doAnswer(invocation -> cancelled = true).when(task).cancel();
             when(scheduler.sync(scheduled.capture(), any(Duration.class), any(Duration.class))).thenReturn(task);
-            when(scheduler.async(any(Runnable.class))).thenAnswer(invocation -> {
-                invocation.<Runnable>getArgument(0).run();
-                return mock(BukkitTask.class);
-            });
         }
 
         void start() {
