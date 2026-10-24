@@ -96,6 +96,8 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     private final AtomicBoolean running = new AtomicBoolean();
     private final ScenarioLogCapture logCapture = new ScenarioLogCapture();
     private final RepairDoneLog repairDoneLog = new RepairDoneLog();
+    /** The island region repair's marker, once the fresh phase has left the repair its work for the restart. */
+    private Path repairMarkerToDelete;
 
     @Override
     public void onEnable() {
@@ -108,6 +110,25 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
     public void onDisable() {
         Logger.getLogger("").removeHandler(logCapture);
         Logger.getLogger("").removeHandler(repairDoneLog);
+        deleteRepairMarker();
+    }
+
+    /**
+     * Deletes the island region repair's marker at the fresh phase's stop, should it have come before: the phase can
+     * take longer than the marker's delay on a slow server. The repair then runs again at the restart, on the work
+     * the phase left it, however long the phase took. The server ticks no more by now, so the marker cannot follow
+     * after this, and uSkyBlock, which stops after this plugin, cancels it.
+     */
+    private void deleteRepairMarker() {
+        if (repairMarkerToDelete == null) return;
+        try {
+            if (Files.deleteIfExists(repairMarkerToDelete)) {
+                getLogger().info("USKYBLOCK-TEST deleted the island region repair's marker, which came before the stop,"
+                    + " so the repair runs again at the restart");
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "USKYBLOCK-TEST could not delete the island region repair's marker", e);
+        }
     }
 
     @EventHandler
@@ -501,14 +522,17 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
          * Leaves the restart phase's start what the island region repair is for: the nether region of a deleted
          * island, still locked and owned, and the run island's nether region locked although the island is not, as
          * {@code /is unlock} left it, and owned by a stray player instead of the island's owner. The repair ran at this
-         * phase's start already, on a server without islands, and its marker is to follow two minutes later: this
-         * phase stops well before then, which cancels the marker, so the repair runs again at the restart. WorldGuard
-         * saves the regions at the stop.
+         * phase's start already, on a server without islands, and its marker is to follow two minutes later. Whether
+         * this phase stops before then, which cancels the marker, or after, when this plugin deletes the marker at the
+         * stop, the repair runs again at the restart. WorldGuard saves the regions at the stop.
          */
         private void islandRegionRepairSetup(Scenario scenario) {
             uSkyBlock usb = requireUsb();
-            check(repairDoneLog.done() != null, "the island region repair did not run at the start");
-            check(!Files.exists(repairMarker(usb)), "the island region repair left its marker before its delay");
+            Instant done = repairDoneLog.done();
+            check(done != null, "the island region repair did not run at the start");
+            Path marker = repairMarker(usb);
+            check(!Files.exists(marker) || repairMarkerDue(done), "the island region repair left its marker before its delay");
+            repairMarkerToDelete = marker;
             IslandInfo island = usb.getIslandInfo(usb.getPlayerInfo(PLAYER_UUID));
             check(island != null && !island.isLocked(), "the run island is missing or locked");
             RegionManager nether = regions(netherWorld(usb));
@@ -534,14 +558,14 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
         }
 
         /**
-         * The island region repair, at the first start after a stop before its marker: it removed the deleted island's
-         * nether region and left the region of another id, and gave the run island's nether region the island's lock,
-         * owner and members: unlocked, owned by the island's owner and not the stray player. Its marker is not there
-         * yet.
+         * The island region repair, at the first start after the fresh phase, which left no marker: it removed the
+         * deleted island's nether region and left the region of another id, and gave the run island's nether region
+         * the island's lock, owner and members: unlocked, owned by the island's owner and not the stray player. Its
+         * marker is not there yet.
          */
         private void islandRegionRepair(Scenario scenario) {
-            check(!Files.exists(repairMarker(requireUsb())), "the fresh phase's island region repair left its marker,"
-                + " so the repair does not run again: its stop did not cancel the marker, or came after the marker's delay");
+            check(!Files.exists(repairMarker(requireUsb())), "the island region repair's marker outlasted the fresh"
+                + " phase's stop, so the repair does not run again");
             scenario.await(() -> coreReady() && repairDoneLog.done() != null, SETUP_TIMEOUT, () -> {
                 uSkyBlock usb = requireUsb();
                 RegionManager nether = regions(netherWorld(usb));
@@ -574,9 +598,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             Path marker = repairMarker(usb);
             Duration timeout = Duration.between(Instant.now(), done.plus(REPAIR_MARKER_DELAY).plusSeconds(60));
             scenario.await(() -> Files.exists(marker), timeout, () -> {
-                // The delay counts ticks, which may run a little fast while the server catches up after a slow one.
-                check(Duration.between(done, Instant.now()).compareTo(REPAIR_MARKER_DELAY.minusSeconds(5)) >= 0,
-                    "the repair left its marker before its delay");
+                check(repairMarkerDue(done), "the repair left its marker before its delay");
                 World netherWorld = netherWorld(usb);
                 Path regionsFile = Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("WorldGuard"), "WorldGuard is missing")
                     .getDataFolder().toPath().resolve("worlds").resolve(netherWorld.getName()).resolve("regions.yml");
@@ -904,6 +926,14 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
 
     private static Path repairMarker(uSkyBlock usb) {
         return usb.getDataFolder().toPath().resolve("data").resolve("island-region-repair.done");
+    }
+
+    /**
+     * @return whether the island region repair's marker is due: its delay has passed since the repair was done. The
+     * delay counts ticks, which may run a little fast while the server catches up after a slow one.
+     */
+    private static boolean repairMarkerDue(Instant done) {
+        return Duration.between(done, Instant.now()).compareTo(REPAIR_MARKER_DELAY.minusSeconds(5)) >= 0;
     }
 
     private static Optional<Block> findMarker(Location center) {
