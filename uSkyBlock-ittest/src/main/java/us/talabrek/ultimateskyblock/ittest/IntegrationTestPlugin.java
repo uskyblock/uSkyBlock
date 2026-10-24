@@ -30,7 +30,6 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.challenge.Challenge;
 import us.talabrek.ultimateskyblock.challenge.ChallengeCompletion;
@@ -39,6 +38,7 @@ import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Msg;
+import us.talabrek.ultimateskyblock.player.NotificationManager;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.ittest.result.AtomicVerdictWriter;
@@ -378,8 +378,8 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
 
         /**
          * Keeps a banned player off the nether island: {@code /is ban} sends the visitor from the fixture player's
-         * nether island to spawn, a teleport back onto it is refused, and a move into its nether region is cancelled
-         * with a bounce level with the ground, without an exception.
+         * nether island to spawn, a teleport back onto it is refused, and a move into its nether region is cancelled,
+         * which puts a player back where they came from, and tells them they are banned.
          */
         private void netherBan(Scenario scenario) {
             scenario.await(() -> Bukkit.getPlayerExact(VISITOR_NAME) != null, PLAYER_TIMEOUT, () -> {
@@ -405,13 +405,12 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                         check(!visitor.teleport(onTheNetherIsland), "the banned visitor could teleport onto the nether island");
                         Location outside = onTheNetherIsland.clone().add(usb.getRuntimeConfigs().current().island().radius() + 8, 0, 0);
                         PlayerMoveEvent move = new PlayerMoveEvent(visitor, outside, onTheNetherIsland);
-                        Bukkit.getPluginManager().callEvent(move);
+                        List<String> told = messagesTo(visitor, () -> Bukkit.getPluginManager().callEvent(move));
                         check(move.isCancelled(), "the banned visitor could move into the nether region");
-                        Vector bounce = visitor.getVelocity();
-                        check(bounce.getY() == 0 && Math.abs(bounce.length() - 1.5) < 1e-6,
-                            "the banned visitor was not bounced level with the ground: " + bounce);
+                        check(told.contains("Banned: You are banned from this island."),
+                            "the banned visitor was not told they are banned: " + told);
                         scenario.pass("/is ban sent the visitor from the nether island to spawn, the teleport back was"
-                            + " refused, and the move into the nether region bounced them level with the ground");
+                            + " refused, and the move into the nether region was cancelled with the ban message");
                     }, "/is ban did not send the visitor from the nether island to spawn");
                 }, "the nether island world did not tick");
             }, "the visitor did not connect before the deadline", Verdict.Category.HARNESS_ERROR);
@@ -717,6 +716,25 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             Player player = Bukkit.getPlayerExact(name);
             check(player != null && player.isOnline(), name + " is not online");
             return player;
+        }
+
+        /**
+         * Runs the action and returns the messages uSkyBlock sent the player meanwhile. They still reach the player:
+         * the delivery uSkyBlock configures at its start is wrapped, and put back afterwards.
+         */
+        private List<String> messagesTo(Player player, Runnable action) {
+            NotificationManager notifications = requireUsb().getPlayerLogic().getNotificationManager();
+            List<String> messages = new ArrayList<>();
+            Msg.configure((sender, message) -> {
+                if (sender.equals(player)) messages.add(Msg.plainText(message));
+                notifications.sendMessage(sender, message);
+            });
+            try {
+                action.run();
+            } finally {
+                Msg.configure(notifications::sendMessage);
+            }
+            return messages;
         }
 
         private void writeState(Properties state) {

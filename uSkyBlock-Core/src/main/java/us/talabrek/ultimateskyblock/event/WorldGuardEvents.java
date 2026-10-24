@@ -2,12 +2,10 @@ package us.talabrek.ultimateskyblock.event;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.handler.WorldGuardHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -45,27 +43,12 @@ public class WorldGuardEvents implements Listener {
         Player player = e.getPlayer();
         if (!player.isOp() && !player.hasPermission("usb.mod.bypassprotection") && isBlockedFromEntry(player, islandInfo)) {
             e.setCancelled(true);
-            player.setVelocity(bounce(e.getTo(), islandInfo.getIslandLocation()));
             if (islandInfo.isBanned(player)) {
                 plugin.notifyPlayer(player, tr("Banned: You are banned from this island.", ERROR));
             } else {
                 plugin.notifyPlayer(player, tr("Locked: That island is locked. No entry allowed.", ERROR));
             }
         }
-    }
-
-    /**
-     * The push that bounces a player away from the island's centre, level with the ground. The island location is in
-     * the island world, the player may be in any island world: only their x and z are compared. A player at the
-     * centre's x and z, with no direction away from it, is pushed back from where they face.
-     */
-    static Vector bounce(@NotNull Location to, @NotNull Location island) {
-        Vector away = new Vector(to.getX() - island.getX(), 0, to.getZ() - island.getZ());
-        if (away.lengthSquared() == 0) {
-            double yaw = Math.toRadians(to.getYaw());
-            away = new Vector(Math.sin(yaw), 0, -Math.cos(yaw));
-        }
-        return away.normalize().multiply(1.5);
     }
 
     private boolean isBlockedFromEntry(Player player, IslandInfo islandInfo) {
