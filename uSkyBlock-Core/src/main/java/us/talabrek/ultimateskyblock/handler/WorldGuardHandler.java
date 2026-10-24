@@ -10,7 +10,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -28,7 +27,6 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LogUtil;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -299,24 +297,6 @@ public class WorldGuardHandler {
         }
         Set<ProtectedRegion> removed = regionManager.removeRegion(islandName + "nether");
         return removed != null && !removed.isEmpty();
-    }
-
-    /**
-     * Writes the changed regions of the island world and the nether island world to WorldGuard's storage now, not at
-     * WorldGuard's next background save.
-     *
-     * @throws IOException if WorldGuard cannot write them
-     */
-    public static void saveRegions() throws IOException {
-        try {
-            getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld()).saveChanges();
-            RegionManager netherRegionManager = getNetherRegionManager();
-            if (netherRegionManager != null) {
-                netherRegionManager.saveChanges();
-            }
-        } catch (StorageException e) {
-            throw new IOException("Unable to save the island regions", e);
-        }
     }
 
     private static ProtectedRegion getNetherRegion(String islandName) {

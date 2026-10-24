@@ -39,6 +39,10 @@ import java.util.regex.Pattern;
  * party. The first start with this version gives every island's regions the island's lock, owners and members, removes
  * the nether regions of islands that no longer exist, and leaves a marker so it never runs again. It works through a
  * few islands each tick, so a server with thousands of them does not stall.
+ * <p>
+ * It leaves saving the regions to WorldGuard, which saves changed regions every 30 seconds on a thread of its own,
+ * under a lock no other plugin can take: a save of the repair's own could overlap one. The marker follows two minutes
+ * later instead, so a crash before WorldGuard's next save does not leave the marker of a repair that was lost.
  */
 @Singleton
 public class IslandRegionRepair {
@@ -46,6 +50,8 @@ public class IslandRegionRepair {
     static final String MARKER_FILE = "island-region-repair.done";
     /** How many islands, or nether regions, the repair works through in one tick. */
     static final int PER_TICK = 20;
+    /** How long after the repair the marker follows: well after WorldGuard's next save. */
+    static final Duration MARKER_DELAY = Duration.ofMinutes(2);
     private static final Pattern NETHER_REGION_ID = Pattern.compile("(-?\\d+,-?\\d+)nether");
 
     private final Path pluginDataDir;
@@ -109,8 +115,9 @@ public class IslandRegionRepair {
     }
 
     /**
-     * Stops a repair still running, at a reload or a stop: it uses the services of this start, and the next start
-     * runs it again from the beginning, as it has left no marker.
+     * Stops a repair still running, or the marker still to follow it, at a reload or a stop: the repair uses the
+     * services of this start, and the next start runs it again from the beginning, as it has left no marker. That is
+     * harmless: it sets the same lock, owners and members again, and the nether regions it removed are gone.
      */
     public void shutdown() {
         if (run != null) {
@@ -152,6 +159,7 @@ public class IslandRegionRepair {
     private final class Run implements Runnable {
         private final Iterator<String> islands;
         private final Iterator<String> netherIslands;
+        /** The repair's ticks, then the marker that follows them: what a reload or a stop cancels. */
         private BukkitTask task;
         private int islandsSynced;
         private int regionsSynced;
@@ -226,28 +234,21 @@ public class IslandRegionRepair {
         }
 
         private void finish() {
-            logger.info("Synced " + regionsSynced + " regions of " + islandsSynced + " islands to their lock, owners"
-                + " and members" + (unreadable > 0 ? " (" + unreadable + " islands could not be read)" : "")
-                + ", and removed " + removed + " nether regions of deleted islands.");
-            // WorldGuard writes changed regions only every 30 seconds, so the marker waits for them to be written: a
-            // crash before then must not leave the marker of a lost repair. On the main thread: it runs once, and there
-            // no command changes the regions while they are written.
-            saveAndLeaveMarker();
+            logger.info("Island region repair done: synced " + regionsSynced + " regions of " + islandsSynced
+                + " islands to their lock, owners and members"
+                + (unreadable > 0 ? " (" + unreadable + " islands could not be read)" : "") + ", and removed "
+                + removed + " nether regions of deleted islands. Its marker follows in " + MARKER_DELAY.toMinutes()
+                + " minutes, once WorldGuard has saved the regions.");
+            task = scheduler.sync(this::leaveMarker, MARKER_DELAY);
         }
 
-        private void saveAndLeaveMarker() {
-            try {
-                regions.save();
-            } catch (IOException e) {
-                logger.log(Level.WARNING, "Unable to save the island regions, so they are synced again at the next"
-                    + " start", e);
-                return;
-            }
+        private void leaveMarker() {
             try {
                 Files.createDirectories(markerFile().getParent());
                 Files.writeString(markerFile(), "uSkyBlock synced the island regions to their islands and removed the"
                     + " nether regions of deleted islands on " + Instant.now() + ".\n"
                     + "Delete this file to run that again at the next start.\n");
+                logger.info("Island region repair: left its marker " + markerFile() + ", so it does not run again.");
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Unable to write " + markerFile() + ", so the island regions are synced"
                     + " again at the next start", e);
@@ -282,11 +283,6 @@ public class IslandRegionRepair {
          * @return whether there was a region to remove
          */
         boolean removeNetherRegion(String islandName);
-
-        /**
-         * Writes the changed regions to WorldGuard's storage now.
-         */
-        void save() throws IOException;
     }
 
     private record WorldGuardRegions(uSkyBlock plugin) implements IslandRegions {
@@ -313,11 +309,6 @@ public class IslandRegionRepair {
         @Override
         public boolean removeNetherRegion(String islandName) {
             return WorldGuardHandler.removeNetherRegion(islandName);
-        }
-
-        @Override
-        public void save() throws IOException {
-            WorldGuardHandler.saveRegions();
         }
     }
 }

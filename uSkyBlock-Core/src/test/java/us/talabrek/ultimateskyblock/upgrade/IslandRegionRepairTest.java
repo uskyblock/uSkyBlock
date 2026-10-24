@@ -110,10 +110,8 @@ public class IslandRegionRepairTest {
         assertEquals(Set.of("128,0nether", "-256,128nether", "640,0nether", "__global__", "spawn", "notchnether", "notchisland"),
             regions.netherRegionIds);
         assertTrue(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."), logged.toString());
-        assertTrue(logged.contains("Synced 4 regions of 2 islands to their lock, owners and members, and removed 1 nether"
-            + " regions of deleted islands."), logged.toString());
-        assertTrue(regions.saved);
-        assertTrue(Files.exists(marker()));
+        assertTrue(logged.contains(done("synced 4 regions of 2 islands to their lock, owners and members, and removed 1"
+            + " nether regions of deleted islands")), logged.toString());
     }
 
     @Test
@@ -128,23 +126,70 @@ public class IslandRegionRepairTest {
 
         assertFalse(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."),
             logged.toString());
-        assertTrue(logged.contains("Synced 0 regions of 0 islands to their lock, owners and members, and removed 0"
-            + " nether regions of deleted islands."), logged.toString());
+        assertTrue(logged.contains(done("synced 0 regions of 0 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands")), logged.toString());
     }
 
     @Test
-    public void runsAgainIfTheRegionsCannotBeSaved() throws IOException {
+    public void leavesItsMarkerOnlyAfterTheDelay() throws IOException {
         islandFiles("128,0");
-        regions.saveFails = true;
-
         Repair repair = new Repair();
         repair.start();
         repair.runToTheEnd();
 
-        assertEquals(List.of("128,0"), regions.synced);
-        assertTrue(logged.contains("Unable to save the island regions, so they are synced again at the next start"),
-            logged.toString());
+        // The repair has no save of its own: WorldGuard saves the regions by itself, well before the marker follows.
+        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands")), logged.toString());
         assertFalse(Files.exists(marker()));
+        assertEquals(Duration.ofMinutes(2), repair.markerDelay());
+
+        repair.afterTheMarkerDelay();
+        assertTrue(Files.exists(marker()));
+        assertTrue(logged.contains("Island region repair: left its marker " + marker() + ", so it does not run again."),
+            logged.toString());
+    }
+
+    @Test
+    public void aStopOrAReloadBeforeTheMarkerLeavesNoneAndTheNextStartRunsAgain() throws IOException {
+        islandFiles("128,0");
+        Repair stopped = new Repair();
+        stopped.start();
+        stopped.runToTheEnd();
+
+        stopped.shutdown();
+        assertTrue(stopped.markerCancelled);
+        assertFalse(Files.exists(marker()));
+
+        Repair next = new Repair();
+        next.start();
+        next.runToTheEnd();
+        assertEquals(List.of("128,0", "128,0"), regions.synced);
+        next.afterTheMarkerDelay();
+        assertTrue(Files.exists(marker()));
+    }
+
+    @Test
+    public void aSecondRunChangesNothing() throws IOException {
+        islandFiles("128,0");
+        regions.islandRegions.add("128,0");
+        regions.netherRegionIds.addAll(Set.of("128,0nether", "512,-512nether", "spawn"));
+        Repair first = new Repair();
+        first.start();
+        first.runToTheEnd();
+        first.shutdown();
+        Set<String> afterTheFirstRun = regions.netherRegionIds();
+        assertEquals(Set.of("128,0nether", "spawn"), afterTheFirstRun);
+        logged.clear();
+
+        Repair second = new Repair();
+        second.start();
+        second.runToTheEnd();
+
+        assertEquals(afterTheFirstRun, regions.netherRegionIds());
+        assertEquals(List.of("128,0", "128,0"), regions.synced);
+        assertTrue(logged.contains(done("synced 2 regions of 1 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands")), logged.toString());
+        assertTrue(logged.stream().noneMatch(line -> line.startsWith("Removed the nether region")), logged.toString());
     }
 
     @Test
@@ -153,6 +198,7 @@ public class IslandRegionRepairTest {
         Repair first = new Repair();
         first.start();
         first.runToTheEnd();
+        first.afterTheMarkerDelay();
 
         Scheduler scheduler = mock(Scheduler.class);
         new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
@@ -224,8 +270,8 @@ public class IslandRegionRepairTest {
         assertEquals(Set.of("128,0nether", "256,0nether"), regions.netherRegionIds);
         assertTrue(logged.contains("Island 128,0 has no party leader, so its file may not have been read; its regions"
             + " are left as they are."), logged.toString());
-        assertTrue(logged.contains("Synced 1 regions of 1 islands to their lock, owners and members (1 islands could"
-            + " not be read), and removed 0 nether regions of deleted islands."), logged.toString());
+        assertTrue(logged.contains(done("synced 1 regions of 1 islands to their lock, owners and members (1 islands"
+            + " could not be read), and removed 0 nether regions of deleted islands")), logged.toString());
     }
 
     @Test
@@ -240,8 +286,8 @@ public class IslandRegionRepairTest {
 
         assertEquals(List.of("256,0"), regions.synced);
         verify(islandLogic, never()).getIslandInfo("128,0");
-        assertTrue(logged.contains("Synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
-            + " nether regions of deleted islands."), logged.toString());
+        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
+            + " nether regions of deleted islands")), logged.toString());
     }
 
     @Test
@@ -274,6 +320,7 @@ public class IslandRegionRepairTest {
 
         when(plugin.isMaintenanceMode()).thenReturn(false);
         repair.runToTheEnd();
+        repair.afterTheMarkerDelay();
         assertEquals(List.of("128,0", "256,0"), regions.synced);
         assertTrue(Files.exists(marker()));
     }
@@ -296,6 +343,7 @@ public class IslandRegionRepairTest {
         Repair next = new Repair();
         next.start();
         next.runToTheEnd();
+        next.afterTheMarkerDelay();
         assertEquals(IslandRegionRepair.PER_TICK + islands.size(), regions.synced.size());
         assertTrue(Files.exists(marker()));
     }
@@ -316,6 +364,7 @@ public class IslandRegionRepairTest {
         assertEquals(2 * IslandRegionRepair.PER_TICK, regions.synced.size());
         assertFalse(Files.exists(marker()));
         repair.runToTheEnd();
+        repair.afterTheMarkerDelay();
         assertEquals(islands.size(), regions.synced.size());
         assertTrue(Files.exists(marker()));
     }
@@ -353,6 +402,14 @@ public class IslandRegionRepairTest {
         return dataDir.resolve("data").resolve(IslandRegionRepair.MARKER_FILE);
     }
 
+    /**
+     * @return the line the repair logs when it is done, with its counts
+     */
+    private static String done(String counts) {
+        return "Island region repair done: " + counts + ". Its marker follows in 2 minutes, once WorldGuard has saved"
+            + " the regions.";
+    }
+
     private static IslandInfo island(String name) {
         IslandInfo island = mock(IslandInfo.class);
         when(island.getName()).thenReturn(name);
@@ -361,18 +418,24 @@ public class IslandRegionRepairTest {
     }
 
     /**
-     * The repair with a scheduler whose ticks the test runs.
+     * The repair with a scheduler whose ticks, and whose marker after its delay, the test runs.
      */
     private final class Repair {
         private final Scheduler scheduler = mock(Scheduler.class);
         private final ArgumentCaptor<Runnable> scheduled = ArgumentCaptor.forClass(Runnable.class);
+        private final ArgumentCaptor<Runnable> marker = ArgumentCaptor.forClass(Runnable.class);
+        private final ArgumentCaptor<Duration> markerDelay = ArgumentCaptor.forClass(Duration.class);
         private boolean cancelled;
+        private boolean markerCancelled;
         private IslandRegionRepair repair;
 
         private Repair() {
             BukkitTask task = mock(BukkitTask.class);
             doAnswer(invocation -> cancelled = true).when(task).cancel();
             when(scheduler.sync(scheduled.capture(), any(Duration.class), any(Duration.class))).thenReturn(task);
+            BukkitTask markerTask = mock(BukkitTask.class);
+            doAnswer(invocation -> markerCancelled = true).when(markerTask).cancel();
+            when(scheduler.sync(marker.capture(), markerDelay.capture())).thenReturn(markerTask);
         }
 
         void start() {
@@ -394,6 +457,18 @@ public class IslandRegionRepairTest {
                 tick();
             }
         }
+
+        Duration markerDelay() {
+            return markerDelay.getValue();
+        }
+
+        /**
+         * Runs the marker the repair left to follow it, as the scheduler does once its delay has passed.
+         */
+        void afterTheMarkerDelay() {
+            assertFalse(markerCancelled, "the marker was cancelled");
+            marker.getValue().run();
+        }
     }
 
     private static final class FakeRegions implements IslandRegionRepair.IslandRegions {
@@ -402,8 +477,6 @@ public class IslandRegionRepairTest {
         private final Set<String> islandRegions = new HashSet<>();
         private final Set<String> netherRegionIds = new HashSet<>();
         private final List<String> synced = new ArrayList<>();
-        private boolean saveFails;
-        private boolean saved;
 
         @Override
         public boolean available() {
@@ -430,14 +503,6 @@ public class IslandRegionRepairTest {
         @Override
         public boolean removeNetherRegion(String islandName) {
             return netherRegionIds.remove(islandName + "nether");
-        }
-
-        @Override
-        public void save() throws IOException {
-            if (saveFails) {
-                throw new IOException("Unable to save the island regions");
-            }
-            saved = true;
         }
     }
 }
