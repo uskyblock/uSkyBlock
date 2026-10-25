@@ -67,6 +67,7 @@ dependencies {
     compileOnly(libs.org.apache.httpcomponents.client5.httpclient5)
     testImplementation(libs.org.apache.httpcomponents.client5.httpclient5)
     compileOnly(libs.org.apache.maven.maven.artifact)
+    testImplementation(libs.org.apache.maven.maven.artifact)
 }
 
 description = "uSkyBlock-Core"
