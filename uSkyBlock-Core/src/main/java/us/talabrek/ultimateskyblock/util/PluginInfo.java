@@ -112,16 +112,24 @@ public class PluginInfo {
     }
 
     @NotNull String updateNotice() {
-        if (updateChecker.isUpdateAvailable()) {
-            return miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
-                unparsed("version", updateChecker.getLatestVersion(), PRIMARY))
-                + miniToLegacy("<muted>Visit <url> to download.<newline>",
-                unparsed("url", "https://uskyblock.github.io/", PRIMARY));
-        }
         if (updateChecker.lastCheckFailed()) {
             return miniToLegacy("<muted>Failed to check for new uSkyBlock versions. Please check for updates manually at <url><newline>",
                 unparsed("url", "https://uskyblock.github.io/", PRIMARY));
         }
-        return "";
+        StringBuilder notice = new StringBuilder();
+        if (updateChecker.isUpdateAvailable()) {
+            notice.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
+                unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
+            notice.append(miniToLegacy("<muted>Visit <url> to download.<newline>",
+                unparsed("url", "https://uskyblock.github.io/", PRIMARY)));
+        }
+        SkyUpdateChecker.Release newMajorRelease = updateChecker.getNewMajorRelease();
+        if (newMajorRelease != null) {
+            notice.append(miniToLegacy("<muted>A new major version of uSkyBlock is available: <version><newline>",
+                unparsed("version", newMajorRelease.version(), PRIMARY)));
+            notice.append(miniToLegacy("<muted>Read its release notes before upgrading: <url><newline>",
+                unparsed("url", newMajorRelease.url(), PRIMARY)));
+        }
+        return notice.toString();
     }
 }

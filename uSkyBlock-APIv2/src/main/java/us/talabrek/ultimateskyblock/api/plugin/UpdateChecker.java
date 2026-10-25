@@ -21,7 +21,8 @@ public interface UpdateChecker {
     boolean isUpdateAvailable();
 
     /**
-     * Gets the latest release of uSkyBlock. Returns NULL if the version info hasn't been fetched yet or is unavailable.
+     * Gets the latest release of uSkyBlock on the running major version; a newer major version is not reported here.
+     * Returns NULL if the version info hasn't been fetched yet or is unavailable.
      * @return Latest release of uSkyBlock, NULL when unavailable.
      */
     @Nullable String getLatestVersion();
