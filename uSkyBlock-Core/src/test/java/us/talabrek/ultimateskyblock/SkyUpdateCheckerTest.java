@@ -180,6 +180,13 @@ public class SkyUpdateCheckerTest {
     }
 
     @Test
+    public void snapshotOfNewMajorVersionGetsItsReleaseAsRegularUpdate() {
+        String body = releases(release("v4.0.0"), release("v3.7.1"));
+
+        assertEquals(new CheckResult("4.0.0", null), parseCheckResult(200, body, "4.0.0-SNAPSHOT"));
+    }
+
+    @Test
     public void draftsAndPrereleasesAreSkipped() {
         String body = releases(release("v5.0.0", true, false), release("v4.0.0", false, true),
             release("v3.7.3", true, false), release("v3.7.2", false, true), release("v3.7.1"));
@@ -205,6 +212,12 @@ public class SkyUpdateCheckerTest {
     public void readsStagingFeedVersion() {
         String staging = "{\"version\": \"3.8.0-SNAPSHOT\", \"build\": \"493\"}";
         assertEquals(new CheckResult("3.8.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.7.1"));
+    }
+
+    @Test
+    public void stagingFeedVersionIsReportedWhateverItsMajorVersion() {
+        String staging = "{\"version\": \"4.0.0-SNAPSHOT\", \"build\": \"510\"}";
+        assertEquals(new CheckResult("4.0.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.8.0-SNAPSHOT"));
     }
 
     @Test

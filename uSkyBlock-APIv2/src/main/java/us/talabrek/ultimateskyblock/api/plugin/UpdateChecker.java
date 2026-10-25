@@ -21,7 +21,8 @@ public interface UpdateChecker {
     boolean isUpdateAvailable();
 
     /**
-     * Gets the latest release of uSkyBlock on the running major version; a newer major version is not reported here.
+     * Gets the latest release of uSkyBlock on the running major version; a newer major release is not reported here.
+     * On the STAGING channel, this is the version of the latest staging build, whatever its major version.
      * Returns NULL if the version info hasn't been fetched yet or is unavailable.
      * @return Latest release of uSkyBlock, NULL when unavailable.
      */

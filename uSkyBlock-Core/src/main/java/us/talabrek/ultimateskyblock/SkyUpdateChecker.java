@@ -63,7 +63,8 @@ public class SkyUpdateChecker implements UpdateChecker {
     /**
      * What an update check found.
      *
-     * @param latestVersion   The latest release on the running major version, NULL if there is none.
+     * @param latestVersion   The latest release on the running major version, or the version feed's version, NULL if
+     *                        there is none.
      * @param newMajorRelease The latest release, if it has a higher major version than the running one.
      */
     record CheckResult(@Nullable String latestVersion, @Nullable Release newMajorRelease) {
