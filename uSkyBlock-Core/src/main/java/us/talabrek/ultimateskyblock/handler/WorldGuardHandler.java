@@ -185,7 +185,10 @@ public class WorldGuardHandler {
         updateLockStatus(region, islandConfig.isLocked());
     }
 
-    private static void updateLockStatus(ProtectedRegion region, boolean isLocked) {
+    /**
+     * Locks or unlocks the region to players who are not its owners or members, leaving everything else about it.
+     */
+    public static void updateLockStatus(ProtectedRegion region, boolean isLocked) {
         if (isLocked) {
             region.setFlag(Flags.ENTRY, StateFlag.State.DENY);
         } else {
@@ -248,29 +251,6 @@ public class WorldGuardHandler {
     }
 
     /**
-     * Gives the island's regions, in the island world and where it has one in the nether, the island's owners,
-     * members and lock, as {@link #updateRegion} sets them. Everything else about the regions stays, such as a flag
-     * set on one by hand, which a rebuild would drop.
-     *
-     * @return the number of regions synced
-     */
-    public static int syncRegions(IslandInfo islandInfo) {
-        int synced = 0;
-        ProtectedRegion region = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld())
-            .getRegion(islandInfo.getName() + "island");
-        if (region != null) {
-            setIslandSettings(region, islandInfo);
-            synced++;
-        }
-        ProtectedRegion netherRegion = getNetherRegion(islandInfo.getName());
-        if (netherRegion != null) {
-            setIslandSettings(netherRegion, islandInfo);
-            synced++;
-        }
-        return synced;
-    }
-
-    /**
      * @return whether the island has a region in the island world
      */
     public static boolean hasIslandRegion(String islandName) {
@@ -299,7 +279,10 @@ public class WorldGuardHandler {
         return removed != null && !removed.isEmpty();
     }
 
-    private static ProtectedRegion getNetherRegion(String islandName) {
+    /**
+     * @return the island's region in the nether island world, or null without one
+     */
+    public static ProtectedRegion getNetherRegion(String islandName) {
         RegionManager regionManager = getNetherRegionManager();
         return regionManager != null ? regionManager.getRegion(islandName + "nether") : null;
     }
