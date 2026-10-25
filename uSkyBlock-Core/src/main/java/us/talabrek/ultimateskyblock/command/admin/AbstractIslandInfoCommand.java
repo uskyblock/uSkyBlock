@@ -27,9 +27,9 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
 
     @Override
     protected final void doExecute(CommandSender sender, PlayerInfo playerInfo) {
-        // execute() is overridden and routes to the island-aware doExecute below, so the parent's
-        // player-only variant is never reached. Fail loudly rather than silently doing nothing if
-        // that ever stops being true.
+        // execute() below looks the player up itself and runs the island-aware doExecute, never the
+        // parent's execute(), so this player-only variant is not reached. Fail loudly rather than
+        // silently doing nothing if that ever stops being true.
         throw new UnsupportedOperationException(
             getClass().getName() + " routes through doExecute(CommandSender, PlayerInfo, IslandInfo, String...)");
     }
@@ -52,23 +52,17 @@ public abstract class AbstractIslandInfoCommand extends AbstractPlayerInfoComman
             }
             return false;
         }
-        if (super.execute(sender, alias, data, args)) {
-            // super.execute() only succeeds after putting a non-null playerInfo in data, and only
-            // when a player name was supplied - so args[0] is that name.
-            PlayerInfo playerInfo = (PlayerInfo) data.get("playerInfo");
-            if (playerInfo == null) {
-                throw new IllegalStateException(
-                    "AbstractPlayerInfoCommand.execute returned true without storing a playerInfo");
-            }
-            IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(playerInfo);
-            if (islandInfo == null) {
-                sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
-                return false;
-            }
-            doExecute(sender, playerInfo, islandInfo, Arrays.copyOfRange(args, 1, args.length));
-            return true;
+        PlayerInfo playerInfo = findPlayer(sender, args[0]);
+        if (playerInfo == null) {
+            // findPlayer() already said so.
+            return false;
         }
-        // A player name was supplied but did not resolve; super.execute() already said so.
-        return false;
+        IslandInfo islandInfo = uSkyBlock.getInstance().getIslandInfo(playerInfo);
+        if (islandInfo == null) {
+            sendErrorTr(sender, "Player <player> has no island.", unparsed("player", playerInfo.getPlayerName(), PRIMARY));
+            return false;
+        }
+        doExecute(sender, playerInfo, islandInfo, Arrays.copyOfRange(args, 1, args.length));
+        return true;
     }
 }
