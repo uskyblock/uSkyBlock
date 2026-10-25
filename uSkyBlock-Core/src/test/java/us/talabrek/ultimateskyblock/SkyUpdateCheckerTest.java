@@ -1,8 +1,10 @@
 package us.talabrek.ultimateskyblock;
 
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
+import java.net.URI;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseLatestVersion;
+import static us.talabrek.ultimateskyblock.SkyUpdateChecker.updateUri;
 
 public class SkyUpdateCheckerTest {
 
@@ -85,5 +88,17 @@ public class SkyUpdateCheckerTest {
     public void latestTagIsComparedWithoutLeadingV() {
         assertTrue(checker.isNewerVersion("3.7.0", parseLatestVersion(200, GITHUB_LATEST_RELEASE)));
         assertFalse(checker.isNewerVersion("3.7.1", parseLatestVersion(200, GITHUB_LATEST_RELEASE)));
+    }
+
+    @Test
+    public void releaseBranchAsksGitHub() {
+        URI github = URI.create("https://api.github.com/repos/uskyblock/uSkyBlock/releases/latest");
+        assertEquals(github, updateUri("RELEASE"));
+    }
+
+    @Test
+    public void stagingBranchAsksStagingFeed() {
+        assertEquals(UpdateChecker.URL_STAGING, updateUri("STAGING"));
+        assertEquals(UpdateChecker.URL_STAGING, updateUri("staging"));
     }
 }

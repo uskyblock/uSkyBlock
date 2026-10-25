@@ -53,11 +53,7 @@ public class SkyUpdateChecker implements UpdateChecker {
      * STAGING branch), and will log an INFO message if an update is available.
      */
     public void checkForUpdates() {
-        URI uri = GITHUB_LATEST_RELEASE;
-
-        if (runtimeConfigs.current().pluginUpdates().branch().equalsIgnoreCase("STAGING")) {
-            uri = URL_STAGING;
-        }
+        URI uri = updateUri(runtimeConfigs.current().pluginUpdates().branch());
 
         fetchLatestVersion(uri).thenAccept(version -> {
             latestVersion = version;
@@ -70,6 +66,10 @@ public class SkyUpdateChecker implements UpdateChecker {
                 logger.info("Visit https://uskyblock.github.io/ to download.");
             }
         });
+    }
+
+    static @NotNull URI updateUri(@NotNull String branch) {
+        return branch.equalsIgnoreCase("STAGING") ? URL_STAGING : GITHUB_LATEST_RELEASE;
     }
 
     public boolean isUpdateAvailable() {
