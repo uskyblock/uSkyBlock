@@ -185,7 +185,10 @@ public class WorldGuardHandler {
         updateLockStatus(region, islandConfig.isLocked());
     }
 
-    private static void updateLockStatus(ProtectedRegion region, boolean isLocked) {
+    /**
+     * Locks or unlocks the region to players who are not its owners or members, leaving everything else about it.
+     */
+    public static void updateLockStatus(ProtectedRegion region, boolean isLocked) {
         if (isLocked) {
             region.setFlag(Flags.ENTRY, StateFlag.State.DENY);
         } else {
@@ -248,26 +251,20 @@ public class WorldGuardHandler {
     }
 
     /**
-     * Gives the island's regions, in the island world and where it has one in the nether, the island's owners,
-     * members and lock, as {@link #updateRegion} sets them. Everything else about the regions stays, such as a flag
-     * set on one by hand, which a rebuild would drop.
-     *
-     * @return the number of regions synced
+     * @return the island's regions: in the island world, and in the nether where it has one
      */
-    public static int syncRegions(IslandInfo islandInfo) {
-        int synced = 0;
+    public static List<ProtectedRegion> getRegionsOf(String islandName) {
+        List<ProtectedRegion> regions = new ArrayList<>();
         ProtectedRegion region = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld())
-            .getRegion(islandInfo.getName() + "island");
+            .getRegion(islandName + "island");
         if (region != null) {
-            setIslandSettings(region, islandInfo);
-            synced++;
+            regions.add(region);
         }
-        ProtectedRegion netherRegion = getNetherRegion(islandInfo.getName());
+        ProtectedRegion netherRegion = getNetherRegion(islandName);
         if (netherRegion != null) {
-            setIslandSettings(netherRegion, islandInfo);
-            synced++;
+            regions.add(netherRegion);
         }
-        return synced;
+        return regions;
     }
 
     /**

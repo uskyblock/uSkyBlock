@@ -1,5 +1,11 @@
 package us.talabrek.ultimateskyblock.upgrade;
 
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitTask;
@@ -19,23 +25,28 @@ import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -110,8 +121,69 @@ public class IslandRegionRepairTest {
         assertEquals(Set.of("128,0nether", "-256,128nether", "640,0nether", "__global__", "spawn", "notchnether", "notchisland"),
             regions.netherRegionIds);
         assertTrue(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."), logged.toString());
-        assertTrue(logged.contains(done("synced 4 regions of 2 islands to their lock, owners and members, and removed 1"
+        assertTrue(logged.contains(done("synced 4 regions of 2 islands to their lock, and removed 1"
             + " nether regions of deleted islands")), logged.toString());
+    }
+
+    @Test
+    public void leavesTheOwnersAndMembersOfTheRegionsAsTheyAre() throws IOException {
+        islandFiles("128,0");
+        // What uSkyBlock's old name-to-UUID conversion stored on an offline-mode server: not the owner's real UUID.
+        UUID offlineUuid = UUID.nameUUIDFromBytes("OfflinePlayer:Owner".getBytes(StandardCharsets.UTF_8));
+        UUID realUuid = UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5");
+        UUID handAdded = UUID.fromString("853c80ef-3c37-49fd-aa49-938b674adae6");
+        IslandInfo island = island("128,0");
+        when(island.getMemberUUIDs()).thenReturn(Set.of(offlineUuid));
+        when(island.getTrusteeUUIDs()).thenReturn(List.of());
+        when(islandLogic.getIslandInfo("128,0")).thenReturn(island);
+        // Owners other than the island file's: the owner's real UUID, and a name as WorldGuard's own migration left it.
+        ProtectedRegion region = regions.islandRegion("128,0");
+        region.getOwners().addPlayer(realUuid);
+        region.getOwners().addPlayer("owner");
+        // An owner and a member added with /rg addowner and /rg addmember.
+        ProtectedRegion netherRegion = regions.netherRegion("128,0");
+        netherRegion.getOwners().addPlayer(offlineUuid);
+        netherRegion.getOwners().addPlayer(handAdded);
+        netherRegion.getMembers().addPlayer(handAdded);
+
+        Repair repair = new Repair();
+        repair.start();
+        repair.runToTheEnd();
+
+        assertDomain(Set.of(realUuid), Set.of("owner"), region.getOwners());
+        assertDomain(Set.of(), Set.of(), region.getMembers());
+        assertDomain(Set.of(offlineUuid, handAdded), Set.of(), netherRegion.getOwners());
+        assertDomain(Set.of(handAdded), Set.of(), netherRegion.getMembers());
+        assertTrue(logged.contains(done("synced 2 regions of 1 islands to their lock, and removed 0 nether regions of"
+            + " deleted islands")), logged.toString());
+    }
+
+    @Test
+    public void syncsTheLockOfTheRegionsInBothWorlds() throws IOException {
+        islandFiles("128,0", "256,0");
+        IslandInfo locked = island("128,0");
+        when(locked.isLocked()).thenReturn(true);
+        when(islandLogic.getIslandInfo("128,0")).thenReturn(locked);
+        ProtectedRegion lockedRegion = regions.islandRegion("128,0");
+        ProtectedRegion lockedNetherRegion = regions.netherRegion("128,0");
+        ProtectedRegion unlockedRegion = regions.islandRegion("256,0");
+        unlockedRegion.setFlag(Flags.ENTRY, StateFlag.State.DENY);
+        ProtectedRegion unlockedNetherRegion = regions.netherRegion("256,0");
+        unlockedNetherRegion.setFlag(Flags.ENTRY, StateFlag.State.DENY);
+        // A flag set by hand.
+        unlockedNetherRegion.setFlag(Flags.PVP, StateFlag.State.ALLOW);
+
+        Repair repair = new Repair();
+        repair.start();
+        repair.runToTheEnd();
+
+        assertEquals(StateFlag.State.DENY, lockedRegion.getFlag(Flags.ENTRY));
+        assertEquals(StateFlag.State.DENY, lockedNetherRegion.getFlag(Flags.ENTRY));
+        assertNull(unlockedRegion.getFlag(Flags.ENTRY));
+        assertNull(unlockedNetherRegion.getFlag(Flags.ENTRY));
+        assertEquals(StateFlag.State.ALLOW, unlockedNetherRegion.getFlag(Flags.PVP));
+        assertTrue(logged.contains(done("synced 4 regions of 2 islands to their lock, and removed 0 nether regions of"
+            + " deleted islands")), logged.toString());
     }
 
     @Test
@@ -126,7 +198,7 @@ public class IslandRegionRepairTest {
 
         assertFalse(logged.contains("Removed the nether region 512,-512nether: its island no longer exists."),
             logged.toString());
-        assertTrue(logged.contains(done("synced 0 regions of 0 islands to their lock, owners and members, and removed 0"
+        assertTrue(logged.contains(done("synced 0 regions of 0 islands to their lock, and removed 0"
             + " nether regions of deleted islands")), logged.toString());
     }
 
@@ -138,7 +210,7 @@ public class IslandRegionRepairTest {
         repair.runToTheEnd();
 
         // The repair has no save of its own: WorldGuard saves the regions by itself, well before the marker follows.
-        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
+        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, and removed 0"
             + " nether regions of deleted islands")), logged.toString());
         assertFalse(Files.exists(marker()));
         assertEquals(Duration.ofMinutes(2), repair.markerDelay());
@@ -187,7 +259,7 @@ public class IslandRegionRepairTest {
 
         assertEquals(afterTheFirstRun, regions.netherRegionIds());
         assertEquals(List.of("128,0", "128,0"), regions.synced);
-        assertTrue(logged.contains(done("synced 2 regions of 1 islands to their lock, owners and members, and removed 0"
+        assertTrue(logged.contains(done("synced 2 regions of 1 islands to their lock, and removed 0"
             + " nether regions of deleted islands")), logged.toString());
         assertTrue(logged.stream().noneMatch(line -> line.startsWith("Removed the nether region")), logged.toString());
     }
@@ -249,7 +321,7 @@ public class IslandRegionRepairTest {
 
         assertEquals(List.of("256,0"), regions.synced);
         assertEquals(Set.of("128,0nether", "256,0nether"), regions.netherRegionIds);
-        assertTrue(logged.contains("Unable to sync the regions of island 128,0 to the island"), logged.toString());
+        assertTrue(logged.contains("Unable to sync the regions of island 128,0 to its lock"), logged.toString());
     }
 
     @Test
@@ -270,7 +342,7 @@ public class IslandRegionRepairTest {
         assertEquals(Set.of("128,0nether", "256,0nether"), regions.netherRegionIds);
         assertTrue(logged.contains("Island 128,0 has no party leader, so its file may not have been read; its regions"
             + " are left as they are."), logged.toString());
-        assertTrue(logged.contains(done("synced 1 regions of 1 islands to their lock, owners and members (1 islands"
+        assertTrue(logged.contains(done("synced 1 regions of 1 islands to their lock (1 islands"
             + " could not be read), and removed 0 nether regions of deleted islands")), logged.toString());
     }
 
@@ -286,7 +358,7 @@ public class IslandRegionRepairTest {
 
         assertEquals(List.of("256,0"), regions.synced);
         verify(islandLogic, never()).getIslandInfo("128,0");
-        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, owners and members, and removed 0"
+        assertTrue(logged.contains(done("synced 0 regions of 1 islands to their lock, and removed 0"
             + " nether regions of deleted islands")), logged.toString());
     }
 
@@ -398,6 +470,12 @@ public class IslandRegionRepairTest {
         };
     }
 
+    private static void assertDomain(Set<UUID> uuids, Set<String> names, DefaultDomain domain) {
+        assertEquals(uuids, domain.getUniqueIds());
+        assertEquals(names, domain.getPlayers());
+        assertEquals(Set.of(), domain.getGroups());
+    }
+
     private Path marker() {
         return dataDir.resolve("data").resolve(IslandRegionRepair.MARKER_FILE);
     }
@@ -476,7 +554,31 @@ public class IslandRegionRepairTest {
         /** The islands with a region in the island world. */
         private final Set<String> islandRegions = new HashSet<>();
         private final Set<String> netherRegionIds = new HashSet<>();
+        /** The regions of both worlds by id, made the first time they are asked for. */
+        private final Map<String, ProtectedRegion> regions = new HashMap<>();
+        /** The islands whose regions the repair asked for, to sync them. */
         private final List<String> synced = new ArrayList<>();
+
+        /**
+         * @return the island's region in the island world, which the island has from now on
+         */
+        ProtectedRegion islandRegion(String islandName) {
+            islandRegions.add(islandName);
+            return region(islandName + "island");
+        }
+
+        /**
+         * @return the island's nether region, which the island has from now on
+         */
+        ProtectedRegion netherRegion(String islandName) {
+            netherRegionIds.add(islandName + "nether");
+            return region(islandName + "nether");
+        }
+
+        private ProtectedRegion region(String id) {
+            return regions.computeIfAbsent(id,
+                key -> new ProtectedCuboidRegion(key, BlockVector3.at(0, 0, 0), BlockVector3.at(127, 255, 127)));
+        }
 
         @Override
         public boolean available() {
@@ -494,14 +596,21 @@ public class IslandRegionRepairTest {
         }
 
         @Override
-        public int sync(IslandInfo island) {
-            synced.add(island.getName());
-            return (islandRegions.contains(island.getName()) ? 1 : 0)
-                + (netherRegionIds.contains(island.getName() + "nether") ? 1 : 0);
+        public List<ProtectedRegion> regionsOf(String islandName) {
+            synced.add(islandName);
+            List<ProtectedRegion> found = new ArrayList<>();
+            if (islandRegions.contains(islandName)) {
+                found.add(region(islandName + "island"));
+            }
+            if (netherRegionIds.contains(islandName + "nether")) {
+                found.add(region(islandName + "nether"));
+            }
+            return found;
         }
 
         @Override
         public boolean removeNetherRegion(String islandName) {
+            regions.remove(islandName + "nether");
             return netherRegionIds.remove(islandName + "nether");
         }
     }

@@ -50,6 +50,13 @@ dependencies {
         exclude(group = "com.google.guava")
         exclude(group = "com.google.code.gson")
     }
+    // Tests build WorldGuard regions; WorldEdit's own fastutil pin wins over WorldGuard's older one.
+    testImplementation(libs.com.sk89q.worldguard.worldguard.bukkit) {
+        exclude(group = "com.sk89q.worldedit")
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+        exclude(group = "it.unimi.dsi")
+    }
     compileOnly(libs.com.google.guava.guava)
     compileOnly(libs.com.google.code.gson.gson)
     compileOnly(libs.net.kyori.adventure.api)
