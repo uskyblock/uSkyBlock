@@ -22,18 +22,32 @@ public abstract class AbstractPlayerInfoCommand extends AbstractCommand {
     @Override
     public boolean execute(final CommandSender sender, String alias, final Map<String, Object> data, final String... args) {
         if (args.length > 0) {
-            String playerName = args[0];
-            PlayerInfo playerInfo = uSkyBlock.getInstance().getPlayerInfo(playerName);
+            PlayerInfo playerInfo = findPlayer(sender, args[0]);
             if (playerInfo != null) {
                 data.put("playerInfo", playerInfo);
                 doExecute(sender, playerInfo);
                 return true;
             }
-            sendErrorTr(sender, "Invalid player <player> supplied.", unparsed("player", args[0], PRIMARY));
         } else {
             onMissingPlayerArgument(sender);
         }
         return false;
+    }
+
+    /**
+     * Looks up the player the command was given by name, or tells the sender there is no such player.
+     *
+     * <p>{@link AbstractIslandInfoCommand} looks the player up through this as well, and goes on to their island
+     * instead of {@link #doExecute(CommandSender, PlayerInfo)}.</p>
+     *
+     * @return the player, or null once the sender has been told
+     */
+    protected PlayerInfo findPlayer(CommandSender sender, String playerName) {
+        PlayerInfo playerInfo = uSkyBlock.getInstance().getPlayerInfo(playerName);
+        if (playerInfo == null) {
+            sendErrorTr(sender, "Invalid player <player> supplied.", unparsed("player", playerName, PRIMARY));
+        }
+        return playerInfo;
     }
 
     /**
