@@ -63,7 +63,7 @@ public class uSkyBlockTest {
 
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker, never()).fetchLatestVersion(any());
+        verify(updateChecker, never()).fetchCheckResult(any());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class uSkyBlockTest {
 
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker).fetchLatestVersion(any());
+        verify(updateChecker).fetchCheckResult(any());
     }
 
     @Test
@@ -89,13 +89,13 @@ public class uSkyBlockTest {
         loadConfigWithUpdateCheck(runtimeConfigs, false);
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker, times(1)).fetchLatestVersion(any());
+        verify(updateChecker, times(1)).fetchCheckResult(any());
     }
 
     private static SkyUpdateChecker updateCheckerWithoutNetwork(RuntimeConfigs runtimeConfigs) {
         SkyUpdateChecker updateChecker = spy(
             new SkyUpdateChecker(mock(uSkyBlock.class), runtimeConfigs, Logger.getAnonymousLogger()));
-        doReturn(CompletableFuture.completedFuture(null)).when(updateChecker).fetchLatestVersion(any());
+        doReturn(CompletableFuture.completedFuture(null)).when(updateChecker).fetchCheckResult(any());
         return updateChecker;
     }
 

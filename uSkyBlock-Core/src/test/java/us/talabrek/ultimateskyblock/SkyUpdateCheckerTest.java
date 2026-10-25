@@ -4,6 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.SkyUpdateChecker.CheckResult;
+import us.talabrek.ultimateskyblock.SkyUpdateChecker.Release;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -25,24 +27,39 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseLatestVersion;
+import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseCheckResult;
 import static us.talabrek.ultimateskyblock.SkyUpdateChecker.updateUri;
 
 public class SkyUpdateCheckerTest {
 
-    // Trimmed GET /repos/uskyblock/uSkyBlock/releases/latest response.
-    private static final String GITHUB_LATEST_RELEASE = """
-        {
-          "html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/v3.7.1",
-          "tag_name": "v3.7.1",
-          "target_commitish": "master",
-          "name": "3.7.1 - Maintenance and bug fixes",
-          "draft": false,
-          "prerelease": false,
-          "published_at": "2026-10-25T16:06:41Z",
-          "assets": []
-        }
+    // Trimmed GET /repos/uskyblock/uSkyBlock/releases?per_page=100 response.
+    private static final String GITHUB_RELEASES = """
+        [
+          {
+            "html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/v3.7.1",
+            "tag_name": "v3.7.1",
+            "target_commitish": "master",
+            "name": "3.7.1 - Maintenance and bug fixes",
+            "draft": false,
+            "prerelease": false,
+            "published_at": "2026-10-25T16:06:41Z",
+            "assets": []
+          },
+          {
+            "html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/v3.7.0",
+            "tag_name": "v3.7.0",
+            "target_commitish": "master",
+            "name": "3.7.0 - Maintenance and bug fixes",
+            "draft": false,
+            "prerelease": false,
+            "published_at": "2026-10-25T03:11:04Z",
+            "assets": []
+          }
+        ]
         """;
+
+    private static final Release RELEASE_4_0_0 =
+        new Release("4.0.0", "https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0");
 
     private static final String MANUAL_CHECK_HINT = "Failed to check for new uSkyBlock versions. "
         + "Please check for updates manually at https://uskyblock.github.io/";
@@ -85,64 +102,140 @@ public class SkyUpdateCheckerTest {
         return records.stream().map(LogRecord::getMessage).toList();
     }
 
+    private static String release(String tag) {
+        return release(tag, false, false);
+    }
+
+    private static String release(String tag, boolean draft, boolean prerelease) {
+        return """
+            {"html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/%s", "tag_name": "%s",
+             "draft": %s, "prerelease": %s}
+            """.formatted(tag, tag, draft, prerelease);
+    }
+
+    private static String releases(String... releases) {
+        return "[" + String.join(",", releases) + "]";
+    }
+
     private interface Request {
-        String send() throws IOException;
+        CheckResult send() throws IOException;
     }
 
     private SkyUpdateChecker checkerRequesting(Request request) {
         return new SkyUpdateChecker(pluginOn("3.7.1"), mock(RuntimeConfigs.class), loggerInto(records)) {
             @Override
-            String requestLatestVersion(URI uri) throws IOException {
+            CheckResult requestCheckResult(URI uri) throws IOException {
                 return request.send();
             }
         };
     }
 
     // What checkForUpdates does, without the scheduler and the runtime config.
-    private static String check(SkyUpdateChecker checker) {
-        String version = checker.fetchLatestVersion(UpdateChecker.URL_STAGING).join();
-        checker.handleCheckResult(version);
-        return version;
+    private static CheckResult check(SkyUpdateChecker checker) {
+        CheckResult result = checker.fetchCheckResult(UpdateChecker.URL_STAGING).join();
+        checker.handleCheckResult(result);
+        return result;
     }
 
     @Test
     public void readsTagNameWithLeadingV() {
-        assertEquals("3.7.1", parseLatestVersion(200, "{\"tag_name\": \"v3.7.1\"}"));
+        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, releases(release("v3.7.1")), "3.7.0"));
     }
 
     @Test
     public void readsTagNameWithoutLeadingV() {
-        assertEquals("3.7.1", parseLatestVersion(200, "{\"tag_name\": \"3.7.1\"}"));
+        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, releases(release("3.7.1")), "3.7.0"));
     }
 
     @Test
-    public void readsLatestGitHubRelease() {
-        assertEquals("3.7.1", parseLatestVersion(200, GITHUB_LATEST_RELEASE));
+    public void readsGitHubReleases() {
+        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, GITHUB_RELEASES, "3.7.0"));
+    }
+
+    @Test
+    public void latestReleaseOnOwnMajorVersionIsPickedWhenNewerMajorExists() {
+        String body = releases(release("v4.0.0"), release("v3.7.1"), release("v3.7.0"));
+
+        CheckResult result = parseCheckResult(200, body, "3.8.0-SNAPSHOT");
+
+        assertEquals(new CheckResult("3.7.1", RELEASE_4_0_0), result);
+    }
+
+    @Test
+    public void releasesArePickedByVersionNotByListOrder() {
+        String body = releases(release("v3.7.0"), release("v4.1.0"), release("v3.10.0"), release("v4.0.0"),
+            release("v3.9.2"));
+
+        CheckResult result = parseCheckResult(200, body, "3.7.0");
+
+        assertEquals(new CheckResult("3.10.0",
+            new Release("4.1.0", "https://github.com/uskyblock/uSkyBlock/releases/tag/v4.1.0")), result);
+    }
+
+    @Test
+    public void olderMajorVersionIsNotReported() {
+        CheckResult result = parseCheckResult(200, GITHUB_RELEASES, "4.0.0-SNAPSHOT");
+
+        assertEquals(new CheckResult(null, null), result);
+    }
+
+    @Test
+    public void snapshotOfNewMajorVersionGetsItsReleaseAsRegularUpdate() {
+        String body = releases(release("v4.0.0"), release("v3.7.1"));
+
+        assertEquals(new CheckResult("4.0.0", null), parseCheckResult(200, body, "4.0.0-SNAPSHOT"));
+    }
+
+    @Test
+    public void draftsAndPrereleasesAreSkipped() {
+        String body = releases(release("v5.0.0", true, false), release("v4.0.0", false, true),
+            release("v3.7.3", true, false), release("v3.7.2", false, true), release("v3.7.1"));
+
+        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, body, "3.7.0"));
+    }
+
+    @Test
+    public void entriesWithoutVersionTagAreSkipped() {
+        String body = releases(release("nightly"), release("v4"), release("build-493"), release("v"),
+            "{\"tag_name\": null, \"html_url\": \"https://github.com/\"}", "{\"html_url\": \"https://github.com/\"}",
+            "{\"tag_name\": \"v4.0.0\"}", "null", "\"v4.0.0\"", release("v3.7.1"));
+
+        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, body, "3.7.0"));
+    }
+
+    @Test
+    public void emptyReleaseListIsNoFailure() {
+        assertEquals(new CheckResult(null, null), parseCheckResult(200, "[]", "3.7.1"));
     }
 
     @Test
     public void readsStagingFeedVersion() {
         String staging = "{\"version\": \"3.8.0-SNAPSHOT\", \"build\": \"493\"}";
-        assertEquals("3.8.0-SNAPSHOT", parseLatestVersion(200, staging));
+        assertEquals(new CheckResult("3.8.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.7.1"));
+    }
+
+    @Test
+    public void stagingFeedVersionIsReportedWhateverItsMajorVersion() {
+        String staging = "{\"version\": \"4.0.0-SNAPSHOT\", \"build\": \"510\"}";
+        assertEquals(new CheckResult("4.0.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.8.0-SNAPSHOT"));
     }
 
     @Test
     public void nonSuccessStatusGivesNoVersion() {
         String rateLimited = "{\"message\": \"API rate limit exceeded for 203.0.113.7.\"}";
-        assertNull(parseLatestVersion(403, rateLimited));
-        assertNull(parseLatestVersion(429, rateLimited));
-        assertNull(parseLatestVersion(404, "{\"message\": \"Not Found\"}"));
-        assertNull(parseLatestVersion(500, GITHUB_LATEST_RELEASE));
+        assertNull(parseCheckResult(403, rateLimited, "3.7.1"));
+        assertNull(parseCheckResult(429, rateLimited, "3.7.1"));
+        assertNull(parseCheckResult(404, "{\"message\": \"Not Found\"}", "3.7.1"));
+        assertNull(parseCheckResult(500, GITHUB_RELEASES, "3.7.1"));
     }
 
     @Test
     public void badBodyGivesNoVersion() {
-        assertNull(parseLatestVersion(200, "{\"tag_name\": "));
-        assertNull(parseLatestVersion(200, "<html><body>Bad gateway</body></html>"));
-        assertNull(parseLatestVersion(200, "[]"));
-        assertNull(parseLatestVersion(200, ""));
-        assertNull(parseLatestVersion(200, null));
-        assertNull(parseLatestVersion(200, "{\"name\": \"3.7.1\"}"));
+        assertNull(parseCheckResult(200, "[{\"tag_name\": ", "3.7.1"));
+        assertNull(parseCheckResult(200, "<html><body>Bad gateway</body></html>", "3.7.1"));
+        assertNull(parseCheckResult(200, "", "3.7.1"));
+        assertNull(parseCheckResult(200, null, "3.7.1"));
+        assertNull(parseCheckResult(200, "{\"name\": \"3.7.1\"}", "3.7.1"));
     }
 
     @Test
@@ -157,13 +250,14 @@ public class SkyUpdateCheckerTest {
 
     @Test
     public void latestTagIsComparedWithoutLeadingV() {
-        assertTrue(checker.isNewerVersion("3.7.0", parseLatestVersion(200, GITHUB_LATEST_RELEASE)));
-        assertFalse(checker.isNewerVersion("3.7.1", parseLatestVersion(200, GITHUB_LATEST_RELEASE)));
+        String latest = parseCheckResult(200, GITHUB_RELEASES, "3.7.0").latestVersion();
+        assertTrue(checker.isNewerVersion("3.7.0", latest));
+        assertFalse(checker.isNewerVersion("3.7.1", latest));
     }
 
     @Test
     public void releaseBranchAsksGitHub() {
-        URI github = URI.create("https://api.github.com/repos/uskyblock/uSkyBlock/releases/latest");
+        URI github = URI.create("https://api.github.com/repos/uskyblock/uSkyBlock/releases?per_page=100");
         assertEquals(github, updateUri("RELEASE"));
     }
 
@@ -193,7 +287,7 @@ public class SkyUpdateCheckerTest {
     @Test
     public void failureAfterSuccessfulCheckLogsHintAgain() {
         loggingChecker.handleCheckResult(null);
-        loggingChecker.handleCheckResult("3.7.1");
+        loggingChecker.handleCheckResult(new CheckResult("3.7.1", null));
         assertFalse(loggingChecker.lastCheckFailed());
         loggingChecker.handleCheckResult(null);
 
@@ -202,7 +296,7 @@ public class SkyUpdateCheckerTest {
 
     @Test
     public void successfulCheckDoesNotLogHint() {
-        loggingChecker.handleCheckResult("3.7.1");
+        loggingChecker.handleCheckResult(new CheckResult("3.7.1", null));
 
         assertEquals(List.of(), logged());
         assertFalse(loggingChecker.lastCheckFailed());
@@ -215,11 +309,54 @@ public class SkyUpdateCheckerTest {
 
     @Test
     public void newerVersionIsStillAnnounced() {
-        loggingChecker.handleCheckResult("3.8.0");
+        loggingChecker.handleCheckResult(new CheckResult("3.8.0", null));
 
         assertEquals(List.of(
             "There is a new version of uSkyBlock available: 3.8.0",
             "Visit https://uskyblock.github.io/ to download."), logged());
+    }
+
+    @Test
+    public void newMajorVersionIsAnnouncedWhenOwnMajorVersionIsCurrent() {
+        loggingChecker.handleCheckResult(new CheckResult("3.7.1", RELEASE_4_0_0));
+
+        assertEquals(List.of(
+            "There is a new major version of uSkyBlock available: 4.0.0",
+            "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0"),
+            logged());
+        assertFalse(loggingChecker.isUpdateAvailable());
+        assertEquals("3.7.1", loggingChecker.getLatestVersion());
+        assertEquals(RELEASE_4_0_0, loggingChecker.getNewMajorRelease());
+    }
+
+    @Test
+    public void updateAndNewMajorVersionAreBothAnnounced() {
+        loggingChecker.handleCheckResult(new CheckResult("3.7.2", RELEASE_4_0_0));
+
+        assertEquals(List.of(
+            "There is a new version of uSkyBlock available: 3.7.2",
+            "Visit https://uskyblock.github.io/ to download.",
+            "There is a new major version of uSkyBlock available: 4.0.0",
+            "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0"),
+            logged());
+        assertEquals("3.7.2", loggingChecker.getLatestVersion());
+    }
+
+    @Test
+    public void failedCheckForgetsNewMajorVersion() {
+        loggingChecker.handleCheckResult(new CheckResult("3.7.1", RELEASE_4_0_0));
+        loggingChecker.handleCheckResult(null);
+
+        assertNull(loggingChecker.getNewMajorRelease());
+        assertNull(loggingChecker.getLatestVersion());
+        assertTrue(loggingChecker.lastCheckFailed());
+    }
+
+    @Test
+    public void latestVersionApiReportsOwnMajorVersion() {
+        SkyUpdateChecker checker = checkerRequesting(() -> new CheckResult("3.7.1", RELEASE_4_0_0));
+
+        assertEquals("3.7.1", checker.fetchLatestVersion(UpdateChecker.URL_STAGING).join());
     }
 
     @Test

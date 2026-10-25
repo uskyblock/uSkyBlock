@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 public class PluginInfoTest {
 
+    private static final SkyUpdateChecker.Release RELEASE_4_0_0 =
+        new SkyUpdateChecker.Release("4.0.0", "https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0");
+
     private final SkyUpdateChecker updateChecker = mock(SkyUpdateChecker.class);
     private final PluginInfo pluginInfo = new PluginInfo(mock(Plugin.class), mock(IslandLogic.class),
         mock(RuntimeConfigs.class), updateChecker, mock(PlayerLogic.class), Logger.getLogger("PluginInfoTest"));
@@ -40,6 +43,28 @@ public class PluginInfoTest {
 
         assertEquals("A new update of uSkyBlock is available: 3.8.0\n"
             + "Visit https://uskyblock.github.io/ to download.\n", plainNotice());
+    }
+
+    @Test
+    public void newMajorVersionIsAnnounced() {
+        when(updateChecker.getNewMajorRelease()).thenReturn(RELEASE_4_0_0);
+
+        assertEquals("A new major version of uSkyBlock is available: 4.0.0\n"
+            + "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0\n",
+            plainNotice());
+    }
+
+    @Test
+    public void updateAndNewMajorVersionAreBothAnnounced() {
+        when(updateChecker.isUpdateAvailable()).thenReturn(true);
+        when(updateChecker.getLatestVersion()).thenReturn("3.7.2");
+        when(updateChecker.getNewMajorRelease()).thenReturn(RELEASE_4_0_0);
+
+        assertEquals("A new update of uSkyBlock is available: 3.7.2\n"
+            + "Visit https://uskyblock.github.io/ to download.\n"
+            + "A new major version of uSkyBlock is available: 4.0.0\n"
+            + "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0\n",
+            plainNotice());
     }
 
     private String plainNotice() {
