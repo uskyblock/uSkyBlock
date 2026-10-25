@@ -17,7 +17,10 @@ import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.upgrade.IslandRegionRepair;
+import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
+
+import java.time.Duration;
 
 @Singleton
 public class Services {
@@ -34,6 +37,7 @@ public class Services {
     private final PlaceholderIntegrations placeholderIntegrations;
     private final SchematicHandler schematicHandler;
     private final IslandRegionRepair islandRegionRepair;
+    private final Scheduler scheduler;
 
     @Inject
     public Services(
@@ -48,7 +52,8 @@ public class Services {
         @NotNull AutoIslandLevelRefresh autoIslandLevelRefresh,
         @NotNull PlaceholderIntegrations placeholderIntegrations,
         @NotNull SchematicHandler schematicHandler,
-        @NotNull IslandRegionRepair islandRegionRepair
+        @NotNull IslandRegionRepair islandRegionRepair,
+        @NotNull Scheduler scheduler
         ) {
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
@@ -62,12 +67,16 @@ public class Services {
         this.placeholderIntegrations = placeholderIntegrations;
         this.schematicHandler = schematicHandler;
         this.islandRegionRepair = islandRegionRepair;
+        this.scheduler = scheduler;
     }
 
     public void startup(uSkyBlock plugin) {
         schematicHandler.initialize(plugin);
         metricsManager.setup();
         autoIslandLevelRefresh.startup();
+        // At every start of the services, a /usb reload's too: its shutdown cancels the plugin's tasks, the update
+        // checks among them.
+        scheduler.async(plugin::checkForUpdatesIfEnabled, Duration.ZERO, Duration.ofHours(4));
     }
 
     public void delayedEnable(uSkyBlock plugin) {
