@@ -21,6 +21,7 @@ import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -106,40 +107,17 @@ public class SkyUpdateChecker implements UpdateChecker {
     public CompletableFuture<String> fetchLatestVersion(URI uri) {
         CompletableFuture<String> future = new CompletableFuture<>();
         future.completeAsync(() -> {
-            String userAgent = "uSkyBlock-Plugin/v" + getCurrentVersion() + " (www.uskyblock.ovh)";
-            Timeout timeout = Timeout.ofSeconds(10);
-            ConnectionConfig connectionConfig = ConnectionConfig.custom()
-                .setConnectTimeout(timeout)
-                .setSocketTimeout(timeout)
-                .build();
-            RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectionRequestTimeout(timeout)
-                .build();
-            var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-                .setDefaultConnectionConfig(connectionConfig)
-                .build();
-
-            try (var httpclient = HttpClients.custom()
-                .setUserAgent(userAgent)
-                .setConnectionManager(connectionManager)
-                .setDefaultRequestConfig(requestConfig)
-                .build()) {
-
-                HttpGet request = new HttpGet(uri);
-                if (GITHUB_LATEST_RELEASE.getHost().equals(uri.getHost())) {
-                    request.addHeader("Accept", "application/vnd.github+json");
-                    request.addHeader("X-GitHub-Api-Version", "2026-03-10");
-                }
-                return httpclient.execute(request, response -> {
-                    HttpEntity entity = response.getEntity();
-                    String body = entity != null ? EntityUtils.toString(entity) : null;
-                    return parseLatestVersion(response.getCode(), body);
-                });
+            try {
+                return requestLatestVersion(uri);
+            } catch (IOException ex) {
+                // The update source can't be reached (no network, DNS, timeout, TLS). That is expected on some
+                // hosts and not a plugin bug, so nothing is logged here; checkForUpdates logs the manual-check hint.
             } catch (Exception ex) {
                 // This runs asynchronously and can still be in flight when the server shuts down or
                 // restarts, tearing down the plugin classloader mid-request. Such a failure is expected
-                // and not actionable, so only surface it while the plugin is actually enabled.
-                if (plugin.isEnabled()) {
+                // and not actionable, so only surface it while the plugin is actually enabled. Like the
+                // manual-check hint, it is only logged on the first failed check in a row.
+                if (plugin.isEnabled() && !lastCheckFailed) {
                     logger.log(Level.SEVERE, "Exception while trying to fetch latest plugin version.", ex);
                 }
             }
@@ -148,6 +126,39 @@ public class SkyUpdateChecker implements UpdateChecker {
         });
 
         return future;
+    }
+
+    @Nullable String requestLatestVersion(@NotNull URI uri) throws IOException {
+        String userAgent = "uSkyBlock-Plugin/v" + getCurrentVersion() + " (www.uskyblock.ovh)";
+        Timeout timeout = Timeout.ofSeconds(10);
+        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+            .setConnectTimeout(timeout)
+            .setSocketTimeout(timeout)
+            .build();
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(timeout)
+            .build();
+        var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+            .setDefaultConnectionConfig(connectionConfig)
+            .build();
+
+        try (var httpclient = HttpClients.custom()
+            .setUserAgent(userAgent)
+            .setConnectionManager(connectionManager)
+            .setDefaultRequestConfig(requestConfig)
+            .build()) {
+
+            HttpGet request = new HttpGet(uri);
+            if (GITHUB_LATEST_RELEASE.getHost().equals(uri.getHost())) {
+                request.addHeader("Accept", "application/vnd.github+json");
+                request.addHeader("X-GitHub-Api-Version", "2026-03-10");
+            }
+            return httpclient.execute(request, response -> {
+                HttpEntity entity = response.getEntity();
+                String body = entity != null ? EntityUtils.toString(entity) : null;
+                return parseLatestVersion(response.getCode(), body);
+            });
+        }
     }
 
     /**

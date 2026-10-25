@@ -8,10 +8,13 @@ import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -47,18 +50,24 @@ public class SkyUpdateCheckerTest {
     private final SkyUpdateChecker checker = new SkyUpdateChecker(
         mock(uSkyBlock.class), mock(RuntimeConfigs.class), Logger.getLogger("SkyUpdateCheckerTest"));
 
-    private final List<String> logged = new ArrayList<>();
-    private final SkyUpdateChecker loggingChecker = checkerOn("3.7.1", logged);
+    private final List<LogRecord> records = new ArrayList<>();
+    private final SkyUpdateChecker loggingChecker = new SkyUpdateChecker(
+        pluginOn("3.7.1"), mock(RuntimeConfigs.class), loggerInto(records));
 
-    private static SkyUpdateChecker checkerOn(String currentVersion, List<String> logged) {
+    private static uSkyBlock pluginOn(String currentVersion) {
         uSkyBlock plugin = mock(uSkyBlock.class);
         when(plugin.getDescription()).thenReturn(new PluginDescriptionFile("uSkyBlock", currentVersion, "main"));
+        when(plugin.isEnabled()).thenReturn(true);
+        return plugin;
+    }
+
+    private static Logger loggerInto(List<LogRecord> records) {
         Logger logger = Logger.getAnonymousLogger();
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
             @Override
             public void publish(LogRecord record) {
-                logged.add(record.getMessage());
+                records.add(record);
             }
 
             @Override
@@ -69,7 +78,31 @@ public class SkyUpdateCheckerTest {
             public void close() {
             }
         });
-        return new SkyUpdateChecker(plugin, mock(RuntimeConfigs.class), logger);
+        return logger;
+    }
+
+    private List<String> logged() {
+        return records.stream().map(LogRecord::getMessage).toList();
+    }
+
+    private interface Request {
+        String send() throws IOException;
+    }
+
+    private SkyUpdateChecker checkerRequesting(Request request) {
+        return new SkyUpdateChecker(pluginOn("3.7.1"), mock(RuntimeConfigs.class), loggerInto(records)) {
+            @Override
+            String requestLatestVersion(URI uri) throws IOException {
+                return request.send();
+            }
+        };
+    }
+
+    // What checkForUpdates does, without the scheduler and the runtime config.
+    private static String check(SkyUpdateChecker checker) {
+        String version = checker.fetchLatestVersion(UpdateChecker.URL_STAGING).join();
+        checker.handleCheckResult(version);
+        return version;
     }
 
     @Test
@@ -144,7 +177,7 @@ public class SkyUpdateCheckerTest {
     public void failedCheckLogsManualCheckHint() {
         loggingChecker.handleCheckResult(null);
 
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged);
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
         assertTrue(loggingChecker.lastCheckFailed());
     }
 
@@ -154,7 +187,7 @@ public class SkyUpdateCheckerTest {
         loggingChecker.handleCheckResult(null);
         loggingChecker.handleCheckResult(null);
 
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged);
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
     }
 
     @Test
@@ -164,14 +197,14 @@ public class SkyUpdateCheckerTest {
         assertFalse(loggingChecker.lastCheckFailed());
         loggingChecker.handleCheckResult(null);
 
-        assertEquals(List.of(MANUAL_CHECK_HINT, MANUAL_CHECK_HINT), logged);
+        assertEquals(List.of(MANUAL_CHECK_HINT, MANUAL_CHECK_HINT), logged());
     }
 
     @Test
     public void successfulCheckDoesNotLogHint() {
         loggingChecker.handleCheckResult("3.7.1");
 
-        assertEquals(List.of(), logged);
+        assertEquals(List.of(), logged());
         assertFalse(loggingChecker.lastCheckFailed());
     }
 
@@ -186,7 +219,38 @@ public class SkyUpdateCheckerTest {
 
         assertEquals(List.of(
             "There is a new version of uSkyBlock available: 3.8.0",
-            "Visit https://uskyblock.github.io/ to download."), logged);
+            "Visit https://uskyblock.github.io/ to download."), logged());
+    }
+
+    @Test
+    public void unreachableUpdateSourceLogsOnlyTheHintOnce() {
+        SkyUpdateChecker checker = checkerRequesting(() -> {
+            throw new UnknownHostException("api.github.com");
+        });
+
+        assertNull(check(checker));
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
+        assertEquals(Level.INFO, records.getFirst().getLevel());
+        assertNull(records.getFirst().getThrown());
+
+        assertNull(check(checker));
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
+    }
+
+    @Test
+    public void unexpectedFailureLogsStackTraceOnce() {
+        IllegalStateException bug = new IllegalStateException("bug");
+        SkyUpdateChecker checker = checkerRequesting(() -> {
+            throw bug;
+        });
+
+        assertNull(check(checker));
+        assertEquals(List.of("Exception while trying to fetch latest plugin version.", MANUAL_CHECK_HINT), logged());
+        assertEquals(Level.SEVERE, records.getFirst().getLevel());
+        assertSame(bug, records.getFirst().getThrown());
+
+        assertNull(check(checker));
+        assertEquals(2, records.size());
     }
 
     @Test
