@@ -226,12 +226,10 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
             getServer().dispatchCommand(getServer().getConsoleSender(), "usb flush"); // See uskyblock#4
         }, getRuntimeConfigs().current().init().initDelay());
-
-        getScheduler().async(this::checkForUpdatesIfEnabled, Duration.ZERO, Duration.ofHours(4));
     }
 
     // Reads the current config on every run, so /usb reload can switch plugin-updates.check on or off.
-    void checkForUpdatesIfEnabled() {
+    public void checkForUpdatesIfEnabled() {
         if (getRuntimeConfigs().current().pluginUpdates().check()) {
             getUpdateChecker().checkForUpdates();
         }
