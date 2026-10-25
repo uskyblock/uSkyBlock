@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || n%10>=5 && n%10<=9 || n%100>=11 && n%100<=14 ? 2 : 3);\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: be\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
 "X-Crowdin-File-ID: 24\n"
+"X-Crowdin-Language: be\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
@@ -177,11 +183,20 @@ msgstr "<player> разблакаваў востраў."
 msgid "<player>'s permissions"
 msgstr "Дазволы <player>"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "<primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
+msgstr "<primary>Націсніце тут, каб прыняць запрашэнне!</primary><newline>(Спачатку цябе павінны запрасіць)"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "<primary>Click here to refresh.</primary><newline>(must be on your island)"
+msgstr "<primary>Націсніце тут, каб абнавіць.</primary><newline>(трэба быць на сваім востраве)"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "<primary>SKY</primary><muted> ></muted> <message>"
 msgstr "<primary>SKY</primary><muted> ></muted> <message>"
 
-#. I18N: <page> and <max-page> are localized number tags. Tag arguments use DecimalFormat patterns; keep tag names unchanged.
+#. I18N: <page> and <max-page> are localized number tags. Tag arguments use
+#. DecimalFormat patterns; keep tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "<primary>Wall of Fame</primary> (page <page> of <max-page>):"
 msgstr "<primary>Сцяна славы</primary> (старонка <page> з <max-page>):"
@@ -226,7 +241,8 @@ msgstr "Назад у галоўнае меню"
 msgid "Banned: You are banned from this island."
 msgstr "Бан: ты забанены на гэтым востраве."
 
-#. I18N: Section header for banned player list in admin island info debug output.
+#. I18N: Section header for banned player list in admin island info debug
+#. output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Bans:"
 msgstr "Баны:"
@@ -327,6 +343,10 @@ msgstr "Націсні тут, каб заблакаваць свой востр
 msgid "Click here to remove this permission."
 msgstr "Націсні тут, каб забраць гэты дазвол."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Click here to return home."
+msgstr "Націсніце тут, каб вярнуцца дадому."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "Click here to return to the main island screen."
 msgstr "Націсні тут, каб вярнуцца на галоўны экран вострава."
@@ -379,6 +399,10 @@ msgstr "Націсні, каб выйсці"
 msgid "Click to restart!"
 msgstr "Націсні, каб перазапусціць!"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "Click to view the log."
+msgstr "Націсніце, каб паглядзець журнал."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Click to warp to the island!"
 msgstr "Націсні, каб тэлепартавацца на востраў!"
@@ -415,7 +439,7 @@ msgstr "Медныя големы"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/LevelCommand.java
 msgid "Could not calculate the island level. <muted>Please contact a server admin."
-msgstr ""
+msgstr "Не ўдалося разлічыць узровень вострава. <muted>Калі ласка, звярніся да адміністратара сервера."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Could not create your island. Please contact a server moderator."
@@ -445,7 +469,8 @@ msgstr "Узнагарода валютай: <primary><amount:'#,##0'><currency>
 msgid "Current biome: <biome>"
 msgstr "Бягучы біём: <biome>"
 
-#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat pattern; keep tag name "level".
+#. I18N: <level:'#,##0'> is a localized number tag. It uses a DecimalFormat
+#. pattern; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Current level: <level:'#,##0'>"
 msgstr "Бягучы ўзровень: <level:'#,##0'>"
@@ -475,8 +500,8 @@ msgid "First Page"
 msgstr "Першая старонка"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)"
-msgstr "Павялічвай узровень вострава, развіваючы<newline>свой скайблок і выконваючы<newline>пэўныя выпрабаванні. Больш рэдкія блокі<newline>дададуць больш да твайго ўзроўню.<newline><primary>Націсніце тут, каб абнавіць.</primary><newline>(трэба быць на сваім востраве)"
+msgid "Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level."
+msgstr "Атрымлівай узроўні вострава, пашыраючы<newline>свой скайблок і выконваючы<newline>пэўныя выпрабаванні. Больш рэдкія блокі<newline>дададуць больш да твайго ўзроўню."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/uSkyBlock.java
 msgid "Getting your island ready. Please be patient, this can take a while."
@@ -487,7 +512,8 @@ msgstr "Падрыхтоўваем твой востраў. Калі ласка,
 msgid "Golems"
 msgstr "Големы"
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use
+#. DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
 msgstr "Удзельнікі групы: <current>/<max>"
@@ -661,7 +687,8 @@ msgstr "Пакідае твой востраў.<newline><error>Увага! Гэ�
 msgid "Let the player change their island's biome to <biome>"
 msgstr "Дазволіць гульцу змяніць біём свайго вострава на <biome>"
 
-#. I18N: Section header for configured island limits in admin island info debug output.
+#. I18N: Section header for configured island limits in admin island info
+#. debug output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Limits:"
 msgstr "Ліміты:"
@@ -684,7 +711,8 @@ msgstr "Заблакаванае выпрабаванне"
 msgid "Locked: That island is locked. No entry allowed."
 msgstr "Заблакавана: гэты востраў заблакаваны. Уваход забаронены."
 
-#. I18N: Section header for island activity log in admin island info debug output.
+#. I18N: Section header for island activity log in admin island info debug
+#. output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Log:"
 msgstr "Журнал:"
@@ -701,7 +729,8 @@ msgstr "Удзельнік"
 msgid "Members are already trusted!"
 msgstr "Удзельнікі ўжо маюць давер!"
 
-#. I18N: <current> and <max> are localized number tags. Tag arguments use DecimalFormat patterns; keep both tag names unchanged.
+#. I18N: <current> and <max> are localized number tags. Tag arguments use
+#. DecimalFormat patterns; keep both tag names unchanged.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Members: <current>/<max>"
 msgstr "Удзельнікі: <current>/<max>"
@@ -795,12 +824,14 @@ msgstr "Толькі ўладальнік можа перазапусціць г
 msgid "Owner: <player>"
 msgstr "Уладальнік: <player>"
 
-#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "page".
+#. I18N: <page> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "page".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Page <page>"
 msgstr "Старонка <page>"
 
-#. I18N: Section header for party-related fields in admin island info debug output.
+#. I18N: Section header for party-related fields in admin island info debug
+#. output.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandInfo.java
 msgid "Party:"
 msgstr "Каманда:"
@@ -889,14 +920,15 @@ msgid "Return to the main menu"
 msgstr "Вярнуцца ў галоўнае меню"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary>Click here to return home.</primary>"
-msgstr "Вярнуцца на хатнюю кропку<newline>твайго вострава. Ты можаш змяніць<newline>хатнюю кропку на любое месца на тваім<newline>востраве з дапамогай <cmd>/is sethome</cmd>.<newline><primary>Націсніце тут, каб вярнуцца дадому.</primary>"
+msgid "Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>."
+msgstr "Вярнуцца да хатняй кропкі<newline>твайго вострава. Ты можаш змяніць хатнюю<newline>кропку на любое месца на тваім<newline>востраве з дапамогай <cmd>/is sethome</cmd>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/ExploitEvents.java
 msgid "Riding is only allowed on your own island."
 msgstr "Езда дазволена толькі на тваім уласным востраве."
 
-#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
+#. I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "timeout".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/ConfirmHandler.java
 msgid "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>"
 msgstr "Выконваць <command> — <error>рызыкоўна</error>. <muted>Паўтары гэта на працягу <timeout> секунд, каб пацвердзіць.</muted>"
@@ -1154,7 +1186,8 @@ msgstr "Чат <chat-type> выключаны."
 msgid "Toggled permission <permission> for <player> to <state>."
 msgstr "Дазвол <permission> для <player> пераключаны на <state>."
 
-#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "level".
+#. I18N: <level> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "level".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Top ten list is empty! <muted>Only islands above level <level:'#,##0'> are considered."
 msgstr "Спіс топ-10 пусты! <muted>Улічваюцца толькі астравы ўзроўню вышэй за <level:'#,##0'>."
@@ -1237,8 +1270,8 @@ msgid "View a list of <primary>challenges</primary> that<newline>you can complet
 msgstr "Паглядзі спіс <primary>выпрабаванняў</primary>, якія<newline>ты можаш выканаць на сваім востраве,<newline>каб зарабіць skybucks, прадметы, бонусы<newline>і тытулы."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "View a log of events from<newline>your island such as member,<newline>biome, and warp changes.<newline><primary>Click to view the log.</primary>"
-msgstr "Паглядзі журнал падзей з<newline>твайго вострава, напрыклад змены ўдзельнікаў,<newline>біёма і тэлепорта.<newline><primary>Націсніце, каб паглядзець журнал.</primary>"
+msgid "View a log of events from<newline>your island such as member,<newline>biome, and warp changes."
+msgstr "Паглядзі журнал падзей з<newline>твайго вострава, напрыклад змены ўдзельнікаў,<newline>біёмаў і тэлепортаў."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "View the members of your island<newline>group and their permissions. If<newline>you are the island leader, you<newline>can change member permissions.<newline><primary>Click here to view or change.</primary>"
@@ -1258,8 +1291,8 @@ msgid "Visitors can't drop items."
 msgstr "Наведвальнікі не могуць выкідваць прадметы."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"
-msgstr "Хочаш далучыцца да вострава іншага гульца<newline>замест таго, каб пачынаць<newline>свой уласны? Калі іншы гулец<newline>запросіць цябе на свой востраў,<newline>ты можаш націснуць тут або выкарыстоўваць<newline><cmd>/is accept</cmd>, каб далучыцца да яго.<newline><primary>Націсніце тут, каб прыняць запрашэнне!</primary><newline>(Спачатку цябе павінны запрасіць)"
+msgid "Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island,<newline>you can join them with<newline><cmd>/is accept</cmd>."
+msgstr "Хочаш далучыцца да вострава іншага гульца<newline>замест таго, каб пачынаць<newline>свой? Калі іншы гулец<newline>запросіць цябе на свой востраў,<newline>ты зможаш далучыцца да яго праз<newline><cmd>/is accept</cmd>."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/signs/SignLogic.java
 msgid "Warning: <muted>Could not transfer all required items to your inventory."
@@ -1298,8 +1331,8 @@ msgid "West"
 msgstr "Захад"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
-msgid "When you teleport to your<newline>island you will be taken to<newline>this location.<newline><primary>Click here to change.</primary>"
-msgstr "Калі ты тэлепартуешся на свой<newline>востраў, ты трапіш у<newline>гэта месца.<newline><primary>Націсніце тут, каб змяніць.</primary>"
+msgid "When you teleport to your<newline>island you will be taken to<newline>this location."
+msgstr "Калі ты тэлепартуешся на свой<newline>востраў, цябе перанясе ў<newline>гэта месца."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "When your warp is activated,<newline>other players will be taken to<newline>this point when they teleport<newline>to your island."
@@ -1338,7 +1371,8 @@ msgstr "Табе ўсё яшчэ не хапае наступных прадме
 msgid "You banned <player> from warping to your island."
 msgstr "Ты забараніў <player> тэлепартавацца на твой востраў."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You can change your biome again in <seconds> seconds."
 msgstr "Ты зможаш зноў змяніць біём праз <seconds> с."
@@ -1359,7 +1393,8 @@ msgstr "Ты зможаш выканаць гэта зноў праз <hours> г
 msgid "You can complete this again in <minutes> minutes."
 msgstr "Ты зможаш выканаць гэта зноў праз <minutes> хвілін."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/CreateCommand.java
 msgid "You can create a new island in <seconds> seconds."
 msgstr "Ты зможаш стварыць новы востраў праз <seconds> с."
@@ -1388,7 +1423,8 @@ msgstr "Перадаць уласнасць можна толькі ўдзель
 msgid "You can only use spawn eggs on your own island."
 msgstr "Яйкі спаўну можна выкарыстоўваць толькі на сваім востраве."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
 msgid "You can restart your island in <seconds> seconds."
 msgstr "Ты зможаш перазапусціць свой востраў праз <seconds> с."
@@ -1484,6 +1520,11 @@ msgstr "У цябе няма вострава!"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RequireIslandCommand.java
 msgid "You do not have an island. <muted>Use <cmd>/is create</cmd> to get one."
 msgstr "У цябе няма вострава. <muted>Выкарыстай <cmd>/is create</cmd>, каб атрымаць яго."
+
+#. I18N: Shown on a menu icon whose command the player has no permission for.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
+msgid "You do not have permission for this."
+msgstr "У цябе няма правоў на гэта."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/BiomeCommand.java
 msgid "You do not have permission to change the biome of this island!"
@@ -1630,7 +1671,8 @@ msgstr "Ты адхіліў запрашэнне далучыцца да вос�
 msgid "You unbanned <player> from warping to your island."
 msgstr "Ты зняў забарону для <player> на тэлепарт на твой востраў."
 
-#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
+#. I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "seconds".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/player/TeleportLogic.java
 msgid "You will be teleported in <seconds> seconds."
 msgstr "Ты будзеш тэлепартаваны праз <seconds> с."
@@ -1700,7 +1742,8 @@ msgstr "Твой востраў цяпер <secondary>разблакаваны</
 msgid "Your island must be level <level> to complete this challenge!"
 msgstr "Каб выканаць гэтае выпрабаванне, твой востраў павінен мець узровень <level>!"
 
-#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "rank".
+#. I18N: <rank> is a localized number tag. Tag arguments use DecimalFormat
+#. patterns; keep tag name "rank".
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/IslandLogic.java
 msgid "Your rank is: <rank>."
 msgstr "Твой ранг: <rank>."
@@ -1773,7 +1816,8 @@ msgstr "праверыць інфармацыю пра твой або чужы 
 msgid "check your or another's island level"
 msgstr "праверыць узровень твайго або чужога вострава"
 
-#. I18N: Used in biome radius display to indicate that a single chunk is affected
+#. I18N: Used in biome radius display to indicate that a single chunk is
+#. affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "chunk"
 msgstr "чанк"
@@ -1848,7 +1892,8 @@ msgstr "запрасіць іншых на востраў."
 msgid "invite<newline>other players to the island if<newline>there is enough room for more<newline>members"
 msgstr "запрасіць<newline>іншых гульцоў на востраў, калі<newline>ёсць дастаткова месца для новых<newline>ўдзельнікаў"
 
-#. I18N: Used in biome radius display to indicate that the entire island is affected
+#. I18N: Used in biome radius display to indicate that the entire island is
+#. affected
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/chat/IslandChatCommand.java
 msgid "island"
@@ -1975,4 +2020,3 @@ msgstr "тэлепартавацца на востраў іншага гульц
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/PartyCommand.java
 msgid "withdraw an invite"
 msgstr "адклікаць запрашэнне"
-

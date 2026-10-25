@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: hi\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
 "X-Crowdin-File-ID: 26\n"
+"X-Crowdin-Language: hi\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -381,7 +387,7 @@ msgstr "लोकेल-सक्षम कॉन्फ़िग संसाध
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 msgid "You are not standing on an island. <muted>Supply a player name instead."
-msgstr ""
+msgstr "तुम किसी द्वीप पर खड़े नहीं हो। <muted>इसके बजाय खिलाड़ी का नाम दो।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "You may need to go to spawn, or relog, to see the changes."
@@ -393,7 +399,7 @@ msgstr "पर्ज करने के लिए तुम्हें उम�
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 msgid "You must supply a player name."
-msgstr ""
+msgstr "तुम्हें खिलाड़ी का नाम देना होगा।"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "additional perks <perks>"
@@ -439,7 +445,8 @@ msgstr "संस्करण की जानकारी दिखाता �
 msgid "hides the regions again"
 msgstr "क्षेत्रों को फिर से छिपाता है"
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
+#. still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
 msgstr "jobs   ms/job   ms/tick  ticks    active   time     name"
@@ -611,4 +618,3 @@ msgstr "विभिन्न WorldGuard यूटिलिटीज"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "विभिन्न चंक कमांड्स"
-

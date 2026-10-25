@@ -78,6 +78,35 @@ import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 public class SkyBlockMenu {
     private final Pattern PERM_VALUE_PATTERN = Pattern.compile("(\\[(?<perm>(?<not>[!])?[^\\]]+)\\])?(?<value>.*)");
     private final Pattern CHALLENGE_PAGE_HEADER = Pattern.compile(trLegacy("Challenge Menu") + ".*\\((?<p>[0-9]+)/(?<max>[0-9]+)\\)");
+    // The permissions checked by the commands behind the menu icons. Icons whose permission the player lacks
+    // are shown as unavailable, and clicking them only sends the reason.
+    private static final Map<Material, String> MAIN_MENU_PERMISSIONS = Map.ofEntries(
+        Map.entry(Material.OAK_DOOR, "usb.island.home"),
+        Map.entry(Material.DIAMOND_ORE, "usb.island.challenges"),
+        Map.entry(Material.EXPERIENCE_BOTTLE, "usb.island.level"),
+        Map.entry(Material.IRON_BARS, "usb.island.lock"),
+        Map.entry(Material.END_PORTAL_FRAME, "usb.island.togglewarp"),
+        Map.entry(Material.END_STONE, "usb.island.togglewarp"),
+        Map.entry(Material.SHORT_GRASS, "usb.island.spawn"),
+        Map.entry(Material.WRITABLE_BOOK, "usb.island.log"),
+        Map.entry(Material.RED_BED, "usb.island.sethome"),
+        Map.entry(Material.HOPPER, "usb.island.setwarp")
+    );
+    // The island group permissions the same commands check.
+    private static final Map<Material, String> MAIN_MENU_ISLAND_PERMISSIONS = Map.of(
+        Material.JUNGLE_SAPLING, "canChangeBiome",
+        Material.IRON_BARS, "canToggleLock",
+        Material.END_PORTAL_FRAME, "canToggleWarp",
+        Material.END_STONE, "canToggleWarp",
+        Material.HOPPER, "canChangeWarp"
+    );
+    // Restart and leave share slot 17 and are dispatched by slot, so they are checked there rather than by icon.
+    private static final String RESTART_PERMISSION = "usb.island.restart";
+    private static final String LEAVE_PERMISSION = "usb.party.leave";
+    private static final Map<Material, String> CREATE_MENU_PERMISSIONS = Map.of(
+        Material.SHORT_GRASS, "usb.island.spawn",
+        Material.PLAYER_HEAD, "usb.party.join"
+    );
 
     private final uSkyBlock plugin;
     private final ChallengeLogic challengeLogic;
@@ -194,6 +223,33 @@ public class SkyBlockMenu {
     private void addTranslatedComponentLore(List<Component> lores, String translation) {
         for (String line : translation.split("\n")) {
             lores.add(fromLegacy(line));
+        }
+    }
+
+    private static boolean isAvailable(Player player, Map<Material, String> permissions, Material icon) {
+        String permission = permissions.get(icon);
+        return permission == null || player.hasPermission(permission);
+    }
+
+    private boolean canUse(Player player, IslandInfo islandInfo, Material icon) {
+        String islandPermission = MAIN_MENU_ISLAND_PERMISSIONS.get(icon);
+        return isAvailable(player, MAIN_MENU_PERMISSIONS, icon)
+            && (islandPermission == null || islandInfo.hasPerm(player, islandPermission))
+            && (icon != Material.IRON_BARS || runtimeConfigs.current().island().allowIslandLock());
+    }
+
+    private static void addUnavailableLore(List<Component> lores) {
+        // I18N: Shown on a menu icon whose command the player has no permission for.
+        lores.add(tr("You do not have permission for this.", ERROR));
+    }
+
+    // The same reason the icon's lore gives.
+    private static void sendUnavailableMessage(Player player, Material icon) {
+        switch (icon) {
+            case JUNGLE_SAPLING -> sendErrorTr(player, "You can't change the biome.");
+            case IRON_BARS -> sendErrorTr(player, "You can't change the lock.");
+            case END_PORTAL_FRAME, END_STONE, HOPPER -> sendErrorTr(player, "You can't change the warp.");
+            default -> sendErrorTr(player, "You do not have permission for this.");
         }
     }
 
@@ -445,13 +501,21 @@ public class SkyBlockMenu {
         lores.clear();
         menuItem = new ItemStack(Material.SHORT_GRASS, 1);
         addLore(lores, tr("Teleport to the spawn area."));
+        if (!isAvailable(player, CREATE_MENU_PERMISSIONS, menuItem.getType())) {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Return to Spawn", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
         menu.setItem(menuSize - 2, menuItem);
 
         lores.clear();
         menuItem = new ItemStack(Material.PLAYER_HEAD, 1);
-        addLore(lores, tr("Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island<newline>you can click here or use<newline><cmd>/is accept</cmd> to join them.<newline><primary>Click here to accept an invite!</primary><newline>(You must be invited first)"));
+        addLore(lores, tr("Want to join another player's<newline>island instead of starting<newline>your own? If another player<newline>invites you to their island,<newline>you can join them with<newline><cmd>/is accept</cmd>."));
+        if (isAvailable(player, CREATE_MENU_PERMISSIONS, menuItem.getType())) {
+            addLore(lores, tr("<primary>Click here to accept an invite!</primary><newline>(You must be invited first)"));
+        } else {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Join an Island", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
         menu.setItem(menuSize - 1, menuItem);
@@ -478,7 +542,12 @@ public class SkyBlockMenu {
         Inventory menu = Bukkit.createInventory(new UltimateHolder(player, title, MenuType.DEFAULT), 18, title);
         List<Component> lores = new ArrayList<>();
         ItemStack menuItem = new ItemStack(Material.OAK_DOOR, 1);
-        addLore(lores, tr("Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>.<newline><primary>Click here to return home.</primary>"));
+        addLore(lores, tr("Return to your island's home<newline>point. You can change your home<newline>point to any location on your<newline>island using <cmd>/is sethome</cmd>."));
+        if (isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
+            addLore(lores, tr("Click here to return home.", PRIMARY));
+        } else {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Return Home", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
         menu.addItem(menuItem);
@@ -488,10 +557,12 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.DIAMOND_ORE, 1);
         addLore(lores, tr("View a list of <primary>challenges</primary> that<newline>you can complete on your island<newline>to earn skybucks, items, perks,<newline>and titles."));
-        if (challengeLogic.isEnabled()) {
+        if (!challengeLogic.isEnabled()) {
+            addLore(lores, tr("Challenges disabled.", ERROR));
+        } else if (isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
             addLore(lores, tr("Click here to view challenges.", PRIMARY));
         } else {
-            addLore(lores, tr("Challenges disabled.", ERROR));
+            addUnavailableLore(lores);
         }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Challenges", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
@@ -507,8 +578,13 @@ public class SkyBlockMenu {
         islandLevelLore.addAll(limitLogic.getSummaryComponents(islandInfo));
         addTranslatedComponentLore(
             islandLevelLore,
-            trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.<newline><primary>Click here to refresh.</primary><newline>(must be on your island)")
+            trLegacy("Gain island levels by expanding<newline>your skyblock and completing<newline>certain challenges. Rarer blocks<newline>will add more to your level.")
         );
+        if (isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
+            addTranslatedComponentLore(islandLevelLore, trLegacy("<primary>Click here to refresh.</primary><newline>(must be on your island)"));
+        } else {
+            addUnavailableLore(islandLevelLore);
+        }
         ItemStackUtil.setComponentLore(menuItem, islandLevelLore);
         menu.addItem(menuItem);
         lores.clear();
@@ -528,7 +604,7 @@ public class SkyBlockMenu {
         menuItem = new ItemStack(Material.JUNGLE_SAPLING, 1);
         lores.add(tr("Current biome: <biome>", MUTED, Placeholder.legacy("biome", islandInfo.getBiomeName(), SECONDARY)));
         addLore(lores, tr("The island biome affects things<newline>like grass color and spawning<newline>of both animals and monsters."));
-        if (islandInfo.hasPerm(player, "canChangeBiome")) {
+        if (canUse(player, islandInfo, menuItem.getType())) {
             addLore(lores, tr("Click here to change biomes.", PRIMARY));
         } else {
             addLore(lores, tr("You can't change the biome.", ERROR));
@@ -541,14 +617,14 @@ public class SkyBlockMenu {
         menuItem = new ItemStack(Material.IRON_BARS, 1);
         if (plugin.getIslandInfo(player).isLocked()) {
             addLore(lores, tr("Lock status: <secondary>Active</secondary><newline>Your island is currently <error>locked</error>.<newline>Players outside your group<newline>cannot enter your island.", MUTED));
-            if (islandInfo.hasPerm(player, "canToggleLock") && player.hasPermission("usb.island.lock")) {
+            if (canUse(player, islandInfo, menuItem.getType())) {
                 addLore(lores, tr("Click here to unlock your island.", PRIMARY));
             } else {
                 addLore(lores, tr("You can't change the lock.", ERROR));
             }
         } else {
             addLore(lores, tr("Lock status: Inactive<newline>Your island is currently <secondary>unlocked</secondary>.<newline>All players can enter your island,<newline>but only you and your group<newline>members may build there.", MUTED));
-            if (islandInfo.hasPerm(player, "canToggleLock") && player.hasPermission("usb.island.lock")) {
+            if (canUse(player, islandInfo, menuItem.getType())) {
                 addLore(lores, tr("Click here to lock your island.", PRIMARY));
             } else {
                 addLore(lores, tr("You can't change the lock.", ERROR));
@@ -562,7 +638,7 @@ public class SkyBlockMenu {
         if (plugin.getIslandInfo(player).hasWarp()) {
             menuItem = new ItemStack(Material.END_PORTAL_FRAME, 1);
             addLore(lores, tr("Warp status: <secondary>Active</secondary><newline>Other players may warp to your<newline>island at any time to the point<newline>you set with <cmd>/is setwarp</cmd>.", MUTED));
-            if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
+            if (canUse(player, islandInfo, menuItem.getType())) {
                 addLore(lores, tr("Click here to deactivate.", PRIMARY));
             } else {
                 addLore(lores, tr("You can't change the warp.", ERROR));
@@ -570,7 +646,7 @@ public class SkyBlockMenu {
         } else {
             menuItem = new ItemStack(Material.END_STONE, 1);
             addLore(lores, tr("Warp status: Inactive<newline>Other players can't warp to your<newline>island. Set a warp point with<newline><cmd>/is setwarp</cmd> before activating.", MUTED));
-            if (islandInfo.hasPerm(player, "canToggleWarp") && player.hasPermission("usb.island.togglewarp")) {
+            if (canUse(player, islandInfo, menuItem.getType())) {
                 addLore(lores, tr("Click here to activate.", PRIMARY));
             } else {
                 addLore(lores, tr("You can't change the warp.", ERROR));
@@ -583,20 +659,34 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.SHORT_GRASS, 1);
         addLore(lores, tr("Teleport to the spawn area."));
+        if (!isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Return to Spawn", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
         menu.addItem(menuItem);
         lores.clear();
 
         menuItem = new ItemStack(Material.WRITABLE_BOOK, 1);
-        addLore(lores, tr("View a log of events from<newline>your island such as member,<newline>biome, and warp changes.<newline><primary>Click to view the log.</primary>"));
+        addLore(lores, tr("View a log of events from<newline>your island such as member,<newline>biome, and warp changes."));
+        if (isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
+            addLore(lores, tr("Click to view the log.", PRIMARY));
+        } else {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Island Log", SECONDARY));
+        ItemStackUtil.setComponentLore(menuItem, lores);
         menu.addItem(menuItem);
         menu.setItem(8, menuItem); // Last item, first line
         lores.clear();
 
         menuItem = new ItemStack(Material.RED_BED, 1); // red bed
-        addLore(lores, tr("When you teleport to your<newline>island you will be taken to<newline>this location.<newline><primary>Click here to change.</primary>"));
+        addLore(lores, tr("When you teleport to your<newline>island you will be taken to<newline>this location."));
+        if (isAvailable(player, MAIN_MENU_PERMISSIONS, menuItem.getType())) {
+            addLore(lores, tr("Click here to change.", PRIMARY));
+        } else {
+            addUnavailableLore(lores);
+        }
         ItemStackUtil.setComponentDisplayName(menuItem, tr("Change Home Location", SECONDARY));
         ItemStackUtil.setComponentLore(menuItem, lores);
         menu.setItem(9, menuItem); // First item, 2nd line
@@ -604,7 +694,7 @@ public class SkyBlockMenu {
 
         menuItem = new ItemStack(Material.HOPPER, 1);
         addLore(lores, tr("When your warp is activated,<newline>other players will be taken to<newline>this point when they teleport<newline>to your island."));
-        if (islandInfo.hasPerm(player, "canChangeWarp") && player.hasPermission("usb.island.setwarp")) {
+        if (canUse(player, islandInfo, menuItem.getType())) {
             addLore(lores, tr("Click here to change.", PRIMARY));
         } else {
             addLore(lores, tr("You can't change the warp.", ERROR));
@@ -617,6 +707,9 @@ public class SkyBlockMenu {
             if (runtimeConfigs.current().island().schemesEnabled()) {
                 menuItem = new ItemStack(Material.PODZOL, 1);
                 addLore(lores, tr("Restarts your island.<newline><error>Warning! This will remove your items and island!</error>"));
+                if (!player.hasPermission(RESTART_PERMISSION)) {
+                    addUnavailableLore(lores);
+                }
                 ItemStackUtil.setComponentDisplayName(menuItem, tr("Restart Island", ERROR));
                 ItemStackUtil.setComponentLore(menuItem, lores);
                 menu.setItem(17, menuItem);
@@ -624,14 +717,19 @@ public class SkyBlockMenu {
             }
         } else {
             menuItem = new ItemStack(Material.IRON_DOOR, 1);
+            boolean canLeave = player.hasPermission(LEAVE_PERMISSION);
             addLore(lores, tr("Leaves your island.<newline><error>Warning! This will remove all your items!</error>"));
-            addLore(lores, tr("Click to leave", ERROR));
+            if (canLeave) {
+                addLore(lores, tr("Click to leave", ERROR));
+            } else {
+                addUnavailableLore(lores);
+            }
             ItemStackUtil.setComponentDisplayName(menuItem, tr("Leave Island", ERROR));
             ItemStackUtil.setComponentLore(menuItem, lores);
             menu.setItem(17, menuItem);
             lores.clear();
             Duration durationLeft = confirmHandler.durationLeft(player, "/is leave");
-            if (durationLeft.isPositive()) {
+            if (canLeave && durationLeft.isPositive()) {
                 updateLeaveMenuItemTimer(player, menu, menuItem);
             }
         }
@@ -706,9 +804,17 @@ public class SkyBlockMenu {
         if (slotIndex == 0) {
             p.performCommand("island create");
         } else if (slotIndex == menuSize - 2) {
-            p.performCommand("island spawn");
+            if (isAvailable(p, CREATE_MENU_PERMISSIONS, Material.SHORT_GRASS)) {
+                p.performCommand("island spawn");
+            } else {
+                sendUnavailableMessage(p, Material.SHORT_GRASS);
+            }
         } else if (slotIndex == menuSize - 1) {
-            p.performCommand("island accept");
+            if (isAvailable(p, CREATE_MENU_PERMISSIONS, Material.PLAYER_HEAD)) {
+                p.performCommand("island accept");
+            } else {
+                sendUnavailableMessage(p, Material.PLAYER_HEAD);
+            }
         } else if (meta != null && meta.hasDisplayName()) {
             String schemeName = stripFormatting(meta.getDisplayName());
             if (perkLogic.getSchemes(p).contains(schemeName)) {
@@ -726,6 +832,10 @@ public class SkyBlockMenu {
         }
         PlayerInfo playerInfo = plugin.getPlayerInfo(player);
         IslandInfo islandInfo = plugin.getIslandInfo(playerInfo);
+        if (!canUse(player, islandInfo, currentItem.getType())) {
+            sendUnavailableMessage(player, currentItem.getType());
+            return;
+        }
         if (currentItem.getType() == Material.JUNGLE_SAPLING) {
             player.performCommand("island biome");
         } else if (currentItem.getType() == Material.PLAYER_HEAD) {
@@ -757,14 +867,20 @@ public class SkyBlockMenu {
             player.performCommand("island");
         } else if (slotIndex == 17) {
             if (islandInfo.isLeader(player) && runtimeConfigs.current().island().schemesEnabled()) {
-                player.openInventory(createRestartGUI(player));
-            } else {
+                if (player.hasPermission(RESTART_PERMISSION)) {
+                    player.openInventory(createRestartGUI(player));
+                } else {
+                    sendUnavailableMessage(player, currentItem.getType());
+                }
+            } else if (player.hasPermission(LEAVE_PERMISSION)) {
                 if (confirmHandler.durationLeft(player, "/is leave").isPositive()) {
                     player.performCommand("island leave");
                 } else {
                     player.performCommand("island leave");
                     updateLeaveMenuItemTimer(player, event.getInventory(), currentItem);
                 }
+            } else {
+                sendUnavailableMessage(player, currentItem.getType());
             }
         } else {
             if (!isExtraMenuAction(player, currentItem)) {

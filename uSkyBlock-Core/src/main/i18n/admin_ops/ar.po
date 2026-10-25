@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: ar\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
 "X-Crowdin-File-ID: 26\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -381,7 +387,7 @@ msgstr "استخدم <cmd>/usb reload</cmd> لإعادة تحميل موارد �
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 msgid "You are not standing on an island. <muted>Supply a player name instead."
-msgstr ""
+msgstr "أنت لا تقف على جزيرة. <muted>قدّم اسم لاعب بدلاً من ذلك."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "You may need to go to spawn, or relog, to see the changes."
@@ -393,7 +399,7 @@ msgstr "يجب عليك إدخال العمر بالأيام للتطهير!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 msgid "You must supply a player name."
-msgstr ""
+msgstr "يجب عليك تقديم اسم لاعب."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "additional perks <perks>"
@@ -439,7 +445,8 @@ msgstr "يعرض معلومات الإصدار"
 msgid "hides the regions again"
 msgstr "يُخفي المناطق مرة أخرى"
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
+#. still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
 msgstr "المهام   مل/مهمة   مل/تيك  تيكات    نشطة   وقت     الاسم"
@@ -611,4 +618,3 @@ msgstr "أدوات WorldGuard متنوعة"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "أوامر قطع متنوعة"
-

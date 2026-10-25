@@ -1,3 +1,8 @@
+# uSkyBlock translation template
+# Copyright (C) 2026 uSkyBlock contributors
+# This file is distributed under GPL-3.0 license.
+# Translators should preserve MiniMessage tags/placeholders exactly.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: uskyblock-revived\n"
@@ -10,11 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Crowdin-Language: is\n"
 "X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
 "X-Crowdin-File-ID: 26\n"
+"X-Crowdin-Language: is\n"
+"X-Crowdin-Project: uskyblock-revived\n"
+"X-Crowdin-Project-ID: 764127\n"
+"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -381,7 +387,7 @@ msgstr "Notaðu <cmd>/usb reload</cmd> til að endurhlaða að fullu stillingara
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractIslandInfoCommand.java
 msgid "You are not standing on an island. <muted>Supply a player name instead."
-msgstr ""
+msgstr "Þú stendur ekki á eyju. <muted>Gefðu upp nafn spilara í staðinn."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "You may need to go to spawn, or relog, to see the changes."
@@ -393,7 +399,7 @@ msgstr "Þú verður að gefa upp aldur í dögum til að hreinsa!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AbstractPlayerInfoCommand.java
 msgid "You must supply a player name."
-msgstr ""
+msgstr "Þú verður að gefa upp nafn spilara."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/PerkCommand.java
 msgid "additional perks <perks>"
@@ -439,7 +445,8 @@ msgstr "sýnir útgáfuupplýsingar"
 msgid "hides the regions again"
 msgstr "felur svæðin aftur"
 
-#. I18N: Header row for /usb jobs stats table. Keep labels short so columns still align in chat.
+#. I18N: Header row for /usb jobs stats table. Keep labels short so columns
+#. still align in chat.
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/JobsCommand.java
 msgid "jobs   ms/job   ms/tick  ticks    active   time     name"
 msgstr "verk   ms/verk   ms/tick  ticks    virk     tími     nafn"
@@ -611,4 +618,3 @@ msgstr "ýmis WorldGuard-verkfæri"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "various chunk commands"
 msgstr "ýmsar chunk-skipanir"
-
