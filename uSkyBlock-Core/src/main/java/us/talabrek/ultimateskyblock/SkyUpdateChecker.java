@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Singleton
 public class SkyUpdateChecker implements UpdateChecker {
 
     // Skips drafts and prereleases, so a withdrawn release can be hidden by turning it into either.
@@ -36,6 +38,7 @@ public class SkyUpdateChecker implements UpdateChecker {
     private final uSkyBlock plugin;
 
     private String latestVersion;
+    private volatile boolean lastCheckFailed;
 
     @Inject
     public SkyUpdateChecker(
@@ -50,22 +53,35 @@ public class SkyUpdateChecker implements UpdateChecker {
 
     /**
      * Triggers an update of the latest version info (the latest GitHub release, or the staging feed on the
-     * STAGING branch), and will log an INFO message if an update is available.
+     * STAGING branch), and will log an INFO message if an update is available or the check failed.
      */
     public void checkForUpdates() {
         URI uri = updateUri(runtimeConfigs.current().pluginUpdates().branch());
 
-        fetchLatestVersion(uri).thenAccept(version -> {
-            latestVersion = version;
-            if (latestVersion == null) {
-                logger.info("Failed to check for new uSkyBlock versions.");
-            }
+        fetchLatestVersion(uri).thenAccept(this::handleCheckResult);
+    }
 
-            if (isUpdateAvailable()) {
-                logger.info("There is a new version of uSkyBlock available: " + getLatestVersion());
-                logger.info("Visit https://uskyblock.github.io/ to download.");
-            }
-        });
+    void handleCheckResult(@Nullable String version) {
+        boolean failedBefore = lastCheckFailed;
+        latestVersion = version;
+        lastCheckFailed = version == null;
+        // Only the first failure in a row is logged, so a lasting outage doesn't repeat it on every check.
+        if (lastCheckFailed && !failedBefore) {
+            logger.info("Failed to check for new uSkyBlock versions. "
+                + "Please check for updates manually at https://uskyblock.github.io/");
+        }
+
+        if (isUpdateAvailable()) {
+            logger.info("There is a new version of uSkyBlock available: " + getLatestVersion());
+            logger.info("Visit https://uskyblock.github.io/ to download.");
+        }
+    }
+
+    /**
+     * @return True if the most recent update check got no version info, so admins have to check manually.
+     */
+    public boolean lastCheckFailed() {
+        return lastCheckFailed;
     }
 
     static @NotNull URI updateUri(@NotNull String branch) {

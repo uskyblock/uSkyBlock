@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
-import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
@@ -30,7 +30,7 @@ public class PluginInfo {
     private final Plugin plugin;
     private final IslandLogic islandLogic;
     private final RuntimeConfigs runtimeConfigs;
-    private final UpdateChecker updateChecker;
+    private final SkyUpdateChecker updateChecker;
     private final PlayerLogic playerLogic;
     private final Logger logger;
 
@@ -39,7 +39,7 @@ public class PluginInfo {
         @NotNull Plugin plugin,
         @NotNull IslandLogic islandLogic,
         @NotNull RuntimeConfigs runtimeConfigs,
-        @NotNull UpdateChecker updateChecker,
+        @NotNull SkyUpdateChecker updateChecker,
         @NotNull PlayerLogic playerLogic,
         @NotNull @PluginLog Logger logger
     ) {
@@ -104,13 +104,24 @@ public class PluginInfo {
         }
         msg.append(miniToLegacy("<muted>------------------------------<newline>"));
 
-        if (runtimeConfig.pluginUpdates().check() && updateChecker.isUpdateAvailable()) {
-            msg.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
-                unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
-            msg.append(miniToLegacy("<muted>Visit <url> to download.<newline>",
-                unparsed("url", "https://uskyblock.github.io/", PRIMARY)));
+        if (runtimeConfig.pluginUpdates().check()) {
+            msg.append(updateNotice());
         }
 
         return msg.toString();
+    }
+
+    @NotNull String updateNotice() {
+        if (updateChecker.isUpdateAvailable()) {
+            return miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
+                unparsed("version", updateChecker.getLatestVersion(), PRIMARY))
+                + miniToLegacy("<muted>Visit <url> to download.<newline>",
+                unparsed("url", "https://uskyblock.github.io/", PRIMARY));
+        }
+        if (updateChecker.lastCheckFailed()) {
+            return miniToLegacy("<muted>Failed to check for new uSkyBlock versions. Please check for updates manually at <url><newline>",
+                unparsed("url", "https://uskyblock.github.io/", PRIMARY));
+        }
+        return "";
     }
 }

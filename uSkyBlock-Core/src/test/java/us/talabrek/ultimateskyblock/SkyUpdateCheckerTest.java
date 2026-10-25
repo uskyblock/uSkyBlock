@@ -1,17 +1,27 @@
 package us.talabrek.ultimateskyblock;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.jupiter.api.Test;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
+import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseLatestVersion;
 import static us.talabrek.ultimateskyblock.SkyUpdateChecker.updateUri;
 
@@ -31,8 +41,36 @@ public class SkyUpdateCheckerTest {
         }
         """;
 
+    private static final String MANUAL_CHECK_HINT = "Failed to check for new uSkyBlock versions. "
+        + "Please check for updates manually at https://uskyblock.github.io/";
+
     private final SkyUpdateChecker checker = new SkyUpdateChecker(
         mock(uSkyBlock.class), mock(RuntimeConfigs.class), Logger.getLogger("SkyUpdateCheckerTest"));
+
+    private final List<String> logged = new ArrayList<>();
+    private final SkyUpdateChecker loggingChecker = checkerOn("3.7.1", logged);
+
+    private static SkyUpdateChecker checkerOn(String currentVersion, List<String> logged) {
+        uSkyBlock plugin = mock(uSkyBlock.class);
+        when(plugin.getDescription()).thenReturn(new PluginDescriptionFile("uSkyBlock", currentVersion, "main"));
+        Logger logger = Logger.getAnonymousLogger();
+        logger.setUseParentHandlers(false);
+        logger.addHandler(new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                logged.add(record.getMessage());
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        });
+        return new SkyUpdateChecker(plugin, mock(RuntimeConfigs.class), logger);
+    }
 
     @Test
     public void readsTagNameWithLeadingV() {
@@ -100,5 +138,69 @@ public class SkyUpdateCheckerTest {
     public void stagingBranchAsksStagingFeed() {
         assertEquals(UpdateChecker.URL_STAGING, updateUri("STAGING"));
         assertEquals(UpdateChecker.URL_STAGING, updateUri("staging"));
+    }
+
+    @Test
+    public void failedCheckLogsManualCheckHint() {
+        loggingChecker.handleCheckResult(null);
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged);
+        assertTrue(loggingChecker.lastCheckFailed());
+    }
+
+    @Test
+    public void repeatedFailureLogsHintOnlyOnce() {
+        loggingChecker.handleCheckResult(null);
+        loggingChecker.handleCheckResult(null);
+        loggingChecker.handleCheckResult(null);
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged);
+    }
+
+    @Test
+    public void failureAfterSuccessfulCheckLogsHintAgain() {
+        loggingChecker.handleCheckResult(null);
+        loggingChecker.handleCheckResult("3.7.1");
+        assertFalse(loggingChecker.lastCheckFailed());
+        loggingChecker.handleCheckResult(null);
+
+        assertEquals(List.of(MANUAL_CHECK_HINT, MANUAL_CHECK_HINT), logged);
+    }
+
+    @Test
+    public void successfulCheckDoesNotLogHint() {
+        loggingChecker.handleCheckResult("3.7.1");
+
+        assertEquals(List.of(), logged);
+        assertFalse(loggingChecker.lastCheckFailed());
+    }
+
+    @Test
+    public void lastCheckIsNotFailedBeforeAnyCheck() {
+        assertFalse(loggingChecker.lastCheckFailed());
+    }
+
+    @Test
+    public void newerVersionIsStillAnnounced() {
+        loggingChecker.handleCheckResult("3.8.0");
+
+        assertEquals(List.of(
+            "There is a new version of uSkyBlock available: 3.8.0",
+            "Visit https://uskyblock.github.io/ to download."), logged);
+    }
+
+    @Test
+    public void everyInjectionSharesTheCheckedInstance() {
+        // The scheduled check and /usb version must see the same check result.
+        uSkyBlock plugin = mock(uSkyBlock.class);
+        Injector injector = Guice.createInjector(binder -> {
+            // A provider, so Guice doesn't inject the plugin's own fields.
+            binder.bind(uSkyBlock.class).toProvider(() -> plugin);
+            binder.bind(RuntimeConfigs.class).toInstance(mock(RuntimeConfigs.class));
+            binder.bind(Logger.class).annotatedWith(PluginLog.class).toInstance(Logger.getLogger("SkyUpdateCheckerTest"));
+            binder.bind(UpdateChecker.class).to(SkyUpdateChecker.class);
+        });
+
+        assertSame(injector.getInstance(SkyUpdateChecker.class), injector.getInstance(UpdateChecker.class));
     }
 }
