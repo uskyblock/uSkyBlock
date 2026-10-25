@@ -65,6 +65,7 @@ dependencies {
     compileOnly(libs.net.kyori.adventure.text.serializer.legacy)
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.org.apache.httpcomponents.client5.httpclient5)
+    testImplementation(libs.org.apache.httpcomponents.client5.httpclient5)
     compileOnly(libs.org.apache.maven.maven.artifact)
 }
 
