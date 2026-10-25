@@ -281,6 +281,20 @@ public class IslandRegionRepairTest {
     }
 
     @Test
+    public void doesNotRunWhereTheRepairOf370Ran() throws IOException {
+        islandFiles("128,0");
+        // 3.7.0's marker, by its name in 3.7.0.
+        Files.createDirectories(dataDir.resolve("data"));
+        Files.writeString(dataDir.resolve("data").resolve("island-region-repair.done"), "");
+
+        Scheduler scheduler = mock(Scheduler.class);
+        new IslandRegionRepair(dataDir, logger, plugin, islandLogic, runtimeConfigs, scheduler, regions).start();
+
+        verifyNoInteractions(scheduler);
+        assertEquals(List.of(), regions.synced);
+    }
+
+    @Test
     public void waitsForAStartWithWorldGuard() throws IOException {
         islandFiles("128,0");
         regions.available = false;
