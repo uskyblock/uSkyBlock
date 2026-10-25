@@ -34,17 +34,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Brings the locks of a server's island regions in line with its islands, and removes the nether regions of deleted
- * islands, once. Before 3.7.0, {@code /is lock} and {@code /is unlock} changed only an island's region in the island
- * world, so its nether region kept the lock it had when it was last rebuilt; and deleting an island left its nether
- * region behind, still locked and owned by its last party. The first start gives every island's regions the island's
- * lock, removes the nether regions of islands that no longer exist, and leaves a marker so it never runs again. It
- * works through a few islands each tick, so a server with thousands of them does not stall.
+ * Brings the locks of a server's nether island regions in line with their islands, and removes the nether regions of
+ * deleted islands, once. Before 3.7.0, {@code /is lock} and {@code /is unlock} changed only an island's region in the
+ * island world, so its nether region kept the lock it had when it was last rebuilt; and deleting an island left its
+ * nether region behind, still locked and owned by its last party. The first start gives every island's nether region
+ * the island's lock, removes the nether regions of islands that no longer exist, and leaves a marker so it never runs
+ * again. It works through a few islands each tick, so a server with thousands of them does not stall.
  * <p>
- * It leaves the regions' owners and members as they are. They may differ from the island's party and trustees for
- * good reasons: added with WorldGuard's own commands, or real UUIDs where the island file holds the offline-mode UUIDs
- * of an old name-to-UUID conversion. The repair in 3.7.0 replaced them with the island's, and players lost access to
- * their islands. It left the same marker, so the repair does not run again where that one ran.
+ * It leaves the regions in the island world, and the owners and members of the nether regions, as they are. They may
+ * differ from the island's for good reasons: a lock set with WorldGuard's own commands, owners and members added with
+ * them, or real UUIDs where the island file holds the offline-mode UUIDs of an old name-to-UUID conversion. The repair
+ * in 3.7.0 replaced them with the island's, and players lost access to their islands. It left the same marker, so the
+ * repair does not run again where that one ran.
  * <p>
  * It leaves saving the regions to WorldGuard, which saves changed regions every 30 seconds on a thread of its own,
  * under a lock no other plugin can take: a save of the repair's own could overlap one. The marker follows two minutes
@@ -97,7 +98,8 @@ public class IslandRegionRepair {
             return;
         }
         if (!regions.available()) {
-            logger.info("WorldGuard is not enabled, so the island regions are synced to their islands at a later start.");
+            logger.info("WorldGuard is not enabled, so the nether regions are synced to their islands at a later"
+                + " start.");
             return;
         }
         List<String> islands;
@@ -114,9 +116,9 @@ public class IslandRegionRepair {
             .map(matcher -> matcher.group(1))
             .sorted()
             .toList();
-        logger.info("Syncing the regions of " + islands.size() + " islands to their lock, and removing the nether"
-            + " regions of deleted islands. Owners and members stay as they are. This runs once, " + PER_TICK
-            + " islands a tick.");
+        logger.info("Syncing the nether regions of " + islands.size() + " islands to their lock, and removing those"
+            + " of deleted islands. The regions in the island world, and owners and members, stay as they are. This"
+            + " runs once, " + PER_TICK + " islands a tick.");
         run = new Run(islands.iterator(), netherIslands.iterator());
         run.task = scheduler.sync(run, Duration.ZERO, Duration.ofMillis(50));
     }
@@ -124,7 +126,7 @@ public class IslandRegionRepair {
     /**
      * Stops a repair still running, or the marker still to follow it, at a reload or a stop: the repair uses the
      * services of this start, and the next start runs it again from the beginning, as it has left no marker. That is
-     * harmless: it sets the same lock again, and the nether regions it removed are gone.
+     * harmless: it sets the same locks again, and the nether regions it removed are gone.
      */
     public void shutdown() {
         if (run != null) {
@@ -168,8 +170,7 @@ public class IslandRegionRepair {
         private final Iterator<String> netherIslands;
         /** The repair's ticks, then the marker that follows them: what a reload or a stop cancels. */
         private BukkitTask task;
-        private int islandsSynced;
-        private int regionsSynced;
+        private int synced;
         private int unreadable;
         private int removed;
 
@@ -209,21 +210,21 @@ public class IslandRegionRepair {
                 IslandInfo island = islandLogic.getIslandInfo(islandName);
                 if (island.getLeader().isEmpty()) {
                     // An island file that cannot be parsed loads as an island without a party, and unlocked, so its
-                    // regions stay as they are rather than lose their lock. protectIsland sets them up again.
+                    // nether region stays as it is rather than lose its lock. protectIsland sets it up again.
                     unreadable++;
                     logger.warning("Island " + islandName + " has no party leader, so its file may not have been"
-                        + " read; its regions are left as they are.");
+                        + " read; its nether region is left as it is.");
                 } else {
-                    List<ProtectedRegion> islandRegions = regions.regionsOf(islandName);
-                    for (ProtectedRegion region : islandRegions) {
-                        WorldGuardHandler.updateLockStatus(region, island.isLocked());
+                    ProtectedRegion netherRegion = regions.netherRegionOf(islandName);
+                    if (netherRegion != null) {
+                        WorldGuardHandler.updateLockStatus(netherRegion, island.isLocked());
+                        synced++;
                     }
-                    regionsSynced += islandRegions.size();
-                    islandsSynced++;
                 }
             } catch (RuntimeException e) {
                 unreadable++;
-                logger.log(Level.WARNING, "Unable to sync the regions of island " + islandName + " to its lock", e);
+                logger.log(Level.WARNING, "Unable to sync the nether region of island " + islandName
+                    + " to its lock", e);
             } finally {
                 if (!wasInMemory) {
                     islandLogic.removeIslandFromMemory(islandName);
@@ -245,8 +246,7 @@ public class IslandRegionRepair {
         }
 
         private void finish() {
-            logger.info("Island region repair done: synced " + regionsSynced + " regions of " + islandsSynced
-                + " islands to their lock"
+            logger.info("Island region repair done: synced " + synced + " nether regions to their island's lock"
                 + (unreadable > 0 ? " (" + unreadable + " islands could not be read)" : "") + ", and removed "
                 + removed + " nether regions of deleted islands. Its marker follows in " + MARKER_DELAY.toMinutes()
                 + " minutes, once WorldGuard has saved the regions.");
@@ -256,12 +256,12 @@ public class IslandRegionRepair {
         private void leaveMarker() {
             try {
                 Files.createDirectories(markerFile().getParent());
-                Files.writeString(markerFile(), "uSkyBlock synced the island regions to their islands' locks and"
-                    + " removed the nether regions of deleted islands on " + Instant.now() + ".\n"
+                Files.writeString(markerFile(), "uSkyBlock synced the nether regions to their islands' locks and"
+                    + " removed those of deleted islands on " + Instant.now() + ".\n"
                     + "Delete this file to run that again at the next start.\n");
                 logger.info("Island region repair: left its marker " + markerFile() + ", so it does not run again.");
             } catch (IOException e) {
-                logger.log(Level.WARNING, "Unable to write " + markerFile() + ", so the island regions are synced"
+                logger.log(Level.WARNING, "Unable to write " + markerFile() + ", so the nether regions are synced"
                     + " again at the next start", e);
             }
         }
@@ -285,9 +285,9 @@ public class IslandRegionRepair {
         boolean hasIslandRegion(String islandName);
 
         /**
-         * @return the island's regions: in the island world, and in the nether where it has one
+         * @return the island's region in the nether island world, or null without one
          */
-        List<ProtectedRegion> regionsOf(String islandName);
+        ProtectedRegion netherRegionOf(String islandName);
 
         /**
          * @return whether there was a region to remove
@@ -312,8 +312,8 @@ public class IslandRegionRepair {
         }
 
         @Override
-        public List<ProtectedRegion> regionsOf(String islandName) {
-            return WorldGuardHandler.getRegionsOf(islandName);
+        public ProtectedRegion netherRegionOf(String islandName) {
+            return WorldGuardHandler.getNetherRegion(islandName);
         }
 
         @Override

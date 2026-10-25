@@ -251,23 +251,6 @@ public class WorldGuardHandler {
     }
 
     /**
-     * @return the island's regions: in the island world, and in the nether where it has one
-     */
-    public static List<ProtectedRegion> getRegionsOf(String islandName) {
-        List<ProtectedRegion> regions = new ArrayList<>();
-        ProtectedRegion region = getRegionManager(uSkyBlock.getInstance().getWorldManager().getWorld())
-            .getRegion(islandName + "island");
-        if (region != null) {
-            regions.add(region);
-        }
-        ProtectedRegion netherRegion = getNetherRegion(islandName);
-        if (netherRegion != null) {
-            regions.add(netherRegion);
-        }
-        return regions;
-    }
-
-    /**
      * @return whether the island has a region in the island world
      */
     public static boolean hasIslandRegion(String islandName) {
@@ -296,7 +279,10 @@ public class WorldGuardHandler {
         return removed != null && !removed.isEmpty();
     }
 
-    private static ProtectedRegion getNetherRegion(String islandName) {
+    /**
+     * @return the island's region in the nether island world, or null without one
+     */
+    public static ProtectedRegion getNetherRegion(String islandName) {
         RegionManager regionManager = getNetherRegionManager();
         return regionManager != null ? regionManager.getRegion(islandName + "nether") : null;
     }

@@ -523,14 +523,14 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
 
         /**
          * Leaves the restart phase's start what the island region repair is for: the nether region of a deleted
-         * island, still locked and owned, and the run island's regions locked although the island is not, as
-         * {@code /is unlock} left the nether region before 3.7.0. And what the repair is to leave: owners and members
-         * of the run island's regions that are not the island's, as WorldGuard's own commands leave them. Its nether
-         * region is owned by a stray player instead of the island's owner, and both regions have the stray player as
-         * a member. The repair ran at this phase's start already, on a server without islands, and its marker is to
-         * follow two minutes later. Whether this phase stops before then, which cancels the marker, or after, when
-         * this plugin deletes the marker at the stop, the repair runs again at the restart. WorldGuard saves the
-         * regions at the stop.
+         * island, still locked and owned, and the run island's nether region locked although the island is not, as
+         * {@code /is unlock} left it before 3.7.0. And what the repair is to leave, as WorldGuard's own commands leave
+         * it: a lock on the run island's region in the island world, and owners and members of its regions that are
+         * not the island's. Its nether region is owned by a stray player instead of the island's owner, and both
+         * regions have the stray player as a member. The repair ran at this phase's start already, on a server without
+         * islands, and its marker is to follow two minutes later. Whether this phase stops before then, which cancels
+         * the marker, or after, when this plugin deletes the marker at the stop, the repair runs again at the restart.
+         * WorldGuard saves the regions at the stop.
          */
         private void islandRegionRepairSetup(Scenario scenario) {
             uSkyBlock usb = requireUsb();
@@ -563,16 +563,16 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
             nether.addRegion(orphan);
             nether.addRegion(new ProtectedCuboidRegion(OTHER_NETHER_REGION,
                 WorldGuardHandler.getProtectionVectorRight(deleted), WorldGuardHandler.getProtectionVectorLeft(deleted)));
-            scenario.pass("left a deleted island's nether region, a stale lock on the run island's regions, and an owner"
-                + " and members of their own on them");
+            scenario.pass("left a deleted island's nether region, a stale lock on the run island's nether region, a lock"
+                + " set by hand on its region in the island world, and an owner and members of their own on them");
         }
 
         /**
          * The island region repair, at the first start after the fresh phase, which left no marker: it removed the
-         * deleted island's nether region and left the region of another id, and gave the run island's regions the
-         * island's lock, unlocked, leaving their owners and members as the fresh phase left them: the stray player
-         * still owns the nether region instead of the island's owner, and is still a member of both. Its marker is not
-         * there yet.
+         * deleted island's nether region and left the region of another id, and gave the run island's nether region
+         * the island's lock, unlocked. It left the run island's region in the island world locked, and the owners and
+         * members of both regions as the fresh phase left them: the stray player still owns the nether region instead
+         * of the island's owner, and is still a member of both. Its marker is not there yet.
          */
         private void islandRegionRepair(Scenario scenario) {
             check(!Files.exists(repairMarker(requireUsb())), "the island region repair's marker outlasted the fresh"
@@ -586,7 +586,8 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 check(island != null && !island.isLocked(), "the run island is missing or locked");
                 ProtectedRegion region = regions(usb.getWorldManager().getWorld()).getRegion(island.getName() + "island");
                 check(region != null, "the run island lost its region in the island world");
-                check(region.getFlag(Flags.ENTRY) == null, "the repair left the unlocked island's region in the island world locked");
+                check(region.getFlag(Flags.ENTRY) == StateFlag.State.DENY,
+                    "the repair unlocked the run island's region in the island world, locked by hand");
                 check(region.getOwners().contains(PLAYER_UUID), "the repair took the island's owner off its region in the island world");
                 check(region.getMembers().contains(STRAY_UUID),
                     "the repair took a member added by hand off the run island's region in the island world");
@@ -599,7 +600,7 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                     "the repair took a member added by hand off the run island's nether region");
                 check(!Files.exists(repairMarker(usb)), "the repair left its marker before its delay");
                 scenario.pass("the repair removed the deleted island's nether region and synced the run island's lock to"
-                    + " both its regions, leaving their owners and members");
+                    + " its nether region, leaving its region in the island world and the owners and members");
             }, "the island region repair did not finish before the deadline");
         }
 
