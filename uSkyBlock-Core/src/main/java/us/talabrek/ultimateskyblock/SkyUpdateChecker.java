@@ -1,7 +1,9 @@
 package us.talabrek.ultimateskyblock;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.ConnectionConfig;
@@ -25,13 +27,15 @@ import java.util.logging.Logger;
 
 public class SkyUpdateChecker implements UpdateChecker {
 
+    // Skips drafts and prereleases, so a withdrawn release can be hidden by turning it into either.
+    private static final URI GITHUB_LATEST_RELEASE =
+        URI.create("https://api.github.com/repos/uskyblock/uSkyBlock/releases/latest");
+
     private final Logger logger;
     private final RuntimeConfigs runtimeConfigs;
     private final uSkyBlock plugin;
 
     private String latestVersion;
-
-    private final Gson gson = new Gson();
 
     @Inject
     public SkyUpdateChecker(
@@ -45,11 +49,11 @@ public class SkyUpdateChecker implements UpdateChecker {
     }
 
     /**
-     * Triggers an update of the latest version info from the uSkyBlock website, and will log an INFO message if
-     * an update is available.
+     * Triggers an update of the latest version info (the latest GitHub release, or the staging feed on the
+     * STAGING branch), and will log an INFO message if an update is available.
      */
     public void checkForUpdates() {
-        URI uri = URL_RELEASE;
+        URI uri = GITHUB_LATEST_RELEASE;
 
         if (runtimeConfigs.current().pluginUpdates().branch().equalsIgnoreCase("STAGING")) {
             uri = URL_STAGING;
@@ -106,20 +110,14 @@ public class SkyUpdateChecker implements UpdateChecker {
                 .build()) {
 
                 HttpGet request = new HttpGet(uri);
+                if (GITHUB_LATEST_RELEASE.getHost().equals(uri.getHost())) {
+                    request.addHeader("Accept", "application/vnd.github+json");
+                    request.addHeader("X-GitHub-Api-Version", "2026-03-10");
+                }
                 return httpclient.execute(request, response -> {
-                    int status = response.getCode();
-                    if (status < 200 || status >= 300) {
-                        return null;
-                    }
-
                     HttpEntity entity = response.getEntity();
-                    if (entity != null) {
-                        JsonObject obj = gson.fromJson(EntityUtils.toString(entity), JsonObject.class);
-                        if (obj.has("version")) {
-                            return obj.get("version").getAsString();
-                        }
-                    }
-                    return null;
+                    String body = entity != null ? EntityUtils.toString(entity) : null;
+                    return parseLatestVersion(response.getCode(), body);
                 });
             } catch (Exception ex) {
                 // This runs asynchronously and can still be in flight when the server shuts down or
@@ -134,6 +132,38 @@ public class SkyUpdateChecker implements UpdateChecker {
         });
 
         return future;
+    }
+
+    /**
+     * Reads the version from a GitHub release ({@code tag_name}, without a leading "v") or from a version
+     * feed ({@code version}).
+     *
+     * @return The version, or NULL for a non-2xx status (e.g. GitHub's rate limit) or an unexpected body.
+     */
+    static @Nullable String parseLatestVersion(int status, @Nullable String body) {
+        if (status < 200 || status >= 300 || body == null) {
+            return null;
+        }
+
+        JsonElement json;
+        try {
+            json = JsonParser.parseString(body);
+        } catch (JsonParseException ex) {
+            return null;
+        }
+        if (!json.isJsonObject()) {
+            return null;
+        }
+
+        JsonObject obj = json.getAsJsonObject();
+        if (obj.has("tag_name")) {
+            String tag = obj.get("tag_name").getAsString();
+            return tag.startsWith("v") ? tag.substring(1) : tag;
+        }
+        if (obj.has("version")) {
+            return obj.get("version").getAsString();
+        }
+        return null;
     }
 
     public boolean isNewerVersion(String currentVersion, String newVersion) {
