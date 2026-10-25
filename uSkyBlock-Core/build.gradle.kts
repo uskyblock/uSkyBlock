@@ -168,6 +168,6 @@ tasks.processResources {
 
 tasks.register("updateTranslation") {
     group = "translation"
-    description = "Updates translation sources for Crowdin"
+    description = "Regenerates the .pot templates, then merges the per-locale catalogs and the joke locales"
     dependsOn(extractTranslation, mergeDomainTranslations, generateExtraTranslations)
 }

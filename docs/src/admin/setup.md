@@ -82,7 +82,7 @@ The first setting most servers should review is:
 
 | Option | Default | Notes |
 |---|---|---|
-| `language` | `en` | Server language — see [Crowdin](https://crowdin.com/project/uskyblock-revived) for available translations. Help improve them! |
+| `language` | `en` | Server language — `/usb lang` lists the available translations. Found a bad one? See [Translations](../contributing.md#translations). |
 
 To apply config changes without a full restart: `/usb reload`
 
