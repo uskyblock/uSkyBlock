@@ -9,7 +9,7 @@ uSkyBlock is a standard Bukkit plugin. The main components:
 - **Challenge system** — evaluates requirements and tracks player completion.
 - **Async job queue** — heavy operations (island generation, deletion, chunk regen) run off the main thread.
 - **Adventure / MiniMessage** — all user-facing text goes through the Adventure library. Strings are formatted with MiniMessage tags.
-- **i18n** — messages are externalized in gettext-style `.po` files, synced with [Crowdin](https://crowdin.com/project/uskyblock-revived). See [Translation system](#translation-system) below.
+- **i18n** — messages are externalized in gettext-style `.po` files in the repository. See [Translation system](#translation-system) below.
 - **Economy** — optional Vault hook; the plugin degrades gracefully if Vault is absent.
 
 ## Building
@@ -95,7 +95,7 @@ public void onScoreChanged(uSkyBlockScoreChangedEvent event) {
 
 ## Translation system
 
-uSkyBlock uses a custom gettext-based i18n pipeline. All user-facing strings are translatable, formatted with MiniMessage, and managed through [Crowdin](https://crowdin.com/project/uskyblock-revived).
+uSkyBlock uses a custom gettext-based i18n pipeline. All user-facing strings are translatable and formatted with MiniMessage. Translations are committed to the repository; fixes arrive as pull requests against the `.po` files (see [Translations](contributing.md#translations)).
 
 ### Writing translatable strings
 
@@ -132,11 +132,11 @@ Add `// I18N:` comments above tricky strings to give translators context — the
 
 The `translation` task uses `xgettext` to scan all Java source files for calls to `tr`, `marktr`, `sendTr`, `sendErrorTr`, and `trLegacy`. The extracted strings are split into three domains:
 
-| Domain | POT file | Crowdin | Purpose |
-|---|---|---|---|
-| `player_facing` | `keys.player_facing.pot` | synced | Messages players see |
-| `admin_ops` | `keys.admin_ops.pot` | synced | Messages for server operators |
-| `system_debug` | `keys.system_debug.pot` | excluded | Debug/internal logging — AI-translated only |
+| Domain | POT file | Purpose |
+|---|---|---|
+| `player_facing` | `keys.player_facing.pot` | Messages players see |
+| `admin_ops` | `keys.admin_ops.pot` | Messages for server operators |
+| `system_debug` | `keys.system_debug.pot` | Debug/internal logging |
 
 Domain assignment is based on the source file's package. Classes in `command/admin/` and specific debug classes go to `admin_ops` or `system_debug`; everything else is `player_facing`. See the classification rules in `uSkyBlock-Core/build.gradle.kts`.
 
@@ -150,11 +150,15 @@ POT templates and translated PO files live under `uSkyBlock-Core/src/main/i18n/`
 ./gradlew translation
 ```
 
-This runs the full pipeline: extract strings → split into domains → merge with existing PO files → generate extra locales (Pirate, Kitteh). Commit the updated POT and PO files.
+This runs `extractTranslation` (extract strings → split into the three domain POT files), then merges the domains per locale and generates the extra locales (Pirate, Kitteh) under `build/`. Commit the updated POT files. CI runs `extractTranslation` on every pull request and fails if the committed POT files are out of date.
 
 Only the extraction step needs gettext (`xgettext`, `msgcat`); merging, the Pirate/Kitteh locales, and bundling into `i18n.zip` run natively, so a normal `./gradlew build` needs no external tools.
 
 If you only change code without touching translatable strings, this step is not needed.
+
+### Translating new strings
+
+You do not need to translate new strings yourself. Until a language has a translation, players see the English text. The maintainers translate new and changed strings and commit them to the domain `.po` files.
 
 ### Runtime locale resolution
 

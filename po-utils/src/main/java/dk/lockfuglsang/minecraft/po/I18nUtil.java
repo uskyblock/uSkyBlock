@@ -49,7 +49,6 @@ public enum I18nUtil {
     private static final String DEFAULT_LOCALE_KEY = "en";
     private static final String I18N_ZIP_RESOURCE = "i18n.zip";
     private static final String SUPPORTED_LOCALES_FILE = "supported-locales.txt";
-    private static final String TRANSLATION_SUPPORT_URL = "https://crowdin.com/project/uskyblock-revived";
     private static final TagResolver SEMANTIC_STYLE_TAGS = TagResolver.resolver(
         Placeholder.styling("muted", NamedTextColor.GRAY),
         Placeholder.styling("primary", NamedTextColor.AQUA),
@@ -156,15 +155,6 @@ public enum I18nUtil {
     @NotNull
     public static Component fromLegacy(@Nullable String legacy) {
         return legacy != null ? getLegacySerializer().deserialize(legacy) : Component.empty();
-    }
-
-    /**
-     * Returns the URL where users can help improve translations.
-     *
-     * @return Translation contribution URL.
-     */
-    public static @NotNull String getTranslationSupportUrl() {
-        return TRANSLATION_SUPPORT_URL;
     }
 
     /**

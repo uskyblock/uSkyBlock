@@ -57,8 +57,6 @@ public class LanguageCommand extends AbstractCommand {
         if (resolvedLocale.isEmpty()) {
             sendErrorTr(sender, "Unsupported locale: <locale>", unparsed("locale", args[0]));
             sendTr(sender, "Use <cmd>/usb lang</cmd> to list all supported locales.", MUTED);
-            sendTr(sender, "Help improve translations: <url>",
-                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
             return true;
         }
 
@@ -67,8 +65,6 @@ public class LanguageCommand extends AbstractCommand {
         if (I18nUtil.findSupportedLocaleKey(current).orElse(current).equalsIgnoreCase(localeKey)) {
             sendTr(sender, "Language is already set to <locale>.",
                 MUTED, unparsed("locale", localeKey, PRIMARY));
-            sendTr(sender, "Help improve translations: <url>",
-                MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
             return true;
         }
 
@@ -87,8 +83,6 @@ public class LanguageCommand extends AbstractCommand {
         sendTr(sender, "Language updated to <locale>.",
             MUTED, unparsed("locale", localeKey, PRIMARY));
         sendTr(sender, "Use <cmd>/usb reload</cmd> to fully reload locale-aware config resources.", MUTED);
-        sendTr(sender, "Help improve translations: <url>",
-            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
         return true;
     }
 
@@ -122,7 +116,5 @@ public class LanguageCommand extends AbstractCommand {
                 MUTED, unparsed("locale", systemSupported.get(), PRIMARY));
         }
         sendTr(sender, "Set language with <cmd>/usb lang [locale]</cmd>.", MUTED);
-        sendTr(sender, "Help improve translations: <url>",
-            MUTED, unparsed("url", I18nUtil.getTranslationSupportUrl(), PRIMARY));
     }
 }

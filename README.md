@@ -11,8 +11,6 @@ uSkyBlock is a Skyblock plugin for Spigot and Paper servers. Build a server arou
 
 uSkyBlock is an open-source Skyblock plugin for Spigot and Paper, with public docs, a public API, and a long community-maintained lineage.
 
-**We need your help on translations!** Join the project on [Crowdin](https://crowdin.com/project/uskyblock-revived) to improve translations in your language.
-
 ## Quick Links
 
 - Homepage: https://uskyblock.github.io/
