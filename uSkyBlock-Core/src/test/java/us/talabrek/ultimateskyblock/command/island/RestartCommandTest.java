@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.command.island;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
@@ -14,13 +15,16 @@ import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.message.Msg;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -48,6 +52,7 @@ public class RestartCommandTest {
         when(island.getPartySize()).thenReturn(1);
         when(island.getSchematicName()).thenReturn("broken");
         when(playerInfo.isIslandGenerating()).thenReturn(false);
+        inSkyWorld(plugin, player, true);
 
         I18nUtil.initialize(new File("."), Locale.ENGLISH);
         Msg.configure((sender, message) -> {});
@@ -60,6 +65,51 @@ public class RestartCommandTest {
 
         verify(cooldownHandler, never()).resetCooldown(eq(player), eq("restart"), any());
         verify(plugin, never()).getServer();
+    }
+
+    @Test
+    public void refusesRestartOutsideTheSkyWorld() {
+        uSkyBlock plugin = mock(uSkyBlock.class);
+        RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+        CooldownHandler cooldownHandler = mock(CooldownHandler.class);
+        ConfirmHandler confirmHandler = mock(ConfirmHandler.class);
+        Player player = mock(Player.class);
+        PlayerInfo playerInfo = mock(PlayerInfo.class);
+        IslandInfo island = mock(IslandInfo.class);
+
+        when(runtimeConfigs.current()).thenReturn(runtimeConfig(false));
+        when(plugin.getCooldownHandler()).thenReturn(cooldownHandler);
+        when(cooldownHandler.getCooldown(player, "restart")).thenReturn(Duration.ZERO);
+        when(plugin.getConfirmHandler()).thenReturn(confirmHandler);
+        when(confirmHandler.checkCommand(player, "/is restart")).thenReturn(true);
+        when(plugin.validateIslandScheme(player, "default")).thenReturn(true);
+        when(island.getPartySize()).thenReturn(1);
+        when(island.getSchematicName()).thenReturn("default");
+        when(playerInfo.isIslandGenerating()).thenReturn(false);
+        inSkyWorld(plugin, player, false);
+
+        List<String> messages = new ArrayList<>();
+        I18nUtil.initialize(new File("."), Locale.ENGLISH);
+        Msg.configure((sender, message) -> messages.add(Msg.plainText(message)));
+        try {
+            RestartCommand command = new RestartCommand(plugin, runtimeConfigs);
+            command.doExecute("restart", player, playerInfo, island, Map.of());
+        } finally {
+            Msg.configure(null);
+        }
+
+        assertEquals(List.of("You can only restart your island in the skyblock world!"), messages);
+        verify(confirmHandler, never()).checkCommand(any(), any());
+        verify(cooldownHandler, never()).resetCooldown(eq(player), eq("restart"), any());
+        verify(plugin, never()).getServer();
+    }
+
+    private static void inSkyWorld(uSkyBlock plugin, Player player, boolean inSkyWorld) {
+        WorldManager worldManager = mock(WorldManager.class);
+        World world = mock(World.class);
+        when(plugin.getWorldManager()).thenReturn(worldManager);
+        when(player.getWorld()).thenReturn(world);
+        when(worldManager.isSkyWorld(world)).thenReturn(inSkyWorld);
     }
 
     private static RuntimeConfig runtimeConfig(boolean schemesEnabled) {

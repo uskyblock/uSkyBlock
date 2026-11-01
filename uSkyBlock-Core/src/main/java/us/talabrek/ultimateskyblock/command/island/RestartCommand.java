@@ -29,6 +29,12 @@ public class RestartCommand extends RequireIslandCommand {
 
     @Override
     protected boolean doExecute(String alias, Player player, PlayerInfo pi, IslandInfo island, Map<String, Object> data, String... args) {
+        // Outside the skyworld the inventory clear waits until the new island exists, and a player who gets into
+        // the skyworld and logs out in that gap keeps the old inventory.
+        if (!plugin.getWorldManager().isSkyWorld(player.getWorld())) {
+            sendErrorTr(player, "You can only restart your island in the skyblock world!");
+            return true;
+        }
         if (island.getPartySize() > 1) {
             if (!island.isLeader(player)) {
                 sendErrorTr(player, "Only the owner may restart this island. Leave this island first to start your own (/is leave).");
