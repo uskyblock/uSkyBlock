@@ -281,7 +281,18 @@ public final class IntegrationTestPlugin extends JavaPlugin implements Listener 
                 uSkyBlock usb = uSkyBlock.getInstance();
                 return usb != null && usb.isEnabled() && usb.getRuntimeConfigs() != null
                     && usb.getChallengeLogic() != null && usb.getWorldManager() != null
-                    && usb.getWorldManager().getWorld() != null;
+                    && usb.getWorldManager().getWorld() != null
+                    && delayedEnableDone(usb);
+            } catch (Throwable ignored) {
+                return false;
+            }
+        }
+
+        // uSkyBlock registers its commands in a delayed task that then runs "usb flush", which drops the
+        // cached PlayerInfo objects. A scenario that starts before that task holds a stale PlayerInfo.
+        private boolean delayedEnableDone(uSkyBlock usb) {
+            try {
+                return Objects.requireNonNull(usb.getCommand("usb")).getExecutor() != usb;
             } catch (Throwable ignored) {
                 return false;
             }
