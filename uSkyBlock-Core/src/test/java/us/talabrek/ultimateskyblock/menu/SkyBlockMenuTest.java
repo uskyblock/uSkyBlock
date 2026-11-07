@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.menu;
 
 import dk.lockfuglsang.minecraft.po.I18nUtil;
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,9 +12,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import us.talabrek.ultimateskyblock.challenge.ChallengeLogic;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
@@ -31,6 +35,7 @@ import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
+import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.io.File;
 import java.time.Duration;
@@ -38,17 +43,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.trLegacy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -236,6 +245,25 @@ public class SkyBlockMenuTest {
 
         verify(player, never()).performCommand(anyString());
         assertThat(sent, contains("You do not have access to that island schematic."));
+    }
+
+    @Test
+    public void partyMenuHeadShowsMemberName() {
+        UUID memberId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        when(islandInfo.getMemberUUIDs()).thenReturn(Set.of(memberId));
+        when(server.createPlayerProfile(memberId)).thenReturn(mock(PlayerProfile.class));
+        PlayerDB playerDB = mock(PlayerDB.class);
+        when(plugin.getPlayerDB()).thenReturn(playerDB);
+        when(playerDB.getName(memberId)).thenReturn("member");
+        SkullMeta headMeta = mock(SkullMeta.class);
+        when(server.getItemFactory().getItemMeta(Material.PLAYER_HEAD)).thenReturn(headMeta);
+        captureMenuItems();
+
+        menu.displayPartyGUI(player);
+
+        ArgumentCaptor<String> displayName = ArgumentCaptor.forClass(String.class);
+        verify(headMeta, atLeastOnce()).setDisplayName(displayName.capture());
+        assertThat(ChatColor.stripColor(displayName.getValue()), is("member's permissions"));
     }
 
     private List<ItemStack> captureMenuItems() {
