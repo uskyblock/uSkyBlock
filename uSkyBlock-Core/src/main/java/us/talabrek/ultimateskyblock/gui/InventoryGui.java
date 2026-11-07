@@ -71,6 +71,12 @@ public abstract class InventoryGui implements InventoryHandler {
     }
 
     @Override
+    public boolean isRepeatable(@NotNull InventoryClickEvent event) {
+        InventoryButton button = this.buttonMap.get(event.getSlot());
+        return Objects.equals(event.getClickedInventory(), this.inventory) && button != null && button.isRepeatable();
+    }
+
+    @Override
     public void onOpen(@NotNull InventoryOpenEvent event) {
         requireNonNull(event);
         this.decorate((Player) event.getPlayer());

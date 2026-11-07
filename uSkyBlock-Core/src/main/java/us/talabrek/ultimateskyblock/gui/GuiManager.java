@@ -1,9 +1,11 @@
 package us.talabrek.ultimateskyblock.gui;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +24,12 @@ import static java.util.Objects.requireNonNull;
 public class GuiManager {
 
     private final Map<Inventory, InventoryHandler> activeInventories = new HashMap<>();
+    private final DoubleClickGuard doubleClickGuard;
+
+    @Inject
+    public GuiManager(@NotNull DoubleClickGuard doubleClickGuard) {
+        this.doubleClickGuard = requireNonNull(doubleClickGuard);
+    }
 
     public void openGui(@NotNull InventoryGui gui, @NotNull Player player) {
         requireNonNull(gui);
@@ -46,7 +54,21 @@ public class GuiManager {
         InventoryHandler handler = this.activeInventories.get(event.getInventory());
         if (handler != null) {
             event.setCancelled(true);
-            handler.onClick(event);
+            boolean ignored = handler.isRepeatable(event)
+                ? doubleClickGuard.consumeDoubleClick(event)
+                : doubleClickGuard.consumeRepeat(event);
+            if (!ignored) {
+                handler.onClick(event);
+            }
+        }
+    }
+
+    public void handleDrag(@NotNull InventoryDragEvent event) {
+        requireNonNull(event);
+        Inventory inventory = event.getInventory();
+        if (this.activeInventories.containsKey(inventory)
+            && event.getRawSlots().stream().anyMatch(slot -> slot < inventory.getSize())) {
+            event.setCancelled(true);
         }
     }
 

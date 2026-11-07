@@ -277,9 +277,11 @@ public class SkyBlockMenu {
         for (UUID memberId : memberList) {
             ItemStack headItem = new ItemStack(Material.PLAYER_HEAD, 1);
             SkullMeta meta3 = requireNonNull((SkullMeta) requireNonNull(headItem.getItemMeta()));
-            meta3.setOwnerProfile(Bukkit.createPlayerProfile(memberId));
+            PlayerProfile memberProfile = Bukkit.createPlayerProfile(memberId);
+            meta3.setOwnerProfile(memberProfile);
             headItem.setItemMeta(meta3);
-            ItemStackUtil.setComponentDisplayName(headItem, tr("<player>'s permissions", unparsed("player", String.valueOf(memberId), PRIMARY)));
+            String memberName = resolvePartyMemberName(memberProfile, memberId);
+            ItemStackUtil.setComponentDisplayName(headItem, tr("<player>'s permissions", unparsed("player", memberName, PRIMARY)));
             boolean isLeader = islandInfo.isLeader(memberId);
             if (isLeader) {
                 addLore(lores, tr("Leader", SECONDARY.decorate(BOLD)));
