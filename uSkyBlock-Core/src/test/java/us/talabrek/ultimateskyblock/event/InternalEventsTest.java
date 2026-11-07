@@ -24,6 +24,7 @@ import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -161,8 +162,8 @@ public class InternalEventsTest {
 
     private Player getFakePlayer() {
         Player fakePlayer = mock(Player.class);
-        when(fakePlayer.getUniqueId()).thenReturn(UUID.fromString("29292160-6d49-47a3-ae1c-7c800e14cca3"));
-        when(fakePlayer.getName()).thenReturn("linksssofrechts");
+        when(fakePlayer.getUniqueId()).thenReturn(UUID.nameUUIDFromBytes("OfflinePlayer:Player".getBytes(StandardCharsets.UTF_8)));
+        when(fakePlayer.getName()).thenReturn("Player");
         return fakePlayer;
     }
 }

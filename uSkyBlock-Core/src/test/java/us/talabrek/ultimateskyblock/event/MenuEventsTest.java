@@ -14,6 +14,7 @@ import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.mockito.Mockito.any;
@@ -58,8 +59,8 @@ public class MenuEventsTest {
 
     private Player getFakePlayer() {
         Player fakePlayer = mock(Player.class);
-        when(fakePlayer.getUniqueId()).thenReturn(UUID.fromString("29292160-6d49-47a3-ae1c-7c800e14cca3"));
-        when(fakePlayer.getName()).thenReturn("linksssofrechts");
+        when(fakePlayer.getUniqueId()).thenReturn(UUID.nameUUIDFromBytes("OfflinePlayer:Player".getBytes(StandardCharsets.UTF_8)));
+        when(fakePlayer.getName()).thenReturn("Player");
         return fakePlayer;
     }
 
