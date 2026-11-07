@@ -112,6 +112,7 @@ public class BiomeGui extends InventoryGui {
 
     private InventoryButton creteMinusButton() {
         return new InventoryButton()
+            .repeatable()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.RED_CARPET);
                 ItemStackUtil.setComponentDisplayName(displayItem, Component.text("-", NamedTextColor.RED));
@@ -133,6 +134,7 @@ public class BiomeGui extends InventoryGui {
 
     private InventoryButton createPlusButton() {
         return new InventoryButton()
+            .repeatable()
             .creator((player) -> {
                 ItemStack displayItem = new ItemStack(Material.GREEN_CARPET);
                 ItemStackUtil.setComponentDisplayName(displayItem, Component.text("+", NamedTextColor.GREEN));

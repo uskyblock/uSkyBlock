@@ -15,6 +15,7 @@ public class InventoryButton {
     private Function<Player, ItemStack> iconCreator;
     private BiConsumer<Player, InventoryClickEvent> eventConsumer = (player, event) -> {
     };
+    private boolean repeatable;
 
     public @NotNull InventoryButton creator(@NotNull Function<Player, ItemStack> iconCreator) {
         this.iconCreator = iconCreator;
@@ -24,6 +25,18 @@ public class InventoryButton {
     public @NotNull InventoryButton consumer(@NotNull BiConsumer<Player, InventoryClickEvent> eventConsumer) {
         this.eventConsumer = eventConsumer;
         return this;
+    }
+
+    /**
+     * Lets a quick second press act again, for step buttons like +/-.
+     */
+    public @NotNull InventoryButton repeatable() {
+        this.repeatable = true;
+        return this;
+    }
+
+    public boolean isRepeatable() {
+        return this.repeatable;
     }
 
     public @NotNull BiConsumer<Player, InventoryClickEvent> getEventConsumer() {

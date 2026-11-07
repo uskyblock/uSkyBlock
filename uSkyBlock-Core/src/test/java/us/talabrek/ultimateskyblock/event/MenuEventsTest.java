@@ -11,10 +11,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import us.talabrek.ultimateskyblock.gui.DoubleClickGuard;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
 
+import java.time.Clock;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ public class MenuEventsTest {
 
         doNothing().when(fakeMenu).onClick(any(InventoryClickEvent.class));
 
-        menuEvents = new MenuEvents(fakeMenu);
+        menuEvents = new MenuEvents(fakeMenu, new DoubleClickGuard(Clock.systemUTC()));
     }
 
     @Test
@@ -115,6 +117,7 @@ public class MenuEventsTest {
         Inventory fakeInventory = mock(Inventory.class);
         doReturn(holder).when(fakeInventory).getHolder();
         doReturn(fakeInventory).when(inventoryView).getTopInventory();
+        doReturn(getFakePlayer()).when(inventoryView).getPlayer();
 
         return new InventoryClickEvent(inventoryView, slotType, 1, clickType, inventoryAction);
     }

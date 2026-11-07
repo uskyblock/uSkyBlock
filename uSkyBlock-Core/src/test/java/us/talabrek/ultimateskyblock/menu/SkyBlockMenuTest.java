@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -23,7 +24,9 @@ import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.event.MenuEvents;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
+import us.talabrek.ultimateskyblock.gui.DoubleClickGuard;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -33,12 +36,14 @@ import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
 import us.talabrek.ultimateskyblock.player.UltimateHolder.MenuType;
+import us.talabrek.ultimateskyblock.test.MutableClock;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.io.File;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +66,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -264,6 +270,40 @@ public class SkyBlockMenuTest {
         ArgumentCaptor<String> displayName = ArgumentCaptor.forClass(String.class);
         verify(headMeta, atLeastOnce()).setDisplayName(displayName.capture());
         assertThat(ChatColor.stripColor(displayName.getValue()), is("member's permissions"));
+    }
+
+    @Test
+    public void doubleClickOnLeaveRunsOnlyTheFirstPress() {
+        MutableClock clock = new MutableClock(Instant.EPOCH);
+        MenuEvents menuEvents = new MenuEvents(menu, new DoubleClickGuard(clock));
+
+        menuEvents.guiClick(leaveClick(ClickType.LEFT));
+        clock.advance(Duration.ofMillis(150));
+        menuEvents.guiClick(leaveClick(ClickType.LEFT));
+        clock.advance(Duration.ofMillis(50));
+        menuEvents.guiClick(leaveClick(ClickType.DOUBLE_CLICK));
+
+        verify(player, times(1)).performCommand("island leave");
+    }
+
+    @Test
+    public void secondClickOnLeaveAfterTheDoubleClickWindowConfirms() {
+        MutableClock clock = new MutableClock(Instant.EPOCH);
+        MenuEvents menuEvents = new MenuEvents(menu, new DoubleClickGuard(clock));
+
+        menuEvents.guiClick(leaveClick(ClickType.LEFT));
+        clock.advance(Duration.ofMillis(300));
+        menuEvents.guiClick(leaveClick(ClickType.LEFT));
+
+        verify(player, times(2)).performCommand("island leave");
+    }
+
+    private InventoryClickEvent leaveClick(ClickType clickType) {
+        when(player.getUniqueId()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000002"));
+        InventoryClickEvent event = click(trLegacy("Island Menu"), 18, 17, Material.IRON_DOOR);
+        when(event.getClick()).thenReturn(clickType);
+        when(event.getRawSlot()).thenReturn(17);
+        return event;
     }
 
     private List<ItemStack> captureMenuItems() {
