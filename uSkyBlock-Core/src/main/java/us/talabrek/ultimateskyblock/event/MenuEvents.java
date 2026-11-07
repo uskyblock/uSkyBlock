@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.player.UltimateHolder;
@@ -23,6 +25,15 @@ public class MenuEvents implements Listener {
     public void guiClick(final InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof UltimateHolder holder && holder.getMenuType() == UltimateHolder.MenuType.DEFAULT) {
             mainMenu.onClick(event);
+        }
+    }
+
+    @EventHandler
+    public void guiDrag(final InventoryDragEvent event) {
+        Inventory menu = event.getInventory();
+        if (menu.getHolder() instanceof UltimateHolder holder && holder.getMenuType() == UltimateHolder.MenuType.DEFAULT
+            && event.getRawSlots().stream().anyMatch(slot -> slot < menu.getSize())) {
+            event.setCancelled(true);
         }
     }
 }

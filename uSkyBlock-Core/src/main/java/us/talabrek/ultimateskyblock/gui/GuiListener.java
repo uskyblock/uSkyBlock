@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +24,11 @@ public class GuiListener implements Listener {
     @EventHandler
     public void onClick(@NotNull InventoryClickEvent event) {
         this.guiManager.handleClick(event);
+    }
+
+    @EventHandler
+    public void onDrag(@NotNull InventoryDragEvent event) {
+        this.guiManager.handleDrag(event);
     }
 
     @EventHandler

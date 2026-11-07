@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,15 @@ public class GuiManager {
         if (handler != null) {
             event.setCancelled(true);
             handler.onClick(event);
+        }
+    }
+
+    public void handleDrag(@NotNull InventoryDragEvent event) {
+        requireNonNull(event);
+        Inventory inventory = event.getInventory();
+        if (this.activeInventories.containsKey(inventory)
+            && event.getRawSlots().stream().anyMatch(slot -> slot < inventory.getSize())) {
+            event.setCancelled(true);
         }
     }
 
