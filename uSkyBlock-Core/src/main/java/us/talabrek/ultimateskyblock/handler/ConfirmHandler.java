@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.handler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
@@ -25,6 +26,7 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
  */
 @Singleton
 public class ConfirmHandler {
+    private static final UUID CONSOLE = new UUID(0, 0);
     private final Map<UUID, ConfirmCommand> confirmMap = new WeakHashMap<>();
     private final Scheduler scheduler;
     private final RuntimeConfigs runtimeConfigs;
@@ -50,12 +52,15 @@ public class ConfirmHandler {
         return Duration.ZERO;
     }
 
-    public boolean checkCommand(@NotNull Player player, @NotNull String command) {
+    /**
+     * @param sender A player, or the console, which has one confirmation of its own.
+     */
+    public boolean checkCommand(@NotNull CommandSender sender, @NotNull String command) {
         if (!confirmationsActiveFor(command)) {
             return true;
         }
         Duration timeout = timeout();
-        UUID uuid = player.getUniqueId();
+        UUID uuid = sender instanceof Player player ? player.getUniqueId() : CONSOLE;
         if (confirmMap.containsKey(uuid)) {
             ConfirmCommand confirmCommand = confirmMap.get(uuid);
             if (confirmCommand != null && confirmCommand.isValid(command, timeout)) {
@@ -66,12 +71,12 @@ public class ConfirmHandler {
         confirmMap.put(uuid, new ConfirmCommand(command));
         scheduler.async(() -> {
             ConfirmCommand confirmCommand = confirmMap.remove(uuid);
-            if (confirmCommand != null && player.isOnline()) {
-                sendTr(player, "<command> timed out.", unparsed("command", command, CMD));
+            if (confirmCommand != null && (!(sender instanceof Player player) || player.isOnline())) {
+                sendTr(sender, "<command> timed out.", unparsed("command", command, CMD));
             }
         }, timeout);
         // I18N: <timeout> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "timeout".
-        sendTr(player, "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>",
+        sendTr(sender, "Running <command> is <error>risky</error>. <muted>Repeat it within <timeout> seconds to confirm.</muted>",
             unparsed("command", command, CMD),
             number("timeout", timeout.toSeconds(), PRIMARY));
         return false;

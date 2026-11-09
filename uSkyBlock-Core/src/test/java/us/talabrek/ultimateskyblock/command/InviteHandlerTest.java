@@ -158,7 +158,7 @@ public class InviteHandlerTest {
             new RuntimeConfig.Async(Duration.ZERO, 0L, Duration.ZERO),
             new RuntimeConfig.AsyncWorldEdit(false, Duration.ZERO, Duration.ZERO),
             new RuntimeConfig.Party(Duration.ofMinutes(5), "", List.of(), List.of(), Map.of()),
-            new RuntimeConfig.PluginUpdates(true, "RELEASE"),
+            new RuntimeConfig.PluginUpdates(true, "RELEASE", false, Duration.ofDays(3)),
             new RuntimeConfig.Spawning(new RuntimeConfig.Guardians(false, 0, 0d), new RuntimeConfig.Phantoms(true, false)),
             new RuntimeConfig.ToolMenu(false, tool, List.of()),
             new RuntimeConfig.Signs(true),

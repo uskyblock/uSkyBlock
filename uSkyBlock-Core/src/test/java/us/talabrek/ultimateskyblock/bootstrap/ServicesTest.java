@@ -21,6 +21,7 @@ import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.update.UpdateStager;
 import us.talabrek.ultimateskyblock.upgrade.IslandRegionRepair;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
@@ -97,6 +98,6 @@ public class ServicesTest {
         return new Services(mock(AnimationHandler.class), mock(ChallengeLogic.class), mock(EventLogic.class),
             mock(PlayerLogic.class), mock(IslandLogic.class), mock(PlayerDB.class), mock(MetricsManager.class),
             mock(HookManager.class), mock(AutoIslandLevelRefresh.class), mock(PlaceholderIntegrations.class),
-            mock(SchematicHandler.class), mock(IslandRegionRepair.class), scheduler);
+            mock(SchematicHandler.class), mock(IslandRegionRepair.class), scheduler, mock(UpdateStager.class));
     }
 }

@@ -1,14 +1,19 @@
 package us.talabrek.ultimateskyblock.config;
 
 import dk.lockfuglsang.minecraft.file.FileUtil;
+import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.config.migration.PluginConfigMigrator;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
+import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -469,6 +474,24 @@ public class PluginConfigLoaderTest {
             migrated.getString("options.party.chat-format"));
         assertFalse(migrated.contains("placeholder"));
         assertFalse(migrated.contains("options.advanced.placeholderCache"));
+    }
+
+    @Test
+    public void existingConfigWithoutAutoStageGetsItsDefaults() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(loadBundledVersion());
+        config.set("plugin-updates.check", true);
+        config.save(configFile);
+
+        YamlConfiguration loaded = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger())).load();
+        BukkitServerMock.setupServerMock();
+        RuntimeConfig runtimeConfig = new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger())
+            .load(loaded);
+
+        assertFalse(loaded.contains("plugin-updates.auto-stage"));
+        assertFalse(runtimeConfig.pluginUpdates().autoStage());
+        assertEquals(Duration.ofDays(3), runtimeConfig.pluginUpdates().autoStageDelay());
     }
 
     @Test

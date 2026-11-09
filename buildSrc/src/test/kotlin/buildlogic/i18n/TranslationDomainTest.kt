@@ -21,6 +21,11 @@ class TranslationDomainTest {
     }
 
     @Test
+    fun `the update notice is admin-ops`() {
+        assertEquals(ADMIN_OPS, TranslationDomain.classifyReferencePath("$base/update/UpdateNotice.java"))
+    }
+
+    @Test
     fun `everything else is player-facing`() {
         assertEquals(PLAYER_FACING, TranslationDomain.classifyReferencePath("$base/handler/WorldGuardHandler.java"))
     }

@@ -222,9 +222,14 @@ public record RuntimeConfig(
     ) {
     }
 
+    /**
+     * @param autoStageDelay How old a regular update must be before it is staged automatically.
+     */
     public record PluginUpdates(
         boolean check,
-        @NotNull String branch
+        @NotNull String branch,
+        boolean autoStage,
+        @NotNull Duration autoStageDelay
     ) {
     }
 

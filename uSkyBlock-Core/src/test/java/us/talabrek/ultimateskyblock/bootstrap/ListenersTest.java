@@ -17,6 +17,7 @@ import us.talabrek.ultimateskyblock.event.PortalEvents;
 import us.talabrek.ultimateskyblock.event.WitherTagEvents;
 import us.talabrek.ultimateskyblock.gui.GuiListener;
 import us.talabrek.ultimateskyblock.signs.SignEvents;
+import us.talabrek.ultimateskyblock.update.UpdateNotice;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.time.Duration;
@@ -90,7 +91,8 @@ public class ListenersTest {
             signEvents,
             mock(ChatEvents.class),
             mock(InviteHandler.class),
-            mock(PlayerDB.class)
+            mock(PlayerDB.class),
+            mock(UpdateNotice.class)
         );
     }
 
@@ -135,7 +137,7 @@ public class ListenersTest {
             new RuntimeConfig.Async(Duration.ZERO, 0L, Duration.ZERO),
             new RuntimeConfig.AsyncWorldEdit(false, Duration.ZERO, Duration.ZERO),
             new RuntimeConfig.Party(Duration.ZERO, "", List.of(), List.of(), Map.of()),
-            new RuntimeConfig.PluginUpdates(true, "RELEASE"),
+            new RuntimeConfig.PluginUpdates(true, "RELEASE", false, Duration.ofDays(3)),
             new RuntimeConfig.Spawning(new RuntimeConfig.Guardians(false, 0, 0d), new RuntimeConfig.Phantoms(true, false)),
             new RuntimeConfig.ToolMenu(false, null, List.of()),
             new RuntimeConfig.Signs(signsEnabled),

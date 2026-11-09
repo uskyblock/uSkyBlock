@@ -497,14 +497,23 @@ tool-menu:
     crafting_table: challenges
     bedrock: island spawn
 
-# Automatic update checking.
+# Automatic update checking, against uSkyBlock's versions on Modrinth.
 plugin-updates:
 
-  # [true/false] Check for updates on startup and log a message if one is available.
+  # [true/false] Check for updates on startup and every 4 hours, log a message if one is available, and tell
+  # players with usb.admin.update when they join.
   check: true
 
-  # Update channel: RELEASE or STAGING.
+  # Update channel: RELEASE (release versions only) or STAGING (beta and alpha versions too).
   branch: RELEASE
+
+  # [true/false] Stage a regular update (same major version, runs on this server) for the next restart by itself,
+  # once it has been out for auto-stage-delay. A new major version is never staged automatically. Needs check: true.
+  auto-stage: false
+
+  # [duration] How long an update must have been out before it is staged automatically, so a bad release can be
+  # pulled before it reaches this server. Use ms, s, m, h, or d.
+  auto-stage-delay: 3d
 
 # DO NOT TOUCH THE FIELDS BELOW
 version: 124

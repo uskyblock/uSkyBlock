@@ -140,7 +140,7 @@ public class ChatLogicTest {
                 List.of(),
                 Map.of()
             ),
-            new RuntimeConfig.PluginUpdates(false, "master"),
+            new RuntimeConfig.PluginUpdates(false, "master", false, Duration.ofDays(3)),
             new RuntimeConfig.Spawning(
                 new RuntimeConfig.Guardians(true, 10, 0.1d),
                 new RuntimeConfig.Phantoms(true, false)

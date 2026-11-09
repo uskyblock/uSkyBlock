@@ -153,6 +153,31 @@ public class RuntimeConfigFactoryTest {
     }
 
     @Test
+    public void autoStageIsOffByDefault() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
+
+        assertTrue(runtimeConfig.pluginUpdates().check());
+        assertFalse(runtimeConfig.pluginUpdates().autoStage());
+        assertEquals(Duration.ofDays(3), runtimeConfig.pluginUpdates().autoStageDelay());
+    }
+
+    @Test
+    public void readsAutoStage() {
+        YamlConfiguration config = new YamlConfiguration();
+        config.setDefaults(PluginConfigLoader.loadBundledConfig());
+        config.set("plugin-updates.auto-stage", true);
+        config.set("plugin-updates.auto-stage-delay", "12h");
+
+        RuntimeConfig runtimeConfig = runtimeConfigFactory.load(config);
+
+        assertTrue(runtimeConfig.pluginUpdates().autoStage());
+        assertEquals(Duration.ofHours(12), runtimeConfig.pluginUpdates().autoStageDelay());
+    }
+
+    @Test
     public void ignoresLegacyMiskeyedRuntimePathsWithoutMigration() {
         YamlConfiguration config = new YamlConfiguration();
         config.setDefaults(PluginConfigLoader.loadBundledConfig());
