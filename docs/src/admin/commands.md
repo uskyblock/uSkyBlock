@@ -89,9 +89,26 @@ These are the most useful admin commands for day-to-day server management. Addit
 | `goto <player>` | Teleport to a player's island (`usb.mod.goto`) |
 | `maintenance` | Toggle maintenance mode |
 | `topten` | Recalculate the top 10 list |
-| `purge` | Remove islands below the configured purge level |
+| `purge <days> [level]` | Remove abandoned islands below a level (see below) |
 | `cooldown <player>` | View or reset player cooldowns |
 | `challenge <player>` | View or reset player challenges (`usb.mod.challenges`) |
 | `perk <player>` | Manage player perks |
 | `flush` | Write cached data to disk |
 | `version` | Show plugin and dependency versions |
+
+### Purging abandoned islands
+
+`/usb purge <days> [level]` looks for abandoned islands below `level`, or below `options.advanced.purgeLevel` if you
+give none, and tells you how many it found. Run `/usb purge confirm` to purge them.
+
+- An island is abandoned when **every** member has been away for more than `<days>` days. One recent member keeps it.
+- A member who is online counts as active. A member who never played counts as inactive.
+- An island marked with `/usb island ignore <player>` is never purged.
+- Right before it deletes an island, the purge checks it again and skips it if it no longer matches.
+
+`/usb purge <days> [level] force` purges right after the scan, without asking first.
+
+`/usb purge stop` stops a running scan or purge after the island it is on.
+
+A purge removes the island's data and its WorldGuard regions, and its members lose the island. The blocks stay in the
+world.

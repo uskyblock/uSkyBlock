@@ -17,7 +17,7 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unpa
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
 
 /**
- * Scans for all players on a list of islands.
+ * Purges the islands a scan found, off the server thread, each checked against the scan's rule again right before.
  */
 public class PurgeTask extends BukkitRunnable {
     private final List<String> purgeList;
