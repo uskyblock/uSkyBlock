@@ -179,7 +179,7 @@ public class UpdateCommandTest {
         assertEquals(List.of(CHECKING,
             "uSkyBlock 4.0.0 is a new major version. It changes your data and config at its first start, and needs "
                 + "Minecraft 26.3 on Paper/Spigot.",
-            "Back up your server first, and read the upgrade guide: https://uskyblock.github.io/uSkyBlock/admin/upgrading/",
+            "Back up your server first, and read the upgrade guide: https://uskyblock.github.io/",
             "Release notes: https://modrinth.com/plugin/uskyblock/version/4.0.0"), messages);
         assertEquals(List.of(), modrinth.fileRequests());
         assertFalse(Files.exists(server.staged()));

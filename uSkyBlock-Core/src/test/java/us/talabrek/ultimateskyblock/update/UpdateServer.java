@@ -47,6 +47,7 @@ public final class UpdateServer {
         when(plugin.getServer()).thenReturn(server);
         when(plugin.getDescription()).thenReturn(new PluginDescriptionFile("uSkyBlock", pluginVersion, "main"));
         when(plugin.getPluginJar()).thenReturn(plugins.resolve(JAR_NAME));
+        when(plugin.getDataFolder()).thenReturn(plugins.resolve("uSkyBlock").toFile());
         when(plugin.isEnabled()).thenReturn(true);
         scheduler = mock(Scheduler.class);
         when(scheduler.sync(any(Runnable.class))).thenAnswer(call -> {
@@ -78,6 +79,15 @@ public final class UpdateServer {
         RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
         when(runtimeConfigs.current()).thenReturn(runtimeConfig);
         return runtimeConfigs;
+    }
+
+    /**
+     * Loads the plugin from a remapped copy of its jar outside the plugins folder, as Paper does.
+     */
+    public Path remapped() {
+        Path remapped = plugins.resolve(".paper-remapped").resolve(JAR_NAME);
+        when(plugin.getPluginJar()).thenReturn(remapped);
+        return remapped;
     }
 
     public void updateFolder(File folder) {

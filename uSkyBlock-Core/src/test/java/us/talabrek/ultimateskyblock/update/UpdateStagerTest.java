@@ -82,6 +82,16 @@ public class UpdateStagerTest {
         }
     }
 
+    private static void writePluginJar(Path file, String version) throws IOException {
+        Files.createDirectories(file.getParent());
+        try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(file))) {
+            jar.putNextEntry(new JarEntry("plugin.yml"));
+            jar.write(("name: uSkyBlock\nversion: " + version + "\nmain: us.talabrek.ultimateskyblock.uSkyBlock\n")
+                .getBytes(StandardCharsets.UTF_8));
+            jar.closeEntry();
+        }
+    }
+
     private static Logger loggerInto(List<LogRecord> records) {
         Logger logger = Logger.getAnonymousLogger();
         logger.setUseParentHandlers(false);
@@ -167,6 +177,28 @@ public class UpdateStagerTest {
     }
 
     @Test
+    public void updateFolderThatIsThePluginsFolderIsRefusedForARemappedJar() throws IOException {
+        modrinth.version("3.8.0", "release", NOW, MC_26_3, PAPER_SPIGOT);
+        stager();
+        server.remapped();
+        server.updateFolder(plugins.toFile());
+
+        assertNull(stager.target());
+        assertEquals(UpdateStager.Failure.NO_UPDATE_FOLDER, stage("3.8.0").failure());
+        assertEquals(List.of(), modrinth.fileRequests());
+    }
+
+    @Test
+    public void remappedJarStagesUnderItsName() throws IOException {
+        modrinth.version("3.8.0", "release", NOW, MC_26_3, PAPER_SPIGOT);
+        stager();
+        server.remapped();
+
+        assertNull(stage("3.8.0").failure());
+        assertEquals("uSkyBlock 3.8.0", Files.readString(server.staged()));
+    }
+
+    @Test
     public void secondStagingReplacesTheFirst() throws IOException {
         modrinth.version("3.8.0", "release", NOW, MC_26_3, PAPER_SPIGOT)
             .version("3.8.1", "release", NOW, MC_26_3, PAPER_SPIGOT);
@@ -182,17 +214,23 @@ public class UpdateStagerTest {
     @Test
     public void startupReadsTheStagedVersion() throws IOException {
         stager();
-        Files.createDirectories(server.staged().getParent());
-        try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(server.staged()))) {
-            jar.putNextEntry(new JarEntry("plugin.yml"));
-            jar.write("name: uSkyBlock\nversion: 3.8.1\nmain: us.talabrek.ultimateskyblock.uSkyBlock\n"
-                .getBytes(StandardCharsets.UTF_8));
-            jar.closeEntry();
-        }
+        writePluginJar(server.staged(), "3.8.1");
 
         stager.startup();
 
         assertEquals(new UpdateStager.StagedUpdate("3.8.1", false), stager.staged());
+    }
+
+    @Test
+    public void startupDoesNotTakeTheRunningJarForAStagedOne() throws IOException {
+        stager();
+        server.remapped();
+        server.updateFolder(plugins.toFile());
+        writePluginJar(plugins.resolve(UpdateServer.JAR_NAME), "3.7.1");
+
+        stager.startup();
+
+        assertNull(stager.staged());
     }
 
     @Test
@@ -269,5 +307,31 @@ public class UpdateStagerTest {
 
         assertEquals("3.8.0", result.replaced());
         assertEquals(new UpdateStager.StagedUpdate("3.8.1", true), stager.staged());
+    }
+
+    @Test
+    public void autoStageKeepsANewerStagedVersion() throws IOException {
+        modrinth.version("4.0.0", "release", NOW.minus(Duration.ofDays(10)), MC_26_3, PAPER_SPIGOT);
+        stage("4.0.0");
+        modrinth.version("3.8.1", "release", NOW.minus(DELAY), MC_26_3, PAPER_SPIGOT);
+
+        assertNull(stager.autoStage(updates(), DELAY).join());
+        assertEquals(new UpdateStager.StagedUpdate("4.0.0", false), stager.staged());
+        assertEquals("uSkyBlock 4.0.0", Files.readString(server.staged()));
+        assertEquals(1, modrinth.fileRequests().size());
+    }
+
+    @Test
+    public void failedAutoStageIsRememberedUntilAStagingSucceeds() throws IOException {
+        modrinth.version("3.8.0", "release", NOW.minus(DELAY), MC_26_3, PAPER_SPIGOT);
+        stager();
+        server.updateFolder(null);
+
+        assertEquals(UpdateStager.Failure.NO_UPDATE_FOLDER, stager.autoStage(updates(), DELAY).join().failure());
+        assertTrue(stager.autoStageFailed());
+
+        server.updateFolder(plugins.resolve("update").toFile());
+        assertNull(stager.autoStage(updates(), DELAY).join().failure());
+        assertFalse(stager.autoStageFailed());
     }
 }

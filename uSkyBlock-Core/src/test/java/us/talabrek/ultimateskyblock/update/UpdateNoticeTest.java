@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class UpdateNoticeTest {
 
-    private static final String GUIDE = "https://uskyblock.github.io/uSkyBlock/admin/upgrading/";
+    private static final String GUIDE = "https://uskyblock.github.io/";
 
     @TempDir
     Path plugins;
@@ -194,6 +194,26 @@ public class UpdateNoticeTest {
 
         assertEquals(List.of("uSkyBlock 4.0.0 is out (needs Minecraft 26.3). Read the upgrade guide first: " + GUIDE),
             lines());
+    }
+
+    @Test
+    public void withAutoStageAFailedStagingShowsTheUpdate() {
+        notice(true, true);
+        found("3.8.1", "3.7.1");
+        when(stager.autoStageFailed()).thenReturn(true);
+
+        assertEquals(List.of("uSkyBlock 3.8.1 is available. /usb update stages it for the next restart."), lines());
+    }
+
+    @Test
+    public void withAutoStageAFailedStagingOfANewerUpdateShowsItBesideTheStagedOne() {
+        notice(true, true);
+        found("3.8.2", "3.8.1", "3.7.1");
+        when(stager.staged()).thenReturn(new UpdateStager.StagedUpdate("3.8.1", true));
+        when(stager.autoStageFailed()).thenReturn(true);
+
+        assertEquals(List.of("uSkyBlock 3.8.1 was staged automatically and takes effect at the next restart.",
+            "uSkyBlock 3.8.2 is available. /usb update stages it for the next restart."), lines());
     }
 
     private static List<ClickEvent> clickEvents(Component component) {
