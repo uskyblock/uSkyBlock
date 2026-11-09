@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock;
 
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ import us.talabrek.ultimateskyblock.update.ServerPlatform;
 import us.talabrek.ultimateskyblock.update.UpdateStager;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -150,12 +152,40 @@ public class uSkyBlockTest {
         verify(clear.playerInfo).setClearInventoryOnNextEntry(true);
     }
 
-    /** A player, online or quit, in or outside the island world, with or without a clear marked for their entry. */
+    @Test
+    public void theClearOfAPlayerWhoReconnectedWaitsForTheirNextEntry() throws Exception {
+        EntryClear clear = new EntryClear(true, true, false);
+        clear.reconnect();
+
+        clear.plugin.clearPlayerInventory(clear.player);
+
+        verify(clear.inventory, never()).clear();
+        verify(clear.playerInfo).setClearInventoryOnNextEntry(true);
+        verify(clear.playerInfo, never()).setClearInventoryOnNextEntry(false);
+    }
+
+    @Test
+    public void anEntryLeavesAMarkedPlayerWhoReconnected() throws Exception {
+        EntryClear clear = new EntryClear(true, true, true);
+        clear.reconnect();
+
+        clear.plugin.clearInventoryOnEntry(clear.player);
+
+        verify(clear.inventory, never()).clear();
+        verify(clear.playerInfo, never()).setClearInventoryOnNextEntry(false);
+    }
+
+    /**
+     * A player, online or quit, in or outside the island world, with or without a clear marked for their entry. The
+     * Player is the one the server knows by the UUID while they are online.
+     */
     private static final class EntryClear {
         final uSkyBlock plugin = mock(uSkyBlock.class, Answers.CALLS_REAL_METHODS);
+        final Server server = mock(Server.class);
         final Player player = mock(Player.class);
         final PlayerInventory inventory = mock(PlayerInventory.class);
         final PlayerInfo playerInfo = mock(PlayerInfo.class);
+        final UUID uuid = UUID.randomUUID();
 
         EntryClear(boolean online, boolean inIslandWorld, boolean marked) throws Exception {
             RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
@@ -172,7 +202,10 @@ public class uSkyBlockTest {
             when(worldManager.isSkyWorld(world)).thenReturn(inIslandWorld);
             doReturn(worldManager).when(plugin).getWorldManager();
             doReturn(playerInfo).when(plugin).getPlayerInfo(player);
+            doReturn(server).when(plugin).getServer();
+            when(player.getUniqueId()).thenReturn(uuid);
             when(player.isOnline()).thenReturn(online);
+            when(server.getPlayer(uuid)).thenReturn(online ? player : null);
             when(player.getWorld()).thenReturn(world);
             when(player.getInventory()).thenReturn(inventory);
             EntityEquipment equipment = mock(EntityEquipment.class);
@@ -181,6 +214,11 @@ public class uSkyBlockTest {
             Inventory enderChest = mock(Inventory.class);
             when(player.getEnderChest()).thenReturn(enderChest);
             when(playerInfo.isClearInventoryOnNextEntry()).thenReturn(marked);
+        }
+
+        /** The player quits and joins again, so the server knows them by a new Player; the old one stays online. */
+        void reconnect() {
+            when(server.getPlayer(uuid)).thenReturn(mock(Player.class));
         }
     }
 

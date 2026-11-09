@@ -376,7 +376,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         getLogger().entering(CN, "clearPlayerInventory", player);
         RuntimeConfig.Restart restartConfig = runtimeConfigs.current().restart();
         PlayerInfo playerInfo = getPlayerInfo(player);
-        if (!player.isOnline() || !getWorldManager().isSkyWorld(player.getWorld())) {
+        if (!isInIslandWorld(player)) {
             getLogger().finer("not clearing, since player is not in skyworld, marking for clear on next entry");
             if (playerInfo != null) {
                 playerInfo.setClearInventoryOnNextEntry(true);
@@ -410,13 +410,22 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
      * change has completed, so that a per-world inventory plugin has already swapped in the island world's inventory.
      */
     public void clearInventoryOnEntry(Player player) {
-        if (!player.isOnline() || !getWorldManager().isSkyWorld(player.getWorld())) {
+        if (!isInIslandWorld(player)) {
             return;
         }
         PlayerInfo playerInfo = getPlayerInfo(player);
         if (playerInfo != null && playerInfo.isClearInventoryOnNextEntry()) {
             clearPlayerInventory(player);
         }
+    }
+
+    /**
+     * Whether the player is online in the island world. A Player held from before the player quit is not, even once
+     * they are back: {@link Player#isOnline()} is true for it then, but it is no longer the player's entity.
+     */
+    private boolean isInIslandWorld(Player player) {
+        return getServer().getPlayer(player.getUniqueId()) == player
+            && getWorldManager().isSkyWorld(player.getWorld());
     }
 
     public synchronized boolean devSetPlayerIsland(final Player sender, final Location l, final String player) {
