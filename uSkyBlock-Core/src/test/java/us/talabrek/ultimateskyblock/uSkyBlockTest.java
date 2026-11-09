@@ -5,6 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import us.talabrek.ultimateskyblock.config.PluginConfigLoader;
@@ -13,6 +17,8 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigFactory;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
+import us.talabrek.ultimateskyblock.player.PlayerInfo;
+import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -90,6 +96,89 @@ public class uSkyBlockTest {
         plugin.checkForUpdatesIfEnabled();
 
         verify(updateChecker, times(1)).fetchCheckResult(any());
+    }
+
+    @Test
+    public void anEntryClearsAMarkedPlayerInTheIslandWorld() throws Exception {
+        EntryClear clear = new EntryClear(true, true, true);
+
+        clear.plugin.clearInventoryOnEntry(clear.player);
+
+        verify(clear.inventory).clear();
+        verify(clear.playerInfo).setClearInventoryOnNextEntry(false);
+    }
+
+    @Test
+    public void anEntryLeavesAnUnmarkedPlayer() throws Exception {
+        EntryClear clear = new EntryClear(true, true, false);
+
+        clear.plugin.clearInventoryOnEntry(clear.player);
+
+        verify(clear.inventory, never()).clear();
+    }
+
+    @Test
+    public void anEntryLeavesAMarkedPlayerOutsideTheIslandWorld() throws Exception {
+        EntryClear clear = new EntryClear(true, false, true);
+
+        clear.plugin.clearInventoryOnEntry(clear.player);
+
+        verify(clear.inventory, never()).clear();
+        verify(clear.playerInfo, never()).setClearInventoryOnNextEntry(false);
+    }
+
+    @Test
+    public void anEntryLeavesAMarkedPlayerWhoHasQuit() throws Exception {
+        EntryClear clear = new EntryClear(false, true, true);
+
+        clear.plugin.clearInventoryOnEntry(clear.player);
+
+        verify(clear.inventory, never()).clear();
+        verify(clear.playerInfo, never()).setClearInventoryOnNextEntry(false);
+    }
+
+    @Test
+    public void theClearOfAPlayerWhoHasQuitWaitsForTheirNextEntry() throws Exception {
+        EntryClear clear = new EntryClear(false, true, false);
+
+        clear.plugin.clearPlayerInventory(clear.player);
+
+        verify(clear.inventory, never()).clear();
+        verify(clear.playerInfo).setClearInventoryOnNextEntry(true);
+    }
+
+    /** A player, online or quit, in or outside the island world, with or without a clear marked for their entry. */
+    private static final class EntryClear {
+        final uSkyBlock plugin = mock(uSkyBlock.class, Answers.CALLS_REAL_METHODS);
+        final Player player = mock(Player.class);
+        final PlayerInventory inventory = mock(PlayerInventory.class);
+        final PlayerInfo playerInfo = mock(PlayerInfo.class);
+
+        EntryClear(boolean online, boolean inIslandWorld, boolean marked) throws Exception {
+            RuntimeConfigs runtimeConfigs = mock(RuntimeConfigs.class);
+            BukkitServerMock.setupServerMock();
+            YamlConfiguration config = new YamlConfiguration();
+            config.setDefaults(PluginConfigLoader.loadBundledConfig());
+            RuntimeConfig runtimeConfig =
+                new RuntimeConfigFactory(new GameObjectFactory(), Logger.getAnonymousLogger()).load(config);
+            when(runtimeConfigs.current()).thenReturn(runtimeConfig);
+            setField(plugin, "runtimeConfigs", runtimeConfigs);
+            doReturn(Logger.getAnonymousLogger()).when(plugin).getLogger();
+            World world = mock(World.class);
+            WorldManager worldManager = mock(WorldManager.class);
+            when(worldManager.isSkyWorld(world)).thenReturn(inIslandWorld);
+            doReturn(worldManager).when(plugin).getWorldManager();
+            doReturn(playerInfo).when(plugin).getPlayerInfo(player);
+            when(player.isOnline()).thenReturn(online);
+            when(player.getWorld()).thenReturn(world);
+            when(player.getInventory()).thenReturn(inventory);
+            EntityEquipment equipment = mock(EntityEquipment.class);
+            when(equipment.getArmorContents()).thenReturn(new ItemStack[4]);
+            when(player.getEquipment()).thenReturn(equipment);
+            Inventory enderChest = mock(Inventory.class);
+            when(player.getEnderChest()).thenReturn(enderChest);
+            when(playerInfo.isClearInventoryOnNextEntry()).thenReturn(marked);
+        }
     }
 
     private static SkyUpdateChecker updateCheckerWithoutNetwork(RuntimeConfigs runtimeConfigs) {

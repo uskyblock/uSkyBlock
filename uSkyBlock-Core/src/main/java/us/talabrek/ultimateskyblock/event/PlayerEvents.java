@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,7 +22,9 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -327,6 +330,22 @@ public class PlayerEvents implements Listener {
             final PlayerInfo playerInfo = plugin.getPlayerInfo(player);
             playerInfo.onTeleport(player);
         }
+    }
+
+    /**
+     * A clear marked for the player's next entry, at MONITOR: after a per-world inventory plugin has swapped in the
+     * island world's inventory.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChanged(PlayerChangedWorldEvent event) {
+        plugin.clearInventoryOnEntry(event.getPlayer());
+    }
+
+    /** A clear marked for the player's next entry, a tick after they joined, once every plugin has handled the join. */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        plugin.getScheduler().sync(() -> plugin.clearInventoryOnEntry(player), TimeUtil.ticksAsDuration(1));
     }
 
     /**
