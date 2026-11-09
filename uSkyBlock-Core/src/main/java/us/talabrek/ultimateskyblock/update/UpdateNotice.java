@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 import us.talabrek.ultimateskyblock.SkyUpdateChecker;
 import us.talabrek.ultimateskyblock.command.admin.UpdateCommand;
+import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 
@@ -70,7 +71,8 @@ public class UpdateNotice implements Listener {
      * @return The notice, empty when uSkyBlock is up to date or update checks are off.
      */
     @NotNull List<Component> lines() {
-        if (!runtimeConfigs.current().pluginUpdates().check()) {
+        RuntimeConfig.PluginUpdates config = runtimeConfigs.current().pluginUpdates();
+        if (!config.check()) {
             return List.of();
         }
         List<Component> lines = new ArrayList<>();
@@ -84,7 +86,9 @@ public class UpdateNotice implements Listener {
                     unparsed("version", staged.version(), PRIMARY)));
         }
         ModrinthVersion update = updates != null ? updates.update() : null;
-        if (update != null && (staged == null || Updates.isNewer(staged.version(), update.version()))) {
+        // With auto-stage, a regular update is auto-stage's to stage, and the staged line tells of it once it is.
+        if (update != null && !config.autoStage()
+            && (staged == null || Updates.isNewer(staged.version(), update.version()))) {
             lines.add(tr("uSkyBlock <version> is available. <command> stages it for the next restart.",
                 unparsed("version", update.version(), PRIMARY),
                 component("command", Component.text("/usb update")

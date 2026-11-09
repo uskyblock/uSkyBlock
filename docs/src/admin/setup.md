@@ -105,7 +105,8 @@ is announced on its own line with the Minecraft version it needs, whether it run
   (`plugins/update/` by default, `settings.update-folder` in `bukkit.yml`) under the name of the running JAR. The
   server swaps it in at the next restart. A new major version asks for confirmation first, since it changes your data
   and config at its first start: back up before you confirm. A version that doesn't run on your server is refused.
-- Players with `usb.admin.update` are told when they join that an update is available or staged.
+- Players with `usb.admin.update` are told when they join that an update is available or staged, and that a new
+  major version is out. With `auto-stage: true` they aren't told of a regular update until it is staged.
 - With `plugin-updates.auto-stage: true`, a regular update (same major version, runs on your server) is staged by
   itself once it has been out for `plugin-updates.auto-stage-delay` (default `3d`), so a bad release can be pulled
   before it reaches you. A new major version is never staged automatically.

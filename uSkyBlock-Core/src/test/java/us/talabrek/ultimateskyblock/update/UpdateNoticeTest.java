@@ -50,7 +50,11 @@ public class UpdateNoticeTest {
     }
 
     private void notice(boolean checkEnabled) {
-        runtimeConfigs = UpdateServer.config(checkEnabled, "RELEASE", false);
+        notice(checkEnabled, false);
+    }
+
+    private void notice(boolean checkEnabled, boolean autoStage) {
+        runtimeConfigs = UpdateServer.config(checkEnabled, "RELEASE", autoStage);
         notice = new UpdateNotice(updateChecker, stager, runtimeConfigs, server.scheduler);
     }
 
@@ -164,6 +168,32 @@ public class UpdateNoticeTest {
         notice.onJoin(new PlayerJoinEvent(player, "joined"));
 
         verify(server.scheduler, never()).sync(any(Runnable.class), any(Duration.class));
+    }
+
+    @Test
+    public void withAutoStageAnUpdateWaitingOutTheDelayShowsNothing() {
+        notice(true, true);
+        found("3.8.1", "3.7.1");
+
+        assertEquals(List.of(), lines());
+    }
+
+    @Test
+    public void withAutoStageOnlyTheStagedLineShows() {
+        notice(true, true);
+        found("3.8.2", "3.8.1", "3.7.1");
+        when(stager.staged()).thenReturn(new UpdateStager.StagedUpdate("3.8.1", true));
+
+        assertEquals(List.of("uSkyBlock 3.8.1 was staged automatically and takes effect at the next restart."), lines());
+    }
+
+    @Test
+    public void withAutoStageANewMajorVersionShowsOnlyItsLine() {
+        notice(true, true);
+        found("4.0.0", "3.8.1", "3.7.1");
+
+        assertEquals(List.of("uSkyBlock 4.0.0 is out (needs Minecraft 26.3). Read the upgrade guide first: " + GUIDE),
+            lines());
     }
 
     private static List<ClickEvent> clickEvents(Component component) {
