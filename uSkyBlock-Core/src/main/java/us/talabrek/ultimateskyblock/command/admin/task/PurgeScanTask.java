@@ -4,6 +4,7 @@ import dk.lockfuglsang.minecraft.file.FileUtil;
 import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.island.IslandInfo;
@@ -20,12 +21,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
+import static java.util.stream.Collectors.toSet;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
  * Scans for all players on a list of islands.
@@ -43,9 +43,11 @@ public class PurgeScanTask extends BukkitRunnable {
     private final ProgressTracker tracker;
     private final Timer timer;
     private final PlayerDB playerDB;
+    private final Set<UUID> online;
     private volatile boolean active;
     private boolean done;
 
+    /** On the server thread: it takes the players online then. */
     public PurgeScanTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, File islandDir, Duration time, double purgeLevel, CommandSender sender, Runnable callback) {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
@@ -65,6 +67,7 @@ public class PurgeScanTask extends BukkitRunnable {
             feedbackEvery);
         active = true;
         playerDB = plugin.getPlayerDB();
+        online = plugin.getServer().getOnlinePlayers().stream().map(Player::getUniqueId).collect(toSet());
     }
 
     private void generatePurgeList() {
@@ -116,6 +119,10 @@ public class PurgeScanTask extends BukkitRunnable {
 
     private boolean abandonedSince(Set<UUID> members) {
         for (UUID member : members) {
+            // An online player's last played is their previous logout, or 0 in their first session.
+            if (online.contains(member)) {
+                return false;
+            }
             OfflinePlayer player = playerDB.getOfflinePlayer(member);
             if (player == null || Instant.ofEpochMilli(player.getLastPlayed()).isAfter(cutOff)) {
                 return false;
@@ -131,7 +138,7 @@ public class PurgeScanTask extends BukkitRunnable {
             sendErrorTr(sender, "PURGE:<primary> Scanning aborted.");
             return;
         }
-        log(Level.INFO, "Done scanning - found " + purgeList.size() + " candidates for purging.");
+        plugin.getLogger().info("Done scanning - found " + purgeList.size() + " candidates for purging.");
         sendErrorTr(sender, "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging.",
             unparsed("count", String.valueOf(purgeList.size())),
             unparsed("level", String.valueOf(purgeLevel)));
