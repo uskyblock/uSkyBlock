@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 @Singleton
 public class SkyUpdateChecker implements UpdateChecker {
 
-    public static final URI UPGRADE_GUIDE = URI.create("https://uskyblock.github.io/uSkyBlock/admin/upgrading/");
+    public static final URI UPGRADE_GUIDE = URI.create("https://uskyblock.github.io/");
 
     private final Logger logger;
     private final RuntimeConfigs runtimeConfigs;
