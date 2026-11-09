@@ -15,11 +15,14 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.handler.AsyncWorldEditHandler;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
+import us.talabrek.ultimateskyblock.update.ModrinthVersion;
+import us.talabrek.ultimateskyblock.update.Updates;
 
 import java.util.logging.Logger;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.legacyArg;
 import static dk.lockfuglsang.minecraft.po.I18nUtil.miniToLegacy;
+import static us.talabrek.ultimateskyblock.message.Msg.CMD;
 import static us.talabrek.ultimateskyblock.message.Msg.PRIMARY;
 import static us.talabrek.ultimateskyblock.message.Placeholder.number;
 import static us.talabrek.ultimateskyblock.message.Placeholder.unparsed;
@@ -114,21 +117,25 @@ public class PluginInfo {
     @NotNull String updateNotice() {
         if (updateChecker.lastCheckFailed()) {
             return miniToLegacy("<muted>Failed to check for new uSkyBlock versions. Please check for updates manually at <url><newline>",
-                unparsed("url", "https://uskyblock.github.io/", PRIMARY));
+                unparsed("url", ModrinthVersion.PROJECT_PAGE.toString(), PRIMARY));
         }
         StringBuilder notice = new StringBuilder();
-        if (updateChecker.isUpdateAvailable()) {
+        Updates updates = updateChecker.getUpdates();
+        ModrinthVersion update = updates != null ? updates.update() : null;
+        if (update != null) {
             notice.append(miniToLegacy("<muted>A new update of uSkyBlock is available: <version><newline>",
-                unparsed("version", updateChecker.getLatestVersion(), PRIMARY)));
-            notice.append(miniToLegacy("<muted>Visit <url> to download.<newline>",
-                unparsed("url", "https://uskyblock.github.io/", PRIMARY)));
+                unparsed("version", update.version(), PRIMARY)));
+            notice.append(miniToLegacy("<muted>Run <command> to stage it for the next restart, or download it from <url><newline>",
+                unparsed("command", "/usb update", CMD),
+                unparsed("url", update.page().toString(), PRIMARY)));
         }
-        SkyUpdateChecker.Release newMajorRelease = updateChecker.getNewMajorRelease();
-        if (newMajorRelease != null) {
-            notice.append(miniToLegacy("<muted>A new major version of uSkyBlock is available: <version><newline>",
-                unparsed("version", newMajorRelease.version(), PRIMARY)));
-            notice.append(miniToLegacy("<muted>Read its release notes before upgrading: <url><newline>",
-                unparsed("url", newMajorRelease.url(), PRIMARY)));
+        ModrinthVersion newMajor = updates != null ? updates.newMajor() : null;
+        if (newMajor != null) {
+            notice.append(miniToLegacy("<muted>A new major version of uSkyBlock is available: <version> (needs Minecraft <minecraft>)<newline>",
+                unparsed("version", newMajor.version(), PRIMARY),
+                unparsed("minecraft", newMajor.minecraftVersions())));
+            notice.append(miniToLegacy("<muted>Read the upgrade guide before upgrading: <url><newline>",
+                unparsed("url", SkyUpdateChecker.UPGRADE_GUIDE.toString(), PRIMARY)));
         }
         return notice.toString();
     }

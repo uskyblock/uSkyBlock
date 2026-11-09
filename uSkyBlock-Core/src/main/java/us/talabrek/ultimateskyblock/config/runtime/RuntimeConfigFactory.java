@@ -228,7 +228,9 @@ public final class RuntimeConfigFactory {
                 ),
                 new RuntimeConfig.PluginUpdates(
                     root.boolWithDefault("plugin-updates.check"),
-                    pluginUpdateBranch
+                    pluginUpdateBranch,
+                    root.boolWithDefault("plugin-updates.auto-stage"),
+                    root.durationWithDefault("plugin-updates.auto-stage-delay")
                 ),
                 new RuntimeConfig.Spawning(
                     new RuntimeConfig.Guardians(

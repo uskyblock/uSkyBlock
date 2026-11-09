@@ -18,6 +18,9 @@ import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
 import us.talabrek.ultimateskyblock.gameobject.GameObjectFactory;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
+import us.talabrek.ultimateskyblock.update.ModrinthClient;
+import us.talabrek.ultimateskyblock.update.ServerPlatform;
+import us.talabrek.ultimateskyblock.update.UpdateStager;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.util.concurrent.CompletableFuture;
@@ -69,7 +72,7 @@ public class uSkyBlockTest {
 
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker, never()).fetchCheckResult(any());
+        verify(updateChecker, never()).fetchUpdates();
     }
 
     @Test
@@ -81,7 +84,7 @@ public class uSkyBlockTest {
 
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker).fetchCheckResult(any());
+        verify(updateChecker).fetchUpdates();
     }
 
     @Test
@@ -95,7 +98,7 @@ public class uSkyBlockTest {
         loadConfigWithUpdateCheck(runtimeConfigs, false);
         plugin.checkForUpdatesIfEnabled();
 
-        verify(updateChecker, times(1)).fetchCheckResult(any());
+        verify(updateChecker, times(1)).fetchUpdates();
     }
 
     @Test
@@ -183,8 +186,9 @@ public class uSkyBlockTest {
 
     private static SkyUpdateChecker updateCheckerWithoutNetwork(RuntimeConfigs runtimeConfigs) {
         SkyUpdateChecker updateChecker = spy(
-            new SkyUpdateChecker(mock(uSkyBlock.class), runtimeConfigs, Logger.getAnonymousLogger()));
-        doReturn(CompletableFuture.completedFuture(null)).when(updateChecker).fetchCheckResult(any());
+            new SkyUpdateChecker(mock(uSkyBlock.class), runtimeConfigs, Logger.getAnonymousLogger(),
+                mock(ModrinthClient.class), mock(UpdateStager.class), ServerPlatform.spigot("26.3")));
+        doReturn(CompletableFuture.completedFuture(null)).when(updateChecker).fetchUpdates();
         return updateChecker;
     }
 

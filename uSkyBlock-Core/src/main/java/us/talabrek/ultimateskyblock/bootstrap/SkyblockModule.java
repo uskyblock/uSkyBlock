@@ -18,6 +18,7 @@ import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.placeholder.IslandPlaceholderSource;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderSource;
 import us.talabrek.ultimateskyblock.uSkyBlock;
+import us.talabrek.ultimateskyblock.update.ServerPlatform;
 import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.BukkitPlayerDB;
 import us.talabrek.ultimateskyblock.uuid.FilePlayerDB;
@@ -64,6 +65,12 @@ public class SkyblockModule extends AbstractModule {
         } else {
             return new BukkitPlayerDB();
         }
+    }
+
+    @Provides
+    @Singleton
+    public static @NotNull ServerPlatform provideServerPlatform(Plugin plugin) {
+        return ServerPlatform.of(plugin.getServer());
     }
 
     @Provides

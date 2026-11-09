@@ -35,7 +35,8 @@ enum class TranslationDomain(val id: String, val precedence: Int) {
             if (systemDebugSuffixes.any { normalized.endsWith(it) }) {
                 return SYSTEM_DEBUG
             }
-            if (normalized.contains("/command/admin/")) {
+            // The update notice only reaches players with usb.admin.update.
+            if (normalized.contains("/command/admin/") || normalized.contains("/ultimateskyblock/update/")) {
                 return ADMIN_OPS
             }
             return PLAYER_FACING

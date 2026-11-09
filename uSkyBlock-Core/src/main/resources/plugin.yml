@@ -135,6 +135,7 @@ permissions:
       usb.admin.remove: true
       usb.admin.setbiome: true
       usb.admin.topten: true
+      usb.admin.update: true
       usb.admin.version: true
       usb.exempt.ban: true
       usb.exempt.cooldown.biome: true
@@ -175,6 +176,7 @@ permissions:
       usb.admin.set: true
       usb.admin.setbiome: true
       usb.admin.topten: true
+      usb.admin.update: true
       usb.admin.version: true
       usb.admin.wg: true
 
@@ -381,6 +383,11 @@ permissions:
 
   usb.admin.topten:
     description: 'enables user to all-ways generate top-ten (no caching)'
+
+  usb.admin.update:
+    description: |
+      Grants access to /usb update - stage the newest uSkyBlock version for the next restart
+      Players with it are told about updates when they join
 
   usb.admin.version:
     description: 'Grants access to /usb version - displays version information'

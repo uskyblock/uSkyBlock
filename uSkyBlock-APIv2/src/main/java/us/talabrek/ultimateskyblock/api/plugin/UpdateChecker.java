@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface UpdateChecker {
     /**
-     * @deprecated The plugin now asks GitHub for the latest release; this file is kept for older versions.
+     * @deprecated The plugin now asks Modrinth for the latest version; this file is kept for older versions.
      */
     @Deprecated(since = "3.8.0")
     URI URL_RELEASE = URI.create("https://www.uskyblock.ovh/versions/release.json");
@@ -21,8 +21,8 @@ public interface UpdateChecker {
     boolean isUpdateAvailable();
 
     /**
-     * Gets the latest release of uSkyBlock on the running major version; a newer major release is not reported here.
-     * On the STAGING channel, this is the version of the latest staging build, whatever its major version.
+     * Gets the latest release of uSkyBlock on the running major version that runs on the server's Minecraft version and
+     * platform; a newer major release is not reported here. On the STAGING channel, beta and alpha versions count too.
      * Returns NULL if the version info hasn't been fetched yet or is unavailable.
      * @return Latest release of uSkyBlock, NULL when unavailable.
      */

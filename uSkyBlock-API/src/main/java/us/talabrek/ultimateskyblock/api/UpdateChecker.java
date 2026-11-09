@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface UpdateChecker {
     /**
-     * @deprecated The plugin now asks GitHub for the latest release; this file is kept for older versions.
+     * @deprecated The plugin now asks Modrinth for the latest version; this file is kept for older versions.
      */
     @Deprecated(since = "3.8.0")
     URI URL_RELEASE = URI.create("https://www.uskyblock.ovh/versions/release.json");

@@ -2,19 +2,27 @@ package us.talabrek.ultimateskyblock;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.bukkit.plugin.PluginDescriptionFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import us.talabrek.ultimateskyblock.SkyUpdateChecker.CheckResult;
-import us.talabrek.ultimateskyblock.SkyUpdateChecker.Release;
+import org.junit.jupiter.api.io.TempDir;
 import us.talabrek.ultimateskyblock.api.plugin.UpdateChecker;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.update.ModrinthClient;
+import us.talabrek.ultimateskyblock.update.ModrinthStandIn;
+import us.talabrek.ultimateskyblock.update.ModrinthVersion;
+import us.talabrek.ultimateskyblock.update.ServerPlatform;
+import us.talabrek.ultimateskyblock.update.UpdateServer;
+import us.talabrek.ultimateskyblock.update.UpdateStager;
+import us.talabrek.ultimateskyblock.update.Updates;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -25,57 +33,52 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseCheckResult;
-import static us.talabrek.ultimateskyblock.SkyUpdateChecker.updateUri;
+import static us.talabrek.ultimateskyblock.SkyUpdateChecker.parseLatestVersion;
 
 public class SkyUpdateCheckerTest {
 
-    // Trimmed GET /repos/uskyblock/uSkyBlock/releases?per_page=100 response.
-    private static final String GITHUB_RELEASES = """
-        [
-          {
-            "html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/v3.7.1",
-            "tag_name": "v3.7.1",
-            "target_commitish": "master",
-            "name": "3.7.1 - Maintenance and bug fixes",
-            "draft": false,
-            "prerelease": false,
-            "published_at": "2026-10-25T16:06:41Z",
-            "assets": []
-          },
-          {
-            "html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/v3.7.0",
-            "tag_name": "v3.7.0",
-            "target_commitish": "master",
-            "name": "3.7.0 - Maintenance and bug fixes",
-            "draft": false,
-            "prerelease": false,
-            "published_at": "2026-10-25T03:11:04Z",
-            "assets": []
-          }
-        ]
-        """;
-
-    private static final Release RELEASE_4_0_0 =
-        new Release("4.0.0", "https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0");
+    private static final Instant PUBLISHED = Instant.parse("2026-10-25T16:07:41Z");
+    private static final List<String> PAPER_SPIGOT = List.of("paper", "spigot");
+    private static final List<String> MC_26_3 = List.of("26.2", "26.3");
 
     private static final String MANUAL_CHECK_HINT = "Failed to check for new uSkyBlock versions. "
-        + "Please check for updates manually at https://uskyblock.github.io/";
+        + "Please check for updates manually at https://modrinth.com/plugin/uskyblock";
 
-    private final SkyUpdateChecker checker = new SkyUpdateChecker(
-        mock(uSkyBlock.class), mock(RuntimeConfigs.class), Logger.getLogger("SkyUpdateCheckerTest"));
+    @TempDir
+    Path plugins;
 
+    private final ModrinthStandIn modrinth;
     private final List<LogRecord> records = new ArrayList<>();
-    private final SkyUpdateChecker loggingChecker = new SkyUpdateChecker(
-        pluginOn("3.7.1"), mock(RuntimeConfigs.class), loggerInto(records));
+    private final UpdateStager stager = mock(UpdateStager.class);
+    private RuntimeConfigs runtimeConfigs;
 
-    private static uSkyBlock pluginOn(String currentVersion) {
-        uSkyBlock plugin = mock(uSkyBlock.class);
-        when(plugin.getDescription()).thenReturn(new PluginDescriptionFile("uSkyBlock", currentVersion, "main"));
-        when(plugin.isEnabled()).thenReturn(true);
-        return plugin;
+    public SkyUpdateCheckerTest() throws IOException {
+        modrinth = new ModrinthStandIn();
+        config("RELEASE", false);
+    }
+
+    @AfterEach
+    public void stopModrinth() {
+        modrinth.close();
+    }
+
+    private void config(String branch, boolean autoStage) {
+        runtimeConfigs = UpdateServer.config(true, branch, autoStage);
+    }
+
+    private SkyUpdateChecker checker(ModrinthClient client) {
+        UpdateServer server = new UpdateServer(plugins, "3.7.1");
+        return new SkyUpdateChecker(server.plugin, runtimeConfigs, loggerInto(records), client, stager,
+            ServerPlatform.spigot("26.3"));
+    }
+
+    private SkyUpdateChecker checker() {
+        return checker(modrinth.client());
     }
 
     private static Logger loggerInto(List<LogRecord> records) {
@@ -102,144 +105,220 @@ public class SkyUpdateCheckerTest {
         return records.stream().map(LogRecord::getMessage).toList();
     }
 
-    private static String release(String tag) {
-        return release(tag, false, false);
+    private static Updates updates(String currentVersion, ModrinthVersion... versions) {
+        return Updates.of(List.of(versions), "RELEASE", currentVersion, ServerPlatform.spigot("26.3"));
     }
 
-    private static String release(String tag, boolean draft, boolean prerelease) {
-        return """
-            {"html_url": "https://github.com/uskyblock/uSkyBlock/releases/tag/%s", "tag_name": "%s",
-             "draft": %s, "prerelease": %s}
-            """.formatted(tag, tag, draft, prerelease);
-    }
-
-    private static String releases(String... releases) {
-        return "[" + String.join(",", releases) + "]";
-    }
-
-    private interface Request {
-        CheckResult send() throws IOException;
-    }
-
-    private SkyUpdateChecker checkerRequesting(Request request) {
-        return new SkyUpdateChecker(pluginOn("3.7.1"), mock(RuntimeConfigs.class), loggerInto(records)) {
-            @Override
-            CheckResult requestCheckResult(URI uri) throws IOException {
-                return request.send();
-            }
-        };
-    }
-
-    // What checkForUpdates does, without the scheduler and the runtime config.
-    private static CheckResult check(SkyUpdateChecker checker) {
-        CheckResult result = checker.fetchCheckResult(UpdateChecker.URL_STAGING).join();
-        checker.handleCheckResult(result);
-        return result;
+    private static ModrinthVersion version(String version, List<String> gameVersions) {
+        return new ModrinthVersion(version, "release", PUBLISHED, gameVersions, PAPER_SPIGOT, null);
     }
 
     @Test
-    public void readsTagNameWithLeadingV() {
-        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, releases(release("v3.7.1")), "3.7.0"));
+    public void newerCompatibleVersionIsAnUpdate() {
+        modrinth.version("3.7.1", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("3.8.0", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT);
+        SkyUpdateChecker checker = checker();
+
+        checker.checkForUpdates().join();
+
+        assertTrue(checker.isUpdateAvailable());
+        assertEquals("3.8.0", checker.getLatestVersion());
+        assertNull(checker.getNewMajorVersion());
+        assertEquals(List.of(
+            "There is a new version of uSkyBlock available: 3.8.0",
+            "Run /usb update to stage it for the next restart, or download it from "
+                + "https://modrinth.com/plugin/uskyblock/version/3.8.0"), logged());
     }
 
     @Test
-    public void readsTagNameWithoutLeadingV() {
-        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, releases(release("3.7.1")), "3.7.0"));
+    public void newerVersionForAnotherMinecraftVersionOrLoaderIsNoUpdate() {
+        modrinth.version("3.7.1", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("3.8.1", "release", PUBLISHED, List.of("26.4"), PAPER_SPIGOT)
+            .version("3.8.0", "release", PUBLISHED, MC_26_3, List.of("paper"));
+        SkyUpdateChecker checker = checker();
+
+        checker.checkForUpdates().join();
+
+        assertFalse(checker.isUpdateAvailable());
+        assertEquals("3.7.1", checker.getLatestVersion());
+        assertEquals(List.of(), logged());
     }
 
     @Test
-    public void readsGitHubReleases() {
-        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, GITHUB_RELEASES, "3.7.0"));
+    public void newMajorVersionIsAnnouncedWithItsRequirementAlsoWhenIncompatible() {
+        modrinth.version("3.7.1", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("4.0.0", "release", PUBLISHED, List.of("26.4"), List.of("paper"));
+        SkyUpdateChecker checker = checker();
+
+        checker.checkForUpdates().join();
+
+        assertFalse(checker.isUpdateAvailable());
+        assertEquals("4.0.0", checker.getNewMajorVersion().version());
+        assertEquals(List.of(
+            "There is a new major version of uSkyBlock available: 4.0.0 (needs Minecraft 26.4)",
+            "Read the upgrade guide before upgrading: https://uskyblock.github.io/uSkyBlock/admin/upgrading/",
+            "Release notes: https://modrinth.com/plugin/uskyblock/version/4.0.0"), logged());
     }
 
     @Test
-    public void latestReleaseOnOwnMajorVersionIsPickedWhenNewerMajorExists() {
-        String body = releases(release("v4.0.0"), release("v3.7.1"), release("v3.7.0"));
+    public void betaAndAlphaAreIgnoredOnTheReleaseChannel() {
+        modrinth.version("3.7.1", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("3.8.0-beta", "beta", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("4.0.0-alpha", "alpha", PUBLISHED, MC_26_3, PAPER_SPIGOT);
+        SkyUpdateChecker checker = checker();
 
-        CheckResult result = parseCheckResult(200, body, "3.8.0-SNAPSHOT");
+        checker.checkForUpdates().join();
 
-        assertEquals(new CheckResult("3.7.1", RELEASE_4_0_0), result);
+        assertFalse(checker.isUpdateAvailable());
+        assertNull(checker.getNewMajorVersion());
+        assertEquals(List.of(), logged());
     }
 
     @Test
-    public void releasesArePickedByVersionNotByListOrder() {
-        String body = releases(release("v3.7.0"), release("v4.1.0"), release("v3.10.0"), release("v4.0.0"),
-            release("v3.9.2"));
+    public void stagingChannelOffersBetaAndAlpha() {
+        config("STAGING", false);
+        modrinth.version("3.7.1", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("3.8.0-beta", "beta", PUBLISHED, MC_26_3, PAPER_SPIGOT);
+        SkyUpdateChecker checker = checker();
 
-        CheckResult result = parseCheckResult(200, body, "3.7.0");
+        checker.checkForUpdates().join();
 
-        assertEquals(new CheckResult("3.10.0",
-            new Release("4.1.0", "https://github.com/uskyblock/uSkyBlock/releases/tag/v4.1.0")), result);
+        assertEquals("3.8.0-beta", checker.getLatestVersion());
     }
 
     @Test
-    public void olderMajorVersionIsNotReported() {
-        CheckResult result = parseCheckResult(200, GITHUB_RELEASES, "4.0.0-SNAPSHOT");
+    public void unreachableModrinthLogsOnlyTheHintOnce() {
+        SkyUpdateChecker checker = checker();
+        modrinth.close();
 
-        assertEquals(new CheckResult(null, null), result);
+        checker.checkForUpdates().join();
+        checker.checkForUpdates().join();
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
+        assertEquals(Level.INFO, records.getFirst().getLevel());
+        assertNull(records.getFirst().getThrown());
+        assertTrue(checker.lastCheckFailed());
     }
 
     @Test
-    public void snapshotOfNewMajorVersionGetsItsReleaseAsRegularUpdate() {
-        String body = releases(release("v4.0.0"), release("v3.7.1"));
+    public void malformedAnswerIsAFailedCheck() {
+        modrinth.answer(200, "<html><body>Bad gateway</body></html>");
+        SkyUpdateChecker checker = checker();
 
-        assertEquals(new CheckResult("4.0.0", null), parseCheckResult(200, body, "4.0.0-SNAPSHOT"));
+        checker.checkForUpdates().join();
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
+        assertTrue(checker.lastCheckFailed());
     }
 
     @Test
-    public void draftsAndPrereleasesAreSkipped() {
-        String body = releases(release("v5.0.0", true, false), release("v4.0.0", false, true),
-            release("v3.7.3", true, false), release("v3.7.2", false, true), release("v3.7.1"));
+    public void errorStatusIsAFailedCheck() {
+        modrinth.rateLimited("60");
+        SkyUpdateChecker checker = checker();
 
-        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, body, "3.7.0"));
+        checker.checkForUpdates().join();
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
     }
 
     @Test
-    public void entriesWithoutVersionTagAreSkipped() {
-        String body = releases(release("nightly"), release("v4"), release("build-493"), release("v"),
-            "{\"tag_name\": null, \"html_url\": \"https://github.com/\"}", "{\"html_url\": \"https://github.com/\"}",
-            "{\"tag_name\": \"v4.0.0\"}", "null", "\"v4.0.0\"", release("v3.7.1"));
+    public void unexpectedFailureLogsStackTraceOnce() throws IOException {
+        IllegalStateException bug = new IllegalStateException("bug");
+        ModrinthClient client = mock(ModrinthClient.class);
+        when(client.body(any())).thenThrow(bug);
+        SkyUpdateChecker checker = checker(client);
 
-        assertEquals(new CheckResult("3.7.1", null), parseCheckResult(200, body, "3.7.0"));
+        checker.checkForUpdates().join();
+        checker.checkForUpdates().join();
+
+        assertEquals(List.of("Exception while trying to fetch latest plugin version.", MANUAL_CHECK_HINT), logged());
+        assertEquals(Level.SEVERE, records.getFirst().getLevel());
+        assertSame(bug, records.getFirst().getThrown());
     }
 
     @Test
-    public void emptyReleaseListIsNoFailure() {
-        assertEquals(new CheckResult(null, null), parseCheckResult(200, "[]", "3.7.1"));
+    public void failureAfterSuccessfulCheckLogsHintAgainAndForgetsTheVersions() {
+        SkyUpdateChecker checker = checker();
+        checker.handleCheckResult(null);
+        checker.handleCheckResult(updates("3.7.1", version("3.7.1", MC_26_3), version("4.0.0", MC_26_3)));
+        assertFalse(checker.lastCheckFailed());
+        records.clear();
+
+        checker.handleCheckResult(null);
+
+        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
+        assertNull(checker.getNewMajorVersion());
+        assertNull(checker.getLatestVersion());
+        assertNull(checker.getUpdates());
     }
 
     @Test
-    public void readsStagingFeedVersion() {
-        String staging = "{\"version\": \"3.8.0-SNAPSHOT\", \"build\": \"493\"}";
-        assertEquals(new CheckResult("3.8.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.7.1"));
+    public void lastCheckIsNotFailedBeforeAnyCheck() {
+        assertFalse(checker().lastCheckFailed());
     }
 
     @Test
-    public void stagingFeedVersionIsReportedWhateverItsMajorVersion() {
-        String staging = "{\"version\": \"4.0.0-SNAPSHOT\", \"build\": \"510\"}";
-        assertEquals(new CheckResult("4.0.0-SNAPSHOT", null), parseCheckResult(200, staging, "3.8.0-SNAPSHOT"));
+    public void updateAndNewMajorVersionAreBothAnnounced() {
+        SkyUpdateChecker checker = checker();
+
+        checker.handleCheckResult(updates("3.7.1", version("3.7.2", MC_26_3), version("4.0.0", List.of("26.3"))));
+
+        assertEquals(List.of(
+            "There is a new version of uSkyBlock available: 3.7.2",
+            "Run /usb update to stage it for the next restart, or download it from "
+                + "https://modrinth.com/plugin/uskyblock/version/3.7.2",
+            "There is a new major version of uSkyBlock available: 4.0.0 (needs Minecraft 26.3)",
+            "Read the upgrade guide before upgrading: https://uskyblock.github.io/uSkyBlock/admin/upgrading/",
+            "Release notes: https://modrinth.com/plugin/uskyblock/version/4.0.0"), logged());
     }
 
     @Test
-    public void nonSuccessStatusGivesNoVersion() {
-        String rateLimited = "{\"message\": \"API rate limit exceeded for 203.0.113.7.\"}";
-        assertNull(parseCheckResult(403, rateLimited, "3.7.1"));
-        assertNull(parseCheckResult(429, rateLimited, "3.7.1"));
-        assertNull(parseCheckResult(404, "{\"message\": \"Not Found\"}", "3.7.1"));
-        assertNull(parseCheckResult(500, GITHUB_RELEASES, "3.7.1"));
+    public void checkAutoStagesOnlyWhenAutoStageIsOn() {
+        modrinth.version("3.8.0", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT);
+        when(stager.autoStage(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
+
+        checker().checkForUpdates().join();
+        verify(stager, never()).autoStage(any(), any());
+
+        config("RELEASE", true);
+        checker().checkForUpdates().join();
+        verify(stager).autoStage(any(), any());
     }
 
     @Test
-    public void badBodyGivesNoVersion() {
-        assertNull(parseCheckResult(200, "[{\"tag_name\": ", "3.7.1"));
-        assertNull(parseCheckResult(200, "<html><body>Bad gateway</body></html>", "3.7.1"));
-        assertNull(parseCheckResult(200, "", "3.7.1"));
-        assertNull(parseCheckResult(200, null, "3.7.1"));
-        assertNull(parseCheckResult(200, "{\"name\": \"3.7.1\"}", "3.7.1"));
+    public void failedCheckDoesNotAutoStage() {
+        config("RELEASE", true);
+        SkyUpdateChecker checker = checker();
+        modrinth.close();
+
+        checker.checkForUpdates().join();
+
+        verify(stager, never()).autoStage(any(), any());
+    }
+
+    @Test
+    public void latestVersionApiReportsOwnMajorVersion() {
+        modrinth.version("3.7.2", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT)
+            .version("4.0.0", "release", PUBLISHED, MC_26_3, PAPER_SPIGOT);
+        ModrinthClient client = modrinth.client();
+
+        assertEquals("3.7.2", checker(client).fetchLatestVersion(client.versionsUri()).join());
+    }
+
+    @Test
+    public void latestVersionApiReadsAVersionFeed() {
+        ServerPlatform spigot = ServerPlatform.spigot("26.3");
+
+        assertEquals("3.8.0-SNAPSHOT",
+            parseLatestVersion("{\"version\": \"3.8.0-SNAPSHOT\", \"build\": \"493\"}", "STAGING", "3.7.1", spigot));
+        assertNull(parseLatestVersion("{\"name\": \"3.7.1\"}", "RELEASE", "3.7.1", spigot));
+        assertNull(parseLatestVersion("<html></html>", "RELEASE", "3.7.1", spigot));
     }
 
     @Test
     public void isNewerVersionComparesAsBefore() {
+        SkyUpdateChecker checker = checker();
+
         assertTrue(checker.isNewerVersion("3.7.0", "3.7.1"));
         assertTrue(checker.isNewerVersion("3.7.1", "3.8.0"));
         assertTrue(checker.isNewerVersion("3.8.0-SNAPSHOT", "3.8.0"));
@@ -249,156 +328,18 @@ public class SkyUpdateCheckerTest {
     }
 
     @Test
-    public void latestTagIsComparedWithoutLeadingV() {
-        String latest = parseCheckResult(200, GITHUB_RELEASES, "3.7.0").latestVersion();
-        assertTrue(checker.isNewerVersion("3.7.0", latest));
-        assertFalse(checker.isNewerVersion("3.7.1", latest));
-    }
-
-    @Test
-    public void releaseBranchAsksGitHub() {
-        URI github = URI.create("https://api.github.com/repos/uskyblock/uSkyBlock/releases?per_page=100");
-        assertEquals(github, updateUri("RELEASE"));
-    }
-
-    @Test
-    public void stagingBranchAsksStagingFeed() {
-        assertEquals(UpdateChecker.URL_STAGING, updateUri("STAGING"));
-        assertEquals(UpdateChecker.URL_STAGING, updateUri("staging"));
-    }
-
-    @Test
-    public void failedCheckLogsManualCheckHint() {
-        loggingChecker.handleCheckResult(null);
-
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
-        assertTrue(loggingChecker.lastCheckFailed());
-    }
-
-    @Test
-    public void repeatedFailureLogsHintOnlyOnce() {
-        loggingChecker.handleCheckResult(null);
-        loggingChecker.handleCheckResult(null);
-        loggingChecker.handleCheckResult(null);
-
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
-    }
-
-    @Test
-    public void failureAfterSuccessfulCheckLogsHintAgain() {
-        loggingChecker.handleCheckResult(null);
-        loggingChecker.handleCheckResult(new CheckResult("3.7.1", null));
-        assertFalse(loggingChecker.lastCheckFailed());
-        loggingChecker.handleCheckResult(null);
-
-        assertEquals(List.of(MANUAL_CHECK_HINT, MANUAL_CHECK_HINT), logged());
-    }
-
-    @Test
-    public void successfulCheckDoesNotLogHint() {
-        loggingChecker.handleCheckResult(new CheckResult("3.7.1", null));
-
-        assertEquals(List.of(), logged());
-        assertFalse(loggingChecker.lastCheckFailed());
-    }
-
-    @Test
-    public void lastCheckIsNotFailedBeforeAnyCheck() {
-        assertFalse(loggingChecker.lastCheckFailed());
-    }
-
-    @Test
-    public void newerVersionIsStillAnnounced() {
-        loggingChecker.handleCheckResult(new CheckResult("3.8.0", null));
-
-        assertEquals(List.of(
-            "There is a new version of uSkyBlock available: 3.8.0",
-            "Visit https://uskyblock.github.io/ to download."), logged());
-    }
-
-    @Test
-    public void newMajorVersionIsAnnouncedWhenOwnMajorVersionIsCurrent() {
-        loggingChecker.handleCheckResult(new CheckResult("3.7.1", RELEASE_4_0_0));
-
-        assertEquals(List.of(
-            "There is a new major version of uSkyBlock available: 4.0.0",
-            "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0"),
-            logged());
-        assertFalse(loggingChecker.isUpdateAvailable());
-        assertEquals("3.7.1", loggingChecker.getLatestVersion());
-        assertEquals(RELEASE_4_0_0, loggingChecker.getNewMajorRelease());
-    }
-
-    @Test
-    public void updateAndNewMajorVersionAreBothAnnounced() {
-        loggingChecker.handleCheckResult(new CheckResult("3.7.2", RELEASE_4_0_0));
-
-        assertEquals(List.of(
-            "There is a new version of uSkyBlock available: 3.7.2",
-            "Visit https://uskyblock.github.io/ to download.",
-            "There is a new major version of uSkyBlock available: 4.0.0",
-            "Read its release notes before upgrading: https://github.com/uskyblock/uSkyBlock/releases/tag/v4.0.0"),
-            logged());
-        assertEquals("3.7.2", loggingChecker.getLatestVersion());
-    }
-
-    @Test
-    public void failedCheckForgetsNewMajorVersion() {
-        loggingChecker.handleCheckResult(new CheckResult("3.7.1", RELEASE_4_0_0));
-        loggingChecker.handleCheckResult(null);
-
-        assertNull(loggingChecker.getNewMajorRelease());
-        assertNull(loggingChecker.getLatestVersion());
-        assertTrue(loggingChecker.lastCheckFailed());
-    }
-
-    @Test
-    public void latestVersionApiReportsOwnMajorVersion() {
-        SkyUpdateChecker checker = checkerRequesting(() -> new CheckResult("3.7.1", RELEASE_4_0_0));
-
-        assertEquals("3.7.1", checker.fetchLatestVersion(UpdateChecker.URL_STAGING).join());
-    }
-
-    @Test
-    public void unreachableUpdateSourceLogsOnlyTheHintOnce() {
-        SkyUpdateChecker checker = checkerRequesting(() -> {
-            throw new UnknownHostException("api.github.com");
-        });
-
-        assertNull(check(checker));
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
-        assertEquals(Level.INFO, records.getFirst().getLevel());
-        assertNull(records.getFirst().getThrown());
-
-        assertNull(check(checker));
-        assertEquals(List.of(MANUAL_CHECK_HINT), logged());
-    }
-
-    @Test
-    public void unexpectedFailureLogsStackTraceOnce() {
-        IllegalStateException bug = new IllegalStateException("bug");
-        SkyUpdateChecker checker = checkerRequesting(() -> {
-            throw bug;
-        });
-
-        assertNull(check(checker));
-        assertEquals(List.of("Exception while trying to fetch latest plugin version.", MANUAL_CHECK_HINT), logged());
-        assertEquals(Level.SEVERE, records.getFirst().getLevel());
-        assertSame(bug, records.getFirst().getThrown());
-
-        assertNull(check(checker));
-        assertEquals(2, records.size());
-    }
-
-    @Test
     public void everyInjectionSharesTheCheckedInstance() {
-        // The scheduled check and /usb version must see the same check result.
+        // The scheduled check, /usb version and /usb update must see the same check result.
         uSkyBlock plugin = mock(uSkyBlock.class);
         Injector injector = Guice.createInjector(binder -> {
             // A provider, so Guice doesn't inject the plugin's own fields.
             binder.bind(uSkyBlock.class).toProvider(() -> plugin);
             binder.bind(RuntimeConfigs.class).toInstance(mock(RuntimeConfigs.class));
             binder.bind(Logger.class).annotatedWith(PluginLog.class).toInstance(Logger.getLogger("SkyUpdateCheckerTest"));
+            binder.bind(ModrinthClient.class).toInstance(mock(ModrinthClient.class));
+            binder.bind(UpdateStager.class).toInstance(stager);
+            binder.bind(Clock.class).toInstance(Clock.systemUTC());
+            binder.bind(ServerPlatform.class).toInstance(ServerPlatform.spigot("26.3"));
             binder.bind(UpdateChecker.class).to(SkyUpdateChecker.class);
         });
 

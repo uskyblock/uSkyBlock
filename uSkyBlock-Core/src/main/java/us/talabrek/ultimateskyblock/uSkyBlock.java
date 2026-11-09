@@ -81,6 +81,7 @@ import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 import us.talabrek.ultimateskyblock.world.WorldManager;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -976,6 +977,13 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public SkyUpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    /**
+     * @return The jar the server loaded the plugin from.
+     */
+    public @NotNull Path getPluginJar() {
+        return getFile().toPath();
     }
 
     public WorldManager getWorldManager() {
