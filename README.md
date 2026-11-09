@@ -52,7 +52,7 @@ For installation, upgrade guidance, and server setup, start here:
 - Server admins: https://uskyblock.github.io/docs/admin/setup/
 - Server customization: https://uskyblock.github.io/docs/admin/customization/
 - Challenges config: https://uskyblock.github.io/docs/admin/challenges/
-- Useful commands and permissions: https://uskyblock.github.io/docs/admin/reference/
+- Useful commands and permissions: https://uskyblock.github.io/docs/admin/commands/
 - Developers: https://uskyblock.github.io/docs/developers/
 - Contributors: https://uskyblock.github.io/docs/contributing/
 
