@@ -45,6 +45,7 @@ import us.talabrek.ultimateskyblock.config.PluginConfig;
 import us.talabrek.ultimateskyblock.config.bootstrap.ConfigBootstrap;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfig;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.event.PlayerEvents;
 import us.talabrek.ultimateskyblock.handler.ConfirmHandler;
 import us.talabrek.ultimateskyblock.handler.CooldownHandler;
 import us.talabrek.ultimateskyblock.handler.SchematicHandler;
@@ -370,7 +371,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     /**
      * Clears the player's inventory, as the restart config says, while they are online in the island world; otherwise
-     * it marks the clear for their next entry ({@link #clearInventoryOnEntry}).
+     * it marks the clear for their next entry ({@link #clearInventoryOnEntry}). For a Player held from before a relog,
+     * the entry check runs again for the rejoined Player once their arrival has settled.
      */
     public void clearPlayerInventory(Player player) {
         getLogger().entering(CN, "clearPlayerInventory", player);
@@ -380,6 +382,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             getLogger().finer("not clearing, since player is not in skyworld, marking for clear on next entry");
             if (playerInfo != null) {
                 playerInfo.setClearInventoryOnNextEntry(true);
+            }
+            Player current = getServer().getPlayer(player.getUniqueId());
+            if (current != null && current != player) {
+                // They relogged: the entry check of their join may have run before the clear was marked.
+                getScheduler().sync(() -> clearInventoryOnEntry(current), PlayerEvents.ENTRY_SETTLE);
             }
             return;
         }
