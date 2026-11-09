@@ -95,6 +95,7 @@ These are the most useful admin commands for day-to-day server management. Addit
 | `perk <player>` | Manage player perks |
 | `flush` | Write cached data to disk |
 | `version` | Show plugin and dependency versions |
+| `update` | Stage the newest uSkyBlock version for the next restart (`usb.admin.update`, see [Updates](setup.md#updates)) |
 
 ### Purging abandoned islands
 

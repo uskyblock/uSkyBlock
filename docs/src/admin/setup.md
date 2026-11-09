@@ -95,6 +95,31 @@ To apply config changes without a full restart: `/usb reload`
 
 If something goes wrong, stop the server, restore the previous JAR and backup, and start again.
 
+### Updates
+
+uSkyBlock checks [Modrinth](https://modrinth.com/plugin/uskyblock) for new versions at startup and every 4 hours. It
+only offers a version that runs on your server's Minecraft version and platform (Paper or Spigot). A new major version
+is announced on its own line with the Minecraft version it needs, whether it runs on your server or not.
+
+- `/usb update` downloads the newest version, checks its hash, and places it in the server's update folder
+  (`plugins/update/` by default, `settings.update-folder` in `bukkit.yml`) under the name of the running JAR. The
+  server swaps it in at the next restart. A new major version asks for confirmation first, since it changes your data
+  and config at its first start: back up before you confirm. A version that doesn't run on your server is refused.
+- Players with `usb.admin.update` are told when they join that an update is available or staged.
+- With `plugin-updates.auto-stage: true`, a regular update (same major version, runs on your server) is staged by
+  itself once it has been out for `plugin-updates.auto-stage-delay` (default `3d`), so a bad release can be pulled
+  before it reaches you. A new major version is never staged automatically.
+
+| Option | Default | Notes |
+|---|---|---|
+| `plugin-updates.check` | `true` | Check for updates, log them, and tell admins at join |
+| `plugin-updates.branch` | `RELEASE` | `RELEASE` for release versions, `STAGING` for beta and alpha versions too |
+| `plugin-updates.auto-stage` | `false` | Stage regular updates for the next restart by itself |
+| `plugin-updates.auto-stage-delay` | `3d` | How long an update must have been out before it is staged automatically |
+
+A `config.yml` from before uSkyBlock 3.8 doesn't list `auto-stage` and `auto-stage-delay`; add them under
+`plugin-updates` to change them.
+
 ## Next steps
 
 - For gameplay tuning, schematics, biomes, and protection settings, see [Customization](customization.md).
