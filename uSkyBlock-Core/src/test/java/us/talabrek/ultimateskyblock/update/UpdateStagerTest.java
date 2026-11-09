@@ -270,4 +270,16 @@ public class UpdateStagerTest {
         assertEquals("3.8.0", result.replaced());
         assertEquals(new UpdateStager.StagedUpdate("3.8.1", true), stager.staged());
     }
+
+    @Test
+    public void autoStageKeepsANewerStagedVersion() throws IOException {
+        modrinth.version("4.0.0", "release", NOW.minus(Duration.ofDays(10)), MC_26_3, PAPER_SPIGOT);
+        stage("4.0.0");
+        modrinth.version("3.8.1", "release", NOW.minus(DELAY), MC_26_3, PAPER_SPIGOT);
+
+        assertNull(stager.autoStage(updates(), DELAY).join());
+        assertEquals(new UpdateStager.StagedUpdate("4.0.0", false), stager.staged());
+        assertEquals("uSkyBlock 4.0.0", Files.readString(server.staged()));
+        assertEquals(1, modrinth.fileRequests().size());
+    }
 }

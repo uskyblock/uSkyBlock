@@ -153,8 +153,8 @@ public class UpdateStager {
     }
 
     /**
-     * Stages the regular update once it has been out for the delay, unless it is staged already. A new major
-     * version and a version that doesn't run on this server are never staged.
+     * Stages the regular update once it has been out for the delay, unless it or a newer version is staged already.
+     * A new major version and a version that doesn't run on this server are never staged.
      *
      * @return The staging, or NULL if there is nothing to stage.
      */
@@ -162,7 +162,7 @@ public class UpdateStager {
         ModrinthVersion update = updates.update();
         StagedUpdate current = staged;
         if (update == null || update.published().plus(delay).isAfter(clock.instant())
-            || (current != null && current.version().equals(update.version()))) {
+            || (current != null && !Updates.isNewer(current.version(), update.version()))) {
             return CompletableFuture.completedFuture(null);
         }
         return stage(update, "auto-stage", true).thenApply(result -> {
