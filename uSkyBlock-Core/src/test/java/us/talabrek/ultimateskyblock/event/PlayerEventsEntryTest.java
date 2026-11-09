@@ -1,6 +1,5 @@
 package us.talabrek.ultimateskyblock.event;
 
-import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -36,18 +35,22 @@ public class PlayerEventsEntryTest {
     }
 
     @Test
-    public void aWorldChangeAppliesTheClear() {
+    public void aWorldChangeAppliesTheClearOnceSettled() {
         listener.onWorldChanged(new PlayerChangedWorldEvent(player, mock(World.class)));
 
-        verify(plugin).clearInventoryOnEntry(player);
+        appliesOnceSettled();
     }
 
     @Test
-    public void aJoinAppliesTheClearATickLater() {
+    public void aJoinAppliesTheClearOnceSettled() {
         listener.onJoin(new PlayerJoinEvent(player, "joined"));
 
+        appliesOnceSettled();
+    }
+
+    private void appliesOnceSettled() {
         ArgumentCaptor<Runnable> later = ArgumentCaptor.forClass(Runnable.class);
-        verify(scheduler).sync(later.capture(), eq(TimeUtil.ticksAsDuration(1)));
+        verify(scheduler).sync(later.capture(), eq(PlayerEvents.ENTRY_SETTLE));
         verify(plugin, never()).clearInventoryOnEntry(any());
         later.getValue().run();
         verify(plugin).clearInventoryOnEntry(player);

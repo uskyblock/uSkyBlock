@@ -60,6 +60,7 @@ public class PlayerEvents implements Listener {
         EntityDamageEvent.DamageCause.HOT_FLOOR));
     private static final Random RANDOM = new Random();
     private static final Duration OBSIDIAN_SPAM = Duration.ofSeconds(10);
+    static final Duration ENTRY_SETTLE = TimeUtil.ticksAsDuration(3);
 
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
@@ -333,19 +334,23 @@ public class PlayerEvents implements Listener {
     }
 
     /**
-     * A clear marked for the player's next entry, at MONITOR: after a per-world inventory plugin has swapped in the
-     * island world's inventory.
+     * A clear marked for the player's next entry, once their arrival has settled: a per-world inventory plugin swaps
+     * the inventory in the world change, at MONITOR too, where the order among MONITOR listeners is not fixed, and may
+     * check the world again two ticks after a respawn.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChanged(PlayerChangedWorldEvent event) {
-        plugin.clearInventoryOnEntry(event.getPlayer());
+        clearOnceSettled(event.getPlayer());
     }
 
-    /** A clear marked for the player's next entry, a tick after they joined, once every plugin has handled the join. */
+    /** A clear marked for the player's next entry, once their join has settled. */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        plugin.getScheduler().sync(() -> plugin.clearInventoryOnEntry(player), TimeUtil.ticksAsDuration(1));
+        clearOnceSettled(event.getPlayer());
+    }
+
+    private void clearOnceSettled(Player player) {
+        plugin.getScheduler().sync(() -> plugin.clearInventoryOnEntry(player), ENTRY_SETTLE);
     }
 
     /**
