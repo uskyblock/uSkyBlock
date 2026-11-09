@@ -117,8 +117,16 @@ is announced on its own line with the Minecraft version it needs, whether it run
 | `plugin-updates.auto-stage` | `false` | Stage regular updates for the next restart by itself |
 | `plugin-updates.auto-stage-delay` | `3d` | How long an update must have been out before it is staged automatically |
 
-A `config.yml` from before uSkyBlock 3.8 doesn't list `auto-stage` and `auto-stage-delay`; add them under
-`plugin-updates` to change them.
+A `config.yml` written before these keys existed doesn't list `auto-stage` and `auto-stage-delay`, and uses their
+defaults. To change them, add them under `plugin-updates` and run `/usb reload`:
+
+```yaml
+plugin-updates:
+  check: true
+  branch: RELEASE
+  auto-stage: true
+  auto-stage-delay: 3d
+```
 
 ## Next steps
 
