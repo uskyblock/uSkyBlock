@@ -185,7 +185,9 @@ public class UpdateStager {
         }
         Path folder = updateFolder.toPath().toAbsolutePath().normalize();
         Path jarFolder = jar.toAbsolutePath().normalize().getParent();
-        if (folder.equals(jarFolder)) {
+        // Paper may load a remapped copy of the jar from outside the plugins folder; the data folder stays in it.
+        Path pluginsFolder = plugin.getDataFolder().toPath().toAbsolutePath().normalize().getParent();
+        if (folder.equals(jarFolder) || folder.equals(pluginsFolder)) {
             return null;
         }
         return folder.resolve(jar.getFileName().toString());
