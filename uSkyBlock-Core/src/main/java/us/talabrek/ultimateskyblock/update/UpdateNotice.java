@@ -87,7 +87,8 @@ public class UpdateNotice implements Listener {
         }
         ModrinthVersion update = updates != null ? updates.update() : null;
         // With auto-stage, a regular update is auto-stage's to stage, and the staged line tells of it once it is.
-        if (update != null && !config.autoStage()
+        // Once auto-stage fails, admins have to stage it themselves.
+        if (update != null && (!config.autoStage() || stager.autoStageFailed())
             && (staged == null || Updates.isNewer(staged.version(), update.version()))) {
             lines.add(tr("uSkyBlock <version> is available. <command> stages it for the next restart.",
                 unparsed("version", update.version(), PRIMARY),

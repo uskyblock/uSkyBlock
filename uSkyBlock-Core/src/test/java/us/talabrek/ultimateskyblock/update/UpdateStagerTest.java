@@ -320,4 +320,18 @@ public class UpdateStagerTest {
         assertEquals("uSkyBlock 4.0.0", Files.readString(server.staged()));
         assertEquals(1, modrinth.fileRequests().size());
     }
+
+    @Test
+    public void failedAutoStageIsRememberedUntilAStagingSucceeds() throws IOException {
+        modrinth.version("3.8.0", "release", NOW.minus(DELAY), MC_26_3, PAPER_SPIGOT);
+        stager();
+        server.updateFolder(null);
+
+        assertEquals(UpdateStager.Failure.NO_UPDATE_FOLDER, stager.autoStage(updates(), DELAY).join().failure());
+        assertTrue(stager.autoStageFailed());
+
+        server.updateFolder(plugins.resolve("update").toFile());
+        assertNull(stager.autoStage(updates(), DELAY).join().failure());
+        assertFalse(stager.autoStageFailed());
+    }
 }

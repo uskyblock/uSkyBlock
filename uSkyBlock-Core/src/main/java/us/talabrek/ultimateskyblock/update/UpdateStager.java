@@ -42,6 +42,7 @@ public class UpdateStager {
     private final Logger logger;
     private final AtomicBoolean staging = new AtomicBoolean();
     private volatile @Nullable StagedUpdate staged;
+    private volatile boolean autoStageFailed;
 
     /**
      * @param automatic Whether auto-stage staged it, rather than an admin.
@@ -124,6 +125,13 @@ public class UpdateStager {
     }
 
     /**
+     * @return Whether the last auto-stage attempt failed and nothing has been staged since.
+     */
+    public boolean autoStageFailed() {
+        return autoStageFailed;
+    }
+
+    /**
      * Stages a version off the server thread.
      *
      * @param stagedBy Who staged it, for the log.
@@ -142,6 +150,7 @@ public class UpdateStager {
                 Result result = stageInto(target, version);
                 if (result.failure() == null) {
                     staged = new StagedUpdate(version.version(), automatic);
+                    autoStageFailed = false;
                     logger.info("Staged uSkyBlock " + version.version() + " as " + target
                         + " for the next restart (by " + stagedBy + ").");
                 }
@@ -167,6 +176,7 @@ public class UpdateStager {
         }
         return stage(update, "auto-stage", true).thenApply(result -> {
             if (result.failure() != null) {
+                autoStageFailed = true;
                 logger.warning("Could not stage uSkyBlock " + update.version() + " automatically: "
                     + result.failure().description() + ".");
             }
