@@ -65,6 +65,8 @@ public class PurgeCommand extends AbstractCommand {
         final boolean force = args[args.length - 1].equalsIgnoreCase("force");
 
         Duration time = Duration.ofDays(Integer.parseInt(days, 10));
+        plugin.getLogger().info(sender.getName() + " started a purge scan for islands abandoned for more than " + days
+            + " days below level " + purgeLevel + (force ? ", to purge them without asking." : "."));
         sendTr(sender, "Finding all islands abandoned for more than <days> days below level <level>.",
             unparsed("days", args[0], PRIMARY),
             unparsed("level", String.valueOf(purgeLevel), PRIMARY));
@@ -117,7 +119,9 @@ public class PurgeCommand extends AbstractCommand {
 
     private void doPurge(CommandSender sender) {
         sendErrorTr(sender, "Starting purge...");
-        purgeTask = new PurgeTask(plugin, runtimeConfigs, scanTask.getPurgeList(), sender);
+        plugin.getLogger().info(sender.getName() + " started the purge of " + scanTask.getPurgeList().size()
+            + " islands.");
+        purgeTask = new PurgeTask(plugin, runtimeConfigs, scanTask.getPurgeList(), scanTask.getRule(), sender);
         purgeTask.runTaskAsynchronously(plugin);
         scanTask.stop(); // Mark as inactive
     }

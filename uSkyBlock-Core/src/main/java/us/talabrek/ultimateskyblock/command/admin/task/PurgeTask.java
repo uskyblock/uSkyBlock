@@ -5,35 +5,38 @@ import dk.lockfuglsang.minecraft.util.Timer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.island.IslandInfo;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.ProgressTracker;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.logging.Level;
 
 import static dk.lockfuglsang.minecraft.po.I18nUtil.marktr;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 import static us.talabrek.ultimateskyblock.message.Msg.sendErrorTr;
-import static us.talabrek.ultimateskyblock.util.LogUtil.log;
 
 /**
- * Scans for all players on a list of islands.
+ * Purges the islands a scan found, off the server thread, each checked against the scan's rule again right before.
  */
 public class PurgeTask extends BukkitRunnable {
     private final List<String> purgeList;
+    private final PurgeRule rule;
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
     private final CommandSender sender;
     private final ProgressTracker tracker;
     private final Timer timer;
     private boolean active;
+    private int purged;
+    private int activeAgain;
 
-    public PurgeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, List<String> purgeList, CommandSender sender) {
+    public PurgeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, List<String> purgeList, PurgeRule rule, CommandSender sender) {
         this.plugin = plugin;
         this.runtimeConfigs = runtimeConfigs;
         this.sender = sender;
         this.purgeList = purgeList;
+        this.rule = rule;
         this.timer = Timer.start();
         Duration feedbackEvery = runtimeConfigs.current().advanced().feedbackEvery();
         tracker = new ProgressTracker(sender,
@@ -51,7 +54,15 @@ public class PurgeTask extends BukkitRunnable {
                 break;
             }
             String islandName = purgeList.removeFirst();
-            plugin.getIslandLogic().purge(islandName);
+            IslandInfo island = plugin.getIslandInfo(islandName);
+            // Off the server thread: the server's player list is copy-on-write, which the server reads off it too.
+            if (island != null && !rule.matches(island, PurgeRule.online(plugin.getServer()))) {
+                activeAgain++;
+                plugin.getLogger().info("Not purging island " + islandName + ": it no longer matches the scan.");
+            } else if (plugin.getIslandLogic().purge(islandName)) {
+                purged++;
+                plugin.getLogger().info("Purged island " + islandName + ".");
+            }
             completed++;
             Duration elapsed = timer.elapsed();
             Duration eta = elapsed.dividedBy(completed).multipliedBy(total - completed);
@@ -77,7 +88,12 @@ public class PurgeTask extends BukkitRunnable {
     public void run() {
         try {
             doPurge();
-            log(Level.INFO, "Finished purging marked inactive islands.");
+            plugin.getLogger().info("The purge " + (active ? "ended" : "was stopped") + ": " + purged
+                + " islands purged, " + activeAgain + " skipped as active again.");
+            if (activeAgain > 0) {
+                sendErrorTr(sender, "PURGE:<primary> Skipped <count> islands that are active again.",
+                    unparsed("count", String.valueOf(activeAgain)));
+            }
             if (active) {
                 sendErrorTr(sender, "PURGE:<primary> Finished purging abandoned islands.");
             } else {
