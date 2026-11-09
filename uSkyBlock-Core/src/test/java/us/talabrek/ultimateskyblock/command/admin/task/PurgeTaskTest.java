@@ -30,8 +30,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +46,7 @@ class PurgeTaskTest {
     private static final long ABANDONED = Instant.now().minus(Duration.ofDays(90)).toEpochMilli();
 
     private final List<Player> online = new ArrayList<>();
+    private final List<String> logged = new ArrayList<>();
     private uSkyBlock plugin;
     private IslandLogic islandLogic;
     private PlayerDB playerDB;
@@ -58,7 +63,24 @@ class PurgeTaskTest {
         when(plugin.getServer()).thenReturn(server);
         when(plugin.getIslandLogic()).thenReturn(islandLogic);
         when(plugin.getOrphanLogic()).thenReturn(mock(OrphanLogic.class));
-        when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
+        Logger logger = Logger.getAnonymousLogger();
+        logger.addHandler(new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                if (record.getLevel() == Level.INFO) {
+                    logged.add(record.getMessage());
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        });
+        when(plugin.getLogger()).thenReturn(logger);
         when(server.getOnlinePlayers()).thenAnswer(invocation -> online);
         when(islandLogic.purge(anyString())).thenReturn(true);
         YamlConfiguration yaml = new YamlConfiguration();
@@ -93,6 +115,20 @@ class PurgeTaskTest {
         verify(islandLogic, never()).purge("3,3");
         verify(islandLogic, never()).purge("4,4");
         verify(islandLogic, never()).purge("5,5");
+    }
+
+    @Test
+    void logsEachIslandItPurgesAndTheTotals() {
+        island("1,1", 5, ABANDONED);
+        UUID cameOnline = island("2,2", 5, ABANDONED);
+        online(cameOnline);
+
+        PurgeRule rule = new PurgeRule(Instant.now().minus(Duration.ofDays(30)), 25, playerDB);
+        new PurgeTask(plugin, runtimeConfigs, new ArrayList<>(List.of("1,1", "2,2")), rule, mock(CommandSender.class))
+            .run();
+
+        assertTrue(logged.contains("Purged island 1,1."), logged.toString());
+        assertTrue(logged.contains("The purge ended: 1 islands purged, 1 skipped as active again."), logged.toString());
     }
 
     /** @return its one member, who last played then */

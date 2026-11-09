@@ -28,6 +28,7 @@ public class PurgeTask extends BukkitRunnable {
     private final ProgressTracker tracker;
     private final Timer timer;
     private boolean active;
+    private int purged;
     private int activeAgain;
 
     public PurgeTask(uSkyBlock plugin, RuntimeConfigs runtimeConfigs, List<String> purgeList, PurgeRule rule, CommandSender sender) {
@@ -58,8 +59,9 @@ public class PurgeTask extends BukkitRunnable {
             if (island != null && !rule.matches(island, PurgeRule.online(plugin.getServer()))) {
                 activeAgain++;
                 plugin.getLogger().info("Not purging island " + islandName + ": it no longer matches the scan.");
-            } else {
-                plugin.getIslandLogic().purge(islandName);
+            } else if (plugin.getIslandLogic().purge(islandName)) {
+                purged++;
+                plugin.getLogger().info("Purged island " + islandName + ".");
             }
             completed++;
             Duration elapsed = timer.elapsed();
@@ -86,8 +88,8 @@ public class PurgeTask extends BukkitRunnable {
     public void run() {
         try {
             doPurge();
-            plugin.getLogger().info("Finished purging marked inactive islands, " + activeAgain
-                + " skipped as active again.");
+            plugin.getLogger().info("The purge " + (active ? "ended" : "was stopped") + ": " + purged
+                + " islands purged, " + activeAgain + " skipped as active again.");
             if (activeAgain > 0) {
                 sendErrorTr(sender, "PURGE:<primary> Skipped <count> islands that are active again.",
                     unparsed("count", String.valueOf(activeAgain)));
