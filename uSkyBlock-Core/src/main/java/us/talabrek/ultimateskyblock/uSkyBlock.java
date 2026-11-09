@@ -367,11 +367,15 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
         return true;
     }
 
+    /**
+     * Clears the player's inventory, as the restart config says, while they are online in the island world; otherwise
+     * it marks the clear for their next entry ({@link #clearInventoryOnEntry}).
+     */
     public void clearPlayerInventory(Player player) {
         getLogger().entering(CN, "clearPlayerInventory", player);
         RuntimeConfig.Restart restartConfig = runtimeConfigs.current().restart();
         PlayerInfo playerInfo = getPlayerInfo(player);
-        if (!getWorldManager().isSkyWorld(player.getWorld())) {
+        if (!player.isOnline() || !getWorldManager().isSkyWorld(player.getWorld())) {
             getLogger().finer("not clearing, since player is not in skyworld, marking for clear on next entry");
             if (playerInfo != null) {
                 playerInfo.setClearInventoryOnNextEntry(true);
@@ -398,6 +402,20 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
             getHookManager().getEconomyHook().ifPresent((hook) -> hook.withdrawPlayer(player, hook.getBalance(player)));
         }
         getLogger().exiting(CN, "clearPlayerInventory");
+    }
+
+    /**
+     * The clear marked for the player's next entry, once they are online in the island world. Runs after the world
+     * change has completed, so that a per-world inventory plugin has already swapped in the island world's inventory.
+     */
+    public void clearInventoryOnEntry(Player player) {
+        if (!player.isOnline() || !getWorldManager().isSkyWorld(player.getWorld())) {
+            return;
+        }
+        PlayerInfo playerInfo = getPlayerInfo(player);
+        if (playerInfo != null && playerInfo.isClearInventoryOnNextEntry()) {
+            clearPlayerInventory(player);
+        }
     }
 
     public synchronized boolean devSetPlayerIsland(final Player sender, final Location l, final String player) {

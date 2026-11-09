@@ -3,6 +3,7 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dk.lockfuglsang.minecraft.util.ItemStackUtil;
+import dk.lockfuglsang.minecraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,7 +22,9 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -57,6 +60,7 @@ public class PlayerEvents implements Listener {
         EntityDamageEvent.DamageCause.HOT_FLOOR));
     private static final Random RANDOM = new Random();
     private static final Duration OBSIDIAN_SPAM = Duration.ofSeconds(10);
+    static final Duration ENTRY_SETTLE = TimeUtil.ticksAsDuration(3);
 
     private final uSkyBlock plugin;
     private final RuntimeConfigs runtimeConfigs;
@@ -327,6 +331,26 @@ public class PlayerEvents implements Listener {
             final PlayerInfo playerInfo = plugin.getPlayerInfo(player);
             playerInfo.onTeleport(player);
         }
+    }
+
+    /**
+     * A clear marked for the player's next entry, once their arrival has settled: a per-world inventory plugin swaps
+     * the inventory in the world change, at MONITOR too, where the order among MONITOR listeners is not fixed, and may
+     * check the world again two ticks after a respawn.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChanged(PlayerChangedWorldEvent event) {
+        clearOnceSettled(event.getPlayer());
+    }
+
+    /** A clear marked for the player's next entry, once their join has settled. */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent event) {
+        clearOnceSettled(event.getPlayer());
+    }
+
+    private void clearOnceSettled(Player player) {
+        plugin.getScheduler().sync(() -> plugin.clearInventoryOnEntry(player), ENTRY_SETTLE);
     }
 
     /**

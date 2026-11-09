@@ -419,7 +419,7 @@ public class PlayerInfo implements Serializable, us.talabrek.ultimateskyblock.ap
 
     public void onTeleport(final Player player) {
         if (isClearInventoryOnNextEntry()) {
-            scheduler.sync(() -> plugin.clearPlayerInventory(player), TimeUtil.ticksAsDuration(1));
+            scheduler.sync(() -> plugin.clearInventoryOnEntry(player), TimeUtil.ticksAsDuration(1));
         }
         List<String> pending = playerData.getStringList("pending-commands");
         if (!pending.isEmpty()) {
