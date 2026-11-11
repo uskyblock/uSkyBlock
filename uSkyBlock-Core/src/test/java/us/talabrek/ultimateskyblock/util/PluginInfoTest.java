@@ -61,7 +61,7 @@ public class PluginInfoTest {
         found("4.0.0", "3.7.1");
 
         assertEquals("A new major version of uSkyBlock is available: 4.0.0 (needs Minecraft 26.3)\n"
-            + "Read the upgrade guide before upgrading: https://uskyblock.github.io/\n",
+            + "Read the upgrade guide before upgrading: https://uskyblock.org\n",
             plainNotice());
     }
 
@@ -73,7 +73,7 @@ public class PluginInfoTest {
             + "Run /usb update to stage it for the next restart, or download it from "
             + "https://modrinth.com/plugin/uskyblock/version/3.7.2\n"
             + "A new major version of uSkyBlock is available: 4.0.0 (needs Minecraft 26.3)\n"
-            + "Read the upgrade guide before upgrading: https://uskyblock.github.io/\n",
+            + "Read the upgrade guide before upgrading: https://uskyblock.org\n",
             plainNotice());
     }
 

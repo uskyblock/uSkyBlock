@@ -4,7 +4,7 @@
 [![Version](https://img.shields.io/github/v/tag/uskyblock/uSkyBlock?label=version&sort=semver&color=007EC6)](https://github.com/uskyblock/uSkyBlock/tags)
 [![Spigot](https://img.shields.io/badge/plugin-spigot-ED8106)](https://www.spigotmc.org/resources/uskyblock-revived.66795/)
 [![Hangar](https://img.shields.io/badge/plugin-hangar-007EC6)](https://hangar.papermc.io/uSkyBlock/uSkyBlock)
-[![Docs](https://img.shields.io/badge/docs-site-1F7A52)](https://uskyblock.github.io/docs/)
+[![Docs](https://img.shields.io/badge/docs-site-1F7A52)](https://uskyblock.org/docs/)
 [![License](https://img.shields.io/badge/license-GPLv3-007EC6)](http://www.gnu.org/copyleft/gpl.html)
 
 uSkyBlock is a Skyblock plugin for Spigot and Paper servers. Build a server around islands, progression, challenges, party play, and deep gameplay customization, backed by more than a decade of project history and continued maintenance for modern Minecraft versions.
@@ -13,14 +13,14 @@ uSkyBlock is an open-source Skyblock plugin for Spigot and Paper, with public do
 
 ## Quick Links
 
-- Homepage: https://uskyblock.github.io/
-- Docs: https://uskyblock.github.io/docs/
+- Homepage: https://uskyblock.org
+- Docs: https://uskyblock.org/docs/
 - Releases: https://www.spigotmc.org/resources/uskyblock-revived.66795/history
 - DevBukkit page: https://dev.bukkit.org/projects/uskyblock
 - Hangar page: https://hangar.papermc.io/uSkyBlock/uSkyBlock
 - Spigot page: https://www.spigotmc.org/resources/uskyblock-revived.66795/
 - Issues: https://github.com/uskyblock/uSkyBlock/issues
-- Contributing: https://uskyblock.github.io/docs/contributing/
+- Contributing: https://uskyblock.org/docs/contributing/
 
 ## Why uSkyBlock
 
@@ -44,17 +44,17 @@ Optional integrations:
 
 For installation, upgrade guidance, and server setup, start here:
 
-- https://uskyblock.github.io/docs/admin/setup/
+- https://uskyblock.org/docs/admin/setup/
 
 ## Start Here
 
-- Players: https://uskyblock.github.io/docs/players/
-- Server admins: https://uskyblock.github.io/docs/admin/setup/
-- Server customization: https://uskyblock.github.io/docs/admin/customization/
-- Challenges config: https://uskyblock.github.io/docs/admin/challenges/
-- Useful commands and permissions: https://uskyblock.github.io/docs/admin/commands/
-- Developers: https://uskyblock.github.io/docs/developers/
-- Contributors: https://uskyblock.github.io/docs/contributing/
+- Players: https://uskyblock.org/docs/players/
+- Server admins: https://uskyblock.org/docs/admin/setup/
+- Server customization: https://uskyblock.org/docs/admin/customization/
+- Challenges config: https://uskyblock.org/docs/admin/challenges/
+- Useful commands and permissions: https://uskyblock.org/docs/admin/commands/
+- Developers: https://uskyblock.org/docs/developers/
+- Contributors: https://uskyblock.org/docs/contributing/
 
 ## Building
 
@@ -68,7 +68,7 @@ The resulting JAR can be found in `uSkyBlock-Plugin/build/libs/uSkyBlock.jar`.
 
 For API integration, translation workflow, and local docs preview, see:
 
-- https://uskyblock.github.io/docs/developers/
+- https://uskyblock.org/docs/developers/
 
 ## Project History
 
