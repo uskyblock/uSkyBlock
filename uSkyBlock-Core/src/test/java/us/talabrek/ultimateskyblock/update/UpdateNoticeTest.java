@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class UpdateNoticeTest {
 
-    private static final String GUIDE = "https://uskyblock.github.io/";
+    private static final String GUIDE = "https://uskyblock.org";
 
     @TempDir
     Path plugins;

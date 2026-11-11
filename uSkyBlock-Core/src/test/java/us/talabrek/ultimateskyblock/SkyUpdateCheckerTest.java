@@ -156,7 +156,7 @@ public class SkyUpdateCheckerTest {
         assertEquals("4.0.0", checker.getNewMajorVersion().version());
         assertEquals(List.of(
             "There is a new major version of uSkyBlock available: 4.0.0 (needs Minecraft 26.4)",
-            "Read the upgrade guide before upgrading: https://uskyblock.github.io/",
+            "Read the upgrade guide before upgrading: https://uskyblock.org",
             "Release notes: https://modrinth.com/plugin/uskyblock/version/4.0.0"), logged());
     }
 
@@ -268,7 +268,7 @@ public class SkyUpdateCheckerTest {
             "Run /usb update to stage it for the next restart, or download it from "
                 + "https://modrinth.com/plugin/uskyblock/version/3.7.2",
             "There is a new major version of uSkyBlock available: 4.0.0 (needs Minecraft 26.3)",
-            "Read the upgrade guide before upgrading: https://uskyblock.github.io/",
+            "Read the upgrade guide before upgrading: https://uskyblock.org",
             "Release notes: https://modrinth.com/plugin/uskyblock/version/4.0.0"), logged());
     }
 
