@@ -95,7 +95,7 @@ All placeholders take the viewing player's island as context:
 `%uskyblock_island_members%`, `%uskyblock_island_trustees%`, `%uskyblock_island_bans%`,
 `%uskyblock_island_location%`, `%uskyblock_island_location_x%`, `%uskyblock_island_location_y%`,
 `%uskyblock_island_location_z%`, `%uskyblock_island_golems%`, `%uskyblock_island_copper_golems%`,
-`%uskyblock_island_monsters%`, `%uskyblock_island_animals%`, `%uskyblock_island_villagers%`,
+`%uskyblock_island_happy_ghasts%`, `%uskyblock_island_monsters%`, `%uskyblock_island_animals%`, `%uskyblock_island_villagers%`,
 and the `_max` variants of the creature limits.
 
 Creature counts are sampled on the main server thread at most every 10 seconds; a cold

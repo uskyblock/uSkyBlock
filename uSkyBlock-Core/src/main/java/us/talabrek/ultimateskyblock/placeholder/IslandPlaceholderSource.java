@@ -36,9 +36,9 @@ public class IslandPlaceholderSource implements PlaceholderSource {
     private static final Set<String> KEYS = Set.of(
         "version",
         "island_level", "island_level_int", "island_rank", "island_leader",
-        "island_golems_max", "island_copper_golems_max", "island_monsters_max",
+        "island_golems_max", "island_copper_golems_max", "island_happy_ghasts_max", "island_monsters_max",
         "island_animals_max", "island_villagers_max", "island_partysize_max",
-        "island_golems", "island_copper_golems", "island_monsters",
+        "island_golems", "island_copper_golems", "island_happy_ghasts", "island_monsters",
         "island_animals", "island_villagers", "island_partysize",
         "island_biome", "island_bans", "island_members", "island_trustees",
         "island_location", "island_location_x", "island_location_y", "island_location_z",
@@ -91,12 +91,14 @@ public class IslandPlaceholderSource implements PlaceholderSource {
             case "island_leader" -> fromLegacy(islandInfo.getLeader());
             case "island_golems_max" -> Component.text(islandInfo.getMaxGolems());
             case "island_copper_golems_max" -> Component.text(islandInfo.getMaxCopperGolems());
+            case "island_happy_ghasts_max" -> Component.text(islandInfo.getMaxHappyGhasts());
             case "island_monsters_max" -> Component.text(islandInfo.getMaxMonsters());
             case "island_animals_max" -> Component.text(islandInfo.getMaxAnimals());
             case "island_villagers_max" -> Component.text(islandInfo.getMaxVillagers());
             case "island_partysize_max" -> Component.text(islandInfo.getMaxPartySize());
             case "island_golems" -> creatureCount(islandInfo, LimitLogic.CreatureType.GOLEM);
             case "island_copper_golems" -> creatureCount(islandInfo, LimitLogic.CreatureType.COPPER_GOLEM);
+            case "island_happy_ghasts" -> creatureCount(islandInfo, LimitLogic.CreatureType.HAPPY_GHAST);
             case "island_monsters" -> creatureCount(islandInfo, LimitLogic.CreatureType.MONSTER);
             case "island_animals" -> creatureCount(islandInfo, LimitLogic.CreatureType.ANIMAL);
             case "island_villagers" -> creatureCount(islandInfo, LimitLogic.CreatureType.VILLAGER);

@@ -263,6 +263,11 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
                 section.set("maxCopperGolems", perk.getCopperGolems());
                 dirty = true;
             }
+            int maxHappyGhasts = section.getInt("maxHappyGhasts", 0);
+            if (perk.getHappyGhasts() != maxHappyGhasts) {
+                section.set("maxHappyGhasts", perk.getHappyGhasts());
+                dirty = true;
+            }
             if (section.isConfigurationSection("maxBlocks")) {
                 dirty = true;
                 Map<Material, Integer> blockLimits = perk.getBlockLimits();
@@ -343,6 +348,12 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
     public int getMaxCopperGolems() {
         return getMaxPartyIntValue("maxCopperGolems",
             plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getCopperGolems());
+    }
+
+    @Override
+    public int getMaxHappyGhasts() {
+        return getMaxPartyIntValue("maxHappyGhasts",
+            plugin.getPerkLogic().getIslandPerk(getSchematicName()).getPerk().getHappyGhasts());
     }
 
     @Override
@@ -1109,6 +1120,10 @@ public class IslandInfo implements us.talabrek.ultimateskyblock.api.IslandInfo {
         lines.add(tr("  - copper-golems: <copper-golems>",
             MUTED,
             unparsed("copper-golems", String.valueOf(getMaxCopperGolems()), PRIMARY)));
+        // I18N: Label for max happy ghast count in admin island info debug output.
+        lines.add(tr("  - happy-ghasts: <happy-ghasts>",
+            MUTED,
+            unparsed("happy-ghasts", String.valueOf(getMaxHappyGhasts()), PRIMARY)));
         // I18N: Section header for banned player list in admin island info debug output.
         lines.add(tr("Bans:", PRIMARY));
         for (String ban : getBans()) {

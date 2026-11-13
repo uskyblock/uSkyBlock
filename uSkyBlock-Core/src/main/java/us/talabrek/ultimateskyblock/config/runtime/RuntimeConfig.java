@@ -95,7 +95,8 @@ public record RuntimeConfig(
         int monsters,
         int villagers,
         int golems,
-        int copperGolems
+        int copperGolems,
+        int happyGhasts
     ) {
     }
 
@@ -297,6 +298,7 @@ public record RuntimeConfig(
         int villagers,
         int golems,
         int copperGolems,
+        int happyGhasts,
         double scoreMultiply,
         double scoreOffset
     ) {
@@ -318,6 +320,7 @@ public record RuntimeConfig(
         int villagers,
         int golems,
         int copperGolems,
+        int happyGhasts,
         double rewardBonus,
         double hungerReduction,
         @NotNull List<String> schematics

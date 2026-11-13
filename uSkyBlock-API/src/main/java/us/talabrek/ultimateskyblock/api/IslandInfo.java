@@ -65,6 +65,14 @@ public interface IslandInfo {
     int getMaxCopperGolems();
 
     /**
+     * Returns the maximum number of happy ghasts that can spawn on this island.
+     *
+     * Note: Only enforced if <pre>spawn-limits</pre> are enabled in <pre>config.yml</pre>
+     * @return the maximum number of happy ghasts that can spawn on this island.
+     */
+    int getMaxHappyGhasts();
+
+    /**
      * Returns the maximum number of blocks of limited types that can be placed on the island.
      *
      * @since v2.7.6

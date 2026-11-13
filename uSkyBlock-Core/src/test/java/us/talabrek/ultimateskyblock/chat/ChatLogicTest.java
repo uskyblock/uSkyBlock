@@ -111,7 +111,7 @@ public class ChatLogicTest {
                 "default", Duration.ofMinutes(20), Duration.ofMinutes(5), false, Duration.ofSeconds(2),
                 0.3d, Duration.ZERO, true, 10, true,
                 "<blue>SKY </blue><display-name> <white>></white><light_purple> <message>",
-                new RuntimeConfig.SpawnLimits(true, 64, 50, 16, 5, 5), Map.of()
+                new RuntimeConfig.SpawnLimits(true, 64, 50, 16, 5, 5, 4), Map.of()
             ),
             new RuntimeConfig.Extras(true, false, true),
             new RuntimeConfig.Protection(

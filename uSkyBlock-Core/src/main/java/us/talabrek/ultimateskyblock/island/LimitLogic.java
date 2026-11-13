@@ -38,7 +38,7 @@ import static us.talabrek.ultimateskyblock.message.Placeholder.*;
 
 @Singleton
 public class LimitLogic {
-    public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM, COPPER_GOLEM}
+    public enum CreatureType {UNKNOWN, ANIMAL, MONSTER, VILLAGER, GOLEM, COPPER_GOLEM, HAPPY_GHAST}
 
     private final WorldManager worldManager;
     private final BlockLimitLogic blockLimitLogic;
@@ -84,7 +84,9 @@ public class LimitLogic {
     }
 
     public CreatureType getCreatureType(LivingEntity creature) {
-        if (creature instanceof Monster
+        if (creature.getType() == EntityType.HAPPY_GHAST) {
+            return CreatureType.HAPPY_GHAST;
+        } else if (creature instanceof Monster
             || creature instanceof WaterMob
             || creature instanceof Slime
             || creature instanceof Ghast) {
@@ -103,7 +105,9 @@ public class LimitLogic {
     }
 
     public CreatureType getCreatureType(EntityType entityType) {
-        if (Monster.class.isAssignableFrom(entityType.getEntityClass())
+        if (entityType == EntityType.HAPPY_GHAST) {
+            return CreatureType.HAPPY_GHAST;
+        } else if (Monster.class.isAssignableFrom(entityType.getEntityClass())
             || WaterMob.class.isAssignableFrom(entityType.getEntityClass())
             || Slime.class.isAssignableFrom(entityType.getEntityClass())
             || Ghast.class.isAssignableFrom(entityType.getEntityClass())
@@ -136,6 +140,7 @@ public class LimitLogic {
             case VILLAGER -> islandInfo.getMaxVillagers();
             case COPPER_GOLEM -> islandInfo.getMaxCopperGolems();
             case GOLEM -> islandInfo.getMaxGolems();
+            case HAPPY_GHAST -> islandInfo.getMaxHappyGhasts();
             default -> Integer.MAX_VALUE;
         };
     }
@@ -199,6 +204,8 @@ public class LimitLogic {
             case GOLEM -> tr("Golems");
             // I18N: Creature category label shown in island mob-limit summary.
             case COPPER_GOLEM -> tr("Copper Golems");
+            // I18N: Creature category label shown in island mob-limit summary.
+            case HAPPY_GHAST -> tr("Happy Ghasts");
             // I18N: Fallback creature category label shown in island mob-limit summary.
             case UNKNOWN -> tr("Unknown");
         };
