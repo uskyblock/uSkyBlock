@@ -3,17 +3,22 @@ package us.talabrek.ultimateskyblock.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.DriedGhast;
 import org.bukkit.entity.EntitySnapshot;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +45,7 @@ import static us.talabrek.ultimateskyblock.message.Msg.ERROR;
 @Singleton
 public class SpawnEvents implements Listener {
     private static final Set<Action> RIGHT_CLICKS = Set.of(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK);
+    private static final BlockFace[] FACING_BY_YAW = {BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
 
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
@@ -79,8 +85,8 @@ public class SpawnEvents implements Listener {
                 return;
             }
 
-            checkLimits(event, getSpawnEggType(item), player.getLocation());
-            if (event.useItemInHand() == Event.Result.DENY) {
+            if (!canSpawn(getSpawnEggType(item), player.getLocation())) {
+                event.setCancelled(true);
                 notifier.notifyPlayer(player, tr("You have reached your spawn limit for your island.", ERROR));
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -112,31 +118,60 @@ public class SpawnEvents implements Listener {
         if (event.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) {
             return; // Allow it, the above method would have blocked it if it should be blocked.
         }
-        checkLimits(event, event.getEntity().getType(), event.getLocation());
+        if (!canSpawn(event.getEntity().getType(), event.getLocation())) {
+            event.setCancelled(true);
+            if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.DEFAULT
+                && event.getEntity() instanceof HappyGhast ghastling && !ghastling.isAdult()) {
+                restoreDriedGhast(event.getLocation());
+            }
+        }
     }
 
-    private void checkLimits(Cancellable event, EntityType entityType, Location location) {
+    /**
+     * Spigot fires no fade event for a hatching dried ghast and removes the block before its ghastling spawns, so a
+     * ghastling cancelled at the limit puts the block back for vanilla to try again later.
+     */
+    private static void restoreDriedGhast(@NotNull Location location) {
+        Block block = location.getBlock();
+        if (block.getType() != Material.WATER) {
+            return;
+        }
+        DriedGhast driedGhast = (DriedGhast) Material.DRIED_GHAST.createBlockData();
+        driedGhast.setWaterlogged(true);
+        driedGhast.setHydration(driedGhast.getMaximumHydration());
+        driedGhast.setFacing(FACING_BY_YAW[Math.floorMod(Math.round(location.getYaw() / 90), 4)]);
+        block.setBlockData(driedGhast);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDriedGhastFade(BlockFadeEvent event) {
+        Block block = event.getBlock();
+        if (block.getType() != Material.DRIED_GHAST || !worldManager.isSkyAssociatedWorld(block.getWorld())) {
+            return;
+        }
+        // The dried ghast is removed before its ghastling spawns, so cancelling the spawn would lose the block.
+        if (!canSpawn(EntityType.HAPPY_GHAST, block.getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean canSpawn(@Nullable EntityType entityType, @NotNull Location location) {
         if (entityType == null) {
-            return; // Only happens on "other-plugins", i.e. EchoPet
+            return true; // Only happens on "other-plugins", i.e. EchoPet
         }
         String islandName = WorldGuardHandler.getIslandNameAt(location);
         if (islandName == null) {
-            event.setCancelled(true); // Only allow spawning on active islands...
-            return;
+            return false; // Only allow spawning on active islands...
         }
         if (entityType.equals(EntityType.GHAST) && location.getWorld().getEnvironment() != World.Environment.NETHER) {
             // Disallow ghasts for now...
-            event.setCancelled(true);
-            return;
+            return false;
         }
         IslandInfo islandInfo = islandLogic.getIslandInfo(islandName);
         if (islandInfo == null) {
             // Disallow spawns on inactive islands
-            event.setCancelled(true);
-            return;
+            return false;
         }
-        if (!limitLogic.canSpawn(entityType, islandInfo)) {
-            event.setCancelled(true);
-        }
+        return limitLogic.canSpawn(entityType, islandInfo);
     }
 }
