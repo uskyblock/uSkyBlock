@@ -340,7 +340,7 @@ public class ChallengeCompletionLogicTest {
             new RuntimeConfig.Island(
                 128, 150, false, 128, 64, List.of(), true, Map.of(), true, true, true, "default",
                 Duration.ZERO, Duration.ZERO, false, Duration.ZERO, 0.5d, Duration.ZERO, true, 10, true, "",
-                new RuntimeConfig.SpawnLimits(true, 64, 50, 16, 5, 0), Map.of()
+                new RuntimeConfig.SpawnLimits(true, 64, 50, 16, 5, 0, 4), Map.of()
             ),
             new RuntimeConfig.Extras(false, true, true),
             new RuntimeConfig.Protection(true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, false, false, false, true),

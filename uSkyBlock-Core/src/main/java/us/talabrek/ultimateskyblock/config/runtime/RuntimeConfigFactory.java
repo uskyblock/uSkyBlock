@@ -124,7 +124,8 @@ public final class RuntimeConfigFactory {
                         root.integerWithDefault("options.island.spawn-limits.monsters", 0),
                         root.integerWithDefault("options.island.spawn-limits.villagers", 0),
                         root.integerWithDefault("options.island.spawn-limits.golems", 0),
-                        root.integerWithDefault("options.island.spawn-limits.copper-golems", 0)
+                        root.integerWithDefault("options.island.spawn-limits.copper-golems", 0),
+                        root.integerWithDefault("options.island.spawn-limits.happy-ghasts", 0)
                     ),
                     loadIntMap(root.child("options.island.block-limits"), "enabled")
                 ),
@@ -418,6 +419,7 @@ public final class RuntimeConfigFactory {
                 schemeSection.integer("villagers", 0),
                 schemeSection.integer("golems", 0),
                 schemeSection.integer("copper-golems", 0),
+                schemeSection.integer("happy-ghasts", 0),
                 schemeSection.decimal("scoreMultiply", 1d),
                 schemeSection.decimal("scoreOffset", 0d)
             ));
@@ -469,6 +471,7 @@ public final class RuntimeConfigFactory {
                 section.integer("villagers", 0),
                 section.integer("golems", 0),
                 section.integer("copper-golems", 0),
+                section.integer("happy-ghasts", 0),
                 section.decimal("rewardBonus", 0d, 0d, 1d),
                 section.decimal("hungerReduction", 0d, 0d, 1d),
                 section.stringList("schematics")

@@ -130,9 +130,10 @@ public class IslandPlaceholderSourceTest {
     }
 
     @Test
-    public void keysContainAll26() {
-        assertThat(source.keys().size(), is(26));
+    public void keysContainAll28() {
+        assertThat(source.keys().size(), is(28));
         assertThat(source.keys().contains("island_copper_golems_max"), is(true));
+        assertThat(source.keys().contains("island_happy_ghasts_max"), is(true));
         assertThat(source.keys().contains("version"), is(true));
     }
 

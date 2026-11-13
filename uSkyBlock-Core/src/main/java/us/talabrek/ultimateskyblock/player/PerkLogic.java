@@ -41,6 +41,7 @@ public class PerkLogic {
             runtimeConfig.island().spawnLimits().villagers(),
             runtimeConfig.island().spawnLimits().golems(),
             runtimeConfig.island().spawnLimits().copperGolems(),
+            runtimeConfig.island().spawnLimits().happyGhasts(),
             0,
             0,
             null, null);
@@ -67,6 +68,7 @@ public class PerkLogic {
                     .villagers(scheme.villagers())
                     .golems(scheme.golems())
                     .copperGolems(scheme.copperGolems())
+                    .happyGhasts(scheme.happyGhasts())
                     .extraItems(createItems(scheme.extraItems()))
                     .build();
                 ItemStack itemStack = scheme.displayItem().create(schemeName, scheme.description());
@@ -130,6 +132,7 @@ public class PerkLogic {
                 perk.villagers() > 0 ? perk.villagers() : defaultPerk.getVillagers(),
                 perk.golems() > 0 ? perk.golems() : defaultPerk.getGolems(),
                 perk.copperGolems() > 0 ? perk.copperGolems() : defaultPerk.getCopperGolems(),
+                perk.happyGhasts() > 0 ? perk.happyGhasts() : defaultPerk.getHappyGhasts(),
                 perk.rewardBonus(),
                 perk.hungerReduction(),
                 perk.schematics(), null));
@@ -213,60 +216,65 @@ public class PerkLogic {
         private Perk perk;
 
         public PerkBuilder() {
-            perk = new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, null, null);
+            perk = new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null);
         }
 
         public PerkBuilder(Perk basePerk) {
-            perk = basePerk != null ? basePerk : new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, null, null);
+            perk = basePerk != null ? basePerk : new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null);
         }
 
         public PerkBuilder extraItems(List<ItemStack> items) {
-            perk = perk.combine(new Perk(items, 0, 0, 0, 0, 0, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(items, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder maxPartySize(int max) {
-            perk = perk.combine(new Perk(null, max, 0, 0, 0, 0, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, max, 0, 0, 0, 0, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder animals(int animals) {
-            perk = perk.combine(new Perk(null, 0, animals, 0, 0, 0, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, animals, 0, 0, 0, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder monsters(int monsters) {
-            perk = perk.combine(new Perk(null, 0, 0, monsters, 0, 0, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, monsters, 0, 0, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder villagers(int villagers) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, villagers, 0, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, villagers, 0, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder golems(int golems) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, 0, golems, 0, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, golems, 0, 0, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder copperGolems(int copperGolems) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, copperGolems, 0, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, copperGolems, 0, 0, 0, null, null));
+            return this;
+        }
+
+        public PerkBuilder happyGhasts(int happyGhasts) {
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, happyGhasts, 0, 0, null, null));
             return this;
         }
 
         public PerkBuilder rewBonus(double bonus) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, bonus, 0, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, 0, bonus, 0, null, null));
             return this;
         }
 
         public PerkBuilder hungerReduction(double reduction) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, 0, reduction, null, null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, reduction, null, null));
             return this;
         }
 
         public PerkBuilder schematics(String... schemes) {
-            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, Arrays.asList(schemes), null));
+            perk = perk.combine(new Perk(null, 0, 0, 0, 0, 0, 0, 0, 0, 0, Arrays.asList(schemes), null));
             return this;
         }
 

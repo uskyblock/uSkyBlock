@@ -21,6 +21,7 @@ public class Perk {
     private final int villagers;
     private final int golems;
     private final int copperGolems;
+    private final int happyGhasts;
 
     Perk(List<ItemStack> extraItems,
          int maxPartySize,
@@ -29,6 +30,7 @@ public class Perk {
          int villagers,
          int golems,
          int copperGolems,
+         int happyGhasts,
          double rewBonus,
          double hungerReduction,
          List<String> schematics,
@@ -39,6 +41,7 @@ public class Perk {
         this.villagers = Math.max(villagers, 0);
         this.golems = Math.max(golems, 0);
         this.copperGolems = Math.max(copperGolems, 0);
+        this.happyGhasts = Math.max(happyGhasts, 0);
         this.extraItems = extraItems != null ? extraItems : Collections.emptyList();
         this.rewBonus = rewBonus >= 0 ? rewBonus : 0;
         this.hungerReduction = hungerReduction >= 0 && hungerReduction <= 1 ? hungerReduction : 0;
@@ -68,6 +71,10 @@ public class Perk {
 
     public int getCopperGolems() {
         return copperGolems;
+    }
+
+    public int getHappyGhasts() {
+        return happyGhasts;
     }
 
     public List<ItemStack> getExtraItems() {
@@ -105,6 +112,7 @@ public class Perk {
             Math.max(villagers, other.getVillagers()),
             Math.max(golems, other.getGolems()),
             Math.max(copperGolems, other.getCopperGolems()),
+            Math.max(happyGhasts, other.getHappyGhasts()),
             Math.max(rewBonus, other.getRewBonus()),
             Math.max(hungerReduction, other.getHungerReduction()),
             schems, null);
@@ -118,6 +126,7 @@ public class Perk {
             (villagers > 0 ? "villagers:" + villagers + "\n" : "") +
             (golems > 0 ? "golems:" + golems + "\n" : "") +
             (copperGolems > 0 ? "copperGolems:" + copperGolems + "\n" : "") +
+            (happyGhasts > 0 ? "happyGhasts:" + happyGhasts + "\n" : "") +
             (!extraItems.isEmpty() ? "extraItems:" + ItemStackUtil.asShortString(extraItems) + "\n" : "") +
             (rewBonus > 0 ? "rewBonus:" + rewBonus + "\n" : "") +
             (hungerReduction > 0 ? "hungerReduction:" + hungerReduction + "\n" : "") +

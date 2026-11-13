@@ -64,6 +64,8 @@ This gives you a way to farm wither skulls and blaze rods without needing a full
 
 ## Spawn limits
 
-Islands have per-type mob caps for animals, monsters, villagers, and golems. These prevent lag from excessive mob farms and apply to all spawn sources.
+Islands have per-type mob caps for animals, monsters, villagers, golems, copper golems, and happy ghasts. These prevent lag from excessive mob farms and apply to all spawn sources.
+
+A dried ghast that is ready to hatch while the island is at its happy ghast limit waits instead: it hatches once there is room.
 
 Run `/island limits` to see your island's current limits and usage.

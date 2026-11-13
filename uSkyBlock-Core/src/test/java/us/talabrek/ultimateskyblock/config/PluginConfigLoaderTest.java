@@ -477,6 +477,35 @@ public class PluginConfigLoaderTest {
     }
 
     @Test
+    public void addsHappyGhastSpawnLimitDuringMigration125() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(124);
+        config.set("options.island.spawn-limits.happy-ghasts", null);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(loadBundledVersion(), migrated.getInt("version"));
+        assertEquals(4, migrated.getInt("options.island.spawn-limits.happy-ghasts"));
+    }
+
+    @Test
+    public void keepsConfiguredHappyGhastSpawnLimitDuringMigration125() throws Exception {
+        FileUtil.setDataFolder(tempDir.toFile());
+        File configFile = tempDir.resolve("config.yml").toFile();
+        YamlConfiguration config = createValidConfig(124);
+        config.set("options.island.spawn-limits.happy-ghasts", 7);
+        config.save(configFile);
+
+        PluginConfigLoader loader = new PluginConfigLoader(tempDir, new PluginConfigMigrator(Logger.getAnonymousLogger()));
+        YamlConfiguration migrated = loader.load();
+
+        assertEquals(7, migrated.getInt("options.island.spawn-limits.happy-ghasts"));
+    }
+
+    @Test
     public void existingConfigWithoutAutoStageGetsItsDefaults() throws Exception {
         FileUtil.setDataFolder(tempDir.toFile());
         File configFile = tempDir.resolve("config.yml").toFile();

@@ -125,7 +125,7 @@ public class ListenersTest {
                 10,
                 true,
                 "",
-                new RuntimeConfig.SpawnLimits(false, 0, 0, 0, 0, 0),
+                new RuntimeConfig.SpawnLimits(false, 0, 0, 0, 0, 0, 4),
                 Map.of()
             ),
             new RuntimeConfig.Extras(false, true, true),
