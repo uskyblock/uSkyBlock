@@ -14,7 +14,6 @@ dependencies {
     api(projects.poUtils)
     api(projects.uSkyBlockAPI)
     api(projects.uSkyBlockAPIv2)
-    api(libs.io.papermc.paperlib)
     api(libs.org.bstats.bstats.bukkit)
     api(libs.com.google.inject.guice)
     api(libs.org.jetbrains.annotations)
@@ -71,6 +70,42 @@ dependencies {
 }
 
 description = "uSkyBlock-Core"
+
+// The Paper implementations of the platform seam: compiled against paper-api, packed into Core's jar, and loaded by
+// name only on Paper. The main source set compiles against spigot-api.
+val paper: SourceSet by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output
+}
+dependencies {
+    "paperCompileOnly"(libs.io.papermc.paper.paper.api)
+}
+tasks.jar {
+    from(paper.output)
+}
+
+// The Paper implementations' tests, on paper-api in place of spigot-api as on a Paper server, where the Paper platform
+// is chosen.
+val paperTest: SourceSet by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + paper.output
+    runtimeClasspath += sourceSets.main.get().output + paper.output
+}
+configurations[paperTest.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[paperTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+listOf(paperTest.compileClasspathConfigurationName, paperTest.runtimeClasspathConfigurationName).forEach {
+    configurations[it].exclude(group = "org.spigotmc", module = "spigot-api")
+}
+dependencies {
+    "paperTestImplementation"(libs.io.papermc.paper.paper.api)
+}
+val paperTests = tasks.register<Test>("paperTest") {
+    group = "verification"
+    description = "Runs the Paper implementations' tests on paper-api"
+    testClassesDirs = paperTest.output.classesDirs
+    classpath = paperTest.runtimeClasspath
+}
+tasks.check {
+    dependsOn(paperTests)
+}
 
 // ---------------------------------------------------------------------------
 // i18n message-catalog build.

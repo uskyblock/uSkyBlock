@@ -67,6 +67,7 @@ import us.talabrek.ultimateskyblock.island.task.CreateIslandTask;
 import us.talabrek.ultimateskyblock.island.task.SetBiomeTask;
 import us.talabrek.ultimateskyblock.menu.SkyBlockMenu;
 import us.talabrek.ultimateskyblock.message.Msg;
+import us.talabrek.ultimateskyblock.platform.Platform;
 import us.talabrek.ultimateskyblock.player.IslandPerk;
 import us.talabrek.ultimateskyblock.player.PerkLogic;
 import us.talabrek.ultimateskyblock.player.PlayerInfo;
@@ -166,6 +167,7 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     @Inject
     private RuntimeConfigs runtimeConfigs;
 
+    private Platform platform;
     private UltimateSkyblockApi api;
 
     private volatile boolean maintenanceMode = false;
@@ -207,6 +209,8 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
     public void onEnable() {
         missingRequirements = null;
         instance = this;
+        platform = Platform.forServer();
+        getLogger().info(platform.describe(getServer()));
 
         // Converter has to run before the plugin loads its config files.
         convertConfigItemsTo1_20_6IfRequired();
@@ -1062,6 +1066,11 @@ public class uSkyBlock extends JavaPlugin implements uSkyBlockAPI, CommandManage
 
     public RuntimeConfigs getRuntimeConfigs() {
         return runtimeConfigs;
+    }
+
+    /** @return what differs between Paper and Spigot, chosen at the enable */
+    public @NotNull Platform getPlatform() {
+        return platform;
     }
 
     public Scheduler getScheduler() {

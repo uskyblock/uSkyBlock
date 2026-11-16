@@ -2,7 +2,6 @@ package us.talabrek.ultimateskyblock.player;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.papermc.lib.PaperLib;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.talabrek.ultimateskyblock.bootstrap.PluginLog;
 import us.talabrek.ultimateskyblock.config.runtime.RuntimeConfigs;
+import us.talabrek.ultimateskyblock.platform.Teleports;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.util.LocationUtil;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -42,6 +42,7 @@ public class TeleportLogic implements Listener {
     private final uSkyBlock plugin;
     private final WorldManager worldManager;
     private final Scheduler scheduler;
+    private final Teleports teleports;
     private final RuntimeConfigs runtimeConfigs;
     private final Map<UUID, PendingTeleport> pendingTeleports = new ConcurrentHashMap<>();
 
@@ -51,12 +52,14 @@ public class TeleportLogic implements Listener {
         @NotNull uSkyBlock plugin,
         @NotNull WorldManager worldManager,
         @NotNull Scheduler scheduler,
+        @NotNull Teleports teleports,
         @NotNull RuntimeConfigs runtimeConfigs
     ) {
         this.logger = logger;
         this.plugin = plugin;
         this.worldManager = worldManager;
         this.scheduler = scheduler;
+        this.teleports = teleports;
         this.runtimeConfigs = runtimeConfigs;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -107,14 +110,14 @@ public class TeleportLogic implements Listener {
         final Location targetLoc = LocationUtil.centerOnBlock(targetLocation.clone());
         Duration teleportDelay = teleportDelay();
         if (player.hasPermission("usb.mod.bypassteleport") || teleportDelay.isZero() || force) {
-            PaperLib.teleportAsync(player, targetLoc);
+            teleport(player, targetLoc);
         } else {
             // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
             sendTr(player, "You will be teleported in <seconds> seconds.",
                 SECONDARY, number("seconds", teleportDelay.toSeconds()));
             BukkitTask tpTask = scheduler.sync(() -> {
                 pendingTeleports.remove(player.getUniqueId());
-                PaperLib.teleportAsync(player, targetLoc);
+                teleport(player, targetLoc);
             }, teleportDelay);
             pendingTeleports.put(player.getUniqueId(), new PendingTeleport(player.getLocation(), tpTask));
         }
@@ -137,7 +140,7 @@ public class TeleportLogic implements Listener {
             if (sendToSpawn) {
                 plugin.execCommand(player, "op:spawn", false);
             } else {
-                PaperLib.teleportAsync(player, spawnLocation);
+                teleport(player, spawnLocation);
             }
         } else {
             // I18N: <seconds> is a localized number tag. Tag arguments use DecimalFormat patterns; keep tag name "seconds".
@@ -148,7 +151,7 @@ public class TeleportLogic implements Listener {
                 if (sendToSpawn) {
                     plugin.execCommand(player, "op:spawn", false);
                 } else {
-                    PaperLib.teleportAsync(player, spawnLocation);
+                    teleport(player, spawnLocation);
                 }
             }, teleportDelay);
             pendingTeleports.put(player.getUniqueId(), new PendingTeleport(player.getLocation(), tpTask));
@@ -179,6 +182,14 @@ public class TeleportLogic implements Listener {
         sendTr(player, "Teleporting you to <player>'s island.",
             legacyArg("player", playerInfo.getDisplayName()));
         safeTeleport(player, warpLocation, force);
+    }
+
+    /** Nothing waits for these teleports: one the server cannot make is only logged. */
+    private void teleport(@NotNull Player player, @NotNull Location to) {
+        teleports.teleport(player, to).exceptionally(e -> {
+            logger.log(Level.WARNING, "Could not teleport " + player.getName() + " to " + to, e);
+            return false;
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
