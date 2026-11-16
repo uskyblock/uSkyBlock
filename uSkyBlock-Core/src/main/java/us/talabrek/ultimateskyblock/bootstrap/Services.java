@@ -14,6 +14,7 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
+import us.talabrek.ultimateskyblock.platform.Platform;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.update.UpdateStager;
@@ -22,6 +23,7 @@ import us.talabrek.ultimateskyblock.util.Scheduler;
 import us.talabrek.ultimateskyblock.uuid.PlayerDB;
 
 import java.time.Duration;
+import java.util.logging.Logger;
 
 @Singleton
 public class Services {
@@ -40,6 +42,8 @@ public class Services {
     private final IslandRegionRepair islandRegionRepair;
     private final Scheduler scheduler;
     private final UpdateStager updateStager;
+    private final Platform platform;
+    private final Logger logger;
 
     @Inject
     public Services(
@@ -56,7 +60,9 @@ public class Services {
         @NotNull SchematicHandler schematicHandler,
         @NotNull IslandRegionRepair islandRegionRepair,
         @NotNull Scheduler scheduler,
-        @NotNull UpdateStager updateStager
+        @NotNull UpdateStager updateStager,
+        @NotNull Platform platform,
+        @NotNull @PluginLog Logger logger
         ) {
         this.animationHandler = animationHandler;
         this.challengeLogic = challengeLogic;
@@ -72,9 +78,12 @@ public class Services {
         this.islandRegionRepair = islandRegionRepair;
         this.scheduler = scheduler;
         this.updateStager = updateStager;
+        this.platform = platform;
+        this.logger = logger;
     }
 
     public void startup(uSkyBlock plugin) {
+        logger.info(platform.describe(plugin.getServer()));
         schematicHandler.initialize(plugin);
         metricsManager.setup();
         autoIslandLevelRefresh.startup();

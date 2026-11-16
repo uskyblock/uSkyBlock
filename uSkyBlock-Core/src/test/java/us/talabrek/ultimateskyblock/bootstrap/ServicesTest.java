@@ -2,6 +2,7 @@ package us.talabrek.ultimateskyblock.bootstrap;
 
 import dk.lockfuglsang.minecraft.animation.AnimationHandler;
 import dk.lockfuglsang.minecraft.util.BukkitServerMock;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +20,7 @@ import us.talabrek.ultimateskyblock.hook.HookManager;
 import us.talabrek.ultimateskyblock.island.IslandLogic;
 import us.talabrek.ultimateskyblock.island.level.AutoIslandLevelRefresh;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderIntegrations;
+import us.talabrek.ultimateskyblock.platform.Platform;
 import us.talabrek.ultimateskyblock.player.PlayerLogic;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.update.UpdateStager;
@@ -55,6 +57,20 @@ public class ServicesTest {
         services.shutdown(plugin);
         services(scheduler).startup(plugin);
         verify(scheduler, times(2)).async(any(Runnable.class), eq(Duration.ZERO), eq(CHECK_EVERY));
+    }
+
+    @Test
+    public void startupLogsWhichPlatformRuns() {
+        Platform platform = mock(Platform.class);
+        Logger logger = mock(Logger.class);
+        Server server = mock(Server.class);
+        uSkyBlock plugin = mock(uSkyBlock.class);
+        when(plugin.getServer()).thenReturn(server);
+        when(platform.describe(server)).thenReturn("Running on Spigot (CraftBukkit 26.3)");
+
+        services(mock(Scheduler.class), platform, logger).startup(plugin);
+
+        verify(logger).info("Running on Spigot (CraftBukkit 26.3)");
     }
 
     @Test
@@ -95,9 +111,14 @@ public class ServicesTest {
     }
 
     private static Services services(Scheduler scheduler) {
+        return services(scheduler, mock(Platform.class), mock(Logger.class));
+    }
+
+    private static Services services(Scheduler scheduler, Platform platform, Logger logger) {
         return new Services(mock(AnimationHandler.class), mock(ChallengeLogic.class), mock(EventLogic.class),
             mock(PlayerLogic.class), mock(IslandLogic.class), mock(PlayerDB.class), mock(MetricsManager.class),
             mock(HookManager.class), mock(AutoIslandLevelRefresh.class), mock(PlaceholderIntegrations.class),
-            mock(SchematicHandler.class), mock(IslandRegionRepair.class), scheduler, mock(UpdateStager.class));
+            mock(SchematicHandler.class), mock(IslandRegionRepair.class), scheduler, mock(UpdateStager.class),
+            platform, logger);
     }
 }
