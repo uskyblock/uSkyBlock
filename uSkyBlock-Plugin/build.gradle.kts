@@ -26,7 +26,6 @@ dependencies {
     shade(projects.poUtils) { isTransitive = false }
 
     // External dependencies to be shaded
-    shade(libs.io.papermc.paperlib) { isTransitive = false }
     shade(libs.org.bstats.bstats.bukkit) { isTransitive = true }
 }
 
@@ -57,7 +56,6 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(shade)
 
     relocate("dk.lockfuglsang.minecraft", "us.talabrek.ultimateskyblock.utils")
-    relocate("io.papermc.lib", "us.talabrek.ultimateskyblock.paperlib")
     relocate("org.bstats", "us.talabrek.ultimateskyblock.metrics")
 
     mergeServiceFiles()

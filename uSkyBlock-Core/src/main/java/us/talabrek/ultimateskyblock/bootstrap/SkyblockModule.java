@@ -17,6 +17,7 @@ import us.talabrek.ultimateskyblock.island.level.ChunkSnapshotLevelLogic;
 import us.talabrek.ultimateskyblock.island.level.LevelLogic;
 import us.talabrek.ultimateskyblock.placeholder.IslandPlaceholderSource;
 import us.talabrek.ultimateskyblock.placeholder.PlaceholderSource;
+import us.talabrek.ultimateskyblock.platform.Teleports;
 import us.talabrek.ultimateskyblock.uSkyBlock;
 import us.talabrek.ultimateskyblock.update.ServerPlatform;
 import us.talabrek.ultimateskyblock.util.Scheduler;
@@ -51,6 +52,8 @@ public class SkyblockModule extends AbstractModule {
         bind(UpdateChecker.class).to(SkyUpdateChecker.class);
         bind(Clock.class).toInstance(Clock.systemUTC());
         bind(PlaceholderSource.class).to(IslandPlaceholderSource.class);
+        bind(ServerPlatform.class).toInstance(plugin.getPlatform().serverPlatform(plugin.getServer()));
+        bind(Teleports.class).toInstance(plugin.getPlatform().teleports());
     }
 
     @Provides
@@ -65,12 +68,6 @@ public class SkyblockModule extends AbstractModule {
         } else {
             return new BukkitPlayerDB();
         }
-    }
-
-    @Provides
-    @Singleton
-    public static @NotNull ServerPlatform provideServerPlatform(Plugin plugin) {
-        return ServerPlatform.of(plugin.getServer());
     }
 
     @Provides

@@ -1,7 +1,5 @@
 package us.talabrek.ultimateskyblock.update;
 
-import io.papermc.lib.PaperLib;
-import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -20,12 +18,7 @@ public record ServerPlatform(@NotNull String minecraftVersion, @NotNull String n
     // The leading dotted numbers of the Bukkit version: 26.3-R0.1-SNAPSHOT on Spigot, 26.3.build.41-alpha on Paper.
     private static final Pattern MINECRAFT_VERSION = Pattern.compile("\\d+(?:\\.\\d+)*");
 
-    public static @NotNull ServerPlatform of(@NotNull Server server) {
-        String minecraftVersion = minecraftVersion(server.getBukkitVersion());
-        return PaperLib.isPaper() ? paper(minecraftVersion) : spigot(minecraftVersion);
-    }
-
-    static @NotNull String minecraftVersion(@NotNull String bukkitVersion) {
+    public static @NotNull String minecraftVersion(@NotNull String bukkitVersion) {
         Matcher matcher = MINECRAFT_VERSION.matcher(bukkitVersion);
         return matcher.lookingAt() ? matcher.group() : bukkitVersion;
     }
