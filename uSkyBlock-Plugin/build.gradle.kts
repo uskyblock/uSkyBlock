@@ -145,7 +145,7 @@ modrinth {
         uploadFile.set(shadowJar.flatMap { it.archiveFile })
     }
     gameVersions.set(minecraftVersions)
-    loaders.set(listOf("paper", "spigot"))
+    loaders.set(listOf("paper", "purpur", "spigot"))
     required.project("worldedit", "worldguard")
     changelog.set(modrinthChangelog)
     detectLoaders.set(false)
