@@ -12,6 +12,13 @@ from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
 DEFAULT_GAME_VERSION_TYPE_ID = 1
+# The project IDs pin the dev.bukkit.org plugins: CurseForge's Minecraft mods use the same slugs.
+RELATIONS = {
+    "projects": [
+        {"slug": "worldedit", "projectID": 31043, "type": "requiredDependency"},
+        {"slug": "worldguard", "projectID": 31054, "type": "requiredDependency"},
+    ]
+}
 
 
 def parse_version_spec(spec: str) -> list[str]:
@@ -95,6 +102,22 @@ def resolve_game_version_ids(
     return resolved_ids
 
 
+def build_metadata(
+    display_name: str,
+    changelog: str,
+    game_version_ids: list[int],
+    release_type: str,
+) -> dict[str, Any]:
+    return {
+        "changelog": changelog,
+        "changelogType": "markdown",
+        "displayName": display_name,
+        "gameVersions": game_version_ids,
+        "releaseType": release_type,
+        "relations": RELATIONS,
+    }
+
+
 def encode_multipart_formdata(
     fields: list[tuple[str, str]],
     files: list[tuple[str, str, bytes, str]],
@@ -137,13 +160,7 @@ def upload_release(
     game_version_ids: list[int],
     release_type: str,
 ) -> int:
-    metadata = {
-        "changelog": changelog,
-        "changelogType": "markdown",
-        "displayName": display_name,
-        "gameVersions": game_version_ids,
-        "releaseType": release_type,
-    }
+    metadata = build_metadata(display_name, changelog, game_version_ids, release_type)
     mime_type = mimetypes.guess_type(jar_path.name)[0] or "application/java-archive"
     content_type, request_body = encode_multipart_formdata(
         fields=[("metadata", json.dumps(metadata))],

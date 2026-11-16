@@ -108,6 +108,14 @@ hangarPublish {
                     jar.set(shadowJar.flatMap { it.archiveFile })
                 }
                 platformVersions.set(minecraftVersions)
+                dependencies {
+                    hangar("WorldEdit") {
+                        required.set(true)
+                    }
+                    url("WorldGuard", "https://modrinth.com/plugin/worldguard") {
+                        required.set(true)
+                    }
+                }
             }
         }
     }
@@ -138,6 +146,7 @@ modrinth {
     }
     gameVersions.set(minecraftVersions)
     loaders.set(listOf("paper", "spigot"))
+    required.project("worldedit", "worldguard")
     changelog.set(modrinthChangelog)
     detectLoaders.set(false)
 }

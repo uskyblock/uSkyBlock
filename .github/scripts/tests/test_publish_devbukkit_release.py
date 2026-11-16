@@ -61,5 +61,22 @@ class ResolveGameVersionIdsTest(unittest.TestCase):
             )
 
 
+class BuildMetadataTest(unittest.TestCase):
+    def test_build_metadata_requires_worldedit_and_worldguard(self) -> None:
+        metadata = publish_devbukkit_release.build_metadata("3.0.0", "Fixes\n", [157], "release")
+
+        self.assertEqual(
+            metadata["relations"],
+            {
+                "projects": [
+                    {"slug": "worldedit", "projectID": 31043, "type": "requiredDependency"},
+                    {"slug": "worldguard", "projectID": 31054, "type": "requiredDependency"},
+                ]
+            },
+        )
+        self.assertEqual(metadata["gameVersions"], [157])
+        self.assertEqual(metadata["releaseType"], "release")
+
+
 if __name__ == "__main__":
     unittest.main()
