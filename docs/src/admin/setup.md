@@ -4,7 +4,7 @@
 
 **Required:**
 
-- Spigot or Paper (API version 1.21+)
+- Spigot, or Paper and its forks such as Purpur (API version 1.21+)
 - [WorldEdit](https://dev.bukkit.org/projects/worldedit)
 - [WorldGuard](https://dev.bukkit.org/projects/worldguard)
 
