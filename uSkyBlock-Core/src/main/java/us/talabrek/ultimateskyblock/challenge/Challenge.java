@@ -279,9 +279,7 @@ public class Challenge {
                 MUTED,
                 number("radius", getRadius(), PRIMARY)));
         }
-        List<String> lines = wordWrap(reward.getRewardText(), 20, MAX_LINE);
-        lores.add(tr("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
-        lines.subList(1, lines.size()).forEach(line -> lores.add(fromLegacy(line)));
+        lores.addAll(rewardLore(reward.getRewardText()));
         if (withCurrency) {
             lores.add(tr("Currency reward: <currency:'#,##0'>",
                 MUTED,
@@ -301,6 +299,14 @@ public class Challenge {
 
         ItemStackUtil.setComponentLore(currentChallengeItem, lores);
         return currentChallengeItem;
+    }
+
+    static List<Component> rewardLore(String rewardText) {
+        List<String> lines = wordWrap(rewardText, 20, MAX_LINE);
+        List<Component> lore = new ArrayList<>();
+        lore.add(tr("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
+        lines.subList(1, lines.size()).forEach(line -> lore.add(fromLegacy(line).applyFallbackStyle(PRIMARY)));
+        return lore;
     }
 
     public int getOffset() {
