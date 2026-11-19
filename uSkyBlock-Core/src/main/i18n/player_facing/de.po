@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
-"X-Crowdin-File-ID: 24\n"
-"X-Crowdin-Language: de\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
@@ -517,6 +511,11 @@ msgstr "Golems"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
 msgstr "Gruppenmitglieder: <current>/<max>"
+
+#. I18N: Creature category label shown in island mob-limit summary.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
+msgid "Happy Ghasts"
+msgstr "Glückliche Ghasts"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Hold your horses! <muted>You have to be patient."
@@ -1133,6 +1132,12 @@ msgstr "Dieser Befehl ist nur für Spieler verfügbar."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/biome/BiomeGui.java
 msgid "This is your current biome."
 msgstr "Das ist dein aktuelles Biom."
+
+#. I18N: Action bar text when a dried ghast waits because the island is at its
+#. happy ghast limit.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
+msgid "This island has reached its happy ghast limit (<limit>). The dried ghast will hatch once there's room."
+msgstr "Diese Insel hat ihr Limit für glückliche Ghasts erreicht (<limit>). Der ausgetrocknete Ghast schlüpft, sobald Platz ist."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This island is full."

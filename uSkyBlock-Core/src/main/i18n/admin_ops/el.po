@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
-"X-Crowdin-File-ID: 26\n"
-"X-Crowdin-Language: el\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -29,6 +23,10 @@ msgstr "- Protect-All <progress_pct:'0%'> (<progress>/<total>, απέτυχαν:
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "<count> old island locations will be used before new ones."
 msgstr "Θα χρησιμοποιηθούν <count> παλιές τοποθεσίες νησιών πριν από τις νέες."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "<error>Back up your server first</error>, and read the upgrade guide: <url>"
+msgstr "<error>Πάρε πρώτα αντίγραφο ασφαλείας του διακομιστή σου</error>, και διάβασε τον οδηγό αναβάθμισης: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> has been protected."
@@ -62,6 +60,10 @@ msgstr "Το tick του animation άλλαξε σε <ticks>."
 msgid "Animation tick must be a valid integer."
 msgstr "Το tick του animation πρέπει να είναι έγκυρος ακέραιος αριθμός."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Another update is being staged. Try again in a moment."
+msgstr "Προετοιμάζεται ήδη άλλη ενημέρωση. Δοκίμασε ξανά σε λίγο."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Available locales (<count>):"
 msgstr "Διαθέσιμες γλώσσες (<count>):"
@@ -86,6 +88,10 @@ msgstr "Το biome του/της <player> άλλαξε σε <biome>."
 msgid "Changed biome of <leader>'s island to <biome>."
 msgstr "Το biome του νησιού του/της <leader> άλλαξε σε <biome>."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Checking Modrinth for a newer uSkyBlock..."
+msgstr "Έλεγχος στο Modrinth για νεότερη έκδοση του uSkyBlock..."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Cleared cooldown on <command> for <player>"
 msgstr "Καθαρίστηκε ο χρόνος επαναφόρτισης του <command> για τον/την <player>"
@@ -102,9 +108,33 @@ msgstr "Χρόνοι επαναφόρτισης εντολών"
 msgid "Configuration reloaded from file."
 msgstr "Η διαμόρφωση επαναφορτώθηκε από το αρχείο."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not download uSkyBlock <version> from Modrinth. Try again later, or download it from <url>"
+msgstr "Δεν ήταν δυνατή η λήψη του uSkyBlock <version> από το Modrinth. Δοκίμασε ξανά αργότερα, ή κατέβασέ το από το <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Could not locate an island for player <player>!"
 msgstr "Δεν ήταν δυνατός ο εντοπισμός νησιού για τον παίκτη <player>!"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not reach Modrinth. Check for updates manually at <url>"
+msgstr "Δεν ήταν δυνατή η σύνδεση στο Modrinth. Έλεγξε χειροκίνητα για ενημερώσεις στο <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: <folder> can't be written."
+msgstr "Δεν ήταν δυνατή η προετοιμασία του uSkyBlock <version>: δεν επιτρέπεται η εγγραφή στον φάκελο <folder>."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: Modrinth lists no file for it."
+msgstr "Δεν ήταν δυνατή η προετοιμασία του uSkyBlock <version>: το Modrinth δεν διαθέτει αρχείο για αυτή την έκδοση."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the download doesn't match its SHA-512 hash on Modrinth, so it was deleted."
+msgstr "Δεν ήταν δυνατή η προετοιμασία του uSkyBlock <version>: το ληφθέν αρχείο δεν αντιστοιχεί στο hash SHA-512 του στο Modrinth, οπότε διαγράφηκε."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the server has no update folder apart from the plugins folder. Set settings.update-folder in bukkit.yml."
+msgstr "Δεν ήταν δυνατή η προετοιμασία του uSkyBlock <version>: ο διακομιστής δεν έχει φάκελο ενημερώσεων ξεχωριστό από τον φάκελο plugins. Όρισε το settings.update-folder στο bukkit.yml."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Current language: <locale>"
@@ -113,6 +143,10 @@ msgstr "Τρέχουσα γλώσσα: <locale>"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Deleted abandoned island at your current location."
 msgstr "Διαγράφηκε εγκαταλελειμμένο νησί στην τρέχουσα τοποθεσία σου."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Downloading uSkyBlock <version>..."
+msgstr "Λήψη του uSkyBlock <version>..."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error! <primary>No valid island found for purging."
@@ -137,10 +171,6 @@ msgstr "Ολοκληρώθηκε η δημιουργία της λίστας τ�
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "Generating the top ten list."
 msgstr "Δημιουργία της λίστας των δέκα κορυφαίων."
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Help improve translations: <url>"
-msgstr "Βοήθησε να βελτιώσουμε τις μεταφράσεις: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
@@ -284,6 +314,10 @@ msgstr "Η εκκαθάριση ακυρώθηκε!"
 msgid "Purge timed out."
 msgstr "Το χρονικό όριο για την εκκαθάριση έληξε."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Release notes: <url>"
+msgstr "Σημειώσεις έκδοσης: <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removed ignore-flag of <leader>'s island, it will now show up on top-ten and purge."
 msgstr "Αφαιρέθηκε η σημαία παράβλεψης από το νησί του/της <leader>, θα εμφανίζεται πλέον στα δέκα κορυφαία και στην εκκαθάριση."
@@ -295,6 +329,10 @@ msgstr "Αφαίρεση του/της <player> από το νησί."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removing <player>'s island."
 msgstr "Αφαίρεση του νησιού του/της <player>."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Replaced the staged uSkyBlock <previous> with <version>. It takes effect at the next restart."
+msgstr "Το προετοιμασμένο uSkyBlock <previous> αντικαταστάθηκε με το <version>. Θα τεθεί σε ισχύ στην επόμενη επανεκκίνηση."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Resending chunks to the client."
@@ -587,6 +625,10 @@ msgstr "εμφανίζει τα όρια των εξωτερικών chunks"
 msgid "shows the non-chunk-aligned borders"
 msgstr "εμφανίζει τα όρια που δεν ευθυγραμμίζονται με τα chunks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "stage the newest uSkyBlock version for the next restart"
+msgstr "προετοιμάζει τη νεότερη έκδοση του uSkyBlock για την επόμενη επανεκκίνηση"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another player's island"
 msgstr "τηλεμεταφορά στο νησί άλλου παίκτη"
@@ -602,6 +644,35 @@ msgstr "ενεργοποιεί/απενεργοποιεί την κατάστα�
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
 msgstr "μεταφέρει την αρχηγία σε άλλον παίκτη"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is a new major version. It changes your data and config at its first start, and needs Minecraft <minecraft> on <platforms>."
+msgstr "Το uSkyBlock <version> είναι νέα κύρια έκδοση. Αλλάζει τα δεδομένα και τις ρυθμίσεις σου κατά την πρώτη εκκίνησή του, και απαιτεί Minecraft <minecraft> σε <platforms>."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is available. <command> stages it for the next restart."
+msgstr "Το uSkyBlock <version> είναι διαθέσιμο. Η εντολή <command> το προετοιμάζει για την επόμενη επανεκκίνηση."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is out (needs Minecraft <minecraft>). Read the upgrade guide first: <url>"
+msgstr "Το uSkyBlock <version> κυκλοφόρησε (απαιτεί Minecraft <minecraft>). Διάβασε πρώτα τον οδηγό αναβάθμισης: <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is staged and takes effect at the next restart."
+msgstr "Το uSkyBlock <version> είναι έτοιμο και θα τεθεί σε ισχύ στην επόμενη επανεκκίνηση."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is up to date."
+msgstr "Το uSkyBlock <version> είναι ενημερωμένο."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> needs Minecraft <minecraft> on <platforms>, but this server runs Minecraft <server-minecraft> on <server-platform>. Nothing was downloaded."
+msgstr "Το uSkyBlock <version> απαιτεί Minecraft <minecraft> σε <platforms>, αλλά αυτός ο διακομιστής εκτελεί Minecraft <server-minecraft> σε <server-platform>. Δεν έγινε λήψη κανενός αρχείου."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> was staged automatically and takes effect at the next restart."
+msgstr "Το uSkyBlock <version> προετοιμάστηκε αυτόματα και θα τεθεί σε ισχύ στην επόμενη επανεκκίνηση."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"

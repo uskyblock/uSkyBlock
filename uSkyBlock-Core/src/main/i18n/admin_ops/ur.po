@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
-"X-Crowdin-File-ID: 26\n"
-"X-Crowdin-Language: ur-PK\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -29,6 +23,10 @@ msgstr "- Protect-All <progress_pct:'0%'> (<progress>/<total>, ناکام:<faile
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "<count> old island locations will be used before new ones."
 msgstr "نئی جگہوں سے پہلے <count> پرانی جزیرہ لوکیشنز استعمال کی جائیں گی۔"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "<error>Back up your server first</error>, and read the upgrade guide: <url>"
+msgstr "<error>پہلے اپنے سرور کا بیک اپ بنا لو</error>, اور اپ گریڈ گائیڈ پڑھو: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> has been protected."
@@ -62,6 +60,10 @@ msgstr "اینیمیشن ٹک کو <ticks> پر تبدیل کر دیا گیا ہ
 msgid "Animation tick must be a valid integer."
 msgstr "اینیمیشن ٹک ایک درست integer ہونا چاہیے۔"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Another update is being staged. Try again in a moment."
+msgstr "ایک اور اپ ڈیٹ تیار کی جا رہی ہے. تھوڑی دیر بعد دوبارہ کوشش کرو."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Available locales (<count>):"
 msgstr "دستیاب لوکیلز (<count>):"
@@ -86,6 +88,10 @@ msgstr "<player> کا بایوم <biome> میں بدل دیا گیا ہے۔"
 msgid "Changed biome of <leader>'s island to <biome>."
 msgstr "<leader> کے جزیرہ کا بایوم <biome> میں بدل دیا گیا ہے۔"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Checking Modrinth for a newer uSkyBlock..."
+msgstr "Modrinth پر uSkyBlock کا نیا ورژن تلاش کیا جا رہا ہے..."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Cleared cooldown on <command> for <player>"
 msgstr "<player> کے لیے <command> پر کول ڈاؤن صاف کر دیا گیا"
@@ -102,9 +108,33 @@ msgstr "کمانڈ کول ڈاؤنز"
 msgid "Configuration reloaded from file."
 msgstr "کنفیگریشن فائل سے دوبارہ لوڈ کر لی گئی۔"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not download uSkyBlock <version> from Modrinth. Try again later, or download it from <url>"
+msgstr "Modrinth سے uSkyBlock <version> ڈاؤن لوڈ نہیں ہو سکا. بعد میں دوبارہ کوشش کرو, یا اسے یہاں سے ڈاؤن لوڈ کرو: <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Could not locate an island for player <player>!"
 msgstr "کھلاڑی <player> کے لیے کوئی جزیرہ نہیں مل سکا!"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not reach Modrinth. Check for updates manually at <url>"
+msgstr "Modrinth سے رابطہ نہیں ہو سکا. اپ ڈیٹس خود یہاں چیک کرو: <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: <folder> can't be written."
+msgstr "uSkyBlock <version> تیار نہیں کیا جا سکا: <folder> میں لکھا نہیں جا سکتا."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: Modrinth lists no file for it."
+msgstr "uSkyBlock <version> تیار نہیں کیا جا سکا: Modrinth پر اس کی کوئی فائل درج نہیں ہے."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the download doesn't match its SHA-512 hash on Modrinth, so it was deleted."
+msgstr "uSkyBlock <version> تیار نہیں کیا جا سکا: ڈاؤن لوڈ کی گئی فائل کا SHA-512 ہیش Modrinth پر موجود ہیش سے میل نہیں کھاتا, اس لیے فائل حذف کر دی گئی."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the server has no update folder apart from the plugins folder. Set settings.update-folder in bukkit.yml."
+msgstr "uSkyBlock <version> تیار نہیں کیا جا سکا: سرور پر plugins فولڈر کے علاوہ کوئی اپ ڈیٹ فولڈر نہیں ہے. bukkit.yml میں settings.update-folder سیٹ کرو."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Current language: <locale>"
@@ -113,6 +143,10 @@ msgstr "موجودہ زبان: <locale>"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Deleted abandoned island at your current location."
 msgstr "تمہاری موجودہ لوکیشن پر ترک شدہ جزیرہ ڈیلیٹ کر دیا گیا۔"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Downloading uSkyBlock <version>..."
+msgstr "uSkyBlock <version> ڈاؤن لوڈ ہو رہا ہے..."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error! <primary>No valid island found for purging."
@@ -137,10 +171,6 @@ msgstr "ٹاپ ٹین لسٹ بنانا مکمل ہو گیا۔"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "Generating the top ten list."
 msgstr "ٹاپ ٹین لسٹ بنائی جا رہی ہے۔"
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Help improve translations: <url>"
-msgstr "ترجمے بہتر بنانے میں مدد کریں: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
@@ -284,6 +314,10 @@ msgstr "Purge منسوخ کر دیا گیا!"
 msgid "Purge timed out."
 msgstr "Purge کا وقت ختم ہو گیا۔"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Release notes: <url>"
+msgstr "ریلیز نوٹس: <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removed ignore-flag of <leader>'s island, it will now show up on top-ten and purge."
 msgstr "<leader> کے جزیرہ سے ignore-flag ہٹا دیا گیا، اب یہ top-ten اور purge میں نظر آئے گا۔"
@@ -295,6 +329,10 @@ msgstr "<player> کو جزیرہ سے ہٹایا جا رہا ہے۔"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removing <player>'s island."
 msgstr "<player> کا جزیرہ ہٹایا جا رہا ہے۔"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Replaced the staged uSkyBlock <previous> with <version>. It takes effect at the next restart."
+msgstr "تیار شدہ uSkyBlock <previous> کو <version> سے بدل دیا گیا. یہ اگلے ری اسٹارٹ پر نافذ ہوگا."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Resending chunks to the client."
@@ -587,6 +625,10 @@ msgstr "بیرونی چنکس کی بارڈرز دکھاتا ہے"
 msgid "shows the non-chunk-aligned borders"
 msgstr "نان-چنک-الائنڈ بارڈرز دکھاتا ہے"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "stage the newest uSkyBlock version for the next restart"
+msgstr "اگلے ری اسٹارٹ کے لیے uSkyBlock کا تازہ ترین ورژن تیار کرو"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another player's island"
 msgstr "کسی دوسرے پلیئر کے جزیرے پر ٹیلی پورٹ کریں"
@@ -602,6 +644,35 @@ msgstr "جزیرے کی ignore اسٹیٹس ٹوگل کرتا ہے"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
 msgstr "لیڈرشپ کسی دوسرے پلیئر کو منتقل کریں"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is a new major version. It changes your data and config at its first start, and needs Minecraft <minecraft> on <platforms>."
+msgstr "uSkyBlock <version> ایک نیا میجر ورژن ہے. پہلی بار چلنے پر یہ تمہارا ڈیٹا اور کنفگ بدلتا ہے, اور اسے <platforms> پر Minecraft <minecraft> درکار ہے."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is available. <command> stages it for the next restart."
+msgstr "uSkyBlock <version> دستیاب ہے. <command> اسے اگلے ری اسٹارٹ کے لیے تیار کرتی ہے."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is out (needs Minecraft <minecraft>). Read the upgrade guide first: <url>"
+msgstr "uSkyBlock <version> آ گیا ہے (Minecraft <minecraft> درکار ہے). پہلے اپ گریڈ گائیڈ پڑھو: <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is staged and takes effect at the next restart."
+msgstr "uSkyBlock <version> تیار ہے اور اگلے ری اسٹارٹ پر نافذ ہوگا."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is up to date."
+msgstr "uSkyBlock <version> پہلے ہی تازہ ترین ہے."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> needs Minecraft <minecraft> on <platforms>, but this server runs Minecraft <server-minecraft> on <server-platform>. Nothing was downloaded."
+msgstr "uSkyBlock <version> کو <platforms> پر Minecraft <minecraft> درکار ہے, لیکن اس سرور پر <server-platform> کے ساتھ Minecraft <server-minecraft> چل رہا ہے. کچھ بھی ڈاؤن لوڈ نہیں کیا گیا."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> was staged automatically and takes effect at the next restart."
+msgstr "uSkyBlock <version> خودکار طور پر تیار کر دیا گیا ہے اور اگلے ری اسٹارٹ پر نافذ ہوگا."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"
