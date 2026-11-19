@@ -38,6 +38,24 @@ public class FormatUtilTest {
     }
 
     @Test
+    public void wordWrapStartsEachLineWithTheFormatInEffectAtTheEndOfTheLineBefore() {
+        assertThat(wordWrap("a bucket of §clava, some ice and one slime block", 20, 30),
+                is(Arrays.asList("a bucket of §clava, some", "§cice and one slime block")));
+        assertThat(wordWrap("§c§lred bold words here", 10, 10),
+                is(Arrays.asList("§c§lred bold words", "§c§lhere")));
+        assertThat(wordWrap("§cred words §lbold words", 10, 10),
+                is(Arrays.asList("§cred words", "§c§lbold words")));
+        assertThat(wordWrap("§cred words and §rplain words", 10, 10),
+                is(Arrays.asList("§cred words", "§cand §rplain", "§rwords")));
+    }
+
+    @Test
+    public void wordWrapStrictCarriesColourAndFormatTogether() {
+        assertThat(wordWrapStrict("§c§lred bold words here", 10),
+                is(Arrays.asList("§c§lred bold", "§c§lwords here")));
+    }
+
+    @Test
     public void testWordWrapStrict() {
         assertThat(wordWrapStrict("this is a short story of a long sentence withaverylongword in the end", 14),
                 is(Arrays.asList(

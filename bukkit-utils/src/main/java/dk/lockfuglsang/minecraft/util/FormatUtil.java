@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * Format utility
  */
 public enum FormatUtil {;
-    private static final Pattern FORMATTING = Pattern.compile("^.*(?<format>(\u00a7[0-9a-fklmor])+).*");
+    private static final Pattern FORMAT_CODE = Pattern.compile("\u00a7[0-9a-fklmor]");
     public static String stripFormatting(String format) {
         if (format == null || format.trim().isEmpty()) {
             return "";
@@ -41,12 +41,10 @@ public enum FormatUtil {;
      *   of words
      * </pre>
      * Note that the first line is longer than 11 (14).
+     * <p>
+     * Each wrapped line starts with the colour and formats still in effect where the line before ended.
      */
     public static List<String> wordWrap(String s, int firstSegment, int lineSize) {
-        String format = getFormat(s);
-        if (format == null || !s.startsWith(format)) {
-            format = "";
-        }
         List<String> words = new ArrayList<>();
         int numChars = firstSegment;
         int ix = 0;
@@ -55,14 +53,10 @@ public enum FormatUtil {;
             ix = s.indexOf(' ', ix+1);
             if (ix != -1) {
                 String subString = s.substring(jx, ix).trim();
-                String f = getFormat(subString);
                 int chars = stripFormatting(subString).length() + 1; // remember the space
                 if (chars >= numChars) {
-                    if (f != null) {
-                        format = f;
-                    }
                     if (!subString.isEmpty()) {
-                        words.add(withFormat(format, subString));
+                        words.add(withFormat(trailingFormat(s.substring(0, jx)), subString));
                         numChars = lineSize;
                         jx = ix + 1;
                     }
@@ -71,16 +65,13 @@ public enum FormatUtil {;
                 break;
             }
         }
-        words.add(withFormat(format, s.substring(jx).trim()));
+        words.add(withFormat(trailingFormat(s.substring(0, jx)), s.substring(jx).trim()));
         return words;
     }
 
     public static List<String> wordWrapStrict(String s, int lineLength) {
         List<String> lines = new ArrayList<>();
-        String format = getFormat(s);
-        if (format == null || !s.startsWith(format)) {
-            format = "";
-        }
+        String format = "";
         String[] words = s.split(" ");
         String line = "";
         for (String word: words) {
@@ -90,24 +81,19 @@ public enum FormatUtil {;
                 line += (line.isEmpty() ? "" : " ") + word;
             } else if (line.isEmpty() || stripFormatting(word).length() > lineLength) {
                 // add word truncated
-                String f = getFormat(word);
+                String wordFormat = trailingFormat(format + line + word);
                 String strip = stripFormatting(word);
                 do {
                     int len = Math.min(strip.length(), lineLength-line.length()-1);
                     lines.add(withFormat(format, line + (line.isEmpty() ? "" : " ") + strip.substring(0, len)));
                     strip = strip.substring(len);
-                    if (f != null) {
-                        format = f;
-                    }
+                    format = wordFormat;
                 } while (strip.length() > lineLength);
                 line = strip;
             } else {
                 // add line, then start a new
                 lines.add(withFormat(format, line));
-                String f = getFormat(line);
-                if (f != null) {
-                    format = f;
-                }
+                format = trailingFormat(format + line);
                 line = word;
             }
         }
@@ -117,23 +103,28 @@ public enum FormatUtil {;
         return lines;
     }
 
-    private static String withFormat(String format, String subString) {
-        String sf = null;
-        if (!subString.startsWith("\u00a7")) {
-            sf = format + subString;
-        } else {
-            sf = subString;
-        }
-        return sf;
+    /** A line that opens with its own colour or reset doesn't need the carried format. */
+    private static String withFormat(String format, String line) {
+        return line.length() > 1 && line.charAt(0) == '\u00a7' && isColourOrReset(line.charAt(1)) ? line : format + line;
     }
 
-    private static String getFormat(String s) {
-        Matcher m = FORMATTING.matcher(s);
-        String format = null;
-        if (m.matches() && m.group("format") != null) {
-            format = m.group("format");
+    /** The codes still in effect after {@code s}: a colour or {@code \u00a7r} replaces them, the others add to them. */
+    private static String trailingFormat(String s) {
+        StringBuilder format = new StringBuilder();
+        Matcher m = FORMAT_CODE.matcher(s);
+        while (m.find()) {
+            if (isColourOrReset(m.group().charAt(1))) {
+                format.setLength(0);
+            }
+            if (format.indexOf(m.group()) == -1) {
+                format.append(m.group());
+            }
         }
-        return format;
+        return format.toString();
+    }
+
+    private static boolean isColourOrReset(char code) {
+        return "0123456789abcdefr".indexOf(code) >= 0;
     }
 
     public static List<String> prefix(List<String> list, String prefix) {

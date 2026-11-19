@@ -348,7 +348,7 @@ public class Challenge {
     public List<String> getMissingRequirements(PlayerInfo playerInfo) {
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, requiredChallenges, uSkyBlock.getInstance().getChallengeLogic());
         if (missingRequirement != null) {
-            return wordWrap(trLegacy("Requires <requirement>", legacyArg("requirement", missingRequirement)), MAX_LINE);
+            return wordWrap(trLegacy("Requires <requirement>", MUTED, legacyArg("requirement", missingRequirement)), MAX_LINE);
         }
         return Collections.emptyList();
     }
