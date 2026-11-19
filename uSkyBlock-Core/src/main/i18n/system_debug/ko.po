@@ -15,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ItemInfoCommand.java
 msgid " - name: <item-name>"
@@ -121,6 +120,10 @@ msgstr "PURGE:<primary> 스캔이 중단되었습니다."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeScanTask.java
 msgid "PURGE:<primary> Scanning done, found <count> candidates below level <level>, ready for purging."
 msgstr "PURGE:<primary> 스캔 완료, 레벨 <level> 미만 후보 <count>개를 찾았습니다. 정리 준비 완료."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/task/PurgeTask.java
+msgid "PURGE:<primary> Skipped <count> islands that are active again."
+msgstr "PURGE:<primary> 다시 활성화된 섬 <count>개를 건너뛰었습니다."
 
 #: bukkit-utils/src/main/java/dk/lockfuglsang/minecraft/command/PlainTextCommandVisitor.java
 msgid "Permission"

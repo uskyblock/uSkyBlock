@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
-"X-Crowdin-File-ID: 24\n"
-"X-Crowdin-Language: fil\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
@@ -517,6 +511,11 @@ msgstr "Mga Golem"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
 msgstr "Mga miyembro ng grupo: <current>/<max>"
+
+#. I18N: Creature category label shown in island mob-limit summary.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
+msgid "Happy Ghasts"
+msgstr "Mga Masayang Ghast"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Hold your horses! <muted>You have to be patient."
@@ -1134,6 +1133,12 @@ msgstr "Available lang ang command na ito para sa mga player."
 msgid "This is your current biome."
 msgstr "Ito ang kasalukuyan mong biome."
 
+#. I18N: Action bar text when a dried ghast waits because the island is at its
+#. happy ghast limit.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
+msgid "This island has reached its happy ghast limit (<limit>). The dried ghast will hatch once there's room."
+msgstr "Naabot na ng islang ito ang limitasyon sa mga Masayang Ghast (<limit>). Mapipisa ang Tuyong Ghast kapag may puwang na."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This island is full."
 msgstr "Puno na ang islang ito."
@@ -1406,6 +1411,10 @@ msgstr "Puwede ka pang mag-imbita ng <count> manlalaro."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "You can only convert obsidian once every <cooldown> seconds"
 msgstr "Puwede mo lang i-convert ang obsidian isang beses kada <cooldown> segundo"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "You can only restart your island in the skyblock world!"
+msgstr "Sa skyblock world mo lang puwedeng i-restart ang isla mo!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "You can only submit challenges in the skyblock world!"

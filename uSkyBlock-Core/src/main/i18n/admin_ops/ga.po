@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.admin_ops.pot\n"
-"X-Crowdin-File-ID: 26\n"
-"X-Crowdin-Language: ga-IE\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ProtectAllCommand.java
 msgid "- Protect-All <progress_pct:'0%'> (<progress>/<total>, failed:<failed>, skipped:<skipped>) ~ <elapsed>"
@@ -29,6 +23,10 @@ msgstr "- Protect-All <progress_pct:'0%'> (<progress>/<total>, teipthe:<failed>,
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/OrphanCommand.java
 msgid "<count> old island locations will be used before new ones."
 msgstr "Úsáidfear <count> seanláithreacha oileáin roimh na cinn nua."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "<error>Back up your server first</error>, and read the upgrade guide: <url>"
+msgstr "<error>Déan cúltaca de do fhreastalaí ar dtús</error>, agus léigh an treoir uasghrádaithe: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "<leader>'s island at <island> has been protected."
@@ -62,6 +60,10 @@ msgstr "Athraíodh tick na beochana go <ticks>."
 msgid "Animation tick must be a valid integer."
 msgstr "Caithfidh tick na beochana a bheith ina shlánuimhir bhailí."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Another update is being staged. Try again in a moment."
+msgstr "Tá nuashonrú eile á ullmhú. Bain triail eile as i gceann nóiméid."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Available locales (<count>):"
 msgstr "Logchaighdeáin ar fáil (<count>):"
@@ -86,6 +88,10 @@ msgstr "Athraíodh bithóim <player> go <biome>."
 msgid "Changed biome of <leader>'s island to <biome>."
 msgstr "Athraíodh bithóim oileán <leader> go <biome>."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Checking Modrinth for a newer uSkyBlock..."
+msgstr "Ag seiceáil Modrinth le haghaidh leagan níos nuaí de uSkyBlock..."
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Cleared cooldown on <command> for <player>"
 msgstr "Glanadh an t-am fuaraithe ar <command> do <player>"
@@ -102,9 +108,33 @@ msgstr "Amanna fuaraithe orduithe"
 msgid "Configuration reloaded from file."
 msgstr "Athluchtaíodh an chumraíocht ón gcomhad."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not download uSkyBlock <version> from Modrinth. Try again later, or download it from <url>"
+msgstr "Níorbh fhéidir uSkyBlock <version> a íoslódáil ó Modrinth. Bain triail eile as ar ball, nó íoslódáil é ó <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Could not locate an island for player <player>!"
 msgstr "Níorbh fhéidir oileán a aimsiú don imreoir <player>!"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not reach Modrinth. Check for updates manually at <url>"
+msgstr "Níorbh fhéidir ceangal le Modrinth. Seiceáil le haghaidh nuashonruithe de láimh ag <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: <folder> can't be written."
+msgstr "Níorbh fhéidir uSkyBlock <version> a ullmhú: ní féidir scríobh chuig <folder>."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: Modrinth lists no file for it."
+msgstr "Níorbh fhéidir uSkyBlock <version> a ullmhú: níl aon chomhad liostaithe dó ar Modrinth."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the download doesn't match its SHA-512 hash on Modrinth, so it was deleted."
+msgstr "Níorbh fhéidir uSkyBlock <version> a ullmhú: ní mheaitseálann an íoslódáil a hais SHA-512 ar Modrinth, mar sin scriosadh í."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Could not stage uSkyBlock <version>: the server has no update folder apart from the plugins folder. Set settings.update-folder in bukkit.yml."
+msgstr "Níorbh fhéidir uSkyBlock <version> a ullmhú: níl aon fhillteán nuashonraithe ag an bhfreastalaí seachas an fillteán breiseán. Socraigh settings.update-folder in bukkit.yml."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
 msgid "Current language: <locale>"
@@ -113,6 +143,10 @@ msgstr "Teanga reatha: <locale>"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Deleted abandoned island at your current location."
 msgstr "Scriosadh oileán tréigthe ag do shuíomh reatha."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Downloading uSkyBlock <version>..."
+msgstr "Ag íoslódáil uSkyBlock <version>..."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Error! <primary>No valid island found for purging."
@@ -137,10 +171,6 @@ msgstr "Críochnaíodh giniúint an liosta barr deichniúr."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GenTopTenCommand.java
 msgid "Generating the top ten list."
 msgstr "Ag giniúint an liosta barr deichniúr."
-
-#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/LanguageCommand.java
-msgid "Help improve translations: <url>"
-msgstr "Cabhraigh le haistriúcháin a fheabhsú: <url>"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/CooldownCommand.java
 msgid "Invalid command supplied, only restart and biome supported!"
@@ -284,6 +314,10 @@ msgstr "Cuireadh deireadh leis an purge!"
 msgid "Purge timed out."
 msgstr "Chuaigh an purge thar am."
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Release notes: <url>"
+msgstr "Nótaí eisiúna: <url>"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removed ignore-flag of <leader>'s island, it will now show up on top-ten and purge."
 msgstr "Baineadh an bratach neamhaird ó oileán <leader>, taispeánfar é anois ar an mbarr-deichniúr agus i purge."
@@ -295,6 +329,10 @@ msgstr "Ag baint <player> den oileán."
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/AdminIslandCommand.java
 msgid "Removing <player>'s island."
 msgstr "Ag baint oileán <player>."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "Replaced the staged uSkyBlock <previous> with <version>. It takes effect at the next restart."
+msgstr "Cuireadh <version> in áit uSkyBlock <previous> a bhí ullmhaithe. Tiocfaidh sé i bhfeidhm ag an gcéad atosú eile."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/WGCommand.java
 msgid "Resending chunks to the client."
@@ -587,6 +625,10 @@ msgstr "taispeánann sé teorainneacha na n-outer-chunks"
 msgid "shows the non-chunk-aligned borders"
 msgstr "taispeánann sé na teorainneacha nach bhfuil ailínithe le chunks"
 
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "stage the newest uSkyBlock version for the next restart"
+msgstr "ullmhaigh an leagan is nuaí de uSkyBlock don chéad atosú eile"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/GotoIslandCommand.java
 msgid "teleport to another player's island"
 msgstr "teileaportáil chuig oileán imreora eile"
@@ -602,6 +644,35 @@ msgstr "scoránaíonn sé stádas neamhaird an oileáin"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/MakeLeaderCommand.java
 msgid "transfer leadership to another player"
 msgstr "aistrigh an cheannaireacht chuig imreoir eile"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is a new major version. It changes your data and config at its first start, and needs Minecraft <minecraft> on <platforms>."
+msgstr "Is mórleagan nua é uSkyBlock <version>. Athraíonn sé do shonraí agus do chumraíocht nuair a thosaítear é den chéad uair, agus teastaíonn Minecraft <minecraft> ar <platforms> uaidh."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is available. <command> stages it for the next restart."
+msgstr "Tá uSkyBlock <version> ar fáil. Ullmhaíonn <command> é don chéad atosú eile."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is out (needs Minecraft <minecraft>). Read the upgrade guide first: <url>"
+msgstr "Tá uSkyBlock <version> eisithe (teastaíonn Minecraft <minecraft> uaidh). Léigh an treoir uasghrádaithe ar dtús: <url>"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> is staged and takes effect at the next restart."
+msgstr "Tá uSkyBlock <version> ullmhaithe agus tiocfaidh sé i bhfeidhm ag an gcéad atosú eile."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> is up to date."
+msgstr "Tá uSkyBlock <version> cothrom le dáta."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/UpdateCommand.java
+msgid "uSkyBlock <version> needs Minecraft <minecraft> on <platforms>, but this server runs Minecraft <server-minecraft> on <server-platform>. Nothing was downloaded."
+msgstr "Teastaíonn Minecraft <minecraft> ar <platforms> ó uSkyBlock <version>, ach tá Minecraft <server-minecraft> ar <server-platform> á rith ag an bhfreastalaí seo. Níor íoslódáladh aon rud."
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/update/UpdateNotice.java
+msgid "uSkyBlock <version> was staged automatically and takes effect at the next restart."
+msgstr "Ullmhaíodh uSkyBlock <version> go huathoibríoch agus tiocfaidh sé i bhfeidhm ag an gcéad atosú eile."
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/admin/ChunkCommand.java
 msgid "unload current chunk"

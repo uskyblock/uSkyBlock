@@ -15,12 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-File: /master/uSkyBlock-Core/src/main/i18n/keys.player_facing.pot\n"
-"X-Crowdin-File-ID: 24\n"
-"X-Crowdin-Language: hi\n"
-"X-Crowdin-Project: uskyblock-revived\n"
-"X-Crowdin-Project-ID: 764127\n"
-"X-Generator: po_ai_translate (OpenAI)\n"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/handler/WorldGuardHandler.java
 msgid "** You are entering <leader>'s island."
@@ -517,6 +511,11 @@ msgstr "गोलम"
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "Group members: <current>/<max>"
 msgstr "समूह सदस्य: <current>/<max>"
+
+#. I18N: Creature category label shown in island mob-limit summary.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/island/LimitLogic.java
+msgid "Happy Ghasts"
+msgstr "खुश घास्ट"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/InfoCommand.java
 msgid "Hold your horses! <muted>You have to be patient."
@@ -1134,6 +1133,12 @@ msgstr "यह कमांड सिर्फ खिलाड़ियों �
 msgid "This is your current biome."
 msgstr "यह तुम्हारा वर्तमान बायोम है।"
 
+#. I18N: Action bar text when a dried ghast waits because the island is at its
+#. happy ghast limit.
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/SpawnEvents.java
+msgid "This island has reached its happy ghast limit (<limit>). The dried ghast will hatch once there's room."
+msgstr "इस द्वीप पर खुश घास्ट की सीमा (<limit>) पूरी हो गई है। जगह होने पर सूखी घास्ट से बच्चा निकलेगा।"
+
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/menu/SkyBlockMenu.java
 msgid "This island is full."
 msgstr "यह द्वीप भर चुका है।"
@@ -1406,6 +1411,10 @@ msgstr "तुम और <count> खिलाड़ियों को निम
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/event/PlayerEvents.java
 msgid "You can only convert obsidian once every <cooldown> seconds"
 msgstr "तुम ऑब्सिडियन को हर <cooldown> सेकंड में केवल एक बार ही बदल सकते हो"
+
+#: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/island/RestartCommand.java
+msgid "You can only restart your island in the skyblock world!"
+msgstr "तुम अपना द्वीप केवल स्काईब्लॉक दुनिया में ही दोबारा शुरू कर सकते हो!"
 
 #: uSkyBlock-Core/src/main/java/us/talabrek/ultimateskyblock/command/ChallengeCommand.java
 msgid "You can only submit challenges in the skyblock world!"
