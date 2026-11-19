@@ -279,9 +279,7 @@ public class Challenge {
                 MUTED,
                 number("radius", getRadius(), PRIMARY)));
         }
-        List<String> lines = wordWrap(reward.getRewardText(), 20, MAX_LINE);
-        lores.add(tr("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
-        lines.subList(1, lines.size()).forEach(line -> lores.add(fromLegacy(line)));
+        lores.addAll(rewardLore(reward.getRewardText()));
         if (withCurrency) {
             lores.add(tr("Currency reward: <currency:'#,##0'>",
                 MUTED,
@@ -301,6 +299,14 @@ public class Challenge {
 
         ItemStackUtil.setComponentLore(currentChallengeItem, lores);
         return currentChallengeItem;
+    }
+
+    static List<Component> rewardLore(String rewardText) {
+        List<String> lines = wordWrap(rewardText, 20, MAX_LINE);
+        List<Component> lore = new ArrayList<>();
+        lore.add(tr("Item reward: <reward-line>", MUTED, Placeholder.legacy("reward-line", lines.getFirst(), PRIMARY)));
+        lines.subList(1, lines.size()).forEach(line -> lore.add(fromLegacy(line).applyFallbackStyle(PRIMARY)));
+        return lore;
     }
 
     public int getOffset() {
@@ -342,7 +348,7 @@ public class Challenge {
     public List<String> getMissingRequirements(PlayerInfo playerInfo) {
         String missingRequirement = ChallengeFormat.getMissingRequirement(playerInfo, requiredChallenges, uSkyBlock.getInstance().getChallengeLogic());
         if (missingRequirement != null) {
-            return wordWrap(trLegacy("Requires <requirement>", legacyArg("requirement", missingRequirement)), MAX_LINE);
+            return wordWrap(trLegacy("Requires <requirement>", MUTED, legacyArg("requirement", missingRequirement)), MAX_LINE);
         }
         return Collections.emptyList();
     }
