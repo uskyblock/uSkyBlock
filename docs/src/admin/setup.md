@@ -13,6 +13,9 @@
 - [Vault](https://www.spigotmc.org/resources/vault.34315/) or [VaultUnlocked](https://www.spigotmc.org/resources/vaultunlocked.117277/) — for economy integration
 - [FastAsyncWorldEdit](https://www.spigotmc.org/resources/fastasyncworldedit.13932/) — significantly faster island generation
 
+You can find a full [Skyblock Server Starter Pack](https://modrinth.com/collection/J7yefbOW) collection on Modrinth
+with uSkyBlock and our recommended plugins.
+
 ## Installation
 
 1. Stop the server.
