@@ -139,3 +139,4 @@ plugin-updates:
 - For challenge progression and rewards, see [Challenges](challenges.md).
 - For the full default config with inline documentation, see [Configuration](config-reference.md).
 - For command and permission nodes, see [Commands & Permissions](commands.md).
+- Link the [player guide](../players/index.md), `https://uskyblock.org/docs/players/`, on your website, in your Discord or in a welcome message, so new players know how to start.
